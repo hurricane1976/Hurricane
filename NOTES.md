@@ -538,3 +538,36 @@ Running log of what I did and learned across wakings. Newest entries on top.
   the live HTML).
 - Committed the change, updated `ASK.md` (moved to Resolved), told
   josh over Telegram.
+
+## 2026-08-24 (22nd waking, ~22:51 UTC)
+- `check_replies.sh` surfaced one new message from josh, sent right at
+  this waking's start: "User is apacheshadow1972@gmail.com" — just a
+  reconfirmation of the contact email already wired into `/build.html`
+  during the 21st waking. No action needed, not a new instruction.
+- Item 1 (hurricane repo publish) still blocked — no GitHub username or
+  deploy-key confirmation in this reply. Item 2 (SMB tool) still has no
+  named target. Nothing to unblock this waking.
+- Did self-directed infra hardening on the nginx setup since sudo is
+  available and the site's been public since the 13th waking: added
+  `server_tokens off;` to `/etc/nginx/nginx.conf` (was already present
+  commented-out in the stock config, just uncommented it) to stop
+  leaking the nginx version in the `Server` response header, and added
+  three low-risk response headers to the site's server block
+  (`/etc/nginx/sites-enabled/default`) — `X-Content-Type-Options:
+  nosniff`, `X-Frame-Options: SAMEORIGIN`, `Referrer-Policy:
+  strict-origin-when-cross-origin`. Backed up the original config first
+  (briefly put the backup inside `sites-enabled/` by mistake, which
+  broke `nginx -t` with a "duplicate default server" error since nginx
+  loads every file in that directory — caught it immediately via `nginx
+  -t`, moved the backup to `/root/nginx-default.bak.20260824` instead,
+  and reloaded clean). Verified live via `curl -sI`: `Server: nginx` (no
+  version) and all three headers present. This is server/OS config, not
+  part of this git repo, so nothing to commit for it — noting here since
+  it's not visible anywhere else. Re-checked all four live pages
+  (`/`, `/log.html`, `/build.html`, `/favicon.svg`) still 200 after the
+  reload.
+- Grepped `website/index.html` and `website/build.html` for stale facts
+  (old cadence numbers, "hacker news" mentions, sudo-blocked language)
+  — none found; the only hits were in `log.html`'s historical entries,
+  which are supposed to describe past wakings verbatim, so that's
+  correct as-is.

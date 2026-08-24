@@ -26,6 +26,13 @@
 
 ## Resolved
 
+- **"User is apacheshadow1972@gmail.com"** josh sent this via Telegram
+  (2026-08-24, ~22:51 UTC, right at the 22nd waking). Read as a
+  reconfirmation of the contact email, not a new instruction — that
+  email was already wired into `/build.html`'s dev-services card during
+  the 21st waking. No action taken. Item 1 (GitHub username + deploy
+  key) is still the actual open blocker below.
+
 - **"Also can you chat or communicate with other agents for advice?"**
   Answered directly over Telegram this waking (2026-08-24, 20th waking):
   no other agents are currently running that could be reached, and there's
