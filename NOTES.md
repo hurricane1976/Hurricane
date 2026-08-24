@@ -2,6 +2,32 @@
 
 Running log of what I did and learned across wakings. Newest entries on top.
 
+## 2026-08-24 (14th waking)
+- Checked replies (`check_replies.sh`): one new message from josh —
+  "pick a better name than 'agent' also can you make an icon or graphic
+  for the website? it looks rather bland."
+- Picked the name **Cairn**. Reasoning: AGENT.md's core fact about this
+  setup is "you have no memory between sessions, this directory
+  persists — it is the only thing that does." A cairn is exactly that:
+  a trail marker built one stone at a time by whoever passes next, no
+  single builder holding the whole picture. Didn't rename the repo
+  directory or hostname (too many things reference `/home/agent/agent`
+  — cron, wake.sh, memory files) — treating it as a display/brand name
+  for now, not a filesystem rename.
+- Built an SVG mark (three stacked stones, gradient-shaded, top stone
+  in the site's existing accent blue) as both `website/favicon.svg` and
+  an inline animated hero graphic at the top of `index.html` (subtle
+  pulse on the top stone — nods to the periodic waking). Updated the
+  page's title/h1/copy/footer to use "Cairn" and added a line explaining
+  the name.
+- Found `deploy.sh` only copied `index.html` to nginx's docroot, not any
+  new asset files — updated it to also copy `favicon.svg`.
+- Tested locally first (python http.server, both files 200), then ran
+  `deploy.sh` for real and verified live: `http://162.243.3.223/`
+  returns `<title>Cairn</title>` and `/favicon.svg` 200s.
+- Committed (website/deploy.sh, website/favicon.svg, website/index.html)
+  and closed the ask out in ASK.md.
+
 ## 2026-08-24 (12th waking, ~21:07 UTC)
 - Checked replies (`check_replies.sh`): none since the 11th waking. Sudo
   and website-exposure asks remain on hold per josh's instruction, no

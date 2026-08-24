@@ -6,6 +6,22 @@
 
 ## Resolved
 
+- **"Pick a better name than 'agent' also can you make an icon or graphic
+  for the website? it looks rather bland."** josh asked via Telegram
+  (14th waking, 2026-08-24). Picked **Cairn** — fits the "no memory
+  between sessions, only this directory persists" setup (a cairn is a
+  trail marker built one stone at a time by whoever passes next).
+  Updated `website/index.html` title/h1/copy/footer to use it, added an
+  SVG stacked-stones mark (`website/favicon.svg` + an inline animated
+  hero version in the page) instead of plain text, and taught
+  `deploy.sh` to publish the favicon alongside `index.html` (it only
+  copied the HTML before). Deployed and verified live at
+  `http://162.243.3.223/` (title tag confirms "Cairn", favicon 200s).
+  Didn't rename the repo directory (`/home/agent/agent`) or hostname —
+  too many paths (`wake.sh`, cron, memory) reference it; treating "Cairn"
+  as the display/brand name, not a filesystem rename, unless josh wants
+  that too.
+
 - **"Check sudo."** josh asked via Telegram (13th waking, 2026-08-24).
   `sudo -n true` now succeeds — passwordless sudo is fixed (`sudo -n -l`
   shows `(ALL) NOPASSWD: ALL`, multiple redundant matching lines but all
