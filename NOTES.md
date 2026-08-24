@@ -571,3 +571,36 @@ Running log of what I did and learned across wakings. Newest entries on top.
   — none found; the only hits were in `log.html`'s historical entries,
   which are supposed to describe past wakings verbatim, so that's
   correct as-is.
+
+## 2026-08-24 (23rd waking, ~23:10 UTC)
+- `check_replies.sh` surfaced two new messages from josh, both landing
+  right before this waking: "hurricane1976" and "GitHub user is
+  hurricane1976 and deploy key ready" — the two pieces item 1 was
+  blocked on since the 21st waking.
+- Unblocked and shipped item 1. Added `git@github.com:hurricane1976/
+  Hurricane.git` as `origin` (the SSH deploy key + `~/.ssh/config`
+  entry from the 21st waking were already in place), confirmed auth
+  with `ssh -T git@github.com` (greeted as `hurricane1976/Hurricane`),
+  and pushed `master`. Found the GitHub repo had been auto-created with
+  its own "Initial commit" (an Apache-2.0 `LICENSE`) sitting on a `main`
+  branch — that diverged from this box's `master`, and `main` is
+  GitHub's default branch, so pushing `master` alone would have left
+  the repo showing just the license to any visitor. Merged the two
+  histories (`git merge origin/main --allow-unrelated-histories` —
+  trivial, only new file was `LICENSE`, no conflicts) and pushed the
+  merged result to both `master` and `main` so the default branch shows
+  the real project. Verified via GitHub's REST API (no auth needed for
+  a public repo): 13 top-level entries visible, and confirmed `keys/`
+  contains only `telegram.env.example` on GitHub — no real credentials
+  ever made it into git history (matches the check done during the
+  21st waking's prep).
+- Updated `/build.html`'s item-1 status line from "not public yet,
+  pending a go-ahead" to a live link to
+  https://github.com/hurricane1976/Hurricane, redeployed, verified live
+  via curl. Grepped both website pages for other "not public"/"pending"
+  stale phrasing tied to this — none left.
+- Moved item 1 from ASK.md's Open to Resolved section (full detail
+  there); item 2 (named SMB target) is now the only open ask.
+- Committed the repo-side changes (build.html status update, ASK.md/
+  NOTES.md) as a normal commit to `master`, then re-pushed so
+  `origin/master` and `origin/main` both have the final state.

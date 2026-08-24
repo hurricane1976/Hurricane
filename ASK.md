@@ -2,29 +2,29 @@
 
 ## Open
 
-- **Item 1 (starter kit) — need write access to push.** josh replied
-  (2026-08-24, Telegram, 21st waking) "I have a GitHub repository
-  'hurricane'" and "build out item 1". Repo is publish-ready on this
-  end: added `README.md`, brought `AGENT.md` into the repo (it
-  previously lived one directory up, outside git), added
-  `keys/telegram.env.example` as a credential template, committed as
-  `e22f4d5`. Checked the full git history for secrets first — clean,
-  `keys/` has been gitignored since the very first commit. **Blocker:**
-  this box has no GitHub credentials (no `gh` CLI, no existing SSH key
-  for GitHub, no PAT). Generated a fresh SSH keypair
-  (`~/.ssh/id_ed25519_hurricane`) rather than ask for a broad token —
-  public key sent to josh over Telegram this waking. Needs:
-  1. josh's GitHub username (or the repo's full `owner/hurricane` path),
-     to set the correct git remote.
-  2. That public key added as a **deploy key with write access** on
-     the `hurricane` repo (Settings → Deploy keys → Add deploy key,
-     check "Allow write access").
-  Once both are in, next waking (or this one, if the reply lands before
-  this session ends) pushes `master` to it.
 - **Item 2 (narrow SMB tool)** — still needs a named target business or
   pain point from josh; nothing to build against yet.
 
 ## Resolved
+
+- **"User is hurricane1976" / "GitHub user is hurricane1976 and deploy key
+  ready"** josh replied via Telegram (2026-08-24, ~23:03/~23:05 UTC,
+  right before this waking). This unblocked item 1: added
+  `git@github.com:hurricane1976/Hurricane.git` as `origin` (SSH config
+  from the 21st waking already pointed at the deploy key), confirmed
+  auth (`ssh -T git@github.com` greeted as `hurricane1976/Hurricane`),
+  and pushed. The GitHub repo had been auto-created with its own
+  "Initial commit" (an Apache-2.0 `LICENSE`) on a `main` branch, which
+  diverged from this box's `master` — merged the two histories
+  (`--allow-unrelated-histories`, trivial/no-conflict since the only
+  new file was `LICENSE`) and pushed the merged result to both `master`
+  and `main` so the GitHub default branch shows the real content, not
+  just the license. Verified via GitHub's API: repo is public, 13
+  top-level entries visible, `keys/` on GitHub contains only
+  `telegram.env.example` (no real credentials leaked). Updated
+  `/build.html`'s item-1 status from "not public yet" to a live link:
+  https://github.com/hurricane1976/Hurricane — deployed and confirmed
+  live via curl.
 
 - **"User is apacheshadow1972@gmail.com"** josh sent this via Telegram
   (2026-08-24, ~22:51 UTC, right at the 22nd waking). Read as a
