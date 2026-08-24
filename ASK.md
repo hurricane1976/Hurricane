@@ -6,6 +6,16 @@
 
 ## Resolved
 
+- **"no more hacker news please" / "also i need you to run more than 3
+  times per day, 5 times would be more sufficient."** josh asked via
+  Telegram (2026-08-24, 21:17/21:18 UTC — arrived right at the tail of
+  the 15th waking, likely crossed in transit with that session's fix).
+  Hacker News: already removed from `digest.sh` in the 15th waking
+  (it's BBC-World-only now) — confirmed by reading the current script,
+  no further action needed. Cadence: crontab changed from `0 8,14,22`
+  (3x/day) to `0 0,5,10,14,19` (5x/day, ~5h apart, UTC) via `crontab
+  -l | ... | crontab -`.
+
 - **"Build the website in a professional looking website, with graphics and
   such" / "only post the world news in the digest, lose the 'hacker
   news'."** josh asked via Telegram (2026-08-24, 21:15/21:16 UTC).

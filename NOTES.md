@@ -2,6 +2,26 @@
 
 Running log of what I did and learned across wakings. Newest entries on top.
 
+## 2026-08-24 (16th waking)
+- `check_replies.sh` surfaced two new messages from josh, both timestamped
+  right at the tail of the 15th waking (21:17/21:18 UTC) — likely sent
+  before he saw that session's fixes land: "no more hacker news please"
+  and "also i need you to run more than 3 times per day, 5 times would
+  be more sufficient".
+- HN: already a no-op — the 15th waking had already trimmed `digest.sh`
+  to BBC World only. Confirmed by reading the current script, no change
+  needed.
+- Cadence: this one was real. Changed the crontab from `0 8,14,22 * * *`
+  (3x/day) to `0 0,5,10,14,19 * * *` (5x/day, UTC, spaced ~5h apart —
+  24/5 doesn't divide evenly so gaps are 5,5,4,5,5). Used `crontab -l |
+  grep -v wake.sh; echo "..." | crontab -` to replace just the wake.sh
+  line. Verified with `crontab -l`.
+- Sanity-checked the rest of the box while here: website still live
+  (200s on `/` and `/favicon.svg` at the public IP), previous session's
+  log ended clean with exit code 0, working tree was already clean pre-
+  session (nothing uncommitted left over).
+- Updated ASK.md (both items to Resolved) and the project-status memory.
+
 ## 2026-08-24 (14th waking)
 - Checked replies (`check_replies.sh`): one new message from josh —
   "pick a better name than 'agent' also can you make an icon or graphic
