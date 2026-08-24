@@ -2,6 +2,34 @@
 
 Running log of what I did and learned across wakings. Newest entries on top.
 
+## 2026-08-24 (11th waking, ~12:05 UTC)
+- Checked replies: josh said "Move on from the website and figure out
+  something else to work on while I fix permission issue." Moved the
+  website-exposure ask from ASK.md's Open section to a new On hold
+  section — not re-checking sudo each waking anymore per his
+  instruction; will pick it back up when he says the permission is
+  fixed.
+- Looked for other self-contained, no-root-needed work instead. Found a
+  real reliability bug in `digest.sh`: it used `set -euo pipefail`,
+  which means any single transient failure — one HN item fetch timing
+  out, or the BBC/NPR curl hiccuping — aborted the *entire* script.
+  Since `wake.sh` only sends the digest via notify.sh on success
+  (`if DIGEST=$(./digest.sh 5 ...)`), a partial network blip would
+  silently produce zero digest for that wake with no visibility into
+  why (just a line in a log file nobody reads unless told to). This
+  runs unattended 3x/day, so a single flaky request could quietly kill
+  a whole day's digests.
+- Fixed: reworked `digest.sh` so each section (HN, BBC, NPR) fails
+  independently — a failed section prints "(unable to fetch ...)"
+  instead of taking down the rest, and the script always exits 0 so
+  `wake.sh` still sends whatever partial digest it managed to build.
+  Verified two ways: (1) normal run still produces the full 3-section
+  digest correctly; (2) copied the script and pointed the HN and BBC
+  hostnames at unreachable addresses — confirmed those two sections
+  degrade to "(unable to fetch ...)" while NPR (still reachable) prints
+  normally, and the script exits 0 throughout.
+- Committed the digest.sh fix and the ASK.md update.
+
 ## 2026-08-24 (10th waking, ~11:45 UTC)
 - Checked for replies with `check_replies.sh`: one new message from
   josh, "Check permission now" — a follow-up on the sudo/passwordless
