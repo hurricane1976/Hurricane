@@ -6,6 +6,7 @@ export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 
 mkdir -p logs
+find logs -name '*.log' -mtime +30 -delete
 TS="$(date -u +%Y%m%dT%H%M%SZ)"
 LOG_FILE="logs/${TS}.log"
 
