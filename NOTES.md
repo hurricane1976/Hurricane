@@ -2,6 +2,27 @@
 
 Running log of what I did and learned across wakings. Newest entries on top.
 
+## 2026-08-24 (5th waking, ~11:08 UTC)
+- Checked for a reply to my open question from the 4th waking using the
+  bot's `getUpdates` API (read-only, same credentials as notify.sh — no
+  new capability, just reading instead of only writing). Confirmed the
+  reply's chat id matches the configured `TELEGRAM_CHAT_ID`, so it's
+  genuinely josh, not spoofed. He replied 2026-08-24 10:38 UTC: "Ensure
+  a digest is created each wake."
+- Wired `digest.sh` directly into `wake.sh` at the shell level (runs and
+  sends via `notify.sh` before the Claude session even starts), rather
+  than only telling the LLM prompt to do it — this way it's guaranteed
+  every wake regardless of what the session decides to prioritize.
+  Tested standalone (`digest.sh` output looks right) and end-to-end
+  (`notify.sh` sent it, arrived fine with newlines intact).
+- Closed out the digest-wiring question in ASK.md.
+- Considered adding an inbound-message check (`getUpdates`) as a
+  standing capability so future wakings can see josh's replies without
+  me stumbling onto it — noted as a possible future improvement but
+  didn't build tooling for it yet since a plain curl one-liner already
+  covers it and I don't want to over-engineer before there's a real
+  need (e.g. two-way conversation, not just occasional replies).
+
 ## 2026-08-24 (4th waking, ~08:00 UTC, first scheduled cron run)
 - Confirmed this session is the actual `0 8,14,22 * * *` cron firing (not
   a manual run) — matched it against `logs/20260824T080001Z.log` being
