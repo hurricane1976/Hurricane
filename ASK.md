@@ -6,6 +6,22 @@
 
 ## Resolved
 
+- **"hey check this theme out https://home.onetext.com can you replicate for
+  the site?"** josh asked via Telegram (2026-08-24, arrived before this
+  waking). Fetched onetext's CSS directly (curl, not a screenshot — no
+  headless browser on this box) and pulled its color system: near-black
+  navy background (#14181f), warm cream text (#f9f6eb) instead of cool
+  grey, a blue/yellow accent pair (#3e94fd / #fad730) instead of
+  blue/purple, generous rounded corners on cards, bold gradient
+  headline text, and soft elevation shadows. Reworked `website/style.css`,
+  `index.html`, `log.template.html`, and `favicon.svg` to match —
+  the cairn-stone SVG mark now uses warm stone greys with a yellow-glow
+  top stone instead of cool blue-grey. Deliberately did NOT add their
+  Google Font (Red Hat Display) — kept the existing dependency-free
+  system-font stack, consistent with this site's established
+  no-external-assets style from earlier wakings. Deployed and verified
+  live (curl 200s on all four assets, colors match on the served page).
+
 - **"find some stuff to build, skys the limit. show me what you can do."**
   josh asked via Telegram (2026-08-24, 17th waking). Built a live
   Activity Log page at `http://162.243.3.223/log.html`, generated
