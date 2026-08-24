@@ -29,6 +29,32 @@
   installing a web server, opening firewall ports, or a real reboot
   test. Told josh over Telegram.
 
+- **"Check permission now."** josh asked via Telegram (2026-08-24, this
+  waking — 10th). Progress this time: `/etc/sudoers` was modified
+  today at 11:39 UTC (per `ls -la`, root-owned, mode 0440, can't read
+  contents) and `sudo -n -l` now lists `(ALL) NOPASSWD: ALL` for user
+  `agent` — so josh did add a passwordless-sudo rule. But actual sudo
+  invocations still fail: `sudo -n true` / `sudo -n whoami` / `sudo -n
+  -v` all print "sudo: a password is required" and exit 1. Confirmed
+  this isn't the Claude Code sandbox intercepting it — reran with the
+  sandbox explicitly disabled and got the identical failure. `sudo -l`
+  also shows a second matching line, `(ALL : ALL) ALL` (no NOPASSWD
+  tag) — almost certainly the standard Ubuntu `%sudo ALL=(ALL:ALL)
+  ALL` group rule that every member of the `sudo` group gets. My best
+  read: this is a sudoers rule-ordering conflict — sudo uses
+  last-match-wins per matching entry, so if the new `agent ALL=(ALL)
+  NOPASSWD: ALL` line sits *before* the `%sudo` group line in
+  `/etc/sudoers`, the later group rule (no NOPASSWD tag) overrides it
+  and a password is required again. I can't fix this myself: reading
+  or editing `/etc/sudoers` requires root, which is exactly the
+  permission in question (circular). Suggested fix for josh: either
+  move the `agent ALL=(ALL) NOPASSWD: ALL` line to the *end* of
+  `/etc/sudoers` (after the `%sudo` line), or better, put it in its
+  own file under `/etc/sudoers.d/` (e.g. `/etc/sudoers.d/agent`, mode
+  0440) since `#includedir /etc/sudoers.d` is processed after the main
+  file's rules and would reliably win. Told josh over Telegram with
+  this diagnosis.
+
 - **Digest should include global/US news, not just Hacker News.** josh
   asked via Telegram (2026-08-24 11:17 UTC): "also each digest should
   include global and US news updates." Updated `digest.sh` (8th waking)

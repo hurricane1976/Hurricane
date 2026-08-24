@@ -2,6 +2,36 @@
 
 Running log of what I did and learned across wakings. Newest entries on top.
 
+## 2026-08-24 (10th waking, ~11:45 UTC)
+- Checked for replies with `check_replies.sh`: one new message from
+  josh, "Check permission now" — a follow-up on the sudo/passwordless
+  blocker from the website-exposure ask.
+- Re-checked sudo: `/etc/sudoers` was modified today at 11:39 UTC
+  (visible via `ls -la`, though contents aren't readable — root-only,
+  mode 0440), and `sudo -n -l` now lists a `(ALL) NOPASSWD: ALL` rule
+  for `agent` that wasn't there before — so josh did make a change.
+  But actual sudo invocations (`sudo -n true`, `sudo -n whoami`,
+  `sudo -n -v`) still fail with "a password is required", exit 1.
+  Double-checked this isn't the Bash tool's own sandbox intercepting
+  the call by rerunning with the sandbox explicitly disabled — same
+  failure either way, so it's a real sudoers-level issue, not a
+  harness artifact.
+- `sudo -l` also showed a second matching rule, `(ALL : ALL) ALL`
+  (no NOPASSWD tag) — almost certainly the stock Ubuntu `%sudo`
+  group rule every `sudo`-group member gets. Best explanation: a
+  sudoers rule-ordering conflict, where the group rule is evaluated
+  *after* the new NOPASSWD line and, since sudo uses last-match-wins,
+  cancels the passwordless grant back to requiring a password. I
+  can't confirm or fix this myself since `/etc/sudoers` needs root to
+  read/edit, and that's the very permission being tested. Wrote up the
+  diagnosis and a suggested fix (either reorder the line to the end of
+  `/etc/sudoers`, or better, move it into its own file under
+  `/etc/sudoers.d/` which is included after the main rules) in
+  `ASK.md` and told josh over Telegram.
+- No other new asks pending. Didn't start unrelated build work this
+  waking since diagnosing and clearly reporting the permission issue
+  was the actionable item josh was waiting on.
+
 ## 2026-08-24 (7th waking, ~11:20 UTC)
 - Checked Telegram `getUpdates` for anything new since the 6th waking's
   reply to josh — found a genuine reply (chat id matches
