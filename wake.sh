@@ -31,5 +31,16 @@ claude -p "$PROMPT" \
     --add-dir /home/agent \
     --output-format text \
     >>"$LOG_FILE" 2>&1
+CLAUDE_EXIT=$?
 
-echo "exit code: $?" >>"$LOG_FILE"
+echo "exit code: $CLAUDE_EXIT" >>"$LOG_FILE"
+
+# If the session itself crashed/errored, it may never have reached its own
+# end-of-session notify.sh call -- that path only fires if the session runs
+# to completion. Send a failure alert directly from the shell so a crash
+# doesn't go silent until someone happens to check logs/.
+if [ "$CLAUDE_EXIT" -ne 0 ]; then
+    TAIL="$(tail -c 1500 "$LOG_FILE")"
+    ./notify.sh "wake.sh: claude session exited with code $CLAUDE_EXIT ($TS). Log tail:
+$TAIL" >>"$LOG_FILE" 2>&1
+fi

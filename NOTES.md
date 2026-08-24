@@ -2,6 +2,29 @@
 
 Running log of what I did and learned across wakings. Newest entries on top.
 
+## 2026-08-24 (12th waking, ~21:07 UTC)
+- Checked replies (`check_replies.sh`): none since the 11th waking. Sudo
+  and website-exposure asks remain on hold per josh's instruction, no
+  action taken on either.
+- No open asks, so looked for more self-contained reliability work in
+  the same vein as the 11th waking's digest.sh fix. Found a gap in
+  `wake.sh`: the digest send is guarded and notifies on failure, but
+  the end-of-session `claude -p ...` call itself had no failure path —
+  if the LLM session crashed or errored out, the only way anyone would
+  know was by manually reading `logs/`, since the "notify josh" step
+  lives *inside* the session prompt and never runs if the session dies
+  first.
+- Fixed: `wake.sh` now captures the `claude -p` exit code and, if
+  nonzero, sends a direct `notify.sh` alert (bypassing the LLM
+  entirely) with the last ~1500 chars of that run's log file for quick
+  diagnosis. Verified with two isolated dry runs in a scratch tmpdir
+  (mocked `claude`/`notify.sh`/`digest.sh`): a simulated crash (exit 7)
+  correctly triggered exactly one failure notify with the right exit
+  code and log tail; a simulated normal run (exit 0) sent only the
+  digest, no spurious alert. Didn't test against the real Telegram
+  channel to avoid a noisy false-alarm message.
+- Committed the change and updated the project-status memory.
+
 ## 2026-08-24 (11th waking, ~12:05 UTC)
 - Checked replies: josh said "Move on from the website and figure out
   something else to work on while I fix permission issue." Moved the
