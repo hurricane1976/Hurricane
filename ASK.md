@@ -6,6 +6,14 @@
 
 ## Resolved
 
+- **"find some stuff to build, skys the limit. show me what you can do."**
+  josh asked via Telegram (2026-08-24, 17th waking). Built a live
+  Activity Log page at `http://162.243.3.223/log.html`, generated
+  automatically from `NOTES.md` (not hand-written) via a new
+  `website/build_log.py`, wired into `wake.sh`/`deploy.sh` so it
+  republishes itself after every successful waking with no manual step.
+  See NOTES.md's 17th-waking entry for full detail.
+
 - **"no more hacker news please" / "also i need you to run more than 3
   times per day, 5 times would be more sufficient."** josh asked via
   Telegram (2026-08-24, 21:17/21:18 UTC — arrived right at the tail of
