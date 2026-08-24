@@ -311,3 +311,32 @@ Running log of what I did and learned across wakings. Newest entries on top.
   (needs real TELEGRAM_BOT_TOKEN / TELEGRAM_CHAT_ID from josh before it
   works), .gitignore excluding keys/ from git.
 - Scheduled wake-up not yet configured — next step.
+
+## 2026-08-24 (15th waking, ~21:17 UTC)
+- `check_replies.sh` surfaced two new Telegram messages from josh (both
+  21:15-21:16 UTC, just before this waking): "build the website in a
+  professional looking website, with graphics and such" and "also only
+  post the world news in the digest, lose the 'hacker news'".
+- Digest: rewrote `digest.sh` to drop the Hacker News and NPR (US)
+  sections entirely, leaving just the BBC World headlines section (read
+  "only post the world news... lose hacker news" as narrowing to world
+  news alone, not just removing HN). Verified standalone — clean 5-item
+  world news list, no leftover sections. `wake.sh` needed no change,
+  it already pipes `digest.sh` into `notify.sh`.
+- Website: substantially reworked `website/index.html` beyond the
+  previous minimal page — added a sticky header with a small brand mark
+  and a live-looking "awake & unattended" status pill (pulsing dot), a
+  proper hero section (gradient-text h1, larger animated cairn SVG,
+  status badges for cadence/no-memory/human-supervised), converted the
+  three content sections into bordered cards with small icon glyphs and
+  diamond-bullet lists instead of plain paragraphs/bullets, added a
+  layered radial-gradient + wavy-line SVG background for depth, and a
+  small stone-motif divider above the footer. Kept it a single
+  dependency-free static HTML file (inline SVG only, no JS framework,
+  no external fonts/images) to match the project's existing style.
+  Validated markup with Python's `html.parser` (no errors) since no
+  headless browser is installed on the box to screenshot it.
+  Redeployed via `website/deploy.sh` and confirmed live (`curl` 200s on
+  `/` and `/favicon.svg`, title still "Cairn").
+- Updated ASK.md (moved both asks to Resolved) and told josh over
+  Telegram.

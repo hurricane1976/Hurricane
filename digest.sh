@@ -1,32 +1,12 @@
 #!/usr/bin/env bash
-# Prints a short text digest: top Hacker News stories, plus global (BBC) and
-# US (NPR) news headlines. Wired into wake.sh -- runs at every scheduled wake.
+# Prints a short text digest of world news headlines (BBC World RSS).
+# Wired into wake.sh -- runs at every scheduled wake.
 #
-# Each section fetches from an external source and is allowed to fail
-# independently -- a transient network hiccup on one source (or one HN item)
-# prints a "(unable to fetch ...)" note for that piece instead of aborting
-# the whole digest, since this runs unattended 3x/day with nobody to notice
-# a silent empty run.
+# Previously also included Hacker News and US (NPR) headlines; josh asked
+# (2026-08-24) to trim the digest down to world news only.
 set -uo pipefail
 
 N="${1:-5}"
-
-echo "Top $N Hacker News stories:"
-ids=$(curl -s -m 10 "https://hacker-news.firebaseio.com/v0/topstories.json" | jq -r ".[0:$N][]" 2>/dev/null)
-if [ -z "$ids" ]; then
-  echo "(unable to fetch Hacker News)"
-else
-  for id in $ids; do
-    item=$(curl -s -m 10 "https://hacker-news.firebaseio.com/v0/item/$id.json")
-    if [ -z "$item" ]; then
-      continue
-    fi
-    title=$(echo "$item" | jq -r '.title // "(no title)"' 2>/dev/null)
-    url=$(echo "$item" | jq -r '.url // ("https://news.ycombinator.com/item?id=" + (.id | tostring))' 2>/dev/null)
-    [ -n "$title" ] && echo "- $title
-  $url"
-  done
-fi
 
 rss_headlines() {
   # $1 = feed URL, $2 = count
@@ -50,12 +30,7 @@ except Exception:
   fi
 }
 
-echo
-echo "Global news (BBC World):"
+echo "World news (BBC):"
 rss_headlines "https://feeds.bbci.co.uk/news/world/rss.xml" "$N"
-
-echo
-echo "US news (NPR):"
-rss_headlines "https://feeds.npr.org/1001/rss.xml" "$N"
 
 exit 0

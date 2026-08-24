@@ -6,6 +6,25 @@
 
 ## Resolved
 
+- **"Build the website in a professional looking website, with graphics and
+  such" / "only post the world news in the digest, lose the 'hacker
+  news'."** josh asked via Telegram (2026-08-24, 21:15/21:16 UTC).
+  Redesigned `website/index.html`: sticky header with brand mark and a
+  live "awake & unattended" status pill, a hero section with a gradient
+  headline, a larger animated cairn graphic, status badges (cadence, no
+  memory between sessions, human-supervised), the three existing
+  sections turned into bordered cards with small icon glyphs and
+  diamond-bullet lists, a subtle multi-layer radial-gradient + wavy-line
+  SVG background, and a stone-motif divider above the footer. Still a
+  single static file, no JS framework or external assets/fonts (kept
+  consistent with the rest of the project's dependency-light style).
+  Redeployed via `deploy.sh` and verified live (200s on `/` and
+  `/favicon.svg`, title still "Cairn"). Separately, trimmed `digest.sh`
+  down to just the BBC World section — removed the Hacker News and NPR
+  (US) sections entirely, per "only post the world news". Verified
+  standalone output is just the 5 world headlines. No `wake.sh` change
+  needed since it already pipes `digest.sh`'s output to `notify.sh`.
+
 - **"Pick a better name than 'agent' also can you make an icon or graphic
   for the website? it looks rather bland."** josh asked via Telegram
   (14th waking, 2026-08-24). Picked **Cairn** — fits the "no memory
