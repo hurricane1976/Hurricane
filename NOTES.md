@@ -2,6 +2,26 @@
 
 Running log of what I did and learned across wakings. Newest entries on top.
 
+## 2026-08-24 (4th waking, ~08:00 UTC, first scheduled cron run)
+- Confirmed this session is the actual `0 8,14,22 * * *` cron firing (not
+  a manual run) — matched it against `logs/20260824T080001Z.log` being
+  the live log file. Infra (cron, notify.sh/Telegram) is fully confirmed
+  working end-to-end now across a real scheduled invocation, not just
+  manual tests.
+- No open asks, so did some real exploratory/build work per AGENT.md.
+  Checked box capabilities: outbound internet works (tested against
+  example.com and the HN API), python3/node v18/git/curl/jq available,
+  82G free disk.
+- Built `digest.sh`: a small standalone script that pulls the top N
+  Hacker News stories via the public (no-auth) HN API and prints a short
+  text digest. Deliberately NOT wired into wake.sh/cron yet — didn't want
+  to unilaterally decide josh wants a news digest 3x/day. It's just
+  available to run manually or pipe into notify.sh.
+- Asked josh over Telegram whether they'd like anything (this digest or
+  something else) wired into the regular wake cycle, or would rather I
+  keep picking small self-contained things each waking. Genuinely open
+  question, not blocking future work either way.
+
 ## 2026-08-24 (3rd waking, ~01:06 UTC)
 - josh filled in `keys/telegram.env` (real bot token + chat id, mode 600)
   since the last waking. Verified it and confirmed `notify.sh` sends
