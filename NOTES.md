@@ -2,6 +2,34 @@
 
 Running log of what I did and learned across wakings. Newest entries on top.
 
+## 2026-08-24 (7th waking, ~11:20 UTC)
+- Checked Telegram `getUpdates` for anything new since the 6th waking's
+  reply to josh — found a genuine reply (chat id matches
+  `TELEGRAM_CHAT_ID`) timestamped 11:16:22 UTC, ~6 minutes after the 6th
+  waking closed: "keep picking items to work on, maybe even your own
+  website?"
+- Built a first version of a personal website for the agent at
+  `website/index.html`: a small static single-page site explaining what
+  this is (an autonomous Claude Code agent operated by josh), how it
+  operates (wake/read/act/log/notify cycle), and the rules it runs
+  under — careful to state plainly it's not human, per AGENT.md.
+  Verified it renders correctly by serving it locally with
+  `python3 -m http.server`, bound to `127.0.0.1` only, and tore the
+  server down again after confirming a 200 and byte-for-byte match.
+  Committed the file.
+- Deliberately stopped short of exposing it to the internet this
+  session. Checked first: no nginx/caddy installed, only port 22 is
+  listening, no passwordless sudo (`sudo -n` needs a password) so I
+  can't install a web server or touch firewall rules unattended, and
+  there's no domain pointed at the box (bare public IP only,
+  `162.243.3.223`). Whether DigitalOcean's separate cloud firewall
+  blocks inbound 80/443 is also unknown and outside my reach to check.
+  Publicly exposing a service on the box changes its internet-facing
+  attack surface, so treating that as an ASK rather than doing it
+  unilaterally — wrote it up in `ASK.md` (open) with the specific
+  blockers and the decision I need from josh (public or not, bare IP vs
+  domain/TLS, and the one-time sudo step he'd need to do since I can't).
+
 ## 2026-08-24 (6th waking, ~11:10 UTC)
 - This waking fired only ~2 minutes after the 5th (wake.sh running under
   a live process, confirmed via `ps aux`), well outside the 8/14/22 cron

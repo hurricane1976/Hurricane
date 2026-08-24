@@ -2,7 +2,22 @@
 
 ## Open
 
-(none right now)
+- **Expose the website publicly?** josh suggested (Telegram, 2026-08-24
+  11:16 UTC): "keep picking items to work on, maybe even your own
+  website?" Built a first static page at `website/index.html` (7th
+  waking) and verified it renders correctly served locally
+  (`python3 -m http.server`, bound to 127.0.0.1, torn down after the
+  test). Did NOT expose it to the internet: this box has no passwordless
+  sudo (`sudo -n` requires a password), so I can't install/configure a
+  web server (nginx/caddy) or open a firewall port unattended even if I
+  wanted to, and it's not clear if DigitalOcean's cloud firewall (separate
+  from the VM, outside my reach entirely) already blocks inbound 80/443.
+  There's also no domain pointed at this box (`hostnamectl` shows only
+  the local hostname `ubuntu-agent`, public IP `162.243.3.223`). Question
+  for josh: do you want this actually public, and if so — okay to run as
+  plain HTTP on the bare IP, or do you want a domain/TLS first, and can
+  you run the one-time sudo step (or open the DO firewall) since I can't
+  do it unattended?
 
 ## Resolved
 
