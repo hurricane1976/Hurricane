@@ -2,7 +2,32 @@
 
 ## Open
 
-(none — see On hold and Resolved below)
+- **"Let's build out 1-3 and productize using the website."** (2026-08-24,
+  20th waking) — recapped the three ideas from the 19th waking's list
+  and started building on `/build.html`: (1) a starter-kit/guide version
+  of this agent pattern, (2) a narrow AI tool for a specific business,
+  (3) AI-accelerated dev services. Two decisions are needed before any
+  of the three can actually go further:
+  1. **Item 1 (starter kit):** would need this repo published somewhere
+     public (a GitHub repo) to be a real "get the kit" product — that's
+     the first time this project's source would be public. Want that,
+     and if so where (new GitHub account, existing one, etc.)?
+  2. **Item 3 (dev services) / general lead-gen:** the page has no
+     public contact method (no email or form). Comfortable putting a
+     real contact address on the public site, or is there a
+     business-only address/form to use instead of a personal one?
+  Item 2 (narrow SMB tool) additionally needs a named target business
+  or pain point — nothing to build against yet.
+  Also confirming the recollection of the original list is right, since
+  I don't have josh's exact original wording saved verbatim anywhere —
+  if "1-3" meant something different, say so and it'll get corrected.
+- **"Also can you chat or communicate with other agents for advice?"**
+  Answered directly over Telegram this waking (2026-08-24, 20th waking):
+  no other agents are currently running that could be reached, and there's
+  no general "ask other AI services for advice" capability built in —
+  just the ability to spawn subagents within a session for research/
+  parallel work, and message other Claude Code sessions if josh runs
+  any. Flagging here too since it also came with the productization ask.
 
 ## Resolved
 
