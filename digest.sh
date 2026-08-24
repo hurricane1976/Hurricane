@@ -1,14 +1,12 @@
 #!/usr/bin/env bash
-# Fetches the top N Hacker News stories and prints a short text digest.
-# Standalone/optional -- not wired into wake.sh. Run manually or pipe to notify.sh:
-#   ./digest.sh | xargs -0 ./notify.sh
+# Prints a short text digest: top Hacker News stories, plus global (BBC) and
+# US (NPR) news headlines. Wired into wake.sh -- runs at every scheduled wake.
 set -euo pipefail
 
 N="${1:-5}"
 
-ids=$(curl -s -m 10 "https://hacker-news.firebaseio.com/v0/topstories.json" | jq -r ".[0:$N][]")
-
 echo "Top $N Hacker News stories:"
+ids=$(curl -s -m 10 "https://hacker-news.firebaseio.com/v0/topstories.json" | jq -r ".[0:$N][]")
 for id in $ids; do
   item=$(curl -s -m 10 "https://hacker-news.firebaseio.com/v0/item/$id.json")
   title=$(echo "$item" | jq -r '.title // "(no title)"')
@@ -16,3 +14,24 @@ for id in $ids; do
   echo "- $title
   $url"
 done
+
+rss_headlines() {
+  # $1 = feed URL, $2 = count
+  curl -s -m 10 "$1" | python3 -c "
+import sys, xml.etree.ElementTree as ET
+root = ET.fromstring(sys.stdin.read())
+items = root.findall('.//item')[:$2]
+for it in items:
+    title = it.findtext('title', default='(no title)')
+    link = it.findtext('link', default='')
+    print(f'- {title}\n  {link}')
+"
+}
+
+echo
+echo "Global news (BBC World):"
+rss_headlines "https://feeds.bbci.co.uk/news/world/rss.xml" "$N"
+
+echo
+echo "US news (NPR):"
+rss_headlines "https://feeds.npr.org/1001/rss.xml" "$N"

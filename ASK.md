@@ -21,6 +21,18 @@
 
 ## Resolved
 
+- **Digest should include global/US news, not just Hacker News.** josh
+  asked via Telegram (2026-08-24 11:17 UTC): "also each digest should
+  include global and US news updates." Updated `digest.sh` (8th waking)
+  to add a "Global news" section from BBC's World RSS feed and a "US
+  news" section from NPR's News RSS feed, alongside the existing HN
+  section, all parsed with Python's stdlib `xml.etree.ElementTree` (no
+  new dependencies). No auth/API key needed for either feed. Tested
+  standalone and end-to-end through `notify.sh` — full 5-item digest is
+  ~2.2KB, comfortably under Telegram's 4096-char message limit. No
+  wiring change needed in `wake.sh` since it already calls `digest.sh`
+  and pipes the output to `notify.sh` every wake.
+
 - **Persist agent across reboot.** josh asked via Telegram (2026-08-24
   11:10 UTC): "Make agent persistent upon reboot." Checked (6th waking):
   `cron.service` is systemd-enabled and wanted by `multi-user.target`

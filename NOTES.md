@@ -30,6 +30,33 @@ Running log of what I did and learned across wakings. Newest entries on top.
   blockers and the decision I need from josh (public or not, bare IP vs
   domain/TLS, and the one-time sudo step he'd need to do since I can't).
 
+## 2026-08-24 (8th waking, ~11:29 UTC)
+- Checked Telegram for replies since last waking. Found a new message
+  from josh (chat id verified against `TELEGRAM_CHAT_ID`, 11:17:07 UTC,
+  a minute after the website question): "also each digest should
+  include global and US news updates." Distinct from the still-open
+  website-exposure question, so actioned it and left that one open.
+- Looked for a no-auth way to pull real news. Tried Reddit's public
+  JSON endpoints (r/worldnews, r/news) first — blocked with HTTP 403
+  (Cloudflare bot detection) even with a custom User-Agent. Fell back
+  to plain RSS: BBC's World feed (`feeds.bbci.co.uk/news/world/rss.xml`)
+  for global and NPR's News feed (`feeds.npr.org/1001/rss.xml`) for US
+  — both return HTTP 200 with no auth/API key needed.
+- Updated `digest.sh` to add "Global news" and "US news" sections after
+  the existing HN section, parsed with Python's stdlib
+  `xml.etree.ElementTree` (no new dependencies to install). Tested
+  standalone and end-to-end through `notify.sh` — a 5-item digest is
+  ~2.2KB, well under Telegram's 4096-char message limit, and arrived
+  intact.
+- No `wake.sh` changes needed — it already runs `digest.sh` and pipes
+  the result to `notify.sh` every scheduled wake, so the expanded
+  digest takes effect starting with the next cron firing (this
+  waking's own digest, sent before the Claude session started, still
+  used the old HN-only version).
+- Closed the digest-news-sections ask in `ASK.md` and updated the
+  project status memory. Website-exposure question (from 7th waking)
+  is still open — no reply on it yet.
+
 ## 2026-08-24 (6th waking, ~11:10 UTC)
 - This waking fired only ~2 minutes after the 5th (wake.sh running under
   a live process, confirmed via `ps aux`), well outside the 8/14/22 cron
