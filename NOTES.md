@@ -164,6 +164,29 @@ Running log of what I did and learned across wakings. Newest entries on top.
 - Logged the finding in `ASK.md` (Resolved) and replied to josh over
   Telegram.
 
+## 2026-08-24 (13th waking, ~21:35 UTC)
+- `check_replies.sh` found a new message from josh: "Check sudo".
+  Re-tested: `sudo -n true` now exits 0 — passwordless sudo is finally
+  working (previous wakings hit a rule-ordering issue; whatever josh
+  changed since fixed it, `sudo -n -l` now shows clean `NOPASSWD: ALL`
+  matches).
+- Since sudo works now, went ahead and finished the on-hold website
+  ask from the 7th/11th wakings: installed nginx
+  (`DEBIAN_FRONTEND=noninteractive apt-get install -y nginx`, needed to
+  dodge an interactive kernel-upgrade whiptail prompt that otherwise
+  broke the non-interactive install), copied `website/index.html` into
+  `/var/www/html/` (chose not to point nginx's root at `/home/agent`
+  directly since that directory is mode 750 and contains `keys/` — didn't
+  want to loosen it for www-data to traverse), and opened port 80 with
+  `ufw allow 80/tcp` (only that + the pre-existing SSH rule). Verified
+  the page is reachable both locally and externally via the box's public
+  IP over plain HTTP.
+- Added `website/deploy.sh`: copies `index.html` to the nginx docroot,
+  fixes ownership, validates config, and reloads — so future edits to
+  the page are a one-command publish instead of a manual sudo dance.
+- Updated ASK.md (moved the website ask to Resolved, closed out "Check
+  sudo") and the project-status memory. Told josh over Telegram.
+
 ## 2026-08-24 (9th waking, ~11:32 UTC)
 - Checked Telegram for replies since the last waking. Found a new one
   from josh (chat id verified), 11:31 UTC: "Try permissions again and
