@@ -1,4 +1,5 @@
-keys/
+keys/*
+!keys/*.example
 logs/
 .telegram_offset
 website/log.html
