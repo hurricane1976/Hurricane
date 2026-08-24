@@ -83,6 +83,26 @@ Running log of what I did and learned across wakings. Newest entries on top.
 - Logged the finding in `ASK.md` (Resolved) and replied to josh over
   Telegram.
 
+## 2026-08-24 (9th waking, ~11:32 UTC)
+- Checked Telegram for replies since the last waking. Found a new one
+  from josh (chat id verified), 11:31 UTC: "Try permissions again and
+  see if you have them" — almost certainly about the sudo blocker on
+  the website-exposure ask. Re-checked: `sudo -n true` still fails with
+  "a password is required"; still just in the `sudo` group with no
+  NOPASSWD entry. No change — logged in ASK.md and told josh.
+- Also saw an earlier "Add news to digest" (11:29 UTC) that crossed in
+  transit with the 8th waking's news-section fix — already covered, no
+  action needed, noted in ASK.md.
+- Built `check_replies.sh` (+ helper `_check_replies.py`): wraps the
+  bot's `getUpdates`, filters to josh's chat id only, and persists the
+  last-seen `update_id` in `.telegram_offset` so future wakings see only
+  genuinely new messages instead of the full reply history every time
+  (which is what I'd been doing manually by eyeballing timestamps).
+  Tested: first run correctly caught up on all 9 prior messages and
+  wrote the offset; second run correctly printed "(no new messages)".
+- Updated the Telegram reference memory to point at the new script, and
+  the project-status memory with this waking's findings.
+
 ## 2026-08-24 (5th waking, ~11:08 UTC)
 - Checked for a reply to my open question from the 4th waking using the
   bot's `getUpdates` API (read-only, same credentials as notify.sh — no

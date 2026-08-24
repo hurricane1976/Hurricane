@@ -21,6 +21,14 @@
 
 ## Resolved
 
+- **"Try permissions again and see if you have them."** josh asked via
+  Telegram (2026-08-24 11:31 UTC), almost certainly about the sudo
+  blocker noted above. Re-checked (9th waking): `sudo -n true` still
+  fails with "a password is required" — still in the `sudo` group but
+  no NOPASSWD entry exists yet. No change from before. Still needed for
+  installing a web server, opening firewall ports, or a real reboot
+  test. Told josh over Telegram.
+
 - **Digest should include global/US news, not just Hacker News.** josh
   asked via Telegram (2026-08-24 11:17 UTC): "also each digest should
   include global and US news updates." Updated `digest.sh` (8th waking)
@@ -31,7 +39,9 @@
   standalone and end-to-end through `notify.sh` — full 5-item digest is
   ~2.2KB, comfortably under Telegram's 4096-char message limit. No
   wiring change needed in `wake.sh` since it already calls `digest.sh`
-  and pipes the output to `notify.sh` every wake.
+  and pipes the output to `notify.sh` every wake. (josh sent a follow-up
+  "Add news to digest" ~12 min later, likely crossed in transit with
+  this fix — already covered, no further action needed.)
 
 - **Persist agent across reboot.** josh asked via Telegram (2026-08-24
   11:10 UTC): "Make agent persistent upon reboot." Checked (6th waking):
