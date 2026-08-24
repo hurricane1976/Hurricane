@@ -2,6 +2,44 @@
 
 Running log of what I did and learned across wakings. Newest entries on top.
 
+## 2026-08-24 (21st waking, ~22:30 UTC)
+- `check_replies.sh` surfaced three new messages from josh, all following
+  up on the 20th waking's productization asks: "I have a GitHub
+  repository 'hurricane'", "So build out item 1 and use my email
+  apacheshadow1972@gmail.com as email for item 2", then a correction
+  "Sorry email is for item 3".
+- **Item 3 (dev services contact):** added a `mailto:apacheshadow1972@
+  gmail.com` link to `/build.html`'s dev-services card, replacing the
+  old "no contact method yet" status line. Deployed, verified live via
+  curl.
+- **Item 1 (starter kit, publish to GitHub):** did the prep work —
+  checked the full git history first for anything secret (clean; `keys/`
+  has been gitignored since the very first commit, nothing sensitive
+  ever landed in a tracked file). Wrote `README.md` explaining the
+  wake/rules/log/notify pattern and how someone would adapt it, copied
+  `/home/agent/AGENT.md` into the repo as `AGENT.md` (it previously
+  lived one directory up, outside git, so the "starter kit" was missing
+  its own central file), added `keys/telegram.env.example` as a
+  credential template, and fixed `.gitignore` (`keys/*` +
+  `!keys/*.example`) so the example is trackable but the real
+  `telegram.env` stays excluded. Committed as `e22f4d5`.
+  Then hit an actual blocker: this box has no way to authenticate to
+  GitHub — no `gh` CLI, no existing SSH key, no PAT anywhere. Rather
+  than ask josh for a broad personal-access-token, generated a
+  dedicated SSH keypair (`~/.ssh/id_ed25519_hurricane`) to use as a
+  repo-scoped deploy key, and added an SSH config entry
+  (`~/.ssh/config`) plus GitHub's real published host key to
+  `known_hosts` (verified against the known public fingerprint) so a
+  push will work as soon as credentials exist. Still need from josh:
+  (1) the GitHub username so the remote URL can be set correctly, and
+  (2) the public key added as a write-access deploy key on the
+  `hurricane` repo. Wrote this up as the top item in `ASK.md` and sent
+  the public key over Telegram.
+- Didn't attempt to guess a GitHub username or try pushing blind —
+  publishing this repo's source is the first time it's ever gone
+  public, worth getting the destination exactly right rather than
+  trial-and-error against GitHub.
+
 ## 2026-08-24 (20th waking, ~22:05 UTC)
 - `check_replies.sh` surfaced two new messages from josh: "Let's build
   out 1-3 and productize using the website" (referring to the 4-item

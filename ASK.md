@@ -2,25 +2,30 @@
 
 ## Open
 
-- **"Let's build out 1-3 and productize using the website."** (2026-08-24,
-  20th waking) — recapped the three ideas from the 19th waking's list
-  and started building on `/build.html`: (1) a starter-kit/guide version
-  of this agent pattern, (2) a narrow AI tool for a specific business,
-  (3) AI-accelerated dev services. Two decisions are needed before any
-  of the three can actually go further:
-  1. **Item 1 (starter kit):** would need this repo published somewhere
-     public (a GitHub repo) to be a real "get the kit" product — that's
-     the first time this project's source would be public. Want that,
-     and if so where (new GitHub account, existing one, etc.)?
-  2. **Item 3 (dev services) / general lead-gen:** the page has no
-     public contact method (no email or form). Comfortable putting a
-     real contact address on the public site, or is there a
-     business-only address/form to use instead of a personal one?
-  Item 2 (narrow SMB tool) additionally needs a named target business
-  or pain point — nothing to build against yet.
-  Also confirming the recollection of the original list is right, since
-  I don't have josh's exact original wording saved verbatim anywhere —
-  if "1-3" meant something different, say so and it'll get corrected.
+- **Item 1 (starter kit) — need write access to push.** josh replied
+  (2026-08-24, Telegram, 21st waking) "I have a GitHub repository
+  'hurricane'" and "build out item 1". Repo is publish-ready on this
+  end: added `README.md`, brought `AGENT.md` into the repo (it
+  previously lived one directory up, outside git), added
+  `keys/telegram.env.example` as a credential template, committed as
+  `e22f4d5`. Checked the full git history for secrets first — clean,
+  `keys/` has been gitignored since the very first commit. **Blocker:**
+  this box has no GitHub credentials (no `gh` CLI, no existing SSH key
+  for GitHub, no PAT). Generated a fresh SSH keypair
+  (`~/.ssh/id_ed25519_hurricane`) rather than ask for a broad token —
+  public key sent to josh over Telegram this waking. Needs:
+  1. josh's GitHub username (or the repo's full `owner/hurricane` path),
+     to set the correct git remote.
+  2. That public key added as a **deploy key with write access** on
+     the `hurricane` repo (Settings → Deploy keys → Add deploy key,
+     check "Allow write access").
+  Once both are in, next waking (or this one, if the reply lands before
+  this session ends) pushes `master` to it.
+- **Item 2 (narrow SMB tool)** — still needs a named target business or
+  pain point from josh; nothing to build against yet.
+
+## Resolved
+
 - **"Also can you chat or communicate with other agents for advice?"**
   Answered directly over Telegram this waking (2026-08-24, 20th waking):
   no other agents are currently running that could be reached, and there's
@@ -29,7 +34,14 @@
   parallel work, and message other Claude Code sessions if josh runs
   any. Flagging here too since it also came with the productization ask.
 
-## Resolved
+- **"So build out item 1 and use my email apacheshadow1972@gmail.com as
+  email for item 2" / "Sorry email is for item 3"** josh replied via
+  Telegram (2026-08-24, 21st waking) to the productization asks above.
+  Item 3: added `apacheshadow1972@gmail.com` as a mailto contact link on
+  `/build.html`'s dev-services card, deployed, verified live. Item 1: in
+  progress — repo prepped for publishing (see the still-open item above),
+  waiting on josh's GitHub username and a deploy key add before the
+  actual `git push` can happen.
 
 - **"Closer to original"** josh replied via Telegram (2026-08-24, ~21:30
   UTC), most likely feedback on the 18th waking's onetext.com retheme.
