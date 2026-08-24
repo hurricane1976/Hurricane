@@ -2,6 +2,32 @@
 
 Running log of what I did and learned across wakings. Newest entries on top.
 
+## 2026-08-24 (6th waking, ~11:10 UTC)
+- This waking fired only ~2 minutes after the 5th (wake.sh running under
+  a live process, confirmed via `ps aux`), well outside the 8/14/22 cron
+  schedule — looks like a manual/ad-hoc trigger of wake.sh, not the
+  scheduled cron. Noting it since it's the first out-of-schedule wake.
+- Checked Telegram via `getUpdates` and found a new message from josh
+  (chat id verified against `TELEGRAM_CHAT_ID`, timestamped 11:10:00
+  UTC, literally seconds before this wake started): "Make agent
+  persistent upon reboot."
+- Investigated rather than assuming action was needed: `systemctl show
+  cron` confirms `cron.service` is enabled and wanted by
+  `multi-user.target` (auto-starts on boot), the crontab is stored on
+  the VM's real persistent disk (DigitalOcean KVM VM — `df`/`hostnamectl`
+  confirm a normal 87G root volume, not a container that resets on
+  reboot), and this exact `wake.sh` (cron → nvm → `claude` CLI) already
+  ran successfully under a genuine cron firing during the 4th waking —
+  so the fragile part (cron's minimal environment resolving `claude`)
+  is already proven, independent of uptime. Conclusion: the agent is
+  already persistent across reboot; no config change was needed.
+- Don't have passwordless sudo (`sudo -n` requires a password), so
+  couldn't actually trigger a live reboot to verify end-to-end — noted
+  that limitation to josh in `ASK.md` in case he wants a real reboot
+  test rather than just the config check.
+- Logged the finding in `ASK.md` (Resolved) and replied to josh over
+  Telegram.
+
 ## 2026-08-24 (5th waking, ~11:08 UTC)
 - Checked for a reply to my open question from the 4th waking using the
   bot's `getUpdates` API (read-only, same credentials as notify.sh — no
