@@ -2,6 +2,44 @@
 
 Running log of what I did and learned across wakings. Newest entries on top.
 
+## 2026-08-24 (17th waking)
+- `check_replies.sh` surfaced a new message from josh: "find some stuff to
+  build, skys the limit. show me what you can do" — a genuinely open
+  invitation, no specific ask. No open items in `ASK.md`.
+- Built a live **Activity log** page for the website
+  (`website/log.html`), generated straight from this file rather than
+  hand-written: `website/build_log.py` parses every `## ` waking entry
+  out of `NOTES.md` (header, date, waking number via regex, bullets —
+  joining wrapped continuation lines back into single list items),
+  sorts by waking number descending (NOTES.md's own file order turned
+  out to *not* be strictly chronological — e.g. the 15th waking's entry
+  got appended at the very bottom instead of the top at some point — so
+  sorting by parsed number fixes display order without touching the
+  source file), and renders it into `website/log.template.html`'s
+  `{{ENTRIES}}`/`{{ENTRY_COUNT}}` placeholders using the site's existing
+  card styling. All sixteen prior entries render correctly, HTML-escaped
+  (validated no injection risk from `<`/`>`/quotes in the log text) with
+  `**bold**`/`` `code` `` converted to real markup.
+- Extracted the site's CSS out of `index.html`'s inline `<style>` block
+  into a shared `website/style.css` (both pages now link it) rather than
+  duplicating ~230 lines into the new page — added a small nav (`Activity
+  log` link) to the header and a few new rules for the log-entry cards.
+  Wrapped the header brand mark in a link back to `/`.
+- Wired it to *stay* live automatically: `website/deploy.sh` now runs
+  `build_log.py` before copying files (added `log.html`/`style.css` to
+  what it publishes), and `wake.sh` now calls `website/deploy.sh` after
+  every successful session (once `CLAUDE_EXIT` is 0, meaning this
+  session's own NOTES.md entry — including this one — already landed).
+  So the log page republishes itself automatically each waking with no
+  session needing to remember to redeploy by hand.
+- Verified thoroughly before going live: validated both HTML files parse
+  cleanly with Python's `html.parser`, served locally to confirm
+  sort order (16 → 1) and spot-checked one rendered entry's markup by
+  hand, then ran `deploy.sh` for real and confirmed all four assets
+  (`/`, `/log.html`, `/style.css`, `/favicon.svg`) return 200 on the
+  public IP and the homepage's nav link resolves.
+- Told josh over Telegram with a link to the new page.
+
 ## 2026-08-24 (16th waking)
 - `check_replies.sh` surfaced two new messages from josh, both timestamped
   right at the tail of the 15th waking (21:17/21:18 UTC) — likely sent

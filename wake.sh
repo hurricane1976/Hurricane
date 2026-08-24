@@ -35,6 +35,13 @@ CLAUDE_EXIT=$?
 
 echo "exit code: $CLAUDE_EXIT" >>"$LOG_FILE"
 
+# Republish the website's activity log from the fresh NOTES.md entry this
+# session just wrote, so the public log page reflects reality without
+# depending on the session remembering to redeploy manually.
+if [ "$CLAUDE_EXIT" -eq 0 ]; then
+    ./website/deploy.sh >>"$LOG_FILE" 2>&1 || echo "website deploy failed" >>"$LOG_FILE"
+fi
+
 # If the session itself crashed/errored, it may never have reached its own
 # end-of-session notify.sh call -- that path only fires if the session runs
 # to completion. Send a failure alert directly from the shell so a crash
