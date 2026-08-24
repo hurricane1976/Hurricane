@@ -6,6 +6,36 @@
 
 ## Resolved
 
+- **"Closer to original"** josh replied via Telegram (2026-08-24, ~21:30
+  UTC), most likely feedback on the 18th waking's onetext.com retheme.
+  Re-pulled onetext.com's stylesheet and found the one deliberate gap
+  from the prior waking: it loads Google Fonts "Red Hat Display"
+  (headings) and "Lato" (body) and uses chunkier `border-radius` (~2rem)
+  on cards than the site had (22px). Added both fonts (previously
+  skipped to stay dependency-free — decided fidelity to josh's explicit
+  reference now outweighs that) and bumped card/log-entry radius to
+  2rem. Deployed and verified live (curl shows the font link + new
+  radius). While in there, also fixed an unrelated stale fact: the
+  homepage hero badge still said "3x daily wake cycle" from before the
+  16th-waking cadence bump to 5x — now says 5x, matches crontab.
+  Note: "closer to original" is genuinely ambiguous (could mean "closer
+  to onetext.com" or "closer to Cairn's pre-retheme look") — went with
+  the onetext.com reading since that's what was actively being worked
+  on and matches how a person would naturally react to seeing a
+  close-but-not-quite replica. If this was wrong, josh can say so and
+  it's a one-message flag away from adjusting.
+
+- **"also could you help out with some legit money making opportunities
+  using AI? I'm looking for potential business opportunties that can
+  generate some passive income"** josh asked via Telegram (2026-08-24,
+  ~21:26 UTC). Not a coding task — replied directly over Telegram with a
+  grounded, non-hypey answer (declined to oversell "passive" since real
+  income streams need ongoing work) tailored to what josh already has
+  running (a working autonomous-agent + VM setup). See notify.sh message
+  sent this waking for full text; not duplicating the business-advice
+  content here since it's not really "project" context, just a one-off
+  answer.
+
 - **"hey check this theme out https://home.onetext.com can you replicate for
   the site?"** josh asked via Telegram (2026-08-24, arrived before this
   waking). Fetched onetext's CSS directly (curl, not a screenshot — no

@@ -399,6 +399,40 @@ Running log of what I did and learned across wakings. Newest entries on top.
 - Updated ASK.md (moved both asks to Resolved) and told josh over
   Telegram.
 
+## 2026-08-24 (19th waking, ~22:00 UTC)
+- `check_replies.sh` surfaced two new messages from josh, both sent
+  right after the 18th waking's onetext.com retheme: "also could you
+  help out with some legit money making opportunities using AI? I'm
+  looking for potential business opportunties that can generate some
+  passive income" (21:26 UTC) and "Closer to original" (21:30 UTC).
+- Read "Closer to original" as feedback on the retheme (ambiguous —
+  could mean either "closer to onetext.com" or "closer to Cairn's old
+  look" — went with the former since it's the thing actively being
+  worked on and matches how someone would react to a close-but-not-
+  quite copy). Re-pulled onetext.com's actual stylesheet and found the
+  one deliberate gap left from the 18th waking: it loads Google Fonts
+  "Red Hat Display" (headings) and "Lato" (body), and uses chunkier
+  ~2rem card corners vs. our 22px. Added both fonts (decided fidelity
+  to josh's named reference now outweighs the prior "stay
+  dependency-free" preference) and bumped border-radius on
+  `section.card` and `.log-entry` to 2rem. Verified live via curl.
+- While in the CSS, caught a real stale-fact bug: the homepage hero
+  badge still read "3× daily wake cycle" even though cadence was bumped
+  to 5x back in the 16th waking (crontab confirms `0 0,5,10,14,19`).
+  Fixed to "5×", redeployed, verified live.
+- Money-making question: not a coding task, answered directly over
+  Telegram. Gave a grounded (not hypey) 4-item list, leaning on what
+  josh already has running here — the working autonomous-agent+VM setup
+  itself is a plausible thing to productize (guide/starter-kit for other
+  tinkerers), plus narrow AI tools for a specific business pain point
+  sold directly to a few SMBs, plus straightforward AI-accelerated dev
+  services. Explicitly steered away from the "passive income with AI"
+  course/prompt-selling grift ecosystem. Offered to help scope/build
+  further if josh wants to pursue one for real.
+- Updated `ASK.md` (moved both to Resolved) and committed the website
+  changes as two separate commits (font/radius fidelity fix, then the
+  stale-badge fix).
+
 ## 2026-08-24 (18th waking, ~21:28 UTC)
 - `check_replies.sh` surfaced one new message from josh: "hey check this
   theme out https://home.onetext.com can you replicate for the site?"
