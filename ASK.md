@@ -30,6 +30,20 @@
 
 ## Resolved
 
+- **"create a current weather and time field on the home page"** josh
+  asked via Telegram (2026-08-25, 39th waking). Added a `/api/weather`
+  endpoint to `api/server.py` (current conditions from the nearest NWS
+  station to Woodbridge, VA — KDAA/Fort Belvoir — with a 10-minute
+  in-process cache so it doesn't hammer `api.weather.gov` on every page
+  view; serves stale data rather than nothing on a transient upstream
+  failure). The homepage now has a small "now" widget under the hero
+  badges: a live clock (client-side JS, `Intl.DateTimeFormat` in
+  `America/New_York`, ticks every second) and current weather (fetched
+  from `/api/weather` on load, refreshed every 10 min) — progressive
+  enhancement like `log.html`'s search box, degrades to a plain link to
+  `/api/weather` with JS off or on fetch failure. `/status.html`'s
+  page-health check now covers 16/16 (added `/api/weather`).
+
 - **"I'll handle it tonight"** josh replied via Telegram (2026-08-25,
   37th waking) to the 36th waking's reboot-required ask. Read as: he'll
   reboot the box himself (e.g. via the DigitalOcean console), not a

@@ -2,6 +2,45 @@
 
 Running log of what I did and learned across wakings. Newest entries on top.
 
+## 2026-08-25 (42nd waking, ~19:56 UTC)
+- `check_replies.sh` surfaced one new message from josh: "create a
+  current weather and time field on the home page." `ASK.md`'s Open
+  section was empty going in.
+- Added a `/api/weather` endpoint to `api/server.py`: current
+  conditions from KDAA (Fort Belvoir), the NWS station nearest
+  Woodbridge, VA and the same location `digest.sh`'s forecast section
+  already covers (found via `/gridpoints/LWX/89,61/stations`, same
+  gridpoint `digest.sh` hardcodes). Cached in-process for 10 minutes
+  (module-level dict, `time.monotonic()`-gated) so the homepage doesn't
+  trigger an `api.weather.gov` call on every page view; on a transient
+  upstream failure it serves the last good cached reading instead of
+  erroring, and only advances the cache timestamp on success so a
+  failed fetch gets retried on the very next request rather than
+  blocked for the full 10 minutes.
+- Homepage (`website/index.html`) now has a small "now" widget below
+  the hero badges: a live clock (client-side, `Intl.DateTimeFormat` in
+  `America/New_York`, ticks every second — no server round-trip needed
+  for this part) and current weather (fetched from `/api/weather` on
+  load, refreshed every 10 minutes to match the server cache). Built as
+  progressive enhancement, same pattern as `log.html`'s search box: with
+  JS off, or if the fetch fails, it falls back to a plain link to
+  `/api/weather` instead of showing broken/stuck text.
+- Added `/api/weather` to `build_status.py`'s page-health list —
+  `/status.html` now checks 16/16 (was 15/15) — and to `ROUTES_DOC`/
+  `OPENAPI_SPEC` in `api/server.py` so it's documented alongside the
+  other five endpoints.
+- Verified: `sudo -n systemctl restart cairn-api` picked up the new
+  route cleanly, `curl http://127.0.0.1/api/weather` returns real live
+  data (temp/conditions/station/observed_at), `node --check` on the
+  extracted `<script>` block confirms no JS syntax errors, and
+  `website/deploy.sh` published clean (`nginx -t` OK, 16/16 on
+  `/status.html` post-deploy).
+- Logged this ask straight to `ASK.md`'s Resolved section since it was
+  fully built and verified live in the same session it arrived.
+  Committed `api/server.py`, `website/build_status.py`,
+  `website/index.html`, `website/style.css`, `ASK.md`, and this entry,
+  and pushed.
+
 ## 2026-08-25 (41st waking, ~19:53 UTC)
 - `check_replies.sh` surfaced one new message from josh: "please build
   something, sky is the limit" — an open-ended build ask, same spirit

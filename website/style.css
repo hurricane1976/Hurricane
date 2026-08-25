@@ -147,6 +147,24 @@
     border-radius: 999px;
     background: rgba(255,255,255,0.02);
   }
+  .now-widget {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 1.25rem;
+    font-size: 0.85rem;
+    color: var(--muted);
+  }
+  .now-item {
+    border: 1px solid var(--line);
+    padding: 0.35rem 0.8rem;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.02);
+  }
+  .now-item a { color: inherit; }
+  .now-sep { opacity: 0.5; }
 
   /* ---------- cards ---------- */
   .grid {

@@ -15,6 +15,8 @@ import re
 import shutil
 import socketserver
 import subprocess
+import time
+import urllib.request
 from datetime import datetime, timezone
 from http.server import BaseHTTPRequestHandler
 from pathlib import Path
@@ -78,6 +80,7 @@ ROUTES_DOC = {
         "/api/waking": "the most recent waking recorded in this agent's own activity log",
         "/api/search?q=...": f"substring search over this agent's own activity log, up to {SEARCH_LIMIT} matching bullets",
         "/api/stats": "aggregate numbers about this box and its history (wakings, commits, disk, load, uptime)",
+        "/api/weather": "current weather observation for Woodbridge, VA (nearest NWS station)",
         "/api/openapi.json": "machine-readable OpenAPI 3.0 spec for this API",
     },
     "source": "https://github.com/hurricane1976/Hurricane",
@@ -105,9 +108,45 @@ OPENAPI_SPEC = {
             }
         },
         "/stats": {"get": {"summary": "Aggregate numbers about this box and its history", "responses": {"200": {"description": "OK"}}}},
+        "/weather": {"get": {"summary": "Current weather observation for Woodbridge, VA", "responses": {"200": {"description": "OK"}, "503": {"description": "Upstream NWS observation unavailable"}}}},
         "/openapi.json": {"get": {"summary": "This spec", "responses": {"200": {"description": "OK"}}}},
     },
 }
+
+
+# Nearest NWS station to Woodbridge, VA 22192 (same location digest.sh's
+# forecast section uses), found once via /gridpoints/LWX/89,61/stations --
+# hardcoded like digest.sh's gridpoint to skip a lookup call every request.
+WEATHER_STATION = "KDAA"  # Fort Belvoir
+WEATHER_URL = f"https://api.weather.gov/stations/{WEATHER_STATION}/observations/latest"
+WEATHER_CACHE_SECONDS = 600
+_weather_cache = {"at": 0.0, "data": None}
+
+
+def current_weather():
+    now = time.monotonic()
+    if _weather_cache["data"] is not None and now - _weather_cache["at"] < WEATHER_CACHE_SECONDS:
+        return _weather_cache["data"]
+    try:
+        req = urllib.request.Request(
+            WEATHER_URL,
+            headers={"User-Agent": "CairnAgent/1.0 (contact: apacheshadow1972@gmail.com)"},
+        )
+        with urllib.request.urlopen(req, timeout=10) as resp:
+            props = json.load(resp)["properties"]
+        temp_c = props["temperature"]["value"]
+        data = {
+            "location": "Woodbridge, VA",
+            "station": WEATHER_STATION,
+            "temperature_f": round(temp_c * 9 / 5 + 32, 1) if temp_c is not None else None,
+            "conditions": props.get("textDescription"),
+            "observed_at": props.get("timestamp"),
+        }
+        _weather_cache["at"] = now
+        _weather_cache["data"] = data
+        return data
+    except Exception:
+        return _weather_cache["data"]  # serve stale cache rather than nothing, if any; retry next request
 
 
 def count_wakings():
@@ -204,6 +243,12 @@ class Handler(BaseHTTPRequestHandler):
                 self._json(200, w)
         elif path == "/stats":
             self._json(200, build_stats())
+        elif path == "/weather":
+            w = current_weather()
+            if w is None:
+                self._json(503, {"error": "weather observation temporarily unavailable"})
+            else:
+                self._json(200, w)
         elif path == "/openapi.json":
             self._json(200, OPENAPI_SPEC)
         else:
