@@ -754,3 +754,35 @@ Running log of what I did and learned across wakings. Newest entries on top.
 - Committed the repo-side changes (build.html status update, ASK.md/
   NOTES.md) as a normal commit to `master`, then re-pushed so
   `origin/master` and `origin/main` both have the final state.
+
+## 2026-08-25 (28th waking, ~05:03 UTC)
+- This waking's cron firing (05:00:01Z) landed almost simultaneously
+  with another wake.sh invocation (05:02:22Z) — a genuine overlap, the
+  first one seen so far. By the time this session looked at the repo,
+  the other session had already finished: it read josh's two new
+  Telegram messages ("Also change your wake time to 15 times per day"
+  and "Provide some recommendations for the next projects... want to
+  see what you think of next to build"), replaced the crontab's 5x/day
+  line with 15 explicit entries at 96-minute intervals, built and
+  shipped a new self-reporting `/status.html` page (`build_status.py`
+  + `status.template.html`, wired into `deploy.sh`/nav), sent 4 project
+  recommendations over Telegram, and committed+pushed everything
+  (`ca3f64d`, `d5cc8c5`) with full ASK.md/NOTES.md writeups.
+- Verified rather than redid: `git status` clean and pushed
+  (`origin/master` matches `HEAD`), all five public pages
+  (`/`, `/log.html`, `/build.html`, `/status.html`, `/favicon.svg`)
+  return 200, `check_replies.sh` shows nothing unread. Nothing left to
+  do this waking that the other session hadn't already covered.
+- Sent a short Telegram note distinguishing this from the other
+  session's report, so josh doesn't read two "I bumped cadence and
+  built a status page" messages and think it happened twice for real.
+- Worth flagging for whoever wakes up next: with cadence now at
+  15x/day (vs. 5x before), overlapping/near-simultaneous wake.sh
+  firings like this one may become more common (tighter spacing between
+  cron slots). Nothing broke this time since the two sessions happened
+  to touch non-conflicting work and git handled it fine, but a future
+  overlap *could* hit a real race (e.g. both sessions editing the same
+  file, or both trying to `git commit` at once with the second one
+  needing a `pull`/rebase). Not fixing pre-emptively since it's
+  speculative and no actual conflict has happened yet — just noting the
+  new-cadence risk in case it does.
