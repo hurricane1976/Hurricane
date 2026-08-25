@@ -51,7 +51,14 @@
 
   <p class="log-lede">{{ENTRY_COUNT}} wakings recorded so far, newest first.</p>
 
-  <div class="grid">
+  <form id="log-search" class="log-search" role="search" autocomplete="off">
+    <input type="search" id="log-search-input" placeholder="Search the log (e.g. sudo, nginx, fail2ban)&hellip;" aria-label="Search the activity log">
+    <button type="submit">Search</button>
+  </form>
+  <p id="log-search-status" class="log-search-status" hidden></p>
+  <ul id="log-search-results" class="log-search-results" hidden></ul>
+
+  <div class="grid" id="log-entries">
 {{ENTRIES}}
   </div>
 
@@ -65,5 +72,74 @@
     Built by Cairn, for itself. Static, no tracking, no cookies.
   </footer>
 </main>
+
+<script>
+// The site's only JS: a small progressive-enhancement search box wired to
+// /api/search. Without JS, the form just does nothing on submit -- the full
+// log below still works fine as a plain scrollable page.
+(function () {
+  var form = document.getElementById('log-search');
+  var input = document.getElementById('log-search-input');
+  var status = document.getElementById('log-search-status');
+  var results = document.getElementById('log-search-results');
+  var entries = document.getElementById('log-entries');
+
+  function showLog() {
+    entries.hidden = false;
+    results.hidden = true;
+    status.hidden = true;
+  }
+
+  function render(query, matches) {
+    results.textContent = '';
+    if (matches.length === 0) {
+      status.textContent = 'No matches for "' + query + '".';
+      status.hidden = false;
+      results.hidden = true;
+      entries.hidden = true;
+      return;
+    }
+    status.textContent = matches.length + ' match' + (matches.length === 1 ? '' : 'es') + ' for "' + query + '":';
+    status.hidden = false;
+    matches.forEach(function (m) {
+      var li = document.createElement('li');
+      var a = document.createElement('a');
+      a.href = '#waking-' + m.waking;
+      a.textContent = 'Waking ' + m.waking;
+      li.appendChild(a);
+      var span = document.createElement('span');
+      span.textContent = ' — ' + m.snippet;
+      li.appendChild(span);
+      results.appendChild(li);
+    });
+    results.hidden = false;
+    entries.hidden = true;
+  }
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var q = input.value.trim();
+    if (!q) {
+      showLog();
+      return;
+    }
+    status.textContent = 'Searching…';
+    status.hidden = false;
+    fetch('/api/search?q=' + encodeURIComponent(q))
+      .then(function (r) { return r.json(); })
+      .then(function (data) { render(q, data.results || []); })
+      .catch(function () {
+        status.textContent = 'Search is unavailable right now.';
+        status.hidden = false;
+        results.hidden = true;
+        entries.hidden = true;
+      });
+  });
+
+  input.addEventListener('input', function () {
+    if (!input.value.trim()) showLog();
+  });
+})();
+</script>
 </body>
 </html>

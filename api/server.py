@@ -9,16 +9,20 @@ dependency-free.
 Run directly for local testing, or via the cairn-api systemd unit.
 """
 import json
+import os
 import random
 import re
+import shutil
 import socketserver
+import subprocess
 from datetime import datetime, timezone
 from http.server import BaseHTTPRequestHandler
 from pathlib import Path
 from urllib.parse import urlsplit, parse_qs
 
 HOST, PORT = "127.0.0.1", 8081
-NOTES = Path(__file__).resolve().parent.parent / "NOTES.md"
+ROOT = Path(__file__).resolve().parent.parent
+NOTES = ROOT / "NOTES.md"
 WAKING_RE = re.compile(r"^## (.*\((\d+)(?:st|nd|rd|th) waking[^)]*\))", re.MULTILINE)
 ENTRY_RE = re.compile(
     r"^## (.*?\((\d+)(?:st|nd|rd|th) waking[^)]*\))\n(.*?)(?=^## |\Z)",
@@ -73,9 +77,90 @@ ROUTES_DOC = {
         "/api/wisdom": "a random one-line piece of cairn-themed wisdom",
         "/api/waking": "the most recent waking recorded in this agent's own activity log",
         "/api/search?q=...": f"substring search over this agent's own activity log, up to {SEARCH_LIMIT} matching bullets",
+        "/api/stats": "aggregate numbers about this box and its history (wakings, commits, disk, load, uptime)",
+        "/api/openapi.json": "machine-readable OpenAPI 3.0 spec for this API",
     },
     "source": "https://github.com/hurricane1976/Hurricane",
 }
+
+OPENAPI_SPEC = {
+    "openapi": "3.0.3",
+    "info": {
+        "title": "cairn-api",
+        "description": "Read-only JSON API run by Cairn, an autonomous Claude Code agent.",
+        "version": "1.0.0",
+    },
+    "servers": [{"url": "/api"}],
+    "paths": {
+        "/": {"get": {"summary": "Index of available endpoints", "responses": {"200": {"description": "OK"}}}},
+        "/wisdom": {"get": {"summary": "A random one-line piece of cairn-themed wisdom", "responses": {"200": {"description": "OK"}}}},
+        "/waking": {"get": {"summary": "The most recent waking recorded in NOTES.md", "responses": {"200": {"description": "OK"}, "404": {"description": "No history available"}}}},
+        "/search": {
+            "get": {
+                "summary": "Substring search over this agent's activity log",
+                "parameters": [
+                    {"name": "q", "in": "query", "required": True, "schema": {"type": "string", "maxLength": QUERY_MAX_LEN}}
+                ],
+                "responses": {"200": {"description": "OK"}, "400": {"description": "Missing q param"}},
+            }
+        },
+        "/stats": {"get": {"summary": "Aggregate numbers about this box and its history", "responses": {"200": {"description": "OK"}}}},
+        "/openapi.json": {"get": {"summary": "This spec", "responses": {"200": {"description": "OK"}}}},
+    },
+}
+
+
+def count_wakings():
+    if not NOTES.exists():
+        return 0
+    return len(WAKING_RE.findall(NOTES.read_text()))
+
+
+def count_git_commits():
+    try:
+        r = subprocess.run(
+            ["git", "-C", str(ROOT), "rev-list", "--count", "HEAD"],
+            capture_output=True, text=True, timeout=5,
+        )
+        return int(r.stdout.strip()) if r.returncode == 0 else None
+    except Exception:
+        return None
+
+
+def uptime_seconds():
+    try:
+        with open("/proc/uptime") as f:
+            return round(float(f.read().split()[0]))
+    except Exception:
+        return None
+
+
+def disk_stats():
+    try:
+        total, used, free = shutil.disk_usage("/")
+        return {
+            "total_gb": round(total / 1e9, 1),
+            "used_gb": round(used / 1e9, 1),
+            "percent_used": round(used / total * 100, 1),
+        }
+    except Exception:
+        return None
+
+
+def build_stats():
+    try:
+        load1, load5, load15 = os.getloadavg()
+        load = [round(load1, 2), round(load5, 2), round(load15, 2)]
+    except Exception:
+        load = None
+    return {
+        "wakings": count_wakings(),
+        "git_commits": count_git_commits(),
+        "uptime_seconds": uptime_seconds(),
+        "load_average": load,
+        "disk": disk_stats(),
+        "generated_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+    }
 
 
 class Handler(BaseHTTPRequestHandler):
@@ -117,6 +202,10 @@ class Handler(BaseHTTPRequestHandler):
             else:
                 w["checked_at"] = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
                 self._json(200, w)
+        elif path == "/stats":
+            self._json(200, build_stats())
+        elif path == "/openapi.json":
+            self._json(200, OPENAPI_SPEC)
         else:
             self._json(404, {"error": "not found", "see": "/api/"})
 

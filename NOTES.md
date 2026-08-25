@@ -2,6 +2,49 @@
 
 Running log of what I did and learned across wakings. Newest entries on top.
 
+## 2026-08-25 (33rd waking, ~11:14 UTC)
+- `check_replies.sh` surfaced one new message from josh: "Build all" —
+  read as approving all three build ideas sent at the end of the 32nd
+  waking (`/api/stats`, an in-browser search box on the log page wired
+  to `/api/search`, and a machine-readable `/api/openapi.json` spec),
+  since those were the most recent open proposal and nothing else was
+  pending a yes/no. Built all three this waking.
+- `/api/stats`: aggregate numbers about the box and its own history —
+  waking count (from `NOTES.md`), git commit count, server uptime
+  (`/proc/uptime`), 1/5/15-min load average, and disk usage
+  (`shutil.disk_usage`). Deliberately avoided anything requiring
+  `sudo` (fail2ban stats, etc.) since `cairn-api.service` runs as the
+  unprivileged `agent` user with `NoNewPrivileges=true` — confirmed via
+  `systemctl cat cairn-api` before writing it, rather than assuming.
+- `/api/openapi.json`: a hand-written OpenAPI 3.0 spec covering all six
+  endpoints (`/`, `/wisdom`, `/waking`, `/search`, `/stats`,
+  `/openapi.json` itself), served as static JSON from the same handler.
+  Meant to make the "AI dev services" pitch on `/build.html` more
+  credible to a technical visitor who wants to see machine-readable
+  docs, not just prose.
+- In-browser search box: the site's **first JavaScript**, added to
+  `/log.html` only (`website/log.template.html`) — a small
+  progressive-enhancement `<form>` wired to `fetch('/api/search?q=...')`
+  that swaps the log grid for a results list, or restores it when the
+  query is cleared. No framework, vanilla `fetch`/DOM APIs, uses
+  `textContent` (not `innerHTML`) when rendering API results to avoid
+  any injection risk even though the data is self-served. Without JS
+  the form just does nothing on submit — the full log below still reads
+  fine, so this is additive, not a regression for JS-disabled visitors.
+  New CSS for the search input/button/results list added to
+  `style.css`, matching the existing pill/rounded-corner visual
+  language rather than introducing a new pattern.
+- Restarted `cairn-api` (its `ExecStart` points straight at the repo's
+  `api/server.py`, so no separate copy step was needed — just
+  `py_compile` to sanity-check syntax first, then
+  `systemctl restart`), then verified all four new/changed surfaces
+  live via the public IP: `/api/stats`, `/api/openapi.json`,
+  `/api/search` still 403s on POST, and `/log.html` serves the new
+  search markup. Added the two new endpoints to `build_status.py`'s
+  page-health list and linked them from `/build.html`'s API bullet.
+  `/status.html` now reports **10/10** pages healthy (was 8/8).
+- Moved "Build all" to ASK.md's Resolved section. Committed and pushed.
+
 ## 2026-08-25 (32nd waking, ~10:21 UTC)
 - `check_replies.sh` surfaced one new message from josh: "Ok thanks
   please come up with more build options in subset wakes" — read as

@@ -30,6 +30,20 @@
 
 ## Resolved
 
+- **"Ok thanks please come up with more build options in subset wakes"
+  / "Build all"** josh sent two messages via Telegram (2026-08-25):
+  the first (32nd waking) asked for a steady trickle of a few build
+  ideas per waking rather than one big list; the second, "Build all"
+  (33rd waking), read as approving the three ideas sent at the end of
+  that same waking since nothing else was pending a decision. Built
+  all three: `/api/stats` (aggregate box/history numbers — wakings,
+  git commits, uptime, load average, disk usage), an in-browser search
+  box on `/log.html` wired to the existing `/api/search` endpoint (the
+  site's first JavaScript, progressive-enhancement only), and
+  `/api/openapi.json` (a hand-written OpenAPI 3.0 spec for all six
+  endpoints). See NOTES.md's 33rd-waking entry for full detail.
+  `/status.html` now checks 10/10 pages.
+
 - **"What else can you build, improvements to the web page?" / "Check
   cairnwake.com it's another agent and seems to have good ideas" / "The
   other agent built a 'memory handbook' and a 'field guide' can you make
