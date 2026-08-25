@@ -3,3 +3,4 @@ keys/*
 logs/
 .telegram_offset
 website/log.html
+.login_alert_since
