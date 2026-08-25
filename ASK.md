@@ -2,22 +2,7 @@
 
 ## Open
 
-- **Reboot pending since 2026-08-23** — `/var/run/reboot-required` has
-  been set since 23:56 UTC on 2026-08-23 (~2 days as of this waking,
-  36th, 2026-08-25 ~16:00 UTC), covering a kernel update
-  (`linux-image-6.8.0-138-generic`, running kernel is still `-124`) and
-  `libc6`/`linux-base`. `unattended-upgrades` installed the packages
-  automatically but won't reboot on its own (no `Unattended-Upgrade::
-  Automatic-Reboot` set). Didn't reboot unilaterally: this box has no
-  console access I can fall back on if SSH doesn't come back cleanly,
-  and it's the only channel back to josh (cron → wake.sh → Telegram) —
-  if a reboot goes wrong there's no way for me to recover it, only
-  josh via DigitalOcean's own console. Low actual risk (standard
-  Ubuntu kernel/libc security update on a normal KVM VM, `cron.service`
-  confirmed enabled at boot since the 6th waking), but reboot itself is
-  the kind of hard-to-reverse-if-wrong action AGENT.md says to ask
-  about first rather than assume. Want me to `sudo reboot` next
-  waking, or will you handle it via the DO console?
+(none)
 
 ## On hold
 
@@ -44,6 +29,40 @@
   infrastructure yet. Revisit once HTTPS (above) is resolved.
 
 ## Resolved
+
+- **"I'll handle it tonight"** josh replied via Telegram (2026-08-25,
+  37th waking) to the 36th waking's reboot-required ask. Read as: he'll
+  reboot the box himself (e.g. via the DigitalOcean console), not a
+  request for me to do it. Taking no reboot action; if the box is still
+  showing `/var/run/reboot-required` in a later waking, worth a light
+  follow-up but not re-asking every waking.
+
+- **"Send digest only once per day in the morning at 0800 EST" /
+  "Also include the weather forecast for Woodbridge Virginia 22192"**
+  josh sent both via Telegram (2026-08-25, 37th waking). Previously
+  `wake.sh` sent a digest at every wake (15x/day) — moved that to a new
+  `daily_digest.sh`, run hourly via its own cron line, which only
+  actually sends once a day: it checks `TZ=America/New_York date +%H`
+  and no-ops unless the local Eastern hour is 08, with a
+  `.digest_sent_date` state file (gitignored) as a backstop against a
+  double-send within that hour. Went with America/New_York (DST-aware)
+  rather than a fixed UTC offset for "EST", since a fixed offset would
+  drift off 8am wall-clock time for half the year and need manual
+  twice-yearly upkeep — read "0800 EST" as "8am, however Eastern time
+  is currently offset" rather than literally UTC-5 year-round.
+  `wake.sh`'s old unconditional digest-send block was removed entirely.
+  Also added a weather section to `digest.sh` for Woodbridge, VA
+  22192 via the National Weather Service API (`api.weather.gov`, free,
+  no key) — geocoded the zip's centroid once via OpenStreetMap Nominatim
+  (38.6825, -77.3024), resolved that to NWS gridpoint `LWX/89,61`, and
+  hardcoded the gridpoint's forecast URL in `digest.sh` (the
+  point→gridpoint mapping is static for a fixed location, so skips a
+  lookup call on every digest). Shows the next two forecast periods
+  (e.g. "This Afternoon" / "Tonight"). Tested `digest.sh` standalone —
+  980 chars, well under Telegram's 4096 limit — and verified
+  `daily_digest.sh`'s hour-gate correctly no-ops outside the 8am ET
+  hour. Won't get a live end-to-end send confirmation until the first
+  real 0800 ET firing (tomorrow, 2026-08-26).
 
 - **"Ok thanks please come up with more build options in subset wakes"
   / "Build all"** josh sent two messages via Telegram (2026-08-25):

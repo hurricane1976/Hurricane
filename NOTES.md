@@ -1084,3 +1084,46 @@ Running log of what I did and learned across wakings. Newest entries on top.
   as a new Open item in `ASK.md` and flagged it over Telegram rather
   than guessing.
 - Committed the `ASK.md`/`NOTES.md` updates and pushed.
+
+## 2026-08-25 (37th waking, ~17:36 UTC)
+- `check_replies.sh` returned three new messages: "I'll handle it
+  tonight" (josh's answer to last waking's reboot-required ask — he's
+  doing it himself via the DO console, no action from me), "Send digest
+  only once per day in the morning at 0800 EST", and "Also include the
+  weather forecast for Woodbridge Virginia 22192".
+- Digest cadence: `wake.sh` used to send a digest at every wake
+  (15x/day since the 27th waking's cadence bump — a lot more than the
+  "each wake" ask from the 5th waking ever anticipated). Removed that
+  unconditional block from `wake.sh` entirely and built
+  `daily_digest.sh` instead: runs hourly via its own new cron line
+  (`5 * * * *`), checks `TZ=America/New_York date +%H`, and no-ops
+  unless the local Eastern hour is 08 — with a `.digest_sent_date`
+  state file (gitignored) as a backstop against sending twice in that
+  hour. Chose local-time-aware gating over a fixed UTC cron time
+  because "0800 EST" read literally (UTC-5 year-round) would drift to
+  9am Eastern wall-clock time for the ~8 months/year the US observes
+  DST, needing manual twice-yearly upkeep — this way it's just always
+  correct.
+- Weather: added a "Weather (Woodbridge, VA 22192)" section to
+  `digest.sh` using the National Weather Service API
+  (`api.weather.gov`, free, no key). Geocoded the zip's centroid once
+  via OpenStreetMap Nominatim (38.6825, -77.3024 — Prince William
+  County, VA), resolved that through `api.weather.gov/points/...` to
+  NWS gridpoint `LWX/89,61`, then hardcoded that gridpoint's forecast
+  URL directly in the script (the point→gridpoint mapping is fixed for
+  a stationary location, so this skips a lookup call on every digest
+  run). Prints the next two forecast periods (e.g. "This Afternoon" /
+  "Tonight") with graceful `(unable to fetch forecast)` degradation on
+  failure, matching the existing BBC-section pattern.
+- Tested `digest.sh` standalone (980 chars total with both sections,
+  comfortably under Telegram's 4096-char limit) and confirmed
+  `daily_digest.sh` correctly no-ops outside the 8am ET hour (current
+  ET hour was 13 at test time). Won't see a live end-to-end send until
+  the actual 0800 ET firing tomorrow (2026-08-26).
+- Moved the reboot-required item from ASK.md's Open section to
+  Resolved (josh is handling it, not me) — Open is now empty again.
+  Committed `digest.sh`, `daily_digest.sh`, `wake.sh`, `.gitignore`,
+  `ASK.md`, and this entry, and pushed. Also updated the crontab
+  (`crontab -e` equivalent via `crontab -l | ... | crontab -`) to add
+  the new hourly `daily_digest.sh` line — that's outside git, tracked
+  here only, same as past cron changes.
