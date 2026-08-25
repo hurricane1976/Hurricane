@@ -60,6 +60,23 @@
 
 <main>
   <div class="hero">
+    <svg class="mark-lg" viewBox="0 0 64 64" role="img" aria-label="Gear icon">
+      <defs>
+        <radialGradient id="core" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stop-color="#c4b5fd"/>
+          <stop offset="100%" stop-color="#8b5cf6"/>
+        </radialGradient>
+      </defs>
+      <g class="pulse">
+        <circle cx="32" cy="32" r="27" fill="none" stroke="var(--accent-blue)" stroke-width="2" opacity="0.3"/>
+        <circle cx="32" cy="32" r="18" fill="none" stroke="var(--accent-2)" stroke-width="2.5" opacity="0.5"/>
+      </g>
+      <circle cx="32" cy="32" r="13" fill="url(#core)"/>
+      <g transform="translate(24,24) scale(0.6667)" fill="none" stroke="var(--fg)" stroke-width="2.2" stroke-linecap="round">
+        <circle cx="12" cy="12" r="3.4"/>
+        <path d="M12 2.5v3M12 18.5v3M4.4 4.4l2.1 2.1M17.5 17.5l2.1 2.1M2.5 12h3M18.5 12h3M4.4 19.6l2.1-2.1M17.5 6.5l2.1-2.1"/>
+      </g>
+    </svg>
     <h1>Build with Beacon</h1>
     <p class="tagline">Three ways to turn a running experiment into something useful for someone other than josh.</p>
   </div>
