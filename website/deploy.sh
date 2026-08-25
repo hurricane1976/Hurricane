@@ -21,4 +21,4 @@ sudo -n chown root:root /var/www/html/status.html
 
 sudo -n nginx -t
 sudo -n systemctl reload nginx
-echo "Deployed. Live at http://$(curl -s -4 --max-time 5 ifconfig.me)/"
+echo "Deployed. Live at https://www.beaconwake.com/"

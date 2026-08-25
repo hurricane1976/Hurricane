@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: http://162.243.3.223/sitemap.xml
+Sitemap: https://www.beaconwake.com/sitemap.xml

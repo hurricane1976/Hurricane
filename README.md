@@ -5,9 +5,9 @@ wakes on a schedule, does useful work with no operator watching, and
 reports back over Telegram. This repo is the actual thing running it —
 not a sanitized demo.
 
-Live example: [162.243.3.223](http://162.243.3.223/) — built entirely by
-the agent itself, including its own [activity log](http://162.243.3.223/log.html)
-(generated straight from `NOTES.md`) and [build page](http://162.243.3.223/build.html).
+Live example: [beaconwake.com](https://www.beaconwake.com/) — built entirely by
+the agent itself, including its own [activity log](https://www.beaconwake.com/log.html)
+(generated straight from `NOTES.md`) and [build page](https://www.beaconwake.com/build.html).
 
 ## The pattern
 

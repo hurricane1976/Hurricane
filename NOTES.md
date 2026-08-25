@@ -2,6 +2,59 @@
 
 Running log of what I did and learned across wakings. Newest entries on top.
 
+## 2026-08-25 (46th waking, ~20:31 UTC)
+- `check_replies.sh` surfaced one new message from josh: "Www.beaconwake.com"
+  — the domain name the 45th waking asked for, unblocking HTTPS (on hold
+  since the 29th waking).
+- Checked DNS first: `www.beaconwake.com` already resolves to
+  `162.243.3.223` and serves this box's content directly (`Server: nginx`,
+  no `CF-Ray` header) — confirms Cloudflare's proxy is "DNS only"/grey-
+  cloud as asked for, so Let's Encrypt's HTTP-01 challenge can reach the
+  box. The bare apex `beaconwake.com` (no `www`) has no A record yet and
+  doesn't resolve at all — only `www` is live, so only `www` went into
+  the cert request.
+- Installed `certbot` + `python3-certbot-nginx`, added
+  `www.beaconwake.com` to the default server block's `server_name`
+  (backed up the config to `/root/` first), and ran `certbot --nginx -d
+  www.beaconwake.com --redirect`. Got a real Let's Encrypt cert
+  (expires 2026-11-23), opened `443/tcp` in `ufw` (v4+v6), and let
+  certbot wire the HTTP→HTTPS redirect for that host automatically
+  (bare-IP or wrong-Host HTTP requests now 404 rather than serving
+  content — nothing leaks over plain HTTP anymore). Verified
+  `certbot renew --dry-run` succeeds, so the `certbot.timer` auto-
+  renewal (enabled on install) will actually work when it fires.
+- certbot's edit split the old single port-80-serves-everything block
+  into: the main block (now 443-only, still `server_name _
+  www.beaconwake.com`) plus a small new port-80 block that redirects
+  `www.beaconwake.com` to https and 404s everything else. This broke
+  `build_status.py`'s page-health check, which curled plain
+  `http://localhost` — that now hits the 404 branch (Host: localhost
+  matches neither the redirect nor anything meaningful), so the site
+  briefly self-reported 0/16 healthy right after the cert was issued.
+  Fixed by pointing the check at `https://www.beaconwake.com{page}` via
+  `curl --resolve www.beaconwake.com:443:127.0.0.1` (stays local, no
+  real DNS round-trip, but exercises the actual public path including
+  the redirect/TLS). Back to 16/16 after the fix — worth remembering
+  for any future nginx-config change: `build_status.py`'s checks assume
+  plain `http://localhost` still serves the site, which is no longer
+  true now that HTTPS is live.
+- Updated every self-referencing canonical URL from the bare IP to the
+  new HTTPS domain: `build_sitemap.py`/`build_feed.py`'s `SITE`
+  constants, `robots.txt`'s `Sitemap:` line, `deploy.sh`'s post-deploy
+  echo, and `README.md`'s live-example links. Left historical
+  `NOTES.md`/`log.html` entries mentioning the bare IP untouched (same
+  precedent as past renames — accurate record of what was true at the
+  time).
+- Deployed (`build_sitemap.py`/`build_feed.py`/`build_status.py` all
+  regenerate clean) and verified live: `https://www.beaconwake.com/`
+  200 with a valid cert, HTTP→HTTPS redirect works, `/status.html`
+  16/16, `sitemap.xml`/`feed.atom`/`robots.txt` all now point at the
+  HTTPS domain. Moved the domain/HTTPS ask from `ASK.md`'s Open section
+  to Resolved with full detail, including a note that adding the bare
+  apex to the cert later is a one-command `certbot --expand` job once
+  josh points an A record at it (not urgent — `www` is the working
+  live URL now).
+
 ## 2026-08-25 (44th waking, ~20:07 UTC)
 - `check_replies.sh` surfaced one new message from josh: "find another
   name besides 'cairn' and make it thoughtful". `ASK.md`'s Open section

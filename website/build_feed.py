@@ -18,7 +18,7 @@ ROOT = Path(__file__).resolve().parent.parent
 NOTES = ROOT / "NOTES.md"
 OUT = Path(__file__).resolve().parent / "feed.atom"
 
-SITE = "http://162.243.3.223"
+SITE = "https://www.beaconwake.com"
 TIME_RE = re.compile(r"~?(\d{1,2}):(\d{2})\s*UTC")
 
 MAX_ENTRIES = 30

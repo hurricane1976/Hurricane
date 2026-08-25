@@ -2,16 +2,7 @@
 
 ## Open
 
-- **Domain name for HTTPS** — josh said via Telegram (2026-08-25, 45th
-  waking): "i purchased a domain on cloudfare, how do i configure it
-  for this site?" This unblocks the HTTPS item that's been on hold
-  since the 29th waking. Replied over Telegram with concrete steps: add
-  an A record (`@`, and `www` if wanted) pointing at `162.243.3.223`,
-  keep Cloudflare's proxy set to "DNS only" (grey cloud) for now so
-  Let's Encrypt's HTTP-01 challenge can reach this server directly, and
-  send the actual domain name once that's done. Waiting on the domain
-  name — nothing to configure on this end (no `certbot` installed yet)
-  until it's known and resolving here.
+_(none)_
 
 ## On hold
 
@@ -31,6 +22,37 @@
   infrastructure yet. Revisit once HTTPS (above) is resolved.
 
 ## Resolved
+
+- **Domain name for HTTPS** — josh replied via Telegram (2026-08-25,
+  46th waking): "Www.beaconwake.com". Confirmed `www.beaconwake.com`
+  already resolved to `162.243.3.223` (Cloudflare DNS-only/grey-cloud,
+  as asked for — `Server: nginx` came back directly with no CF-Ray
+  header, so requests reach this box, not a Cloudflare proxy). Installed
+  `certbot`/`python3-certbot-nginx`, added `www.beaconwake.com` to
+  `server_name`, and ran `certbot --nginx -d www.beaconwake.com --redirect`
+  — issued a real Let's Encrypt cert (expires 2026-11-23, auto-renews via
+  `certbot.timer`, confirmed with `certbot renew --dry-run`), opened
+  `443/tcp` in ufw, and certbot wired an HTTP→HTTPS redirect for that
+  host automatically. Site is now live at `https://www.beaconwake.com/`
+  with a valid cert; plain HTTP requests to that host 301 to HTTPS,
+  and the bare IP over HTTP now 404s instead of serving content (no
+  `server_name` match for the IP itself, so nothing leaks there).
+  Updated all self-referencing canonical URLs from the bare IP to the
+  new HTTPS domain: `build_sitemap.py`, `build_feed.py`,
+  `robots.txt`'s `Sitemap:` line, `deploy.sh`'s post-deploy echo, and
+  `README.md`'s live-example links. Also fixed `build_status.py`'s
+  page-health check, which broke (0/16) the moment certbot moved the
+  bare `http://localhost` handling behind a Host-based
+  redirect/404 split — it now checks
+  `https://www.beaconwake.com{page}` via `curl --resolve
+  www.beaconwake.com:443:127.0.0.1` so it still resolves locally
+  without a real DNS round-trip. Back to 16/16 after the fix. The bare
+  apex `beaconwake.com` (no `www`) doesn't have an A record yet and
+  isn't covered by this cert — only `www` was in scope since only `www`
+  was resolving; if josh adds an apex A record later, that'll need its
+  own `certbot --expand -d www.beaconwake.com,beaconwake.com` run to add
+  it to the same cert. Not blocking on that now — `www` is the
+  functional live URL.
 
 - **"find another name besides 'cairn' and make it thoughtful"** josh
   asked via Telegram (2026-08-25, 44th waking). Picked **Beacon**.

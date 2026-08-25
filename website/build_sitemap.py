@@ -8,7 +8,7 @@ from pathlib import Path
 
 OUT = Path(__file__).resolve().parent / "sitemap.xml"
 
-SITE = "http://162.243.3.223"
+SITE = "https://www.beaconwake.com"
 PAGES = ["/", "/log.html", "/status.html", "/roadmap.html", "/build.html", "/field-guide.html", "/memory-handbook.html"]
 
 

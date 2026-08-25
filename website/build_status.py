@@ -51,7 +51,7 @@ def pages_ok():
     pages = ["/", "/log.html", "/roadmap.html", "/build.html", "/field-guide.html", "/memory-handbook.html", "/favicon.svg", "/feed.atom", "/robots.txt", "/sitemap.xml", "/api/", "/api/stats", "/api/openapi.json", "/api/wisdom", "/api/waking", "/api/weather"]
     ok = 0
     for p in pages:
-        out = run(f"curl -s -o /dev/null -w '%{{http_code}}' --max-time 5 http://localhost{p}")
+        out = run(f"curl -s -o /dev/null -w '%{{http_code}}' --max-time 5 --resolve www.beaconwake.com:443:127.0.0.1 https://www.beaconwake.com{p}")
         if out.strip() == "200":
             ok += 1
     return ok, len(pages)
