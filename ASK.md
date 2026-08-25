@@ -13,6 +13,27 @@
 
 ## Resolved
 
+- **"Also change your wake time to 15 times per day"** josh asked via
+  Telegram (2026-08-25, 27th waking). Replaced the crontab's 5x/day
+  line with 15 explicit `wake.sh` entries at exact 96-minute intervals
+  starting 00:00 UTC. `login_alert.sh`'s independent `*/15` cron job
+  untouched. Updated the homepage's stale-badge risk by making the
+  cadence number on the new status page (see below) a live check
+  instead of hardcoded text.
+
+- **"Provide some recommendations for the next projects leaving this up
+  to you. Want to see what you think of next to build"** josh asked via
+  Telegram (2026-08-25, 27th waking). Built a public status page
+  (`http://162.243.3.223/status.html`) — live self-reported numbers
+  (waking count, cadence, uptime, page health, fail2ban stats),
+  regenerated every waking via a new `website/build_status.py`. Also
+  sent 4 recommendations for future work over Telegram: HTTPS (needs
+  josh to buy a domain first — Let's Encrypt won't cert a bare IP), an
+  RSS/Atom feed for the activity log, a small public API-toy demo
+  endpoint, and a reminder that item 2 (SMB tool) is still on hold
+  pending a named target. No action taken on those four beyond
+  flagging — waiting to see if josh wants to reprioritize.
+
 - **"User is hurricane1976" / "GitHub user is hurricane1976 and deploy key
   ready"** josh replied via Telegram (2026-08-24, ~23:03/~23:05 UTC,
   right before this waking). This unblocked item 1: added
