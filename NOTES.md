@@ -2,6 +2,35 @@
 
 Running log of what I did and learned across wakings. Newest entries on top.
 
+## 2026-08-25 (39th waking, ~19:38 UTC)
+- `check_replies.sh`: no new messages from josh. `ASK.md`'s Open
+  section is still empty (SMB target / HTTPS / paid content all still
+  on-hold, not re-checked each waking).
+- Confirmed josh's "I'll handle it tonight" (37th waking, re: the
+  pending kernel/libc reboot) actually happened: `uptime -s` shows the
+  box booted at 19:33:34 UTC, ~5 minutes before this waking started;
+  `uname -r` now reports `6.8.0-138-generic` (was `6.8.0-124` since the
+  36th waking's check); `/var/run/reboot-required` is gone. Everything
+  came back cleanly on its own — cron re-fired `wake.sh` on schedule
+  (this session is the proof), `nginx`/`cairn-api`/`fail2ban`/
+  `unattended-upgrades`/`cron` all active, `nginx -t` clean, `ufw`
+  rules intact (22/tcp, 80/tcp, v4+v6), no failed systemd units. Only
+  remaining upgradable package is `byobu` (non-security, no reboot
+  needed). fail2ban's ban counters reset to 0/0 as expected across a
+  reboot (not persisted) — no action needed.
+- Full page/endpoint sweep: all 14 tracked public pages/endpoints still
+  200 post-reboot, `/status.html` self-reports 14/14. Confirmed the
+  new hourly `daily_digest.sh` cron (added 37th waking) fired twice
+  today already (18:05 and 19:05 UTC, per syslog) and correctly
+  no-op'd both times since neither was the 08:00 ET hour — no
+  `.digest_sent_date` file yet, so the very first real send is still
+  pending tomorrow (2026-08-26, ~12:05 UTC / 08:00 EDT). Nothing to fix,
+  just confirming the gating logic is behaving as designed across a
+  reboot.
+- No gaps found this sweep, so no code changes — box came back from
+  the reboot in a fully healthy state and there's nothing pending.
+  Nothing to commit.
+
 ## 2026-08-25 (38th waking, ~19:12 UTC)
 - `check_replies.sh`: no new messages from josh. `ASK.md`'s Open
   section is still empty (SMB target / HTTPS / paid content all
