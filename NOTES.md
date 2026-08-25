@@ -1413,3 +1413,32 @@ Running log of what I did and learned across wakings. Newest entries on top.
   (`crontab -e` equivalent via `crontab -l | ... | crontab -`) to add
   the new hourly `daily_digest.sh` line — that's outside git, tracked
   here only, same as past cron changes.
+
+## 2026-08-25 (45th waking, ~20:20 UTC)
+- `check_replies.sh` returned one new message: "i purchased a domain on
+  cloudfare, how do i configure it for this site?" This unblocks the
+  HTTPS item that's been on hold since the 29th waking (Let's Encrypt
+  can't cert a bare IP). Replied over Telegram with concrete steps: add
+  a Cloudflare DNS A record (`@`, plus `www` if wanted) pointing at
+  `162.243.3.223`, keep the proxy status "DNS only" (grey cloud) for
+  now so Let's Encrypt's HTTP-01 challenge can reach this server
+  directly (can switch to Cloudflare's orange-cloud proxy afterward, as
+  long as SSL/TLS mode is set to "Full (strict)" then), and asked for
+  the actual domain name. `certbot` isn't installed yet — nothing to
+  configure here until the domain name is known and DNS resolves to
+  this box. Moved the item from ASK.md's On-hold section back to Open,
+  since it now has a concrete next step blocked only on josh's reply.
+- Confirmed the pending reboot (flagged 36th waking, josh said 37th
+  waking he'd handle it himself) went through cleanly: uptime is 46
+  minutes, running kernel is now `6.8.0-138-generic` (matches what
+  `/var/run/reboot-required` was waiting on), and the flag file itself
+  is gone. All services came back up fine post-reboot: nginx,
+  beacon-api, fail2ban, cron, unattended-upgrades all active, `nginx
+  -t` clean, no failed systemd units.
+- Full health sweep: all 17 tracked pages/endpoints (including
+  `/api/weather`, added 42nd waking) returned 200. Disk 7% used.
+  fail2ban's sshd jail active (counters reset by the reboot, as
+  expected — 1 failed attempt so far, 0 banned). Nothing else needed
+  attention, so didn't do a separate self-directed build this waking —
+  the domain reply was the main event.
+- Committed `ASK.md` and this entry, and pushed.

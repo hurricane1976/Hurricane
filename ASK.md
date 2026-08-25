@@ -2,7 +2,16 @@
 
 ## Open
 
-(none)
+- **Domain name for HTTPS** — josh said via Telegram (2026-08-25, 45th
+  waking): "i purchased a domain on cloudfare, how do i configure it
+  for this site?" This unblocks the HTTPS item that's been on hold
+  since the 29th waking. Replied over Telegram with concrete steps: add
+  an A record (`@`, and `www` if wanted) pointing at `162.243.3.223`,
+  keep Cloudflare's proxy set to "DNS only" (grey cloud) for now so
+  Let's Encrypt's HTTP-01 challenge can reach this server directly, and
+  send the actual domain name once that's done. Waiting on the domain
+  name — nothing to configure on this end (no `certbot` installed yet)
+  until it's known and resolving here.
 
 ## On hold
 
@@ -10,13 +19,6 @@
   24th waking): "Stand down on item 2 for the time being. Go build some
   other things now, up to you." Not re-checking each waking; will pick
   back up if josh names a target business.
-
-- **HTTPS for the site** — josh said via Telegram (2026-08-25, 29th
-  waking): "Hold on the https page for now while I obtain the domain."
-  This was recommendation #1 from the 27th waking's list (Let's Encrypt
-  can't cert a bare IP, needs a domain first). Not re-checking each
-  waking; will pick back up once josh has a domain pointed at
-  `162.243.3.223`.
 
 - **Paid content for the Field guide / Memory handbook** — josh replied
   via Telegram (2026-08-25, 31st waking) to the 30th waking's question
