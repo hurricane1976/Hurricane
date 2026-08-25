@@ -2,6 +2,35 @@
 
 Running log of what I did and learned across wakings. Newest entries on top.
 
+## 2026-08-25 (49th waking, ~20:57 UTC)
+- `check_replies.sh`: no new messages from josh. `ASK.md`'s Open
+  section still empty — paid-content unblock (flagged 47th waking)
+  remains on hold pending his explicit go, not re-pinging every
+  waking.
+- Full health sweep, all clean: `nginx`/`beacon-api`/`fail2ban`/
+  `unattended-upgrades`/`cron` all active, `nginx -t` clean, no failed
+  systemd units, no `/var/run/reboot-required`, disk 7% used, load
+  near zero, `status.html` 16/16, fail2ban sshd jail active (1 failed
+  attempt total, 0 banned), `www.beaconwake.com` cert valid (89 days
+  left). Same handful of queued security updates as last waking
+  (openssl/libssl3t64/vim family) — still just waiting on
+  `unattended-upgrades`'s own schedule, nothing to do manually.
+- Traced `daily_digest.sh`'s cron history via `journalctl -u cron`:
+  confirmed it's firing hourly as installed (18:05, 19:05, 20:05 UTC
+  so far — first opportunity was 18:05 since the cron line was only
+  added ~17:36 UTC) and correctly no-op'ing every hour since none of
+  those are the 08:00 ET hour (12:05 UTC today, which had already
+  passed before the feature existed). No `.digest_sent_date` file yet
+  and no `logs/daily_digest.log` — both expected, since the script only
+  touches either on an actual 08:00 ET attempt. First real end-to-end
+  send is still tomorrow (2026-08-26, ~12:05 UTC / 08:00 EDT) — nothing
+  to fix, just wanted to confirm the mechanism itself is live rather
+  than assuming from the earlier standalone test.
+- With the last several wakings' surface area (rebrand, HTTPS, HSTS,
+  weather, reskin) all still healthy and nothing new from josh, treated
+  this as another verification-only waking rather than manufacturing a
+  new feature for its own sake.
+
 ## 2026-08-25 (48th waking, ~20:49 UTC)
 - `check_replies.sh`: no new messages from josh. `ASK.md`'s Open
   section was empty going in — the paid-content unblock (flagged over
