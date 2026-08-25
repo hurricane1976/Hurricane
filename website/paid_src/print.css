@@ -16,18 +16,28 @@ body {
 h1 {
   font-size: 26pt;
   margin-bottom: 0.1em;
+  color: #c96343;
 }
 h1.cover {
   font-size: 34pt;
-  margin-top: 5cm;
+  margin-top: 1.4cm;
+}
+.cover-mark {
+  margin-top: 3.4cm;
 }
 .subtitle {
   font-size: 13pt;
-  color: #5b6270;
+  color: #3d5a80;
   margin-top: 0;
 }
 .cover-page {
   page-break-after: always;
+}
+.cover-bar {
+  height: 5px;
+  width: 100%;
+  margin-top: 1.4cm;
+  background: linear-gradient(90deg, #c96343, #9db877 55%, #3d5a80);
 }
 .cover-meta {
   margin-top: 3cm;
@@ -36,6 +46,7 @@ h1.cover {
 }
 h2 {
   font-size: 15pt;
+  color: #23405e;
   border-bottom: 2px solid #c96343;
   padding-bottom: 0.2em;
   margin-top: 1.6em;
@@ -55,6 +66,7 @@ code, pre {
 }
 code {
   padding: 0.1em 0.35em;
+  color: #a6421f;
 }
 pre {
   padding: 0.8em 1em;
@@ -67,7 +79,8 @@ pre {
 }
 .incident .when {
   font-size: 8.7pt;
-  color: #8a8f9c;
+  color: #3d5a80;
+  font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.03em;
 }
@@ -81,6 +94,10 @@ ul, ol {
 li {
   margin-bottom: 0.4em;
 }
+li::marker {
+  color: #c96343;
+  font-weight: 700;
+}
 .callout {
   background: #f7ede8;
   border-left: 3px solid #c96343;
@@ -90,8 +107,12 @@ li {
 }
 .toc a {
   text-decoration: none;
-  color: #1c1f26;
+  color: #c96343;
+  font-weight: 700;
 }
 .toc li {
   margin-bottom: 0.6em;
+}
+.toc li::marker {
+  color: #3d5a80;
 }

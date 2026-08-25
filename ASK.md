@@ -2,47 +2,6 @@
 
 ## Open
 
-- **Paid content — waiting on josh to finish Gumroad setup and send product links.**
-  josh said via Telegram (2026-08-25, 50th waking): "Paid content for
-  the Field guide / Memory handbook is a go, make it happen." Built
-  everything that's mine to build: real expanded paid-tier PDFs for
-  both guides (`website/paid_src/*.html` → rendered via `weasyprint`
-  to `website/paid/field-guide-full.pdf` and
-  `website/paid/memory-handbook-full.pdf`, checked visually via
-  `pdftoppm`) and a live `/get.html` pricing page describing both at a
-  suggested $9 each. The PDFs are in the git repo but deliberately
-  **not** published to `/var/www/html` — no free-download bypass of a
-  paywall that doesn't exist yet.
-  What's blocking an actual "Buy now" button: taking real payment
-  needs a payment processor account, and creating one requires a real
-  person's identity/bank verification (KYC) — not something an agent
-  can do on a human's behalf, and not something to ask josh to hand
-  over piece by piece in a Telegram chat either. This is the concrete
-  ask: **which processor does josh want, and can he create that
-  account himself?** Recommended options, in order:
-  1. **Gumroad or Lemon Squeezy** (merchant-of-record — they handle
-     card processing, tax/VAT, chargebacks, and hosted checkout/file
-     delivery for a digital PDF; just needs josh to sign up, list the
-     two PDFs, and send back the product page URLs to link from
-     `/get.html`). Lowest engineering lift, standard for solo-creator
-     PDF sales.
-  2. **Stripe directly** (more control, more integration work here,
-     and josh becomes the merchant of record responsible for sales
-     tax handling himself).
-  3. **A crypto wallet address** (no KYC needed to receive funds,
-     closer to what cairnwake.com does) — deliberately not defaulted
-     to without asking, since holding cryptocurrency is its own new
-     kind of custody decision distinct from "sell a PDF."
-  Once josh picks one and supplies either a product-page link (1) or
-  API keys (2) or a wallet address (3), `/get.html`'s "Checkout isn't
-  open yet" section becomes a real buy button — that part is quick.
-  josh asked "how do i set up gumroad" via Telegram (2026-08-25, 51st
-  waking) — read as picking option 1. Replied over Telegram with
-  concrete steps (sign up, verify email, add payout bank/tax info under
-  Settings → Payments — that's the actual KYC step, add the two PDFs as
-  digital products at $9 each, send back the two product-page URLs).
-  Still waiting on josh to actually do it and reply with the links.
-
 ## On hold
 
 - **Item 2 (narrow SMB tool)** — josh said via Telegram (2026-08-25,
@@ -51,6 +10,27 @@
   back up if josh names a target business.
 
 ## Resolved
+
+- **Paid content — Gumroad product links.** josh sent both product-page
+  URLs via Telegram (2026-08-25, ~23:29 UTC, between the 56th and 57th
+  wakings): `shadowapache.gumroad.com/l/jjfcsl` (field guide) and
+  `.../l/udeuw` (memory handbook) — confirmed which was which by
+  fetching each page's title. Wired both into `/get.html` as real "Buy
+  now" buttons (57th waking) and updated the page copy from "Checkout
+  isn't open yet" to "Checkout is open." Closes the item that had been
+  open since the 50th waking.
+- **"Can you add some dark blue coloring on the website?"** and
+  **"Can you make the format of the field guides in color?"** — both
+  asked via Telegram, 2026-08-25, ~22:30-22:50 UTC. Addressed same
+  waking (57th): added a real dark navy accent (`--accent-navy:
+  #3d5a80`) used on the new Gumroad buy buttons and deepened in the
+  site-wide ambient backdrop glow; recolored `website/paid_src/print.css`
+  (headings, code, bullets, TOC links, a cover-page brand mark + accent
+  bar) so both full-edition PDFs read as designed rather than
+  plain black-on-white. Sent the updated PDFs to josh over Telegram
+  since Gumroad hosts the buyer-facing files independently of this
+  server — he'll need to re-upload them to the existing listings if he
+  wants the color version live for buyers.
 
 - **Domain name for HTTPS** — josh replied via Telegram (2026-08-25,
   46th waking): "Www.beaconwake.com". Confirmed `www.beaconwake.com`

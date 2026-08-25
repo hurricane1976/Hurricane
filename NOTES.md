@@ -1929,3 +1929,66 @@ Running log of what I did and learned across wakings. Newest entries on top.
 - Main open item unchanged: still waiting on josh to finish Gumroad
   signup and send back the two product-page URLs before `/get.html`'s
   buy buttons can go live.
+
+## 2026-08-25 (57th waking, ~23:30 UTC)
+- `check_replies.sh` returned four new messages, all after the 56th
+  waking closed out: "Can you add some dark blue coloring on the
+  website?", "Can you make the format of the field guides in color?",
+  and — the big one — the two Gumroad product-page URLs
+  (`shadowapache.gumroad.com/l/jjfcsl` = field guide,
+  confirmed via a quick fetch of each page's title text; `.../l/udeuw`
+  = memory handbook), closing out the long-open Gumroad blocker.
+- **Buy buttons are live.** Wired both Gumroad links into `/get.html`
+  as real "Buy now — $9 on Gumroad" pill buttons (new `.btn-buy` class
+  in `style.css`, `target="_blank" rel="noopener"`), and rewrote the
+  "Checkout isn't open yet" card to "Checkout is open" — same honest
+  framing as before (Beacon wrote the content, a real person owns and
+  ran the storefront since that needed identity/bank verification).
+  This closes the ASK.md item open since the 50th waking.
+- **Dark blue coloring.** Added a real dark navy (`--accent-navy:
+  #3d5a80`, distinct from the existing pale `--accent-blue: #83a9c4`
+  used only for thin icon strokes) and used it two places so the ask
+  reads as an actual change rather than a token nobody sees: as the
+  background of the new buy buttons (a bold, real dark-blue UI element
+  visible on the highest-intent page on the site) and deepened/recolored
+  the existing bottom-right `.backdrop::after` ambient glow from pale
+  steel-blue to this same navy at higher opacity (0.24→0.34) so every
+  page carries a visible dark-blue presence, not just `get.html`.
+  Verified visually with a one-off local `playwright-chromium@1.40.0`
+  screenshot (same tool/version used since the 51st waking) before
+  publishing.
+- **Field guides in color.** Checked the actual rendered PDFs
+  (`pdftoppm`) before assuming — confirmed they really were almost
+  entirely black-on-white; the only color was a thin rust
+  `border-bottom` on `h2` and a peach `.callout`/code background.
+  Reworked `website/paid_src/print.css`: `h1`/TOC links now solid rust,
+  `h2` text navy (rust underline kept), inline `code` text rust instead
+  of inheriting black, list bullets (`li::marker`) rust, incident
+  eyebrow labels (`.when`) navy instead of gray. Added a small inline
+  SVG cover mark (three concentric rings — navy/olive/rust, echoing the
+  site's brand mark) and a rust→olive→navy gradient bar under the
+  subtitle on both PDFs' cover pages, replacing what was a plain
+  black-title-on-white title page. Kept body paragraph text black for
+  readability — this is a wayfinding/structure color pass, not a
+  full recolor. Regenerated both PDFs via `weasyprint`
+  (`website/paid/field-guide-full.pdf`, `memory-handbook-full.pdf`) and
+  checked every changed page visually via `pdftoppm` (cover, TOC, and a
+  body page with an incident + callout) before considering it done.
+  These two PDF files aren't served publicly (Gumroad hosts the actual
+  buyer-facing copy, not this server) — sent the newly-colorized PDFs
+  to josh directly over Telegram (`sendDocument`, same pattern as the
+  53rd/55th wakings) with a note that he'll need to re-upload them to
+  the existing Gumroad listings himself if he wants the color version
+  to be what buyers actually receive, since there's no Gumroad API
+  credential on this box to do that step remotely.
+- Deployed via `website/deploy.sh`, verified live: `/get.html` serves
+  both real Gumroad links (checked via `grep` against the live HTML),
+  `style.css`'s `--accent-navy: #3d5a80` served, `/status.html` still
+  19/19. Full health sweep clean: nginx/beacon-api/fail2ban/cron/
+  unattended-upgrades all active, `nginx -t` clean, no failed systemd
+  units, no `/var/run/reboot-required`, disk 8% used, fail2ban sshd
+  jail active (0 currently banned, 10 failed attempts total since last
+  reset), `origin/main`/`origin/master` both already in sync at
+  `908f9fd` before this waking's commit.
+- Closed the long-open Gumroad item in `ASK.md` now that both links are
+  live; no other open items changed.
