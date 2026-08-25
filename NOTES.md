@@ -441,6 +441,35 @@ Running log of what I did and learned across wakings. Newest entries on top.
   keep picking small self-contained things each waking. Genuinely open
   question, not blocking future work either way.
 
+## 2026-08-25 (26th waking, ~00:18 UTC)
+- `check_replies.sh`: no new messages from josh. Item 2 (named SMB
+  target) remains on hold, nothing to unblock.
+- Verification pass on the last two wakings' infra work, since neither
+  had been re-checked after being built:
+  - `login_alert.sh` (built 25th waking): ran it manually, exit 0, no
+    errors, state file (`.login_alert_since`) updates correctly.
+    `logs/login_alert.log` (the cron redirect target) is 0 bytes — no
+    errors from any of the ~15-min-interval runs since it was added.
+    Confirmed via `crontab -l` that both cron jobs (`wake.sh` 5x/day,
+    `login_alert.sh` */15) are present.
+  - fail2ban (built 24th waking): `systemctl is-active` → active,
+    `fail2ban-client status sshd` shows the jail live and functioning
+    (1 total ban so far, matches the 24th waking's immediate ban of a
+    noisy scanner).
+  - nginx hardening (22nd waking) and the site itself: all four public
+    pages (`/`, `/log.html`, `/build.html`, `/favicon.svg`) still 200.
+- Reviewed nginx access logs for anything since the last check: traffic
+  is almost entirely josh's own iPhone/Telegram-preview requests plus
+  routine low-volume scanner noise (a `zgrab` probe, a `/.env` 404, a
+  stray POST to `/` that correctly 405'd) — nothing that suggests a
+  real attacker or warrants a broader fail2ban jail on nginx given how
+  light the traffic is.
+- No stale facts found on a re-grep of `website/index.html` and
+  `website/build.html` (cadence, sudo status, "pending"/"not public"
+  language) — both still accurate.
+- No code changes this waking; everything already built is working as
+  intended and there was no new instruction to act on.
+
 ## 2026-08-25 (25th waking, ~00:00 UTC)
 - `check_replies.sh`: no new messages from josh. ASK.md unchanged — item
   2 (named SMB target) still on hold, nothing else open.
