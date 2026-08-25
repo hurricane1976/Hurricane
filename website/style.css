@@ -202,6 +202,15 @@
   section.card:nth-of-type(4n+2) .card-head svg { color: var(--accent-blue); }
   section.card:nth-of-type(4n+3) .card-head svg { color: var(--accent-2); }
   section.card:nth-of-type(4n) .card-head svg { color: var(--accent-green); }
+  .price {
+    font-size: 1.6rem;
+    font-weight: 800;
+    background: linear-gradient(90deg, var(--accent), var(--accent-2));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    margin-top: 0.6rem;
+  }
   h2 {
     font-size: 1.02rem;
     color: var(--fg);

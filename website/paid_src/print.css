@@ -1,0 +1,97 @@
+@page {
+  size: Letter;
+  margin: 2.2cm 2cm;
+  @bottom-center {
+    content: "Beacon — beaconwake.com";
+    font-size: 8pt;
+    color: #8a8f9c;
+  }
+}
+body {
+  font-family: "Helvetica Neue", Arial, sans-serif;
+  color: #1c1f26;
+  line-height: 1.55;
+  font-size: 10.8pt;
+}
+h1 {
+  font-size: 26pt;
+  margin-bottom: 0.1em;
+}
+h1.cover {
+  font-size: 34pt;
+  margin-top: 5cm;
+}
+.subtitle {
+  font-size: 13pt;
+  color: #5b6270;
+  margin-top: 0;
+}
+.cover-page {
+  page-break-after: always;
+}
+.cover-meta {
+  margin-top: 3cm;
+  font-size: 10pt;
+  color: #5b6270;
+}
+h2 {
+  font-size: 15pt;
+  border-bottom: 2px solid #6d5bd0;
+  padding-bottom: 0.2em;
+  margin-top: 1.6em;
+  page-break-after: avoid;
+}
+h3 {
+  font-size: 11.5pt;
+  color: #3d3466;
+  margin-bottom: 0.3em;
+  page-break-after: avoid;
+}
+code, pre {
+  font-family: "Courier New", monospace;
+  font-size: 9.3pt;
+  background: #f3f1fa;
+  border-radius: 4px;
+}
+code {
+  padding: 0.1em 0.35em;
+}
+pre {
+  padding: 0.8em 1em;
+  white-space: pre-wrap;
+  border-left: 3px solid #6d5bd0;
+}
+.incident {
+  margin-bottom: 1em;
+  page-break-inside: avoid;
+}
+.incident .when {
+  font-size: 8.7pt;
+  color: #8a8f9c;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+.incident .what {
+  font-weight: 700;
+  margin: 0.1em 0 0.2em;
+}
+ul, ol {
+  padding-left: 1.3em;
+}
+li {
+  margin-bottom: 0.4em;
+}
+.callout {
+  background: #f3f1fa;
+  border-left: 3px solid #6d5bd0;
+  padding: 0.7em 1em;
+  margin: 1em 0;
+  page-break-inside: avoid;
+}
+.toc a {
+  text-decoration: none;
+  color: #1c1f26;
+}
+.toc li {
+  margin-bottom: 0.6em;
+}

@@ -2,7 +2,40 @@
 
 ## Open
 
-_(none)_
+- **Paid content — which payment processor, and josh needs to create the account himself.**
+  josh said via Telegram (2026-08-25, 50th waking): "Paid content for
+  the Field guide / Memory handbook is a go, make it happen." Built
+  everything that's mine to build: real expanded paid-tier PDFs for
+  both guides (`website/paid_src/*.html` → rendered via `weasyprint`
+  to `website/paid/field-guide-full.pdf` and
+  `website/paid/memory-handbook-full.pdf`, checked visually via
+  `pdftoppm`) and a live `/get.html` pricing page describing both at a
+  suggested $9 each. The PDFs are in the git repo but deliberately
+  **not** published to `/var/www/html` — no free-download bypass of a
+  paywall that doesn't exist yet.
+  What's blocking an actual "Buy now" button: taking real payment
+  needs a payment processor account, and creating one requires a real
+  person's identity/bank verification (KYC) — not something an agent
+  can do on a human's behalf, and not something to ask josh to hand
+  over piece by piece in a Telegram chat either. This is the concrete
+  ask: **which processor does josh want, and can he create that
+  account himself?** Recommended options, in order:
+  1. **Gumroad or Lemon Squeezy** (merchant-of-record — they handle
+     card processing, tax/VAT, chargebacks, and hosted checkout/file
+     delivery for a digital PDF; just needs josh to sign up, list the
+     two PDFs, and send back the product page URLs to link from
+     `/get.html`). Lowest engineering lift, standard for solo-creator
+     PDF sales.
+  2. **Stripe directly** (more control, more integration work here,
+     and josh becomes the merchant of record responsible for sales
+     tax handling himself).
+  3. **A crypto wallet address** (no KYC needed to receive funds,
+     closer to what cairnwake.com does) — deliberately not defaulted
+     to without asking, since holding cryptocurrency is its own new
+     kind of custody decision distinct from "sell a PDF."
+  Once josh picks one and supplies either a product-page link (1) or
+  API keys (2) or a wallet address (3), `/get.html`'s "Checkout isn't
+  open yet" section becomes a real buy button — that part is quick.
 
 ## On hold
 
@@ -10,22 +43,6 @@ _(none)_
   24th waking): "Stand down on item 2 for the time being. Go build some
   other things now, up to you." Not re-checking each waking; will pick
   back up if josh names a target business.
-
-- **Paid content for the Field guide / Memory handbook** — josh replied
-  via Telegram (2026-08-25, 31st waking) to the 30th waking's question
-  about whether to adopt cairnwake.com's paid-PDF model: "Hold on the
-  paid content for now, will follow up later after we do the domain
-  name. I do eventually want to go paid for the content but not now."
-  So: yes eventually, but explicitly tied to the domain/HTTPS work
-  landing first (makes sense — no sensible way to take payment over
-  plain HTTP on a bare IP). Not building any paywall/payment
-  infrastructure yet.
-  **Update (2026-08-25, 47th waking):** the domain/HTTPS condition
-  landed (`https://www.beaconwake.com/` live with a valid cert since
-  the 46th waking) — flagged this to josh over Telegram rather than
-  building anything, since payment/paywall infrastructure is exactly
-  the kind of consequential, hard-to-reverse decision AGENT.md's
-  escape hatch is for. Still waiting on josh to actually say go.
 
 ## Resolved
 
