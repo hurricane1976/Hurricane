@@ -80,7 +80,7 @@ ROUTES_DOC = {
         "/api/waking": "the most recent waking recorded in this agent's own activity log",
         "/api/search?q=...": f"substring search over this agent's own activity log, up to {SEARCH_LIMIT} matching bullets",
         "/api/stats": "aggregate numbers about this box and its history (wakings, commits, disk, load, uptime)",
-        "/api/weather": "current weather observation for Woodbridge, VA (nearest NWS station)",
+        "/api/weather?lat=..&lon=..": "current weather observation for the given coordinates (nearest NWS station); omit both for the Woodbridge, VA default",
         "/api/openapi.json": "machine-readable OpenAPI 3.0 spec for this API",
     },
     "source": "https://github.com/hurricane1976/Hurricane",
@@ -108,7 +108,16 @@ OPENAPI_SPEC = {
             }
         },
         "/stats": {"get": {"summary": "Aggregate numbers about this box and its history", "responses": {"200": {"description": "OK"}}}},
-        "/weather": {"get": {"summary": "Current weather observation for Woodbridge, VA", "responses": {"200": {"description": "OK"}, "503": {"description": "Upstream NWS observation unavailable"}}}},
+        "/weather": {
+            "get": {
+                "summary": "Current weather observation, optionally near a given coordinate",
+                "parameters": [
+                    {"name": "lat", "in": "query", "required": False, "schema": {"type": "number", "minimum": -90, "maximum": 90}},
+                    {"name": "lon", "in": "query", "required": False, "schema": {"type": "number", "minimum": -180, "maximum": 180}},
+                ],
+                "responses": {"200": {"description": "OK"}, "400": {"description": "Invalid lat/lon"}, "503": {"description": "Upstream NWS observation unavailable"}},
+            }
+        },
         "/openapi.json": {"get": {"summary": "This spec", "responses": {"200": {"description": "OK"}}}},
     },
 }
@@ -117,10 +126,24 @@ OPENAPI_SPEC = {
 # Nearest NWS station to Woodbridge, VA 22192 (same location digest.sh's
 # forecast section uses), found once via /gridpoints/LWX/89,61/stations --
 # hardcoded like digest.sh's gridpoint to skip a lookup call every request.
+# This remains the default/fallback for visitors who don't share their
+# location (JS disabled, geolocation denied, or a non-US visitor NWS can't
+# place a station for).
 WEATHER_STATION = "KDAA"  # Fort Belvoir
 WEATHER_URL = f"https://api.weather.gov/stations/{WEATHER_STATION}/observations/latest"
 WEATHER_CACHE_SECONDS = 600
+WEATHER_UA = {"User-Agent": "BeaconAgent/1.0 (contact: apacheshadow1972@gmail.com)"}
 _weather_cache = {"at": 0.0, "data": None}
+
+# Per-location cache for visitor-supplied coordinates, keyed on lat/lon
+# rounded to 2 decimals (~1km) so nearby visitors share a cache entry. Capped
+# so an attacker feeding many distinct coordinates can't grow this unbounded.
+_geo_weather_cache = {}
+GEO_CACHE_MAX_ENTRIES = 500
+
+
+def _temp_f(temp_c):
+    return round(temp_c * 9 / 5 + 32, 1) if temp_c is not None else None
 
 
 def current_weather():
@@ -128,17 +151,13 @@ def current_weather():
     if _weather_cache["data"] is not None and now - _weather_cache["at"] < WEATHER_CACHE_SECONDS:
         return _weather_cache["data"]
     try:
-        req = urllib.request.Request(
-            WEATHER_URL,
-            headers={"User-Agent": "BeaconAgent/1.0 (contact: apacheshadow1972@gmail.com)"},
-        )
+        req = urllib.request.Request(WEATHER_URL, headers=WEATHER_UA)
         with urllib.request.urlopen(req, timeout=10) as resp:
             props = json.load(resp)["properties"]
-        temp_c = props["temperature"]["value"]
         data = {
             "location": "Woodbridge, VA",
             "station": WEATHER_STATION,
-            "temperature_f": round(temp_c * 9 / 5 + 32, 1) if temp_c is not None else None,
+            "temperature_f": _temp_f(props["temperature"]["value"]),
             "conditions": props.get("textDescription"),
             "observed_at": props.get("timestamp"),
         }
@@ -147,6 +166,49 @@ def current_weather():
         return data
     except Exception:
         return _weather_cache["data"]  # serve stale cache rather than nothing, if any; retry next request
+
+
+def geo_weather(lat: float, lon: float):
+    key = (round(lat, 2), round(lon, 2))
+    now = time.monotonic()
+    cached = _geo_weather_cache.get(key)
+    if cached is not None and now - cached["at"] < WEATHER_CACHE_SECONDS:
+        return cached["data"]
+    try:
+        points_req = urllib.request.Request(
+            f"https://api.weather.gov/points/{lat:.4f},{lon:.4f}", headers=WEATHER_UA
+        )
+        with urllib.request.urlopen(points_req, timeout=10) as resp:
+            points = json.load(resp)["properties"]
+        rel = points.get("relativeLocation", {}).get("properties", {})
+        city, state = rel.get("city"), rel.get("state")
+        location = f"{city}, {state}" if city and state else "your location"
+
+        stations_req = urllib.request.Request(points["observationStations"], headers=WEATHER_UA)
+        with urllib.request.urlopen(stations_req, timeout=10) as resp:
+            stations = json.load(resp)["features"]
+        if not stations:
+            raise ValueError("no observation stations near that location")
+        station_id = stations[0]["properties"]["stationIdentifier"]
+
+        obs_req = urllib.request.Request(
+            f"https://api.weather.gov/stations/{station_id}/observations/latest", headers=WEATHER_UA
+        )
+        with urllib.request.urlopen(obs_req, timeout=10) as resp:
+            props = json.load(resp)["properties"]
+        data = {
+            "location": location,
+            "station": station_id,
+            "temperature_f": _temp_f(props["temperature"]["value"]),
+            "conditions": props.get("textDescription"),
+            "observed_at": props.get("timestamp"),
+        }
+        if len(_geo_weather_cache) >= GEO_CACHE_MAX_ENTRIES:
+            _geo_weather_cache.clear()
+        _geo_weather_cache[key] = {"at": now, "data": data}
+        return data
+    except Exception:
+        return cached["data"] if cached is not None else None
 
 
 def count_wakings():
@@ -244,7 +306,19 @@ class Handler(BaseHTTPRequestHandler):
         elif path == "/stats":
             self._json(200, build_stats())
         elif path == "/weather":
-            w = current_weather()
+            qs = parse_qs(split.query)
+            lat_raw, lon_raw = qs.get("lat", [None])[0], qs.get("lon", [None])[0]
+            if lat_raw is not None or lon_raw is not None:
+                try:
+                    lat, lon = float(lat_raw), float(lon_raw)
+                    if not (-90 <= lat <= 90 and -180 <= lon <= 180):
+                        raise ValueError("out of range")
+                except (TypeError, ValueError):
+                    self._json(400, {"error": "lat and lon must both be provided as numbers, lat in [-90,90] and lon in [-180,180]"})
+                    return
+                w = geo_weather(lat, lon)
+            else:
+                w = current_weather()
             if w is None:
                 self._json(503, {"error": "weather observation temporarily unavailable"})
             else:

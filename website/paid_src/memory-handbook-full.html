@@ -20,9 +20,10 @@
 <h2>Contents</h2>
 <ul class="toc">
   <li><a href="#model">1. The three-layer model</a></li>
-  <li><a href="#templates">2. File templates you can copy directly</a></li>
-  <li><a href="#example">3. A stale fact, caught and corrected — a real example</a></li>
-  <li><a href="#guidance">4. What goes where — a decision guide</a></li>
+  <li><a href="#setup">2. Set it up, step by step — a beginner's walkthrough</a></li>
+  <li><a href="#templates">3. File templates you can copy directly</a></li>
+  <li><a href="#example">4. A stale fact, caught and corrected — a real example</a></li>
+  <li><a href="#guidance">5. What goes where — a decision guide</a></li>
 </ul>
 
 <h2 id="model">1. The three-layer model</h2>
@@ -62,7 +63,98 @@ good status pages use: prefer a value computed fresh over a value someone
 remembered to update.
 </div>
 
-<h2 id="templates">2. File templates you can copy directly</h2>
+<h2 id="setup">2. Set it up, step by step — a beginner's walkthrough</h2>
+<p>
+This assumes you already have an agent that wakes on a schedule and reads
+a rules file first (the Field guide's full edition walks through building
+that part). This section is just the memory system: three small files, and
+a shell-level habit of writing to them every single session.
+</p>
+
+<h3>Step 1 — the running log (NOTES.md)</h3>
+<p>Create an empty file at the project root:</p>
+<pre>touch NOTES.md</pre>
+<p>
+Nothing needs to go in it yet — the first entry gets written at the end of
+the first real session. What matters is the convention, which you should
+write down somewhere the agent will actually read it (its rules file, or
+the top of this very file as a comment): every session ends by appending
+one dated section, in the format from the template below, and nothing in
+this file is ever edited or deleted after the fact. Append-only is the
+whole point — it's the one file that can never be argued with about what
+actually happened.
+</p>
+
+<h3>Step 2 — the open-questions file (ASK.md)</h3>
+<pre>cat > ASK.md &lt;&lt;'EOF'
+# Ask
+
+## Open
+
+## On hold
+
+## Resolved
+EOF</pre>
+<p>
+Three headers, nothing else, to start. This file is small on purpose —
+unlike the log, it gets actively edited: an item moves from Open to
+Resolved (or On hold) the moment it's answered, rather than accumulating
+forever. If this file starts feeling long enough that skimming it feels
+necessary, that's the signal something belongs in the log instead, not
+here.
+</p>
+
+<h3>Step 3 — the distilled-memory layer</h3>
+<p>
+This is the layer most setups skip, and the one that matters most once a
+project runs for weeks rather than days. Create a directory and an index
+file:
+</p>
+<pre>mkdir -p memory
+cat > memory/MEMORY.md &lt;&lt;'EOF'
+EOF</pre>
+<p>
+Leave the index empty until there's a real fact worth distilling — don't
+pre-populate it with placeholders. The first time a session learns
+something that will matter beyond the current run (a preference the human
+stated, a project deadline, a naming decision), it writes one small file
+under <code>memory/</code> using the frontmatter template below, then adds
+a single-line pointer to <code>MEMORY.md</code>. The index file itself
+should stay short enough to read in full every session — if it's not, the
+files it points to are doing too little work and everything is leaking
+back into the index instead of staying in its own file.
+</p>
+
+<h3>Step 4 — wire the read order into every session</h3>
+<p>
+None of this helps if nothing tells the agent to actually read these files.
+The instruction that fires on every wake (a fixed prompt in a wrapper
+script, not something re-typed by hand) should say, in order: read the
+rules file first, then the running log and open-questions file for prior
+context, then the memory directory. The order matters — rules always come
+first so nothing else can override them, and the log comes before distilled
+memory so a session sees the raw history before the summarized version of
+it.
+</p>
+
+<h3>Step 5 — make "write it down" the last step of every session, not an afterthought</h3>
+<p>
+The single habit that makes this whole system work: the very last thing
+every session does, before signaling it's done, is append to the log and
+update the open-questions file if anything changed. Put this in the fixed
+prompt itself, as an explicit instruction, not as something assumed to
+happen naturally — a session under no obligation to write things down
+usually won't, the same way a person rushing out the door skips the note
+they meant to leave.
+</p>
+<div class="callout">
+A memory system that's easy to skip will get skipped, especially under a
+model that's trying to be efficient. Make writing to <code>NOTES.md</code>
+as non-optional as the notify-a-human step in the wake script — spelled out
+explicitly in the prompt every single time, not left to be inferred.
+</div>
+
+<h2 id="templates">3. File templates you can copy directly</h2>
 
 <h3>Running log entry</h3>
 <pre>## YYYY-MM-DD (Nth session, ~HH:MM UTC)
@@ -107,7 +199,7 @@ future session judge edge cases instead of following the rule blindly.
 
 **How to apply:** when this should actually change behavior.</pre>
 
-<h2 id="example">3. A stale fact, caught and corrected — a real example</h2>
+<h2 id="example">4. A stale fact, caught and corrected — a real example</h2>
 <p>
 A homepage badge once read "3&times; daily wake cycle." Three sessions
 after the schedule changed to 5&times; a day, the badge still said 3 — not
@@ -127,7 +219,7 @@ decision someone made, a reason something is the way it is — not for
 numbers a script could just check.
 </div>
 
-<h2 id="guidance">4. What goes where — a decision guide</h2>
+<h2 id="guidance">5. What goes where — a decision guide</h2>
 <table style="width:100%; border-collapse: collapse; margin-top: 0.5em;">
 <tr style="border-bottom: 1px solid #d8d5ea; text-align:left;">
 <th style="padding: 0.4em 0.6em;">If it's...</th>

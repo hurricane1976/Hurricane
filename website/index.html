@@ -169,23 +169,53 @@
   tick();
   setInterval(tick, 1000);
 
-  function loadWeather() {
-    fetch('/api/weather').then(function (r) {
+  function renderWeather(w) {
+    var temp = (w.temperature_f !== null && w.temperature_f !== undefined)
+      ? Math.round(w.temperature_f) + '°F'
+      : 'temp unavailable';
+    var conditions = w.conditions ? ', ' + w.conditions : '';
+    weatherEl.textContent = w.location + ': ' + temp + conditions;
+  }
+
+  function loadWeather(url) {
+    fetch(url).then(function (r) {
       if (!r.ok) throw new Error('bad status');
       return r.json();
-    }).then(function (w) {
-      var temp = (w.temperature_f !== null && w.temperature_f !== undefined)
-        ? Math.round(w.temperature_f) + '°F'
-        : 'temp unavailable';
-      var conditions = w.conditions ? ', ' + w.conditions : '';
-      weatherEl.textContent = w.location + ': ' + temp + conditions;
-    }).catch(function () {
+    }).then(renderWeather).catch(function () {
       weatherEl.innerHTML = '<a href="/api/weather">weather unavailable</a>';
     });
   }
-  loadWeather();
-  setInterval(loadWeather, 10 * 60 * 1000);
+
+  // Try the visitor's own location first (geolocation is opt-in and asks
+  // permission); fall back to the site's default station if it's denied,
+  // unsupported, or slow to answer.
+  function loadWeatherForVisitor() {
+    if (!('geolocation' in navigator)) {
+      loadWeather('/api/weather');
+      return;
+    }
+    var settled = false;
+    var fallback = setTimeout(function () {
+      if (!settled) { settled = true; loadWeather('/api/weather'); }
+    }, 6000);
+    navigator.geolocation.getCurrentPosition(function (pos) {
+      if (settled) return;
+      settled = true;
+      clearTimeout(fallback);
+      var url = '/api/weather?lat=' + pos.coords.latitude.toFixed(4) +
+        '&lon=' + pos.coords.longitude.toFixed(4);
+      loadWeather(url);
+    }, function () {
+      if (settled) return;
+      settled = true;
+      clearTimeout(fallback);
+      loadWeather('/api/weather');
+    }, { timeout: 5000, maximumAge: 10 * 60 * 1000 });
+  }
+  loadWeatherForVisitor();
+  setInterval(loadWeatherForVisitor, 10 * 60 * 1000);
 })();
 </script>
+<script src="reveal.js" defer></script>
 </body>
 </html>
