@@ -6,7 +6,7 @@
   (2026-08-25, ~23:32/23:39 UTC, between the 57th and 58th wakings) for a
   lighthouse graphic and to "keep trying to build and add new things to
   the website... additional products conceived and added." Built a third
-  product this waking (58th): `website/paid/beacon-starter-kit.zip` — a
+  product the 58th waking: `website/paid/beacon-starter-kit.zip` — a
   sanitized/generalized zip of this project's actual scripts (wake.sh,
   notify.sh, digest.sh, check_replies.sh, an AGENT.md/NOTES.md/ASK.md/
   memory-index template set) plus a copy-paste SETUP.md walkthrough.
@@ -15,6 +15,20 @@
   to create a third Gumroad listing and send back the product URL,
   same as the field-guide/memory-handbook flow — once it lands, wiring
   the real "Buy now" button is a one-line edit to `get.html`.
+  **Update (59th waking):** josh replied via Telegram "provide a link to
+  the beacon starter kit, ensure it's in color like the rest" — read as
+  wanting the actual deliverable file(s) in hand (to upload when creating
+  the Gumroad listing), colorized like the two PDF guides. There's no
+  Gumroad API credential on this box to create a listing directly, so
+  instead: built a colorized companion PDF of the kit's `SETUP.md`
+  walkthrough (`website/paid_src/starter-kit-full.html` →
+  `website/paid/beacon-starter-kit-full.pdf`, same rust/navy/olive
+  `print.css` palette as the other two full editions), and sent both that
+  PDF and the existing `beacon-starter-kit.zip` directly to josh over
+  Telegram (`sendDocument`) so he has the real files to attach when he
+  creates the listing. Still needs josh to actually create the Gumroad
+  listing and send back the product URL — that's the one step that
+  needs a real person/storefront.
 
 ## On hold
 
@@ -24,6 +38,36 @@
   back up if josh names a target business.
 
 ## Resolved
+
+- **"Maybe write a book about the beginning use of claude code or even
+  maybe a study guide for the Claude Certified Architect - Foundations
+  exam that's detailed for beginners covering all topics"** josh asked
+  via Telegram (2026-08-25, between the 58th and 59th wakings). Verified
+  first that the exam is real (Anthropic's official CCA-F certification,
+  via web search — 60 questions/120 min/$125/Pearson VUE, five weighted
+  domains) rather than assuming or inventing structure. Built
+  `website/study-guide.html`, a new free page covering all five official
+  domains (Agentic architecture & orchestration 27%, Claude Code
+  configuration & workflows 20%, Prompt engineering & structured output
+  20%, Tool design & MCP integration 18%, Context management &
+  reliability 15%) at a beginner level — each with the core concept,
+  the exam's actual decision-boundary (when to choose X vs Y, not just
+  define them), and concrete examples. Carries an explicit disclaimer
+  that it's independent study notes written by Beacon, not an Anthropic
+  publication, and points to Anthropic's own exam guide as the
+  authoritative source — didn't want a beginner mistaking an unofficial
+  page for official exam scope. Added a `.weight` pill and
+  `.callout-box` style to `style.css` for the domain-percentage tags and
+  disclaimer box; wired into nav on every page (`build.html`, `get.html`,
+  `log.html`/`log.template.html`, `roadmap.html`/`.template.html`,
+  `status.html`/`.template.html`, `field-guide.html`,
+  `memory-handbook.html`, `index.html`), `build_sitemap.py`,
+  `build_status.py`'s page-health list, and `deploy.sh`'s publish list.
+  Verified locally with a Playwright screenshot before deploying, then
+  confirmed live (200, nav link present, `/status.html` 20/20). Chose
+  this over "a book about beginning Claude Code use" since it's a
+  narrower, concretely-scoped, sourced topic — didn't attempt both in
+  one waking.
 
 - **"Maybe put a photo of a lighthouse on the front page since you are a
   beacon"** josh asked via Telegram (2026-08-25, ~23:32 UTC). Kept the

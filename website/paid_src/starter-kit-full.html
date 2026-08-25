@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Starter Kit — Setup Walkthrough</title>
+<link rel="stylesheet" href="print.css">
+</head>
+<body>
+
+<div class="cover-page">
+  <svg class="cover-mark" width="56" height="56" viewBox="0 0 64 64">
+    <circle cx="32" cy="32" r="22" fill="none" stroke="#3d5a80" stroke-width="2.5" opacity="0.6"/>
+    <circle cx="32" cy="32" r="14" fill="none" stroke="#9db877" stroke-width="3" opacity="0.75"/>
+    <circle cx="32" cy="32" r="7" fill="#c96343"/>
+  </svg>
+  <h1 class="cover">Starter Kit</h1>
+  <p class="subtitle">Setup walkthrough — wiring the real files into a running agent, start to finish</p>
+  <div class="cover-bar"></div>
+  <div class="cover-meta">
+    The actual scripts this project runs on, sanitized and generalized, plus
+    this copy-paste walkthrough for standing them up on your own box.<br>
+    beaconwake.com
+  </div>
+</div>
+
+<h2>Contents</h2>
+<ul class="toc">
+  <li><a href="#vm">1. A small VM</a></li>
+  <li><a href="#user">2. A non-root sudo user</a></li>
+  <li><a href="#ssh">3. Lock down SSH</a></li>
+  <li><a href="#node">4. Node, and Claude Code</a></li>
+  <li><a href="#kit">5. This kit</a></li>
+  <li><a href="#telegram">6. A Telegram bot</a></li>
+  <li><a href="#path">7. Wire the path</a></li>
+  <li><a href="#cron">8. Cron</a></li>
+  <li><a href="#test">9. Test it end to end, manually, before trusting cron</a></li>
+  <li><a href="#hardening">10. Day-one hardening</a></li>
+</ul>
+
+<h2 id="vm">1. A small VM</h2>
+<p>
+Any cheap Linux VM works (1 vCPU / 1&ndash;2GB RAM is plenty for this).
+Provision one from any provider, note its public IP.
+</p>
+
+<h2 id="user">2. A non-root sudo user</h2>
+<p>Don't run this as root day to day.</p>
+<pre>adduser youruser
+usermod -aG sudo youruser</pre>
+<p>
+Give it passwordless sudo if you want the agent able to install packages
+or edit system config unattended &mdash; put this in its own file under
+<code>/etc/sudoers.d/</code> (not appended to the end of
+<code>/etc/sudoers</code> directly; <code>sudoers.d</code> is processed
+after the main file, so a rule there reliably wins over the default
+<code>%sudo</code> group line, which otherwise can silently override an
+equivalent rule placed earlier in <code>/etc/sudoers</code> itself):
+</p>
+<pre>echo "youruser ALL=(ALL) NOPASSWD: ALL" | sudo tee /etc/sudoers.d/youruser
+sudo chmod 0440 /etc/sudoers.d/youruser</pre>
+
+<h2 id="ssh">3. Lock down SSH</h2>
+<p>Key-only login, no root over SSH if you can avoid it:</p>
+<pre>ssh-copy-id youruser@your-vm-ip</pre>
+<p>
+Then in <code>/etc/ssh/sshd_config</code>: <code>PasswordAuthentication
+no</code>, and <code>sudo systemctl restart ssh</code>. Verify you can
+still log in with the key in a <em>second</em> terminal before closing
+the first.
+</p>
+
+<h2 id="node">4. Node, and Claude Code</h2>
+<pre>curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+source ~/.bashrc
+nvm install --lts
+npm install -g @anthropic-ai/claude-code
+claude --version</pre>
+
+<h2 id="kit">5. This kit</h2>
+<pre>git clone &lt;wherever you're keeping this&gt; agent
+cd agent
+mv AGENT.md.template AGENT.md      # edit YOUR_NAME
+mv NOTES.md.template NOTES.md
+mv ASK.md.template ASK.md
+mkdir -p keys logs
+chmod +x wake.sh notify.sh check_replies.sh</pre>
+<p>
+<code>AGENT.md</code> is the one file that matters most &mdash; it's read
+at the start of every waking. Edit <code>YOUR_NAME</code> and adjust the
+rules to taste; the ones in the template (nothing illegal, never claim to
+be human, keys stay out of git, irreversible/gray actions go to ASK.md
+and wait) are a reasonable floor, not a ceiling.
+</p>
+
+<h2 id="telegram">6. A Telegram bot</h2>
+<p>
+Message <code>@BotFather</code> on Telegram, <code>/newbot</code>, follow
+the prompts &mdash; you get a bot token. Then message your new bot
+anything at all (it needs a first message from you to have a chat to
+reply into), and hit:
+</p>
+<pre>https://api.telegram.org/bot&lt;TOKEN&gt;/getUpdates</pre>
+<p>
+Your chat id is in the JSON response (<code>message.chat.id</code>). Put
+both in <code>keys/telegram.env</code>:
+</p>
+<pre>TELEGRAM_BOT_TOKEN=xxxx
+TELEGRAM_CHAT_ID=xxxx</pre>
+<pre>chmod 600 keys/telegram.env
+echo "keys/" &gt;&gt; .gitignore</pre>
+<div class="callout">
+Test it: <code>./notify.sh "hello from the new box"</code> should land in
+your Telegram within a couple seconds.
+</div>
+
+<h2 id="path">7. Wire the path</h2>
+<p>
+Edit <code>wake.sh</code>'s <code>PROJECT_DIR</code> line to the absolute
+path where you cloned this (e.g. <code>/home/youruser/agent</code>). If
+you want the news/weather digest, also fill in <code>digest.sh</code>'s
+gridpoint URL and contact email (see the comments in that file), and wire
+it into <code>wake.sh</code> if you want it sent every wake, or gate it to
+once a day the way this kit's source project does (check the local hour,
+no-op unless it matches, with a small state file as a backstop against
+double-sends within that hour).
+</p>
+
+<h2 id="cron">8. Cron</h2>
+<pre>crontab -e</pre>
+<p>Add a line like (5x/day, ~5h apart, UTC):</p>
+<pre>0 0,5,10,14,19 * * * /home/youruser/agent/wake.sh</pre>
+
+<h2 id="test">9. Test it end to end, manually, before trusting cron</h2>
+<pre>./wake.sh</pre>
+<div class="callout">
+Watch <code>logs/</code> for the new log file, and confirm a Telegram
+message arrives. Only once this works standalone should you trust the
+cron timer to fire it unattended &mdash; debugging a cron-only failure
+with no console access is much harder than catching it here first.
+</div>
+
+<h2 id="hardening">10. Day-one hardening</h2>
+<p>
+Not required to get running, but cheap and worth doing immediately on a
+box that's going to sit on the open internet unattended:
+</p>
+<pre>sudo apt-get install -y fail2ban unattended-upgrades
+sudo ufw allow OpenSSH
+sudo ufw enable</pre>
+<p>
+That's the whole loop: cron fires <code>wake.sh</code>, which hands the
+agent <code>AGENT.md</code> plus its own history
+(<code>NOTES.md</code>/<code>ASK.md</code>/<code>memory/</code>), the
+agent does something and writes down what and why,
+<code>notify.sh</code> tells you, and the next waking picks up wherever
+this one left off.
+</p>
+
+</body>
+</html>

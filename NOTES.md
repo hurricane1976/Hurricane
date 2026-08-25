@@ -2047,3 +2047,67 @@ Running log of what I did and learned across wakings. Newest entries on top.
   pushed and in sync at `5bd3405`.
 - Logged the lighthouse ask as resolved in `ASK.md`; opened a new item
   for the starter kit's pending Gumroad link.
+
+## 2026-08-25 (59th waking, ~23:59 UTC)
+- `check_replies.sh` returned two new messages: "maybe write a book about
+  the beginning use of claude code or even maybe a study guide for the
+  Claude Certified Architect - Foundations exam that's detailed for
+  beginners covering all topics" and "provide a link to the beacon
+  starter kit, ensure it's in color like the rest."
+- **Starter kit files, colorized.** Read the second message as wanting
+  the actual deliverable in hand (to attach when creating the Gumroad
+  listing), matching the color treatment already given to the other two
+  guides. Built `website/paid_src/starter-kit-full.html` (the kit's
+  `SETUP.md` walkthrough, same cover-mark/rust-navy-olive `print.css`
+  palette as the field guide/memory handbook full editions), rendered
+  it via `weasyprint` to `website/paid/beacon-starter-kit-full.pdf`
+  (5 pages), checked cover + TOC pages visually with `pdftoppm` before
+  sending. Sent both that PDF and the existing `beacon-starter-kit.zip`
+  directly to josh over Telegram (`sendDocument`) — no Gumroad API
+  credential on this box, so a real listing still needs josh to create
+  it and send back the URL (logged as an update to the existing open
+  `ASK.md` item, not a new one).
+- **Claude Certified Architect study guide.** For the first message,
+  checked whether "Claude Certified Architect – Foundations" is a real
+  exam before writing anything (web search) rather than guessing at
+  structure — it's a real, official Anthropic certification (CCA-F):
+  60 questions, 120 minutes, scaled pass score 720/1000, $125, delivered
+  via Pearson VUE, five weighted domains (confirmed against multiple
+  independent sources describing the same domain list and percentages:
+  Agentic architecture & orchestration 27%, Claude Code configuration &
+  workflows 20%, Prompt engineering & structured output 20%, Tool design
+  & MCP integration 18%, Context management & reliability 15%). Built
+  `website/study-guide.html`, a new free page covering all five domains
+  at a beginner level, each with the core concept plus the actual
+  decision-boundary the exam tests (when to choose which, not just
+  define terms) and concrete examples grounded in things this project
+  has actually hit (state preservation, escalation, tool failure
+  behavior). Carries an explicit disclaimer that this is independent
+  study notes by Beacon, not an Anthropic publication, and points to
+  Anthropic's own exam guide as the authoritative source — didn't want
+  to imply official endorsement or scope for a real, paid certification
+  exam. Added `.weight` (domain-percentage pill) and `.callout-box`
+  (disclaimer box) to `style.css`; wired the new nav link into every
+  page that has the site nav (`build.html`, `get.html`, `log.html`/
+  `log.template.html`, `roadmap.html`/`.template.html`, `status.html`/
+  `.template.html`, `field-guide.html`, `memory-handbook.html`,
+  `index.html`), added it to `build_sitemap.py` and `build_status.py`'s
+  page-health list, and to `deploy.sh`'s publish list. Verified the page
+  locally with a one-off Playwright screenshot (reused the existing
+  scratch npm setup, no new install left behind) before publishing.
+  Chose this over "a book about beginning Claude Code use" for this
+  waking since it's a narrower, concretely sourced topic rather than two
+  large open-ended writing projects at once; the book idea is still open
+  if josh wants it pursued next.
+- Deployed via `website/deploy.sh`. Verified live: `/study-guide.html`
+  200s with the new nav link and content, `/status.html` now 20/20
+  (up from 19/19 — new page added to the health-check list),
+  `/sitemap.xml` now 9 URLs. Full health sweep clean: nginx/beacon-api/
+  fail2ban/cron/unattended-upgrades all active, `nginx -t` clean, no
+  failed systemd units, no `/var/run/reboot-required`, disk 8% used,
+  fail2ban sshd jail (0 currently banned, 11 failed attempts / 1 total
+  ban since last reset — one new banned IP, no action needed, working
+  as designed), `origin/main`/`origin/master` both already in sync at
+  `ac8d80a` before this waking's commit.
+- Updated the open starter-kit `ASK.md` item with this waking's file
+  delivery; logged the study-guide ask as resolved.
