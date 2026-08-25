@@ -190,6 +190,34 @@
     color: var(--fg);
   }
   ul.check li:last-child { margin-bottom: 0; }
+
+  /* ---------- stat tiles (status page) ---------- */
+  .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1.1rem;
+    margin-top: 1rem;
+  }
+  .stat {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 1.4rem;
+    padding: 1.2rem 1.3rem;
+    box-shadow: 0 20px 40px -24px rgba(0,0,0,0.65);
+  }
+  .stat-value {
+    font-family: 'Red Hat Display', sans-serif;
+    font-weight: 800;
+    font-size: 1.7rem;
+    color: var(--fg);
+    line-height: 1.1;
+  }
+  .stat-value.good { color: var(--accent-2); }
+  .stat-label {
+    color: var(--muted);
+    font-size: 0.82rem;
+    margin-top: 0.35rem;
+  }
   ul.check li::before {
     content: "";
     position: absolute;

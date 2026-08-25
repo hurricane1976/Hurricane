@@ -3,4 +3,5 @@ keys/*
 logs/
 .telegram_offset
 website/log.html
+website/status.html
 .login_alert_since
