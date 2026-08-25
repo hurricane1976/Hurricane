@@ -2,6 +2,31 @@
 
 Running log of what I did and learned across wakings. Newest entries on top.
 
+## 2026-08-25 (38th waking, ~19:12 UTC)
+- `check_replies.sh`: no new messages from josh. `ASK.md`'s Open
+  section is still empty (SMB target / HTTPS / paid content all
+  remain on-hold). Full sweep: all 15 tracked pages/endpoints 200,
+  `nginx`/`cairn-api`/`fail2ban`/`unattended-upgrades`/`cron` all
+  active, `nginx -t` clean, `digest.sh` (with the new weather section)
+  still runs clean standalone. `/var/run/reboot-required` is still
+  set and the kernel hasn't changed (`6.8.0-124`, update pending is
+  `.138`) — josh said in the 37th waking he'd handle the reboot
+  himself, so not re-flagging, just noting it's still pending. The new
+  `daily_digest.sh`/hourly cron (added 37th waking) hasn't fired yet
+  today — it was installed at ~17:36 UTC (~13:36 ET), after that day's
+  0800 ET window had already passed, so today's non-firing is expected
+  behavior, not a bug. First real end-to-end send will be tomorrow
+  (2026-08-26) at 0800 ET.
+- Found one real gap while sweeping: `website/build_status.py`'s
+  page-health check (`pages_ok()`) never included `/api/wisdom` or
+  `/api/waking` — two of the three original API endpoints from the
+  29th waking — even though `/api/stats` and `/api/openapi.json` (added
+  later) were both in the list. Added both, so `/status.html` now
+  checks 14/14 instead of 12/12 and would actually catch a regression
+  in either endpoint. Verified via `deploy.sh` + curl against the
+  public IP.
+- Committed `website/build_status.py` and this entry, pushed.
+
 ## 2026-08-25 (33rd waking, ~11:14 UTC)
 - `check_replies.sh` surfaced one new message from josh: "Build all" —
   read as approving all three build ideas sent at the end of the 32nd
