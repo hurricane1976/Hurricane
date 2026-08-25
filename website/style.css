@@ -1,13 +1,15 @@
   :root {
     color-scheme: dark;
-    --bg: #14181f;
-    --bg-elev: #1b212b;
-    --fg: #f9f6eb;
-    --muted: #a9a494;
-    --accent: #3e94fd;
-    --accent-2: #fad730;
-    --line: #2a2f3a;
-    --card: #191d25cc;
+    --bg: #08080d;
+    --bg-elev: #121118;
+    --fg: #f3f2f7;
+    --muted: #8c8a99;
+    --accent: #8b5cf6;
+    --accent-2: #2dd4bf;
+    --accent-blue: #3b82f6;
+    --accent-green: #34d399;
+    --line: #24222e;
+    --card: #131019cc;
   }
   * { box-sizing: border-box; }
   html { scroll-behavior: smooth; }
@@ -29,9 +31,9 @@
     inset: 0;
     z-index: -1;
     background:
-      radial-gradient(600px 400px at 15% -5%, rgba(62,148,253,0.16), transparent 60%),
-      radial-gradient(500px 350px at 100% 10%, rgba(250,215,48,0.08), transparent 60%),
-      radial-gradient(800px 500px at 50% 120%, rgba(62,148,253,0.10), transparent 60%),
+      radial-gradient(600px 400px at 15% -5%, rgba(139,92,246,0.20), transparent 60%),
+      radial-gradient(500px 350px at 100% 10%, rgba(45,212,191,0.10), transparent 60%),
+      radial-gradient(800px 500px at 50% 120%, rgba(59,130,246,0.12), transparent 60%),
       var(--bg);
   }
   .backdrop svg {
@@ -81,14 +83,14 @@
     width: 7px;
     height: 7px;
     border-radius: 50%;
-    background: #4ade80;
-    box-shadow: 0 0 0 0 rgba(74,222,128,0.6);
+    background: var(--accent-green);
+    box-shadow: 0 0 0 0 rgba(52,211,153,0.6);
     animation: dotpulse 2.2s ease-out infinite;
   }
   @keyframes dotpulse {
-    0% { box-shadow: 0 0 0 0 rgba(74,222,128,0.55); }
-    70% { box-shadow: 0 0 0 7px rgba(74,222,128,0); }
-    100% { box-shadow: 0 0 0 0 rgba(74,222,128,0); }
+    0% { box-shadow: 0 0 0 0 rgba(52,211,153,0.55); }
+    70% { box-shadow: 0 0 0 7px rgba(52,211,153,0); }
+    100% { box-shadow: 0 0 0 0 rgba(52,211,153,0); }
   }
 
   main {
@@ -182,10 +184,24 @@
   .card-head {
     display: flex;
     align-items: center;
-    gap: 0.7rem;
+    gap: 0.85rem;
     margin-bottom: 0.9rem;
   }
-  .card-head svg { width: 22px; height: 22px; flex-shrink: 0; color: var(--accent); }
+  .card-head svg {
+    width: 20px;
+    height: 20px;
+    padding: 10px;
+    box-sizing: content-box;
+    flex-shrink: 0;
+    color: var(--accent);
+    clip-path: polygon(25% 3%, 75% 3%, 100% 50%, 75% 97%, 25% 97%, 0% 50%);
+    background: linear-gradient(160deg, color-mix(in srgb, currentColor 30%, transparent), color-mix(in srgb, currentColor 6%, transparent));
+    box-shadow: 0 0 22px -6px color-mix(in srgb, currentColor 70%, transparent);
+  }
+  /* rotate the icon-badge accent through the palette, card by card */
+  section.card:nth-of-type(4n+2) .card-head svg { color: var(--accent-blue); }
+  section.card:nth-of-type(4n+3) .card-head svg { color: var(--accent-2); }
+  section.card:nth-of-type(4n) .card-head svg { color: var(--accent-green); }
   h2 {
     font-size: 1.02rem;
     color: var(--fg);
@@ -217,12 +233,24 @@
     margin-top: 1rem;
   }
   .stat {
+    position: relative;
     background: var(--card);
     border: 1px solid var(--line);
     border-radius: 1.4rem;
-    padding: 1.2rem 1.3rem;
+    padding: 1.3rem 1.3rem 1.2rem;
     box-shadow: 0 20px 40px -24px rgba(0,0,0,0.65);
+    overflow: hidden;
   }
+  .stat::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent), var(--accent-2));
+  }
+  .stat:nth-of-type(4n+2)::before { background: linear-gradient(90deg, var(--accent-blue), var(--accent)); }
+  .stat:nth-of-type(4n+3)::before { background: linear-gradient(90deg, var(--accent-2), var(--accent-green)); }
+  .stat:nth-of-type(4n)::before { background: linear-gradient(90deg, var(--accent-green), var(--accent-blue)); }
   .stat-value {
     font-family: 'Red Hat Display', sans-serif;
     font-weight: 800;
@@ -230,7 +258,7 @@
     color: var(--fg);
     line-height: 1.1;
   }
-  .stat-value.good { color: var(--accent-2); }
+  .stat-value.good { color: var(--accent-green); }
   .stat-label {
     color: var(--muted);
     font-size: 0.82rem;
