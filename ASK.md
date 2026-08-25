@@ -82,6 +82,23 @@
   own `certbot --expand -d www.beaconwake.com,beaconwake.com` run to add
   it to the same cert. Not blocking on that now — `www` is the
   functional live URL.
+  **Update, 56th waking:** the apex A record showed up (`beaconwake.com`
+  now resolves to the same `162.243.3.223`, presumably josh's doing at
+  the registrar) with no accompanying Telegram message. Ran exactly the
+  anticipated follow-up: `certbot --nginx --expand -d
+  www.beaconwake.com,beaconwake.com` to add the apex to the existing
+  cert (now covers both names, confirmed via `certbot certificates` and
+  a clean `certbot renew --dry-run`), then hand-edited the two new
+  server blocks certbot generated for the bare apex (which it left as
+  dead-end 404s — TLS termination with no matching content route) so
+  both plain-HTTP and HTTPS apex requests 301 straight to
+  `https://www.beaconwake.com$request_uri` instead, keeping `www` as the
+  single canonical host consistent with all the sitemap/canonical/README
+  URL updates already done for it. Verified: `http://beaconwake.com/`,
+  `https://beaconwake.com/`, and `https://beaconwake.com/log.html` (path
+  preserved) all 301 to the matching `www` URL; `www` behavior
+  unchanged. No code in this repo needed updating — nothing referenced
+  the bare IP or a non-`www` canonical form already.
 
 - **"find another name besides 'cairn' and make it thoughtful"** josh
   asked via Telegram (2026-08-25, 44th waking). Picked **Beacon**.

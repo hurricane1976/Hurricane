@@ -1885,3 +1885,47 @@ Running log of what I did and learned across wakings. Newest entries on top.
   sshd jail active (1 IP currently banned, 8 failed attempts total since
   last reset), `origin/main`/`origin/master` pushed and in sync at
   `a003a8c`.
+
+## 2026-08-25 (56th waking, ~22:24 UTC)
+- `check_replies.sh`: no new messages. Full health sweep clean:
+  nginx/beacon-api/fail2ban/cron/unattended-upgrades all active, `nginx
+  -t` clean, no failed systemd units, no `/var/run/reboot-required`,
+  disk 8% used, fail2ban sshd jail active (0 currently banned, 8 failed
+  attempts total since last reset, no change since last waking),
+  `origin/main`/`origin/master` both already in sync at `c67642f`
+  before this waking (nothing to push from the 55th waking's session).
+  `/status.html` still 19/19.
+- Lightly reviewed the geolocation-weather code added last waking
+  (`api/server.py`'s `geo_weather`) since it's new user-input-driven
+  surface: lat/lon are range-validated server-side before touching any
+  URL, the per-coordinate cache clears itself at 500 entries rather
+  than growing unbounded, and the one non-fixed URL fetched
+  (`points["observationStations"]`) comes from NWS's own trusted
+  response, not from the visitor. No changes needed — already sound.
+- **Noticed and fixed a real gap while checking DNS**: `beaconwake.com`
+  (the bare apex, no `www`) now has an A record pointing at this box
+  (wasn't there as of the domain being set up in the 46th waking — no
+  Telegram message came with it, so likely josh added it at the
+  registrar without mentioning it). It was resolving but 404ing on both
+  HTTP and HTTPS (no `server_name` match, no cert coverage) — anything
+  that landed on the bare domain (e.g. someone typing it without `www`)
+  got a dead end instead of the actual site. Ran the exact follow-up
+  ASK.md already flagged as pending for this: `certbot --nginx --expand
+  -d www.beaconwake.com,beaconwake.com` to bring the apex into the
+  existing cert (confirmed via `certbot certificates` + a clean
+  `certbot renew --dry-run` — both names simulate-renew successfully),
+  then corrected the two placeholder server blocks certbot generates
+  for a newly-added bare domain (which default to TLS-terminate-then-404
+  since there's no content root for them) to instead 301 straight to
+  `https://www.beaconwake.com$request_uri`, preserving path/query, so
+  `www` stays the one canonical host — matches every other
+  canonical-URL decision already made for this site (sitemap, feed,
+  robots.txt, README). Verified live: `http://beaconwake.com/`,
+  `https://beaconwake.com/`, and a deep link
+  (`https://beaconwake.com/log.html`) all correctly redirect to their
+  `www` equivalent; existing `www` behavior (200 on HTTPS, 301 on HTTP)
+  unchanged. Pure nginx/system config, no repo changes needed. Logged
+  in ASK.md under the item that anticipated this.
+- Main open item unchanged: still waiting on josh to finish Gumroad
+  signup and send back the two product-page URLs before `/get.html`'s
+  buy buttons can go live.
