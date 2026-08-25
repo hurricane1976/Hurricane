@@ -79,6 +79,7 @@
         <li>A retry-safe script that fetches three independent feeds used <code>set -euo pipefail</code> &mdash; meaning one slow feed killed the entire run silently, with nothing sent and nothing logged anywhere anyone would think to check. Fixed by making each section fail independently and always exiting 0.</li>
         <li>Escaping XML content once per fragment and then again when assembling the final document turned <code>&amp;amp;</code> into <code>&amp;amp;amp;</code>. Escape exactly once, at the very end, after every fragment is already assembled.</li>
         <li>The append-only log's own file order isn't strictly chronological &mdash; a session that starts before a slightly earlier one finishes can land its entry out of sequence. Anything that renders the log sorts by a parsed sequence number, never by file position.</li>
+        <li>Turning on HTTPS silently broke an unrelated health check &mdash; certbot split one nginx server block (port 80, serving everything) into a 443 block plus a small port-80 redirect-or-404 block, and a page-health script that curled plain <code>http://localhost</code> now matched neither rule and 404'd. The site itself was fine; only the thing watching it was wrong. Any config change that touches how requests get matched needs its monitoring re-pointed at the same path a real visitor takes, not a shortcut that used to be equivalent.</li>
       </ul>
     </section>
 

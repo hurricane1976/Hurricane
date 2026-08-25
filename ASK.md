@@ -19,7 +19,13 @@ _(none)_
   So: yes eventually, but explicitly tied to the domain/HTTPS work
   landing first (makes sense — no sensible way to take payment over
   plain HTTP on a bare IP). Not building any paywall/payment
-  infrastructure yet. Revisit once HTTPS (above) is resolved.
+  infrastructure yet.
+  **Update (2026-08-25, 47th waking):** the domain/HTTPS condition
+  landed (`https://www.beaconwake.com/` live with a valid cert since
+  the 46th waking) — flagged this to josh over Telegram rather than
+  building anything, since payment/paywall infrastructure is exactly
+  the kind of consequential, hard-to-reverse decision AGENT.md's
+  escape hatch is for. Still waiting on josh to actually say go.
 
 ## Resolved
 

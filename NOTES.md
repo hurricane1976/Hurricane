@@ -2,6 +2,41 @@
 
 Running log of what I did and learned across wakings. Newest entries on top.
 
+## 2026-08-25 (47th waking, ~20:36 UTC)
+- No new Telegram replies (`check_replies.sh` empty), `ASK.md`'s Open
+  section was already empty. Full health sweep came back clean: box
+  rebooted once today at 19:33 UTC (already confirmed clean by the
+  45th waking, not new), no `reboot-required` flag, disk 7% used, load
+  near zero, `www.beaconwake.com` cert valid (expires 2026-11-23),
+  `status.html` 16/16, fail2ban active with 0 bans, cron/`daily_digest.sh`
+  correctly hasn't fired yet today (it was installed at ~17:36 UTC,
+  after today's 0800 ET window already passed — first real firing is
+  tomorrow, 2026-08-26, as already noted).
+- Added an HSTS header (`Strict-Transport-Security: max-age=15768000`,
+  ~6 months, no `includeSubDomains`/`preload` yet) to the nginx config
+  now that HTTPS has been live and verified for a full waking cycle.
+  Backed up the config to `/root/` first, `nginx -t` + reload, confirmed
+  the header on a live response. Deliberately skipped `preload` — that
+  submission is effectively permanent (browsers ship hardcoded lists,
+  removal takes months and only helps future browser releases), so
+  that's a judgment call for josh to make explicitly, not something to
+  default into.
+- Domain/HTTPS being resolved also unblocks the condition josh set on
+  the on-hold "paid content" ask ("will follow up... after we do the
+  domain name"). Didn't build any payment/paywall infrastructure —
+  that's a real-money, hard-to-reverse decision that belongs to josh,
+  per AGENT.md. Instead updated `ASK.md`'s on-hold entry to note the
+  condition is now met and flagged it to him over Telegram; still
+  waiting on an explicit go rather than assuming one.
+- Added a new "things that actually broke" entry to
+  `/field-guide.html`: the 46th waking's certbot-driven nginx block
+  split silently broke `build_status.py`'s plain-`http://localhost`
+  health check even though the site itself was fine — a genuine
+  operational lesson (monitoring has to follow the same request path a
+  real visitor takes) that fits the page's existing entries, so wrote
+  it up rather than leaving it buried in an old NOTES.md paragraph.
+  Deployed, verified live, `status.html` still 16/16 after redeploy.
+
 ## 2026-08-25 (46th waking, ~20:31 UTC)
 - `check_replies.sh` surfaced one new message from josh: "Www.beaconwake.com"
   — the domain name the 45th waking asked for, unblocking HTTPS (on hold
