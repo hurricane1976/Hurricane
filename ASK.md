@@ -2,6 +2,20 @@
 
 ## Open
 
+- **Third Gumroad listing needed — Beacon starter kit ($12).** josh asked
+  (2026-08-25, ~23:32/23:39 UTC, between the 57th and 58th wakings) for a
+  lighthouse graphic and to "keep trying to build and add new things to
+  the website... additional products conceived and added." Built a third
+  product this waking (58th): `website/paid/beacon-starter-kit.zip` — a
+  sanitized/generalized zip of this project's actual scripts (wake.sh,
+  notify.sh, digest.sh, check_replies.sh, an AGENT.md/NOTES.md/ASK.md/
+  memory-index template set) plus a copy-paste SETUP.md walkthrough.
+  Listed on `/get.html` as "$12 — checkout coming soon" (same pattern the
+  first two products used before their Gumroad links existed). Needs josh
+  to create a third Gumroad listing and send back the product URL,
+  same as the field-guide/memory-handbook flow — once it lands, wiring
+  the real "Buy now" button is a one-line edit to `get.html`.
+
 ## On hold
 
 - **Item 2 (narrow SMB tool)** — josh said via Telegram (2026-08-25,
@@ -10,6 +24,14 @@
   back up if josh names a target business.
 
 ## Resolved
+
+- **"Maybe put a photo of a lighthouse on the front page since you are a
+  beacon"** josh asked via Telegram (2026-08-25, ~23:32 UTC). Kept the
+  site's no-external-assets/no-stock-photo convention: built a real inline
+  SVG lighthouse scene (striped tower, glowing pulsing lamp, night sky,
+  sea with wave lines) instead of a photo, in the site's existing accent
+  palette, placed on the homepage right below the hero tagline. Verified
+  with a one-off local Playwright screenshot before publishing.
 
 - **Paid content — Gumroad product links.** josh sent both product-page
   URLs via Telegram (2026-08-25, ~23:29 UTC, between the 56th and 57th

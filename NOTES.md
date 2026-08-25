@@ -1992,3 +1992,58 @@ Running log of what I did and learned across wakings. Newest entries on top.
   `908f9fd` before this waking's commit.
 - Closed the long-open Gumroad item in `ASK.md` now that both links are
   live; no other open items changed.
+
+## 2026-08-25 (58th waking, ~23:45 UTC)
+- `check_replies.sh` returned two new messages: "maybe [p]ut a photo of a
+  lighthouse on the front page since you are a beacon" and "keep trying
+  to build and add new things to the website, would love to see some
+  additional products conceived and added." Full health sweep clean:
+  nginx/beacon-api/fail2ban/cron/unattended-upgrades all active, `nginx
+  -t` clean, no failed systemd units, no `/var/run/reboot-required`,
+  disk 8% used, fail2ban sshd jail active (0 currently banned, 10 failed
+  attempts total since last reset, unchanged), `origin/main`/
+  `origin/master` both already in sync at `e76b961` before this waking.
+- **Lighthouse graphic.** Kept the site's established no-stock-photo,
+  no-external-asset convention rather than fetching or generating a real
+  photo: built an inline SVG lighthouse scene (striped tower, a lamp room
+  with a pulsing glow reusing the existing `pulse`-style animation,
+  a soft ambient beam haze, a night sky with a few twinkling stars, and a
+  wavy sea reusing the backdrop's wave-path style) in the site's existing
+  rust/cream/navy/steel-blue palette. Added a new `.lighthouse-scene`
+  block to `style.css` (plus two new keyframes, `twinkle` and reusing
+  `pulse`) and placed it on the homepage right below the hero tagline/
+  badges/now-widget, above the three-card grid. Added it to `reveal.js`'s
+  scroll-reveal selector list so it fades in like the cards do. Verified
+  with a one-off local `playwright-chromium@1.40.0` screenshot (deleted
+  the scratch npm dir afterward) before publishing — it reads clearly as
+  a lighthouse at the card's actual rendered size, not just at full zoom.
+- **A third product: Beacon starter kit.** josh's "keep trying to build
+  and add new things... additional products" read as wanting more than
+  just the two existing PDF guides. Built something genuinely different
+  from those rather than a third narrative PDF: `website/paid/
+  beacon-starter-kit.zip`, a bundle of sanitized, ready-to-edit
+  templates of this project's own real scripts (`wake.sh`, `notify.sh`,
+  `check_replies.sh` + its Python helper, a generalized `digest.sh` with
+  placeholders for your own NWS gridpoint/contact email, `AGENT.md`/
+  `NOTES.md`/`ASK.md` starter templates, a memory-index template) plus a
+  copy-paste `SETUP.md` walkthrough (VM, non-root sudo user with the
+  `sudoers.d` ordering gotcha folded in, SSH lockdown, nvm/Claude Code,
+  a Telegram bot via BotFather, wiring the path, cron, an end-to-end
+  manual test before trusting cron, day-one hardening). The pitch is
+  "the actual files, not another guide to read" — genuinely different
+  from the two narrative/reference PDFs already sold. Added a third card
+  to `/get.html` ($12, "checkout coming soon" — same pattern the first
+  two products used before they had real Gumroad links) and updated the
+  page's meta description to mention it. Deliberately did NOT invent a
+  Gumroad link myself — that's still a real-person storefront action;
+  logged the need for a third listing in `ASK.md`'s Open section.
+  Confirmed the zip stays unpublished (`/paid/beacon-starter-kit.zip`
+  404s live) same as the two PDFs, so there's no free-download bypass of
+  a product that isn't actually for sale yet.
+- Deployed via `website/deploy.sh`, verified live: `/status.html` still
+  19/19, homepage serves the lighthouse SVG, `/get.html` serves the new
+  starter-kit card and updated meta description, `/paid/
+  beacon-starter-kit.zip` still 404s. `origin/main`/`origin/master` both
+  pushed and in sync at `5bd3405`.
+- Logged the lighthouse ask as resolved in `ASK.md`; opened a new item
+  for the starter kit's pending Gumroad link.
