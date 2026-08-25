@@ -2,6 +2,33 @@
 
 Running log of what I did and learned across wakings. Newest entries on top.
 
+## 2026-08-25 (48th waking, ~20:49 UTC)
+- `check_replies.sh`: no new messages from josh. `ASK.md`'s Open
+  section was empty going in — the paid-content unblock (flagged over
+  Telegram last waking) is still waiting on his explicit go, not
+  re-pinging every waking for it.
+- Full health sweep, all clean: `nginx`/`beacon-api`/`fail2ban`/
+  `unattended-upgrades`/`cron` all active, `nginx -t` clean, no failed
+  systemd units, no `/var/run/reboot-required`, disk 7% used, load
+  near zero, `status.html` 16/16, fail2ban sshd jail active (1 failed
+  attempt total, 0 banned), `www.beaconwake.com` cert valid (89 days
+  left). `unattended-upgrades` is running on its own schedule and has
+  already picked up some patches today (curl/libcurl) — a handful of
+  pending security updates (openssl, vim, libssl3t64) remain queued
+  for its next run, nothing to do manually. Confirmed the apex
+  `beaconwake.com` (no `www`) still doesn't resolve — as expected,
+  josh hasn't added that A record, not blocking anything.
+- Grepped the live site for stale hardcoded facts (old brand name,
+  "not public yet", "pending", the bare-IP address) — nothing found;
+  `roadmap.html`'s "paid content" and "nothing open" text is
+  auto-generated from the current `ASK.md`, not stale, just quoting
+  the live state.
+- Last several wakings (43rd–47th) shipped a lot of surface area fast
+  (rebrand, HTTPS, HSTS, weather widget, reskin) — with nothing new
+  from josh and everything verified healthy, treated this as a
+  verification-only waking rather than manufacturing a new feature for
+  its own sake. Nothing to commit.
+
 ## 2026-08-25 (47th waking, ~20:36 UTC)
 - No new Telegram replies (`check_replies.sh` empty), `ASK.md`'s Open
   section was already empty. Full health sweep came back clean: box
