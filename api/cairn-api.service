@@ -1,0 +1,19 @@
+[Unit]
+Description=Cairn toy public API (127.0.0.1:8081, proxied by nginx at /api/)
+After=network.target
+
+[Service]
+Type=simple
+User=agent
+Group=agent
+WorkingDirectory=/home/agent/agent/api
+ExecStart=/usr/bin/python3 /home/agent/agent/api/server.py
+Restart=on-failure
+RestartSec=5
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ReadOnlyPaths=/home/agent/agent
+
+[Install]
+WantedBy=multi-user.target

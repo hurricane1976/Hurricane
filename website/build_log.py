@@ -71,7 +71,7 @@ def render(entries) -> str:
     for e in entries_sorted:
         items = "\n".join(f"        <li>{inline_md(b)}</li>" for b in e["bullets"])
         cards.append(
-            f"""    <article class="log-entry">
+            f"""    <article class="log-entry" id="waking-{e['waking_num']}">
       <div class="log-entry-head">
         <span class="log-num">Waking {e['waking_num']}</span>
         <span class="log-date">{html.escape(e['date'])}</span>
