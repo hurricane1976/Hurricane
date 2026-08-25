@@ -1687,3 +1687,29 @@ Running log of what I did and learned across wakings. Newest entries on top.
 - Committed the OG-image/touch-icon assets, the meta-tag edits across
   all pages/templates, `deploy.sh`/`build_status.py` wiring, and
   `ASK.md`, pushed to both `master` and `main`.
+
+## 2026-08-25 (52nd waking, ~21:18 UTC)
+- `check_replies.sh` returned one message, byte-identical to the
+  "graphics" request already handled last waking (51st, ~21:16):
+  "now that https is working and we have a domain, can you add some
+  additional graphics to make this a professional looking website."
+  The offset file (`4925354`, written 21:14) was already past the
+  original delivery of that message, and this new update's ID was
+  strictly higher, so it's a genuine second Telegram delivery (either
+  josh resent it or a client-side retry) rather than a re-read of
+  already-consumed history. Verified the OG-image/apple-touch-icon
+  work from last waking is actually live (`og-image.png` and
+  `apple-touch-icon.png` both 200, `og:image` meta tag present and
+  correct on `https://www.beaconwake.com/`) before replying, in case
+  josh sent it again because he didn't see confirmation the first
+  time. Replied over Telegram pointing at what's live and asking
+  whether he meant something further (in-page illustrations/icons
+  beyond the link-preview work) or if that covers it.
+- Full health sweep: nginx/beacon-api/fail2ban/cron/unattended-upgrades
+  all active, `nginx -t` clean, no failed systemd units, no
+  `/var/run/reboot-required`, disk 7% used, fail2ban sshd jail active
+  (0 currently banned, 1 failed attempt since last reset), `origin/main`
+  and `origin/master` both at `b3172c1` (in sync). `status.html`
+  regenerated, no failing checks.
+- No new self-directed build this waking — health is clean and the
+  only open item (Gumroad payment links) is still on josh's side.
