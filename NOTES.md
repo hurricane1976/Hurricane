@@ -1805,3 +1805,83 @@ Running log of what I did and learned across wakings. Newest entries on top.
   IP currently banned, 7 failed attempts total since last reset — no
   change since last waking), `origin/main` and `origin/master` both at
   `e11573e` before this waking's commit (in sync).
+
+## 2026-08-25 (55th waking, ~22:00 UTC)
+- `check_replies.sh` returned four new messages: make both guides "full
+  featured, complete step by step instructions... for a beginner",
+  repeated/reinforced a moment later ("Every detail needs to go be
+  included"); change the homepage weather to the *visitor's* location
+  instead of the fixed Woodbridge, VA default; and make the site more
+  "graphics intensive... an animation or two."
+- **Weather by visitor location**: added lat/lon support to `/api/weather`
+  in `api/server.py` — resolves the nearest NWS station via
+  `api.weather.gov/points/{lat},{lon}` → its `observationStations` list →
+  that station's latest observation, with its own cache keyed on
+  coordinates rounded to 2 decimals (~1km, so nearby visitors share a
+  cache entry) and capped at 500 entries so arbitrarily many distinct
+  coordinates can't grow it unbounded. Validated lat/lon range
+  server-side (400 on garbage input). The homepage's "now" widget now
+  calls `navigator.geolocation.getCurrentPosition` first and only falls
+  back to the fixed Woodbridge default on denial, timeout (5s), or no
+  `geolocation` support — tested both paths live (Austin/NYC coordinates
+  resolved to their real nearest stations; a bad lat correctly 400s).
+  Restarted `beacon-api` to pick up the change, verified live.
+- **Graphics/animation pass**: added a slow-drifting two-blob gradient to
+  the shared `.backdrop` (all pages), a pulsing glow on the brand mark
+  (CSS `filter: drop-shadow`, works site-wide with no per-file SVG edits),
+  hover-lift + shadow on cards/stat-tiles/log-entries, and a new shared
+  `website/reveal.js` — an `IntersectionObserver`-based scroll-reveal
+  (fade + slide-up, staggered) applied to cards/stats/log entries across
+  every page. Deliberately progressive-enhancement: the `.reveal` class
+  that hides content is only ever added by the script itself, right
+  before observing, so JS-off or `IntersectionObserver`-less browsers see
+  everything immediately — no invisible-content risk. Also honors
+  `prefers-reduced-motion` (kills all of the above, including the
+  existing dot/logo pulses). Verified with a one-off local
+  `playwright-chromium@1.40.0` install (same version used since the
+  51st/54th wakings, Node 18 constraint) — screenshotted `index.html`,
+  `field-guide.html`, `status.html` locally before publishing. Caught one
+  real bug in my own test script during this, not the site: a naive fixed
+  scroll loop used `document.body.scrollHeight`, which undercounted this
+  layout's true height, so it looked like the 2nd/3rd homepage cards
+  never revealed — confirmed with manual scroll-position checks that the
+  actual site reveals correctly, the loop's bound was just wrong. Deleted
+  the npm scratch dir afterward.
+- **Full beginner setup guides**: read "full featured, complete step by
+  step... for a beginner" as being about the paid full editions
+  specifically (they're literally branded "Full Edition" already, and the
+  free pages are deliberately lessons/retrospective, not tutorials — kept
+  that split). Rewrote `website/paid_src/field-guide-full.html`'s section
+  4 from a 6-item bullet checklist into a real ~13-step walkthrough with
+  actual copy-paste commands: provisioning a small VM, creating a
+  non-root sudo user (with the sudoers.d/ordering gotcha from this
+  project's own incident log folded in as a callout), locking down SSH,
+  installing Node via nvm and Claude Code, writing a real AGENT.md
+  template, standing up a Telegram bot via BotFather and finding the chat
+  id, `notify.sh`/`wake.sh` reproduced close to this project's actual
+  scripts, cron, an end-to-end manual test before trusting cron, and
+  day-one hardening (ufw/fail2ban/unattended-upgrades). Rewrote
+  `website/paid_src/memory-handbook-full.html` similarly, adding a new
+  section 2 ("Set it up, step by step") walking through creating
+  `NOTES.md`/`ASK.md`/the `memory/` index from nothing, wiring the read
+  order into the wake prompt, and making "write it down" a non-skippable
+  last step — renumbered the sections after it. Regenerated both PDFs via
+  `weasyprint` (field guide 10 pages now, was shorter; handbook 6 pages)
+  and checked them visually with `pdftoppm` before sending. While in
+  `paid_src/print.css`, also recolored its leftover violet accent
+  (`#6d5bd0`, predates the Anthropic-style clay reskin) to a print-safe
+  clay tone matching the live site. Updated `/get.html`'s and both free
+  pages' description copy to actually mention the new step-by-step
+  content instead of just "a checklist". Sent both updated PDFs directly
+  to josh over Telegram (`sendDocument`, same pattern as the 53rd
+  waking) rather than waiting on the still-open Gumroad checkout.
+- Deployed via `website/deploy.sh`, verified live: `/status.html` 19/19,
+  `reveal.js`/updated `style.css` 200, `/api/weather?lat=...&lon=...`
+  resolving correctly through the public domain, both `/paid/*.pdf`
+  correctly still 404 (not published — no free bypass of a paywall that
+  doesn't exist yet). Full health sweep clean: nginx/beacon-api/fail2ban/
+  cron/unattended-upgrades all active, `nginx -t` clean, no failed
+  systemd units, no `/var/run/reboot-required`, disk 8% used, fail2ban
+  sshd jail active (1 IP currently banned, 8 failed attempts total since
+  last reset), `origin/main`/`origin/master` pushed and in sync at
+  `a003a8c`.
