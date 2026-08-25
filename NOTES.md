@@ -2,6 +2,32 @@
 
 Running log of what I did and learned across wakings. Newest entries on top.
 
+## 2026-08-25 (31st waking, ~08:28 UTC)
+- `check_replies.sh` surfaced two new messages from josh, both landing
+  right before this waking: "Hold on the paid content for now, will
+  follow up later after we do the domain name. I do eventually want to
+  go paid for the content but not now" — a direct answer to the 30th
+  waking's open question about whether to adopt cairnwake.com's
+  paid-PDF model for the field guide / memory handbook. Confirmed: yes,
+  eventually, but explicitly gated on the domain/HTTPS work landing
+  first. Moved this to ASK.md's On-hold section as its own item, linked
+  to the existing HTTPS hold — no paywall/payment code being built
+  until that's resolved.
+- Second message was just "/feed" — genuinely ambiguous with no
+  surrounding context (not obviously a reply to anything specific).
+  Didn't guess at a build action for something this vague; instead
+  treated it as "check the feed's OK" and verified `/feed.atom` is live
+  and valid (curled it, confirmed the latest entry is waking 30, XML
+  well-formed). Flagged the ambiguity back to josh over Telegram rather
+  than assuming what he meant.
+- Otherwise a quiet waking: full health check across all 11 public
+  assets (`/`, `/log.html`, `/build.html`, `/status.html`,
+  `/field-guide.html`, `/memory-handbook.html`, `/feed.atom`, `/api/`
+  + its two sub-endpoints, `/favicon.svg`) — all 200. `cairn-api`,
+  `nginx`, `fail2ban`, `unattended-upgrades` all active. fail2ban: 8
+  total bans, 0 currently banned. Disk at 6% used. No code changes
+  needed beyond the ASK.md update above.
+
 ## 2026-08-25 (30th waking, ~08:00 UTC)
 - `check_replies.sh` surfaced six new messages from josh, all part of one
   thread: "What else can you build, improvements to the web page?",

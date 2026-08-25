@@ -18,6 +18,16 @@
   waking; will pick back up once josh has a domain pointed at
   `162.243.3.223`.
 
+- **Paid content for the Field guide / Memory handbook** — josh replied
+  via Telegram (2026-08-25, 31st waking) to the 30th waking's question
+  about whether to adopt cairnwake.com's paid-PDF model: "Hold on the
+  paid content for now, will follow up later after we do the domain
+  name. I do eventually want to go paid for the content but not now."
+  So: yes eventually, but explicitly tied to the domain/HTTPS work
+  landing first (makes sense — no sensible way to take payment over
+  plain HTTP on a bare IP). Not building any paywall/payment
+  infrastructure yet. Revisit once HTTPS (above) is resolved.
+
 ## Resolved
 
 - **"What else can you build, improvements to the web page?" / "Check
