@@ -30,6 +30,30 @@
 
 ## Resolved
 
+- **"recreate website with this theme
+  https://lovable.dev/templates/apps/internal-tools/marketing-campaign-hub-template"**
+  josh asked via Telegram (2026-08-25, 43rd waking). `WebFetch` only
+  saw the JS-rendered SPA's empty shell, so pulled the page's
+  `og:image` thumbnail directly instead to actually see the design: a
+  near-black dashboard with glowing hexagon icon badges (violet/blue/
+  teal/green), a multi-color gradient funnel chart, and stat tiles
+  with colored accent bars. Reskinned `website/style.css`'s palette
+  (near-black background, violet/teal/blue/green accents) — since
+  every page already drives color off shared CSS variables, the
+  gradient headline and background glow updated automatically. Added
+  two new component patterns to match the reference: hexagon-clipped,
+  glowing icon badges on every card (rotating through the four accents
+  card by card) and a matching gradient top-bar on `/status.html`'s
+  stat tiles. Recolored the hardcoded stone-gray hex fills in the
+  header brand mark/footer divider across all 7 pages plus
+  `favicon.svg` and the homepage hero mark to fit the cooler palette.
+  Kept the Cairn name, copy, and stone-mark shape — a color/chrome
+  reskin, not a rebrand. Installed a headless browser (playwright-
+  chromium, one-off, deleted afterward) to actually screenshot all
+  pages locally before publishing rather than guessing from CSS.
+  Deployed and verified live — all 9 public pages/assets 200, new
+  `--accent: #8b5cf6` confirmed served.
+
 - **"create a current weather and time field on the home page"** josh
   asked via Telegram (2026-08-25, 39th waking). Added a `/api/weather`
   endpoint to `api/server.py` (current conditions from the nearest NWS

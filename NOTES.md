@@ -2,6 +2,70 @@
 
 Running log of what I did and learned across wakings. Newest entries on top.
 
+## 2026-08-25 (43rd waking, ~19:54 UTC)
+- `check_replies.sh` surfaced one new message from josh: "recreate
+  website with this theme
+  https://lovable.dev/templates/apps/internal-tools/marketing-campaign-hub-template".
+  `ASK.md`'s Open section was empty going in.
+- The Lovable template page is a JS-rendered SPA — `WebFetch` only sees
+  an empty shell, no visual content. Found its `og:image` thumbnail
+  (`assets.lovable.dev/templates/marketing-campaign-hub-template-thumb-v2.webp`)
+  in the page's `<head>`, downloaded it directly with `curl`, converted
+  from WebP with `dwebp` (installed via `apt-get install webp`), and
+  viewed it with `Read` — that's how I actually saw the design: a
+  near-black "command center" dashboard with honeycomb-arranged hexagon
+  icon badges glowing violet/blue/teal/green, a multi-color gradient
+  funnel chart, pill-shaped status badges, and stat tiles with small
+  trend indicators.
+- Reskinned `website/style.css`'s `:root` palette (near-black
+  `--bg`/`--card`, violet `--accent`, teal `--accent-2`, new
+  `--accent-blue`/`--accent-green`) and, since every page already
+  drives its colors off those CSS variables, the gradient `h1`
+  headline, background glow, and status-dot pulse picked the new
+  palette up automatically with no other changes. Added two new
+  component patterns matching the reference: `.card-head svg` icons
+  are now hexagon-clipped (`clip-path: polygon(...)`) with a
+  `currentColor`-driven glow, rotating through the four accents
+  card-by-card via `:nth-of-type`; `.stat` tiles (used on
+  `/status.html`) got a matching two-color gradient top bar that also
+  rotates per tile — both close visual matches to the honeycomb icons
+  and the funnel/stat-card look in the reference image.
+  Recolored the hardcoded stone-gray hex fills repeated across all 7
+  pages' header brand mark and footer divider (previously warm
+  browns, `#4a463d`/`#6b6558`/`#3d3a33`) to cool violet-grays via
+  `sed` across all files at once, plus `favicon.svg`'s standalone
+  hardcoded colors and `index.html`'s hero-mark gradient stops
+  (dropped the old yellow `stoneTop` gradient for violet). Kept the
+  Cairn name, copy, and stacked-stone mark shape as-is — this was a
+  color-system/chrome reskin per josh's ask, not a rebrand, and the
+  brand identity is established across many past wakings.
+- No headless browser existed on this box before now (a known gap
+  flagged in earlier field-guide notes) — installed `playwright-chromium`
+  and its system deps (`libatk`, `libpango`, etc. via
+  `playwright-core install-deps`) into `/tmp` to actually screenshot
+  all seven pages locally against a `python3 -m http.server` before
+  publishing, rather than reviewing raw CSS and guessing. Confirmed the
+  hex badges, gradient headline, stat-tile bars, and log-search styling
+  all render as intended and stay readable/high-contrast against the
+  new near-black background. Deleted the ~650MB Chromium
+  cache/`node_modules` afterward — one-off verification tooling, not
+  something this box needs to keep around.
+- Regenerated the templated pages (`build_log.py`/`build_status.py`/
+  `build_roadmap.py`), ran `website/deploy.sh` (bumps
+  `feed.atom`/`sitemap.xml` too, `nginx -t` clean), and swept all 9
+  public pages/assets live via curl — all 200, `style.css`'s new
+  `--accent: #8b5cf6` confirmed served. Full health check alongside:
+  `nginx`/`cairn-api`/`fail2ban`/`cron`/`unattended-upgrades` all
+  active, no failed systemd units, fail2ban's sshd jail at 0
+  failed/0 banned (fresh counters — box only up ~24 minutes,
+  consistent with the 39th/41st waking's reboot), disk 6% used,
+  `/var/run/reboot-required` gone.
+- Committed `website/style.css`, `favicon.svg`, `index.html`, and the
+  five other page/template files that carried the hardcoded stone-hex
+  colors, and pushed to `master` (GitHub `main` remains behind, as
+  it's been since the initial publish merge at the 22nd waking —
+  not something introduced this waking).
+
 ## 2026-08-25 (42nd waking, ~19:56 UTC)
 - `check_replies.sh` surfaced one new message from josh: "create a
   current weather and time field on the home page." `ASK.md`'s Open
