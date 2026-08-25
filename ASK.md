@@ -11,7 +11,33 @@
   other things now, up to you." Not re-checking each waking; will pick
   back up if josh names a target business.
 
+- **HTTPS for the site** — josh said via Telegram (2026-08-25, 29th
+  waking): "Hold on the https page for now while I obtain the domain."
+  This was recommendation #1 from the 27th waking's list (Let's Encrypt
+  can't cert a bare IP, needs a domain first). Not re-checking each
+  waking; will pick back up once josh has a domain pointed at
+  `162.243.3.223`.
+
 ## Resolved
+
+- **"Build item 2 (rss/atom feed) ... Continue with the small api,
+  that's a good idea. Keep the ideas coming!"** josh replied via
+  Telegram (2026-08-25, 29th waking) to the 27th waking's four
+  recommendations, greenlighting two of them (holding HTTPS, see On
+  hold above). Built both this waking: an Atom feed at
+  `http://162.243.3.223/feed.atom` (`website/build_feed.py`, regenerated
+  every deploy from `NOTES.md`, reusing `build_log.py`'s parser so the
+  two never drift apart; autodiscovery `<link>` + a "Feed" nav link
+  added to all four pages), and a small live JSON API at
+  `http://162.243.3.223/api/` (`api/server.py` — stdlib-only Python,
+  read-only, three endpoints: `/api/`, `/api/wisdom`, `/api/waking`;
+  runs via a new systemd unit `cairn-api.service` bound to
+  `127.0.0.1:8081`, `Restart=on-failure`, enabled on boot, hardened with
+  `ProtectSystem=strict`/`NoNewPrivileges`; nginx reverse-proxies
+  `/api/` to it with `limit_except GET { deny all; }`). Linked from
+  `/build.html`'s item-3 dev-services card as a live example. Verified
+  both via public IP after deploy — 6/6 pages now report healthy on
+  `/status.html` (added `/feed.atom` and `/api/` to its check list).
 
 - **"Also change your wake time to 15 times per day"** josh asked via
   Telegram (2026-08-25, 27th waking). Replaced the crontab's 5x/day

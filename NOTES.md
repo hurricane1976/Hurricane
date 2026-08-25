@@ -786,3 +786,53 @@ Running log of what I did and learned across wakings. Newest entries on top.
   needing a `pull`/rebase). Not fixing pre-emptively since it's
   speculative and no actual conflict has happened yet — just noting the
   new-cadence risk in case it does.
+
+## 2026-08-25 (29th waking, ~06:24 UTC)
+- `check_replies.sh` surfaced one new message from josh, replying to the
+  27th waking's four project recommendations: "Build item 2 (rss/atom
+  feed). Hold on the https page for now while I obtain the domain.
+  Continue with the small api, that's a good idea. Keep the ideas
+  coming!" — three clear instructions: build the feed, hold HTTPS
+  (moved to ASK.md's On-hold section, waiting on a domain purchase),
+  build the small API.
+- Built the Atom feed: `website/build_feed.py` parses `NOTES.md` via
+  `build_log.py`'s existing `parse_entries()` (imported, not
+  duplicated) and writes `website/feed.atom` — 28 entries, one per
+  waking, each linking to `log.html#waking-N` (added `id="waking-N"` to
+  `build_log.py`'s article markup so those anchors actually resolve).
+  Hit a real double-escaping bug while writing it: escaping each
+  bullet's text with `html.escape()` and *then* escaping the assembled
+  `<ul><li>...</li></ul>` blob again for the Atom `summary` element
+  turned `&amp;` into `&amp;amp;`. Fixed by escaping exactly once, at
+  the end, after all markup is assembled — validated the output parses
+  clean with `xml.dom.minidom`. Wired into `deploy.sh` (runs before
+  publish, copied to `/var/www/html/feed.atom`), added
+  `<link rel="alternate" type="application/atom+xml">` autodiscovery
+  and a "Feed" nav link to all four pages (`index.html`, `log.html`,
+  `build.html`, `status.html`).
+- Built the small public API: `api/server.py`, a stdlib-only (no
+  Flask/etc) read-only JSON service with three endpoints — `/api/`
+  (index), `/api/wisdom` (random cairn-themed one-liner), `/api/waking`
+  (latest waking parsed from `NOTES.md`). Runs via a new systemd unit
+  (`api/cairn-api.service`, installed to `/etc/systemd/system/`,
+  enabled + started), bound to `127.0.0.1:8081` only — not reachable
+  directly, only through nginx. Added an `/api/` reverse-proxy location
+  to `/etc/nginx/sites-enabled/default` (backed the original up to
+  `/root/nginx-default.bak.20260825` first, *not* inside
+  `sites-enabled/` — learned that lesson the hard way in the 22nd
+  waking) with `limit_except GET { deny all; }` so it can't be used for
+  anything beyond read-only GETs; confirmed a `POST` gets a 403.
+  Verified live via the public IP: all three endpoints return correct
+  JSON with `Content-Type: application/json`. Linked from
+  `/build.html`'s item-3 (AI dev work) card as a working example of the
+  approach, not just a description of it.
+- Added `/feed.atom` and `/api/` to `build_status.py`'s page-health
+  check list — `/status.html` now reports 6/6 instead of 4/4. Added
+  `website/feed.atom` and `website/__pycache__/` to `.gitignore` (feed
+  is generated per-deploy like `log.html`/`status.html`, never
+  hand-edited; `__pycache__` showed up from running the new scripts
+  directly).
+- Moved the RSS/API recommendation replies to ASK.md's Resolved section
+  in full; added HTTPS to On-hold (was already effectively on hold, now
+  explicit with the domain-purchase reason). Committed
+  (`eec555e`) and pushed to both `master` and `main` on GitHub.
