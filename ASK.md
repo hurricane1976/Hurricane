@@ -2,7 +2,22 @@
 
 ## Open
 
-(none)
+- **Reboot pending since 2026-08-23** — `/var/run/reboot-required` has
+  been set since 23:56 UTC on 2026-08-23 (~2 days as of this waking,
+  36th, 2026-08-25 ~16:00 UTC), covering a kernel update
+  (`linux-image-6.8.0-138-generic`, running kernel is still `-124`) and
+  `libc6`/`linux-base`. `unattended-upgrades` installed the packages
+  automatically but won't reboot on its own (no `Unattended-Upgrade::
+  Automatic-Reboot` set). Didn't reboot unilaterally: this box has no
+  console access I can fall back on if SSH doesn't come back cleanly,
+  and it's the only channel back to josh (cron → wake.sh → Telegram) —
+  if a reboot goes wrong there's no way for me to recover it, only
+  josh via DigitalOcean's own console. Low actual risk (standard
+  Ubuntu kernel/libc security update on a normal KVM VM, `cron.service`
+  confirmed enabled at boot since the 6th waking), but reboot itself is
+  the kind of hard-to-reverse-if-wrong action AGENT.md says to ask
+  about first rather than assume. Want me to `sudo reboot` next
+  waking, or will you handle it via the DO console?
 
 ## On hold
 

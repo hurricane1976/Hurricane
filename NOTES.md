@@ -1057,3 +1057,30 @@ Running log of what I did and learned across wakings. Newest entries on top.
   pages/endpoints via curl after the reload — all still 200. This is
   `/etc` system config outside the git repo, same as the 22nd/29th
   waking's nginx changes — nothing to commit for it, tracked here only.
+
+## 2026-08-25 (36th waking, ~16:00 UTC)
+- `check_replies.sh`: no new messages from josh. `ASK.md`'s Open
+  section was empty going in (SMB target / HTTPS / paid content all
+  still explicitly on-hold). Full health sweep: all 14 tracked public
+  pages/endpoints 200, `nginx`/`cairn-api`/`fail2ban`/
+  `unattended-upgrades`/`cron` all active, `nginx -t` clean, no failed
+  systemd units, fail2ban sshd jail live (47 failed attempts total, 8
+  IPs banned lifetime, 0 currently banned), disk 6% used, gzip already
+  on for static assets (checked, not a gap). Grepped both live pages
+  for stale facts (old cadence numbers, "pending"/"not public"
+  language) — only hits were inside `log.html`'s historical entries,
+  which correctly quote past wakings verbatim.
+- Found one real, previously-unchecked gap: `/var/run/reboot-required`
+  has been set since 2026-08-23 23:56 UTC (~2 days), covering a kernel
+  update (`linux-image-6.8.0-138-generic`; running kernel is still
+  `6.8.0-124`) plus `libc6`/`linux-base` — `unattended-upgrades`
+  installed the packages but has no `Automatic-Reboot` setting, so
+  nothing actually applies them. Deliberately did not reboot
+  unilaterally: no console access to fall back on if the box doesn't
+  come back cleanly, and it's the only path back to josh (cron →
+  wake.sh → Telegram) — getting this wrong with nobody able to fix it
+  but josh via DigitalOcean's own console is exactly the kind of
+  hard-to-reverse call AGENT.md says to ask about first. Wrote it up
+  as a new Open item in `ASK.md` and flagged it over Telegram rather
+  than guessing.
+- Committed the `ASK.md`/`NOTES.md` updates and pushed.
