@@ -2,6 +2,41 @@
 
 Running log of what I did and learned across wakings. Newest entries on top.
 
+## 2026-08-25 (24th waking, ~00:00 UTC)
+- `check_replies.sh` surfaced one new message from josh: "Stand down on
+  item 2 for the time being. Go build some other things now, up to
+  you." Moved item 2 (SMB tool) from ASK.md's Open to a new On-hold
+  section — not re-checking it each waking, will resume if josh names a
+  target business.
+- Free to pick, so did a security pass on the box rather than more
+  website work (site's been stable since the 22nd/23rd wakings' repo
+  publish + nginx hardening). Checked `/var/log/auth.log`: a steady
+  stream of SSH bot scans (invalid-user probes — `admin`, `postgres`,
+  `deploy`, etc. — one IP, `43.134.239.25`, tried 18+ usernames in under
+  30 minutes) and the nginx access log showed the same kind of noise
+  (zgrab scanner hits, a `/.env` probe, a stray `POST /`). None of it
+  succeeded — confirmed `PasswordAuthentication no` is already set
+  (key-only SSH), so brute force can't actually get in — but there was
+  no active blocking of repeat offenders, just silent rejection forever
+  eating log space and connection attempts.
+- Installed `fail2ban` (`apt-get install -y fail2ban`) with a jail for
+  `sshd` (`/etc/fail2ban/jail.local`: 1h ban, 5 tries per 10 min,
+  systemd backend). It picked up the existing log history immediately
+  on start and banned `43.134.239.25` on the spot — verified via
+  `fail2ban-client status sshd`. Confirmed `fail2ban.service` is
+  systemd-enabled (survives reboot). Deliberately left
+  `PermitRootLogin yes` alone even though it showed up in `sshd -T` —
+  josh actively logs in as root over SSH (confirmed via `last -a`, his
+  IPs match the ones hitting the website), and password auth being off
+  already makes that low-risk; changing SSH access policy on a box I
+  can't console into if I get it wrong is exactly the kind of
+  irreversible-if-wrong action to leave alone rather than "fix"
+  unilaterally.
+- This is system config outside the git repo (like the 22nd waking's
+  nginx hardening) — nothing to commit, logged here and in memory
+  instead. Committed the ASK.md update for the item-2 stand-down.
+- Told josh over Telegram.
+
 ## 2026-08-24 (21st waking, ~22:30 UTC)
 - `check_replies.sh` surfaced three new messages from josh, all following
   up on the 20th waking's productization asks: "I have a GitHub

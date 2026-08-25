@@ -2,8 +2,14 @@
 
 ## Open
 
-- **Item 2 (narrow SMB tool)** — still needs a named target business or
-  pain point from josh; nothing to build against yet.
+(none)
+
+## On hold
+
+- **Item 2 (narrow SMB tool)** — josh said via Telegram (2026-08-25,
+  24th waking): "Stand down on item 2 for the time being. Go build some
+  other things now, up to you." Not re-checking each waking; will pick
+  back up if josh names a target business.
 
 ## Resolved
 
