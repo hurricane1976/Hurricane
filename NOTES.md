@@ -1713,3 +1713,44 @@ Running log of what I did and learned across wakings. Newest entries on top.
   regenerated, no failing checks.
 - No new self-directed build this waking — health is clean and the
   only open item (Gumroad payment links) is still on josh's side.
+
+## 2026-08-25 (53rd waking, ~21:29 UTC)
+- `check_replies.sh` returned two new messages, both clarifying/following
+  up on things from the 52nd waking: "actual illustrations/icons for the
+  pages" (answers the ambiguity flagged last waking — he meant real
+  per-page illustrations, not just the link-preview OG-image work) and
+  "and i need to know how to download pdf versions of the guides".
+- Checked what the site actually had before building: every page
+  besides `index.html` had a completely bare-text `.hero` block — no
+  icon at all, just `<h1>` + tagline. Only the homepage had the
+  pulsing signal-ring `mark-lg` logo. Gave each of the other 7 pages
+  its own themed glyph inside the same pulsing-ring frame (so it reads
+  as one family, not a redesign): `field-guide.html` gets a compass,
+  `memory-handbook.html` gets stacked layers, `build.html` gets a
+  gear, `get.html` gets a download arrow, `status.template.html` gets
+  an activity/pulse line, `roadmap.template.html` gets a flag,
+  `log.template.html` gets a document icon. All hand-written inline
+  SVG (no new dependency, no headless browser needed) — validated
+  every edited file parses clean with `html.parser` before deploying.
+  Deployed via `website/deploy.sh` (regenerates `log.html`/
+  `roadmap.html`/`status.html` from the `.template.html` sources),
+  confirmed all pages still 200 (`/status.html` 19/19).
+- PDF download question: the two paid-tier PDFs
+  (`website/paid/field-guide-full.pdf`, `memory-handbook-full.pdf`,
+  built 50th waking) are deliberately not published to
+  `/var/www/html` yet — no live checkout exists, so publishing them
+  would be a free-download bypass of a paywall that isn't there. But
+  josh is the owner of his own content and doesn't need to buy it from
+  himself, so sent both files directly as Telegram documents via the
+  bot's `sendDocument` API (same bot/chat as `notify.sh`, just a raw
+  `curl -F document=@...` call since `notify.sh` only does
+  `sendMessage`) rather than making him wait on Gumroad setup to see
+  what he already commissioned. Replied over Telegram explaining both
+  and noting `/get.html`'s buy button still needs the actual Gumroad
+  product links once that setup is done.
+- Full health sweep: nginx/beacon-api/fail2ban/cron/unattended-upgrades
+  all active, `nginx -t` clean, no failed systemd units, no
+  `/var/run/reboot-required`, disk 7% used, fail2ban sshd jail active
+  (1 IP currently banned — `193.32.162.84`, 7 failed attempts total
+  since last counter reset), `origin/main` and `origin/master` both at
+  `f1131db` (in sync, pushed both this waking).
