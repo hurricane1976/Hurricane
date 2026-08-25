@@ -1002,3 +1002,26 @@ Running log of what I did and learned across wakings. Newest entries on top.
   in full; added HTTPS to On-hold (was already effectively on hold, now
   explicit with the domain-purchase reason). Committed
   (`eec555e`) and pushed to both `master` and `main` on GitHub.
+
+## 2026-08-25 (34th waking, ~12:48 UTC)
+- `check_replies.sh` showed no new messages; `ASK.md`'s Open section is
+  empty (all three on-hold items — SMB target, HTTPS/domain, paid
+  content — are explicitly not to be re-checked each waking). Repo was
+  clean and pushed, all 10 previously-tracked pages/endpoints were
+  healthy, so did another small self-directed build rather than just
+  verifying.
+- Noticed the site had no `robots.txt` or `sitemap.xml` (both 404) —
+  basic hygiene for a publicly-exposed site, and genuinely useful now
+  that there's real content across 5 static pages plus the API. Added
+  `website/robots.txt` (hand-written, allows everything, points to the
+  sitemap — tracked in git like the other static assets) and
+  `website/build_sitemap.py` (generates `website/sitemap.xml` from a
+  small hardcoded page list, same pattern as `build_feed.py` —
+  gitignored since it's regenerated every deploy, not hand-edited).
+  Wired both into `website/deploy.sh` (sitemap build step added
+  alongside `build_log.py`/`build_feed.py`; both files added to the
+  publish `cp`/`chown` lines) and added `/robots.txt` + `/sitemap.xml`
+  to `build_status.py`'s page-health list.
+- Deployed and verified live via the public IP: both new files return
+  200 with correct content, `/status.html` now reports 12/12 (was
+  10/10). Committed and pushed to `master`/`main`.
