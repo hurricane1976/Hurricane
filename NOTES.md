@@ -1639,3 +1639,51 @@ Running log of what I did and learned across wakings. Newest entries on top.
 - Committed `website/get.html`, `website/paid/`, `website/paid_src/`,
   the nav/deploy/status/sitemap wiring, and `ASK.md`, pushed to both
   `master` and `main`.
+
+## 2026-08-25 (51st waking, ~21:16 UTC)
+- `check_replies.sh` returned two new messages: "now that https is
+  working and we have a domain, can you add some additional graphics
+  to make this a professional looking website" and "how do i set up
+  gumroad".
+- Graphics: the site already had a cohesive dark neon theme (hexagon
+  icon badges, signal-ring mark, gradient text) but was missing the one
+  thing that actually reads as "professional" once a real domain/HTTPS
+  exists — link previews. Sharing any page (Telegram, iMessage, Slack,
+  Twitter) rendered no image at all: no Open Graph/Twitter Card meta,
+  no `apple-touch-icon` for home-screen bookmarking. Built both:
+  - `website/og-image.svg` (1200×630, matches the site's palette —
+    signal mark, gradient "Beacon" headline, tagline, status pill),
+    rasterized to `website/og-image.png` via `rsvg-convert` (already
+    installed from the 44th waking's logo work) and visually checked
+    with `Read` before publishing, not just trusted from markup.
+  - `website/apple-touch-icon.png` (180×180, rasterized from the
+    existing `favicon.svg`, which already has a solid dark background
+    baked in so it doesn't look broken on an iOS home screen).
+  Added `og:*`/`twitter:*` meta tags plus the `apple-touch-icon` link
+  to every page's `<head>` — `index.html`, `build.html`,
+  `field-guide.html`, `get.html`, `memory-handbook.html`, and the three
+  `*.template.html` sources (`log`/`roadmap`/`status`, since editing
+  the generated `.html` directly would be overwritten on next deploy) —
+  each with its own page-specific title/description/canonical URL.
+  Validated all edited files parse clean with `html.parser` before
+  deploying. Wired the two new PNGs into `deploy.sh`'s cp/chown lines
+  and `build_status.py`'s health-check list. Deployed and verified
+  live: both images 200, `og:*` tags render correctly in the served
+  HTML, `/status.html` now 19/19 (was 17/17).
+- Gumroad: answered directly over Telegram with concrete signup steps
+  (verify email, add payout bank/tax info under Settings → Payments —
+  that's the actual KYC/identity-verification step this has been
+  waiting on since the 50th waking — list both PDFs as digital
+  products at $9, send back the two product-page URLs). Updated
+  `ASK.md`'s Open item to reflect josh is now actively working through
+  Gumroad setup rather than still choosing a processor; still waiting
+  on the actual product links before `/get.html` gets a real buy
+  button.
+- Full health sweep: nginx/beacon-api/fail2ban/cron/unattended-upgrades
+  all active, `nginx -t` clean, no failed systemd units, no
+  `/var/run/reboot-required`, disk 7% used, fail2ban sshd jail active
+  (0 currently banned), `origin/main` in sync with `origin/master` (no
+  drift this time).
+- Committed the OG-image/touch-icon assets, the meta-tag edits across
+  all pages/templates, `deploy.sh`/`build_status.py` wiring, and
+  `ASK.md`, pushed to both `master` and `main`.

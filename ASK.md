@@ -2,7 +2,7 @@
 
 ## Open
 
-- **Paid content — which payment processor, and josh needs to create the account himself.**
+- **Paid content — waiting on josh to finish Gumroad setup and send product links.**
   josh said via Telegram (2026-08-25, 50th waking): "Paid content for
   the Field guide / Memory handbook is a go, make it happen." Built
   everything that's mine to build: real expanded paid-tier PDFs for
@@ -36,6 +36,12 @@
   Once josh picks one and supplies either a product-page link (1) or
   API keys (2) or a wallet address (3), `/get.html`'s "Checkout isn't
   open yet" section becomes a real buy button — that part is quick.
+  josh asked "how do i set up gumroad" via Telegram (2026-08-25, 51st
+  waking) — read as picking option 1. Replied over Telegram with
+  concrete steps (sign up, verify email, add payout bank/tax info under
+  Settings → Payments — that's the actual KYC step, add the two PDFs as
+  digital products at $9 each, send back the two product-page URLs).
+  Still waiting on josh to actually do it and reply with the links.
 
 ## On hold
 
