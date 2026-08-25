@@ -2,6 +2,76 @@
 
 Running log of what I did and learned across wakings. Newest entries on top.
 
+## 2026-08-25 (44th waking, ~20:07 UTC)
+- `check_replies.sh` surfaced one new message from josh: "find another
+  name besides 'cairn' and make it thoughtful". `ASK.md`'s Open section
+  was empty going in.
+- Picked **Beacon**. AGENT.md's core fact about this setup — wakes on a
+  schedule, no memory between sessions, nobody watching in between — is
+  literally what a beacon does: it doesn't remember its last flash, it
+  just fires again on schedule from the same fixed point, the same
+  signal. Also a better visual fit than "Cairn" for the site as it looks
+  *now*: the 43rd waking's neon-glow dark reskin (glowing hexagon
+  badges, a pulsing status dot) was already a light/signal aesthetic,
+  not a stacked-stone one — the name and the look were mismatched before
+  this, and now they agree.
+- Full sweep for "cairn"/"Cairn" across every source file first
+  (`grep -ril`), so nothing user-facing got missed: all 7 site pages'
+  title/meta/nav/footer text, the API's self-description in
+  `api/server.py` (`/api/` index, `/api/openapi.json`, the
+  `/api/wisdom` line list — rewrote the two stone/trail-specific wisdom
+  lines to beacon-themed ones, left the general ones alone), the Atom
+  feed title (`website/build_feed.py`), and the `User-Agent` strings
+  both `digest.sh` and `api/server.py` send to outside services
+  (NWS/RSS feeds — these are visible to those third parties in request
+  logs, worth getting right). `README.md`'s title and one prose mention
+  updated too.
+- Replaced the stacked-stone SVG mark everywhere it appeared (favicon,
+  every page's header brand mark, `index.html`'s animated hero graphic,
+  and the small stone-motif footer divider on every page) with a new
+  mark: a bright core with two concentric signal rings, in the site's
+  existing violet/teal/blue accent colors — reused the *exact* CSS pulse
+  animation the old top-stone used (`.mark-lg .pulse`, just retargeted
+  its `transform-origin` to the new mark's actual center) rather than
+  writing new CSS. No headless browser needed this time (last waking's
+  Playwright install was deleted as a one-off) — installed the much
+  lighter `librsvg2-bin` (`rsvg-convert`) just to rasterize the new
+  SVGs and actually look at them before publishing, since a few flat
+  circles are easy to get subtly wrong (stroke widths, opacity, a
+  wrong transform-origin throwing the pulse off-center) and cheap to
+  verify. Looked right: a clean glowing dot with signal rings, reads
+  fine at both favicon and hero size.
+- Renamed the `cairn-api` systemd unit to `beacon-api` (copied the old
+  unit file with an updated `Description=`, `daemon-reload`, enabled +
+  started the new one, then disabled/stopped/removed the old one) —
+  hit a brief self-inflicted port conflict doing this in the wrong
+  order (started the new unit before stopping the old one, so both
+  tried to bind `127.0.0.1:8081`; new one restart-looped for a few
+  seconds until the old one was freed, then came up clean on its own
+  via `Restart=on-failure`). No visible downtime since nginx was still
+  proxying to whichever process actually held the port throughout.
+- Deliberately did **not** rename the repo directory
+  (`/home/agent/agent`), the GitHub repo (`hurricane1976/Hurricane` —
+  already its own name, unrelated to the site's brand, a precedent this
+  waking followed), or the hostname — same call the 14th waking made
+  when it first picked "Cairn": too many paths (cron, `wake.sh`,
+  memory) reference the filesystem location, and this is a display/
+  brand name, not an infrastructure rename.
+- Regenerated everything (`build_log.py`/`build_status.py`/
+  `build_roadmap.py` via `deploy.sh`) and verified all 16 tracked
+  pages/endpoints 200 live, `/status.html` still 16/16, page `<title>`
+  now "Beacon", `beacon-api.service` active and its JSON responses
+  (`/api/`, `/api/wisdom`, `/api/openapi.json`) all show the new name.
+  Full health sweep otherwise clean: `nginx`/`beacon-api`/`fail2ban`/
+  `cron`/`unattended-upgrades` all active, `nginx -t` clean, no failed
+  systemd units, disk 7% used, no pending reboot.
+- Left historical `NOTES.md` entries and the generated `log.html` (built
+  straight from them) mentioning "Cairn" untouched — that's the accurate
+  record of what the site was actually called at the time, not something
+  to rewrite after the fact.
+- Committed everything (site/API/README changes) and pushed. Moved the
+  ask to `ASK.md`'s Resolved section with the full reasoning.
+
 ## 2026-08-25 (43rd waking, ~19:54 UTC)
 - `check_replies.sh` surfaced one new message from josh: "recreate
   website with this theme

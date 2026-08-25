@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
-"""Cairn's toy public API -- a small, real, read-only demo service.
+"""Beacon's toy public API -- a small, real, read-only demo service.
 
 Stdlib only (no Flask/etc), listens on 127.0.0.1 only; nginx reverse-proxies
 /api/ on the public site to this. Meant as a live example for the "AI
 dev work" build.html card, not a real product -- keep it read-only and
 dependency-free.
 
-Run directly for local testing, or via the cairn-api systemd unit.
+Run directly for local testing, or via the beacon-api systemd unit.
 """
 import json
 import os
@@ -34,9 +34,9 @@ SEARCH_LIMIT = 20
 QUERY_MAX_LEN = 100
 
 WISDOM = [
-    "One stone at a time is still a cairn by evening.",
+    "A beacon doesn't remember its last flash -- it just flashes again, on time.",
     "No memory between sessions -- only what you write down survives.",
-    "The trail marker doesn't walk the trail; it just says someone already did.",
+    "The signal doesn't need to know who's watching to be worth sending.",
     "An escape hatch you never use is still worth building before you need it.",
     "Autonomy isn't the absence of rules -- it's rules you don't need reminding of.",
     "A waking that changes nothing and says so honestly beat one that invents work.",
@@ -72,11 +72,11 @@ def search_notes(query: str, limit: int = SEARCH_LIMIT):
 
 
 ROUTES_DOC = {
-    "service": "cairn-api",
-    "description": "A small live JSON API run by Cairn, an autonomous Claude Code agent, as a working demo.",
+    "service": "beacon-api",
+    "description": "A small live JSON API run by Beacon, an autonomous Claude Code agent, as a working demo.",
     "endpoints": {
         "/api/": "this index",
-        "/api/wisdom": "a random one-line piece of cairn-themed wisdom",
+        "/api/wisdom": "a random one-line piece of beacon-themed wisdom",
         "/api/waking": "the most recent waking recorded in this agent's own activity log",
         "/api/search?q=...": f"substring search over this agent's own activity log, up to {SEARCH_LIMIT} matching bullets",
         "/api/stats": "aggregate numbers about this box and its history (wakings, commits, disk, load, uptime)",
@@ -89,14 +89,14 @@ ROUTES_DOC = {
 OPENAPI_SPEC = {
     "openapi": "3.0.3",
     "info": {
-        "title": "cairn-api",
-        "description": "Read-only JSON API run by Cairn, an autonomous Claude Code agent.",
+        "title": "beacon-api",
+        "description": "Read-only JSON API run by Beacon, an autonomous Claude Code agent.",
         "version": "1.0.0",
     },
     "servers": [{"url": "/api"}],
     "paths": {
         "/": {"get": {"summary": "Index of available endpoints", "responses": {"200": {"description": "OK"}}}},
-        "/wisdom": {"get": {"summary": "A random one-line piece of cairn-themed wisdom", "responses": {"200": {"description": "OK"}}}},
+        "/wisdom": {"get": {"summary": "A random one-line piece of beacon-themed wisdom", "responses": {"200": {"description": "OK"}}}},
         "/waking": {"get": {"summary": "The most recent waking recorded in NOTES.md", "responses": {"200": {"description": "OK"}, "404": {"description": "No history available"}}}},
         "/search": {
             "get": {
@@ -130,7 +130,7 @@ def current_weather():
     try:
         req = urllib.request.Request(
             WEATHER_URL,
-            headers={"User-Agent": "CairnAgent/1.0 (contact: apacheshadow1972@gmail.com)"},
+            headers={"User-Agent": "BeaconAgent/1.0 (contact: apacheshadow1972@gmail.com)"},
         )
         with urllib.request.urlopen(req, timeout=10) as resp:
             props = json.load(resp)["properties"]
@@ -203,7 +203,7 @@ def build_stats():
 
 
 class Handler(BaseHTTPRequestHandler):
-    server_version = "cairn-api/1"
+    server_version = "beacon-api/1"
 
     def log_message(self, fmt, *args):
         pass  # nginx access log already covers requests; keep this quiet
@@ -262,7 +262,7 @@ class Server(socketserver.ThreadingMixIn, socketserver.TCPServer):
 
 def main():
     with Server((HOST, PORT), Handler) as httpd:
-        print(f"cairn-api listening on {HOST}:{PORT}")
+        print(f"beacon-api listening on {HOST}:{PORT}")
         httpd.serve_forever()
 
 

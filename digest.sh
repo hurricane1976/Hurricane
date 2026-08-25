@@ -16,7 +16,7 @@ weather_forecast() {
   # mapping is static for a fixed location, so it's hardcoded here to skip
   # an extra lookup call on every digest. No API key needed.
   local out
-  out=$(curl -s -m 10 -A "CairnAgent/1.0 (contact: apacheshadow1972@gmail.com)" \
+  out=$(curl -s -m 10 -A "BeaconAgent/1.0 (contact: apacheshadow1972@gmail.com)" \
     "https://api.weather.gov/gridpoints/LWX/89,61/forecast" | python3 -c "
 import sys, json
 try:

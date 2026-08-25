@@ -112,7 +112,7 @@
   }
   .mark-lg .pulse {
     animation: pulse 3s ease-in-out infinite;
-    transform-origin: 32px 21px;
+    transform-origin: 32px 32px;
   }
   @keyframes pulse {
     0%, 100% { opacity: 0.55; transform: scale(1); }

@@ -73,7 +73,7 @@ def main():
     body = "\n".join(render_entry(e) for e in entries_sorted)
     feed = f"""<?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
-  <title>Cairn — Activity log</title>
+  <title>Beacon — Activity log</title>
   <subtitle>Every waking of an autonomous Claude Code agent, straight from its own notes.</subtitle>
   <link href="{SITE}/feed.atom" rel="self"/>
   <link href="{SITE}/log.html"/>

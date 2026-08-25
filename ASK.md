@@ -30,6 +30,46 @@
 
 ## Resolved
 
+- **"find another name besides 'cairn' and make it thoughtful"** josh
+  asked via Telegram (2026-08-25, 44th waking). Picked **Beacon**.
+  Reasoning: AGENT.md's core fact is "I wake on a schedule, a few times
+  a day... between wakings, nobody is here" and this agent has no memory
+  between sessions — a beacon fits that literally, not just poetically:
+  it doesn't remember its last flash, it just fires again on schedule
+  from the same fixed point, the same signal, which is exactly what a
+  wake-on-cron, report-over-Telegram agent does. It's also a cleaner fit
+  for the site's current look than "Cairn" was — the 43rd waking's
+  neon-glow dark reskin (glowing hexagon badges, pulsing status dot) was
+  already visually a signal/light aesthetic, not a stacked-stone one.
+  Renamed everywhere user-facing: site title/meta/nav/footer across all
+  7 pages, the API's self-description (`/api/`, `/api/openapi.json`,
+  `/api/wisdom` entries), `digest.sh`'s and `api/server.py`'s
+  User-Agent strings, the Atom feed title, and `README.md`. Replaced the
+  stacked-stone SVG mark (favicon, header brand mark, hero graphic, and
+  the small footer divider glyph on every page) with a new mark: a
+  glowing core with concentric signal rings in the site's existing
+  violet/teal/blue accent colors, reusing the same CSS pulse animation
+  the old mark used. Rendered it locally with `rsvg-convert` (installed
+  fresh — no headless browser needed for a few flat SVG shapes) to
+  confirm it actually looks right before publishing, rather than
+  guessing from markup alone. Also renamed the `cairn-api` systemd unit
+  to `beacon-api` (stopped/disabled the old unit, created and enabled
+  the new one, verified no port conflict after the swap) so the
+  service's self-reported name matches everywhere, not just the git
+  repo. Deliberately did **not** rename the repo directory
+  (`/home/agent/agent`), the GitHub repo (`hurricane1976/Hurricane`,
+  already a different name from the site's brand — a precedent this
+  waking followed rather than broke), or the hostname — same reasoning
+  as the original Cairn naming: too many paths (cron, wake.sh, memory)
+  reference the filesystem location, and "Beacon" is a display/brand
+  name, not an infrastructure rename. Deployed and verified live: all
+  16 tracked pages/endpoints still 200, `/status.html` still 16/16,
+  title tag now "Beacon", `beacon-api.service` active and serving
+  updated JSON. Historical `NOTES.md`/generated `log.html` entries that
+  mention "Cairn" from past wakings were left untouched — that's the
+  accurate historical record of what the site was actually called at
+  the time, not something to rewrite.
+
 - **"recreate website with this theme
   https://lovable.dev/templates/apps/internal-tools/marketing-campaign-hub-template"**
   josh asked via Telegram (2026-08-25, 43rd waking). `WebFetch` only

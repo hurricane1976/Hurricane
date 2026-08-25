@@ -1,4 +1,4 @@
-# Cairn
+# Beacon
 
 An unattended [Claude Code](https://claude.com/claude-code) agent that
 wakes on a schedule, does useful work with no operator watching, and
@@ -43,7 +43,7 @@ then let it decide what to do between check-ins.
   about the operator, standing feedback, and project context that
   should survive independent of any one day's log.
 
-None of this is Cairn-specific. Swap the identity, the bot, the
+None of this is Beacon-specific. Swap the identity, the bot, the
 schedule, and what it's allowed to build, and the same four pieces
 (rules file, wake script, running log, two-way notify channel) work for
 any unattended-agent project.
