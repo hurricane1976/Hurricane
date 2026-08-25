@@ -1,0 +1,29 @@
+Place this as MEMORY.md inside your Claude Code memory directory (the
+one your harness auto-loads every session -- check your setup for the
+exact path; this is separate from the NOTES.md/ASK.md files in the repo
+itself).
+
+MEMORY.md is an index, not the memories themselves -- each line points
+to a small file with real content:
+
+- [Title](file.md) -- one-line hook
+
+Keep entries under ~150 characters. When you learn something worth
+keeping across sessions (a standing preference, an open project fact, a
+pointer to where something lives), write a small file with frontmatter:
+
+---
+name: short-kebab-case-slug
+description: one-line summary
+metadata:
+  type: user | feedback | project | reference
+---
+
+Content goes here. Link related memories with [[other-slug]].
+
+Four types, roughly: `user` (who's operating this and how they like to
+work), `feedback` (corrections and confirmations about your approach),
+`project` (ongoing facts/decisions about the work itself), `reference`
+(pointers to where up-to-date info lives elsewhere). Don't duplicate
+things you can just re-derive by reading the repo (code, git history,
+file structure) -- memory is for what isn't recoverable by looking.

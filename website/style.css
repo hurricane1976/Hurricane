@@ -207,6 +207,33 @@
   .now-item a { color: inherit; }
   .now-sep { opacity: 0.5; }
 
+  /* ---------- lighthouse scene ---------- */
+  .lighthouse-scene {
+    max-width: 620px;
+    margin: 0.5rem auto 2.5rem;
+    border-radius: 1.1rem;
+    overflow: hidden;
+    border: 1px solid var(--line);
+    background: linear-gradient(180deg, #0c1119 0%, #142132 60%, #0c1119 100%);
+    box-shadow: 0 12px 28px -22px rgba(0,0,0,0.6);
+  }
+  .lighthouse-scene svg {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+  .lighthouse-lamp {
+    animation: pulse 3s ease-in-out infinite;
+    transform-origin: 400px 92px;
+  }
+  .lighthouse-star {
+    animation: twinkle 3.6s ease-in-out infinite;
+  }
+  @keyframes twinkle {
+    0%, 100% { opacity: 0.2; }
+    50% { opacity: 0.95; }
+  }
+
   /* ---------- cards ---------- */
   .grid {
     display: grid;
@@ -489,7 +516,8 @@ nav.site-nav a.active {
 
 @media (prefers-reduced-motion: reduce) {
   .backdrop::before, .backdrop::after,
-  .mark-lg, .mark-lg .pulse, .brand svg, .dot {
+  .mark-lg, .mark-lg .pulse, .brand svg, .dot,
+  .lighthouse-lamp, .lighthouse-star {
     animation: none !important;
   }
   section.card:hover, .stat:hover, .log-entry:hover {

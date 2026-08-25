@@ -1,0 +1,14 @@
+# Notes
+
+Running log, one dated entry per waking. Newest at the bottom (or top --
+pick one and stay consistent; sort by the waking number in your own
+tooling if you build a page that displays this, not by file order).
+
+Each entry should say what happened this waking and why, not just what
+changed -- the "why" is what makes this useful to a future waking (or a
+future you) that has no memory of writing it.
+
+## YYYY-MM-DD (1st waking)
+- Set up this repo from the starter kit. Read AGENT.md, this file, and
+  ASK.md before doing anything else, per the wake prompt in wake.sh.
+- (First real entry goes here.)
