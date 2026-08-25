@@ -1586,3 +1586,56 @@ Running log of what I did and learned across wakings. Newest entries on top.
   attention, so didn't do a separate self-directed build this waking —
   the domain reply was the main event.
 - Committed `ASK.md` and this entry, and pushed.
+
+## 2026-08-25 (50th waking, ~21:00 UTC)
+- `check_replies.sh` returned one new message: "Paid content for the
+  Field guide / Memory handbook is a go, make it happen" — the item
+  that's been on hold since the 31st waking, explicitly tied to the
+  domain/HTTPS work (landed 46th waking) and flagged again to josh
+  unactioned at the 47th waking.
+- Full health sweep first: repo clean and pushed, all 17 tracked pages/
+  endpoints 200, nginx/beacon-api/fail2ban/cron/unattended-upgrades all
+  active, `nginx -t` clean, no failed systemd units, no
+  `/var/run/reboot-required`, disk 7% used. `origin/main` had drifted 2
+  commits behind `origin/master` again (same recurring gap as the 45th
+  waking) — pushed `master:main` to resync; worth checking this every
+  few wakings since nothing automates it.
+- Built the actually-buildable half of "make it happen": installed
+  `weasyprint` + `poppler-utils` (apt, sudo), wrote two genuinely
+  expanded paid-tier documents (`website/paid_src/field-guide-full.html`,
+  `memory-handbook-full.html`, shared `print.css`) — not padded
+  reprints of the free pages, real additional content: a full incident
+  log pulled from this file's own history with lessons drawn out, the
+  "where autonomy stops" reasoning with concrete examples, a
+  build-your-own checklist (field guide); copy-paste templates for the
+  log/open-questions/memory files, a worked example of a stale fact
+  that got designed away instead of just fixed, and a what-goes-where
+  decision table (memory handbook). Rendered both to PDF, checked
+  visually via `pdftoppm` (cover + a body page each) before treating
+  them as done — clean single-column layout, no overflow/orphan issues.
+  Built `/get.html`: describes both editions, suggests $9 each, wired
+  into nav on every page (`build_status.py`'s page list,
+  `build_sitemap.py`'s PAGES, `deploy.sh`'s cp/chown lines) and linked
+  from both free pages' footers.
+- Deliberately stopped short of a live "Buy now": taking real payment
+  needs a payment-processor account, and creating one requires a real
+  person's identity/bank verification (KYC) that only josh can supply
+  — not something to attempt on his behalf or piece together from a
+  Telegram exchange. The PDFs are committed to git
+  (`website/paid/*.pdf`) but **not** copied into `/var/www/html` by
+  `deploy.sh` — confirmed both 404 live after deploy — so there's no
+  accidental free-download path around a paywall that doesn't exist
+  yet. Wrote up the concrete remaining decision in `ASK.md`'s Open
+  section: which processor (recommended Gumroad or Lemon Squeezy as
+  merchant-of-record, lowest lift; Stripe direct or a crypto wallet as
+  alternatives, not defaulted to) and asked josh to create that account
+  himself, then hand back a product link or key. Sent the same
+  reasoning over Telegram.
+- Verified end-to-end after deploy: `/status.html` now reports 17/17
+  (was 16/16 — added `/get.html` to `build_status.py`'s page list), and
+  the paid PDFs confirmed 404 live (not published, as intended).
+  `roadmap.html` regenerated from the updated `ASK.md` (1 open, 1 on
+  hold, 30 resolved) — first real "Open" item in a while.
+- Committed `website/get.html`, `website/paid/`, `website/paid_src/`,
+  the nav/deploy/status/sitemap wiring, and `ASK.md`, pushed to both
+  `master` and `main`.
