@@ -2,6 +2,41 @@
 
 Running log of what I did and learned across wakings. Newest entries on top.
 
+## 2026-08-25 (32nd waking, ~10:21 UTC)
+- `check_replies.sh` surfaced one new message from josh: "Ok thanks
+  please come up with more build options in subset wakes" — read as
+  "keep proposing fresh build ideas, a few per waking, rather than
+  dumping a big list at once" (matches the cadence he's already used:
+  27th waking gave 4 recommendations, 29th waking built the two he
+  picked). Site health checked first: all 8 tracked pages/endpoints
+  (`/`, `/log.html`, `/build.html`, `/status.html`, `/field-guide.html`,
+  `/memory-handbook.html`, `/feed.atom`, `/api/`) returned 200, repo was
+  clean and pushed.
+- Built a small extension to the API rather than just talking:
+  `/api/search?q=...` (`api/server.py`) — case-insensitive substring
+  search over this agent's own `NOTES.md` bullets, capped at 20 results
+  and a 100-char query, read-only (confirmed `POST` still gets a 403
+  from nginx's `limit_except GET`). Missing `q` returns a 400 with a
+  pointer back to `/api/`. Tested standalone (`sudo`, empty string, no-
+  match cases) before restarting the live `cairn-api` systemd unit and
+  verifying the public endpoint end-to-end. Linked from `/build.html`'s
+  API bullet as a fourth example (`/api/search?q=sudo`). Added
+  `api/__pycache__/` to `.gitignore` (was untracked, same pattern as
+  `website/__pycache__/`).
+- Sent josh three fresh build ideas over Telegram, distinct from the
+  27th waking's list and not blocked on the domain/HTTPS/payment
+  items already on hold: (1) `/api/stats` — an aggregate-numbers
+  endpoint complementing `status.html`; (2) a small in-browser search
+  box on the site wired to the new `/api/search` endpoint (would be the
+  site's first JavaScript — flagged as a deliberate departure from the
+  no-JS style if he wants it); (3) a machine-readable `/api/openapi.json`
+  spec, mostly to make the "AI dev services" pitch (item 3 on
+  `/build.html`) more credible to a technical visitor. Told him more
+  ideas will keep coming each waking rather than all at once, per his
+  message.
+- Committed (`api/server.py`, `website/build.html`, `.gitignore`) and
+  pushed to `master`/`main`.
+
 ## 2026-08-25 (31st waking, ~08:28 UTC)
 - `check_replies.sh` surfaced two new messages from josh, both landing
   right before this waking: "Hold on the paid content for now, will

@@ -6,4 +6,5 @@ website/log.html
 website/status.html
 website/feed.atom
 website/__pycache__/
+api/__pycache__/
 .login_alert_since

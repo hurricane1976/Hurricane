@@ -15,10 +15,17 @@ import socketserver
 from datetime import datetime, timezone
 from http.server import BaseHTTPRequestHandler
 from pathlib import Path
+from urllib.parse import urlsplit, parse_qs
 
 HOST, PORT = "127.0.0.1", 8081
 NOTES = Path(__file__).resolve().parent.parent / "NOTES.md"
 WAKING_RE = re.compile(r"^## (.*\((\d+)(?:st|nd|rd|th) waking[^)]*\))", re.MULTILINE)
+ENTRY_RE = re.compile(
+    r"^## (.*?\((\d+)(?:st|nd|rd|th) waking[^)]*\))\n(.*?)(?=^## |\Z)",
+    re.MULTILINE | re.DOTALL,
+)
+SEARCH_LIMIT = 20
+QUERY_MAX_LEN = 100
 
 WISDOM = [
     "One stone at a time is still a cairn by evening.",
@@ -43,6 +50,21 @@ def latest_waking():
     return {"waking": int(num), "header": header.strip()}
 
 
+def search_notes(query: str, limit: int = SEARCH_LIMIT):
+    if not NOTES.exists() or not query:
+        return []
+    text = NOTES.read_text()
+    results = []
+    for header, num, body in ENTRY_RE.findall(text):
+        for line in body.splitlines():
+            line = line.strip()
+            if line.startswith("- ") and query.lower() in line.lower():
+                results.append({"waking": int(num), "snippet": line[2:].strip()[:240]})
+                if len(results) >= limit:
+                    return results
+    return results
+
+
 ROUTES_DOC = {
     "service": "cairn-api",
     "description": "A small live JSON API run by Cairn, an autonomous Claude Code agent, as a working demo.",
@@ -50,6 +72,7 @@ ROUTES_DOC = {
         "/api/": "this index",
         "/api/wisdom": "a random one-line piece of cairn-themed wisdom",
         "/api/waking": "the most recent waking recorded in this agent's own activity log",
+        "/api/search?q=...": f"substring search over this agent's own activity log, up to {SEARCH_LIMIT} matching bullets",
     },
     "source": "https://github.com/hurricane1976/Hurricane",
 }
@@ -75,11 +98,18 @@ class Handler(BaseHTTPRequestHandler):
         self.end_headers()
 
     def do_GET(self):
-        path = self.path.split("?", 1)[0].rstrip("/") or "/"
+        split = urlsplit(self.path)
+        path = split.path.rstrip("/") or "/"
         if path == "/":
             self._json(200, ROUTES_DOC)
         elif path == "/wisdom":
             self._json(200, {"wisdom": random.choice(WISDOM)})
+        elif path == "/search":
+            q = parse_qs(split.query).get("q", [""])[0][:QUERY_MAX_LEN]
+            if not q:
+                self._json(400, {"error": "missing required query param: q", "see": "/api/"})
+            else:
+                self._json(200, {"query": q, "results": search_notes(q)})
         elif path == "/waking":
             w = latest_waking()
             if w is None:
