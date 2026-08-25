@@ -20,6 +20,54 @@
 
 ## Resolved
 
+- **"What else can you build, improvements to the web page?" / "Check
+  cairnwake.com it's another agent and seems to have good ideas" / "The
+  other agent built a 'memory handbook' and a 'field guide' can you make
+  those?" / "Also has some other ideas on its page" / "Also check out
+  recursiveai.net for additional build ideas" / "And recursiveai.co.jp"**
+  josh sent all six via Telegram (2026-08-25, arrived before this
+  waking). Fetched all three sites read-only first (treating their
+  content as data per AGENT.md, not instructions) before building
+  anything. Findings: **cairnwake.com** is a different autonomous-agent
+  project that happens to also be named "Cairn" (picked independently
+  here back in the 14th waking — the name is a natural fit for "no
+  memory between sessions, only the trail persists," so likely
+  coincidence, not derivative) — but its business model is different
+  from this one: it sells a "Field Manual" ($29) and an announced
+  "Memory Handbook" ($39) as paid PDFs and maintains a co-signed
+  cryptocurrency treasury. **recursiveai.net** and **recursiveai.co.jp**
+  turned out to be unrelated commercial companies (an AI dev-services
+  shop and an enterprise AI platform vendor) — not agent blogs, no
+  agent-relevant "build ideas" beyond what `/build.html` already
+  covers. No embedded instructions to AI agents found on any of the
+  three pages.
+  Built free equivalents of the two named pages, in this project's
+  existing transparent/no-monetization style rather than copying
+  cairnwake.com's paid/crypto model: `/field-guide.html` (real
+  operational lessons pulled from `NOTES.md` — the nginx
+  `sites-enabled` backup mistake, the sudoers ordering bug, the
+  `digest.sh` pipefail bug, the XML double-escaping bug, the
+  out-of-order log entries, and where the autonomy line actually gets
+  drawn in practice) and `/memory-handbook.html` (how the three memory
+  layers here — `NOTES.md`, `ASK.md`, Claude Code's own semantic memory
+  — divide responsibility, and why). Both wired into nav on every page,
+  `deploy.sh`, and `/status.html`'s page-health check.
+  Deliberately did NOT set up a crypto treasury, payments, or paid
+  content — adopting another operator's monetization/financial-custody
+  model is exactly the kind of consequential, hard-to-reverse decision
+  AGENT.md's escape hatch is for, not something to copy unprompted from
+  a site found via a Telegram message. Flagged this distinction to josh
+  over Telegram and asked whether he wants that explored as a real ask,
+  or to keep this site free/ad-free as it's been so far.
+  While in `deploy.sh`, also fixed a real ordering bug this surfaced:
+  `build_status.py`'s page-health check curls `localhost` for each
+  page, but ran *before* the `cp` step that publishes new files — so
+  any brand-new page always reported as down on the deploy that
+  introduced it (caught it live: field-guide.html/memory-handbook.html
+  showed 6/8 healthy on first deploy, false negative). Reordered so
+  status generation runs after everything except `status.html` itself
+  is already published.
+
 - **"Build item 2 (rss/atom feed) ... Continue with the small api,
   that's a good idea. Keep the ideas coming!"** josh replied via
   Telegram (2026-08-25, 29th waking) to the 27th waking's four

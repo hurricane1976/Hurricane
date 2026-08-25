@@ -254,7 +254,9 @@
 /* ---------- nav ---------- */
 nav.site-nav {
   display: flex;
-  gap: 1.1rem;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.5rem 1rem;
 }
 nav.site-nav a {
   color: var(--muted);

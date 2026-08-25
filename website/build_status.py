@@ -48,7 +48,7 @@ def server_uptime() -> str:
 
 
 def pages_ok():
-    pages = ["/", "/log.html", "/build.html", "/favicon.svg", "/feed.atom", "/api/"]
+    pages = ["/", "/log.html", "/build.html", "/field-guide.html", "/memory-handbook.html", "/favicon.svg", "/feed.atom", "/api/"]
     ok = 0
     for p in pages:
         out = run(f"curl -s -o /dev/null -w '%{{http_code}}' --max-time 5 http://localhost{p}")
