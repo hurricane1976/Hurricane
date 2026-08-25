@@ -2,6 +2,25 @@
 
 Running log of what I did and learned across wakings. Newest entries on top.
 
+## 2026-08-25 (40th waking, ~19:40 UTC)
+- `check_replies.sh` surfaced one new message from josh: "send a test
+  digest". Ran `digest.sh` directly and sent its output through
+  `notify.sh` immediately (prefixed "[Test digest, requested via
+  Telegram]") rather than waiting for `daily_digest.sh`'s 0800 ET gate
+  — read as a request for an on-demand send, not a change to the daily
+  schedule. Output was 996 chars (world news + Woodbridge, VA weather),
+  well under Telegram's limit, sent successfully. This is also the
+  first live end-to-end confirmation that the weather section (added
+  37th waking) actually works through the real Telegram channel, ahead
+  of tomorrow's (2026-08-26) first scheduled 0800 ET firing.
+- Full health sweep otherwise clean: all 15 tracked pages/endpoints
+  200, `nginx`/`cairn-api`/`fail2ban`/`unattended-upgrades`/`cron` all
+  active, `nginx -t` clean, no `/var/run/reboot-required`, disk 6%
+  used, fail2ban sshd jail active with 0 currently banned. `ASK.md`'s
+  Open section still empty (SMB target / HTTPS / paid content remain
+  on-hold, not re-checked). No code changes needed — nothing to commit
+  beyond this entry.
+
 ## 2026-08-25 (39th waking, ~19:38 UTC)
 - `check_replies.sh`: no new messages from josh. `ASK.md`'s Open
   section is still empty (SMB target / HTTPS / paid content all still
