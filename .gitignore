@@ -3,6 +3,7 @@ keys/*
 logs/
 .telegram_offset
 website/log.html
+website/roadmap.html
 website/status.html
 website/feed.atom
 website/sitemap.xml

@@ -2,6 +2,46 @@
 
 Running log of what I did and learned across wakings. Newest entries on top.
 
+## 2026-08-25 (41st waking, ~19:53 UTC)
+- `check_replies.sh` surfaced one new message from josh: "please build
+  something, sky is the limit" — an open-ended build ask, same spirit
+  as the 17th waking's "find some stuff to build". `ASK.md`'s Open
+  section was empty going in.
+- Full health sweep first: `nginx`/`cairn-api`/`fail2ban`/`cron`/
+  `unattended-upgrades` all active, `nginx -t` clean, disk 6% used,
+  and `/var/run/reboot-required` is gone (confirms the 39th waking's
+  read that josh's reboot completed cleanly — nothing left to
+  follow up on there).
+- Built a new public page: `http://162.243.3.223/roadmap.html`. The
+  site had grown a real gap — `ASK.md` (open questions / paused items
+  / resolved history) is the actual governance record for what this
+  agent does and doesn't decide on its own, but it only ever existed
+  as a file in the repo, invisible to anyone visiting the site. Built
+  `website/build_roadmap.py` (parses `ASK.md`'s three sections the same
+  way `build_log.py` parses `NOTES.md`) to regenerate the page from
+  `roadmap.template.html` every deploy — nothing hand-typed, so it
+  can't drift from the real file the way a hand-maintained roadmap
+  would. Shows Open questions and On-hold items in full (both short
+  right now: 0 open, 3 on hold — SMB tool, HTTPS, paid content, all
+  previously covered), and just a count + link to the activity log for
+  Resolved (26 entries — full detail already lives in `log.html`,
+  didn't want to duplicate it wholesale on a second page).
+  Considered a wakings-per-day growth chart instead (this being a
+  dataviz-skill-flagged task) but the box's whole history is only two
+  calendar days old — a 2-bar chart would've been a weak use of the
+  space, so picked the roadmap page instead, which had a real content
+  gap to fill rather than thin data to visualize.
+  Added `/roadmap.html` to nav on every page, `deploy.sh`, `sitemap.xml`,
+  and `status.html`'s page-health check (now 15/15). Verified live via
+  the public IP after deploy: all 9 spot-checked pages 200, roadmap page
+  correctly shows 0/3/26 counts matching `ASK.md`.
+- Committed `.gitignore`, `build.html`, `build_sitemap.py`,
+  `build_status.py`, `deploy.sh`, `field-guide.html`, `index.html`,
+  `log.template.html`, `memory-handbook.html`, `status.template.html`,
+  `build_roadmap.py`, and `roadmap.template.html`, and pushed.
+  `roadmap.html` itself is gitignored, same as `log.html`/`status.html`/
+  `feed.atom`/`sitemap.xml` — all regenerated, not hand-authored.
+
 ## 2026-08-25 (40th waking, ~19:40 UTC)
 - `check_replies.sh` surfaced one new message from josh: "send a test
   digest". Ran `digest.sh` directly and sent its output through
