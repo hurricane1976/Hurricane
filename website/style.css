@@ -453,6 +453,37 @@ table.data-table tr:last-child td { border-bottom: none; }
 .tier-2 { background: color-mix(in srgb, var(--accent) 16%, transparent); color: var(--accent); }
 .tier-3 { background: color-mix(in srgb, #d97757 20%, transparent); color: #e08a6a; }
 
+/* ---------- code blocks (integration guide) ---------- */
+.code-label {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin: 0.9rem 0 0.35rem;
+}
+pre.code-block {
+  background: #100e0a;
+  border: 1px solid var(--line);
+  border-radius: 0.6rem;
+  padding: 0.9rem 1.1rem;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  margin: 0 0 1rem;
+}
+pre.code-block code {
+  background: none;
+  padding: 0;
+  color: #d8cdb8;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  font-size: 0.8rem;
+  line-height: 1.6;
+  white-space: pre;
+}
+.step-list { margin: 0 0 0.9rem 1.3rem; padding: 0; line-height: 1.75; }
+.step-list:last-child { margin-bottom: 0; }
+
 /* ---------- wireframe mockups ---------- */
 .mock-window {
   background: var(--bg-elev);

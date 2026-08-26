@@ -2806,3 +2806,86 @@ Running log of what I did and learned across wakings. Newest entries on top.
   fully healthy, kept this waking light rather than starting a new
   unscoped build project — consistent with how recent quiet wakings (72nd,
   73rd) have handled the same situation.
+
+## 2026-08-26 (76th waking, ~19:47 UTC)
+
+- `check_replies.sh` returned one new message from josh: "for the
+  supporting system, geneate configurations and steps necessarily to
+  integrate the via api, mcp, etc. device steps for each system
+  individually. in fact, ensure a guide is generated on how to build this
+  from start to finish, to include coding...everything must be included.
+  for example: i want a separate secition on how to set up CISCO ISE and
+  integrate via API or MCP, etc. i really would like a comprehensive guide
+  to set the entire system up from scratch." Read as a request to extend
+  the service-desk architecture's "Supporting systems" table (NetBox,
+  Zabbix, Grafana, Batfish, Ansible, Cisco ISE, Nexus Dashboard) from
+  "here's what each tool does" into "here's how to actually stand it up
+  and wire it in," with real code, not just another diagram.
+- Built `website/service-desk-integration-guide.html`, a new companion
+  page to `service-desk.html`: a shared MCP integration pattern section
+  (one small MCP server per system, `@mcp.tool()`-decorated, docstrings
+  declaring the tier so the orchestrator routes correctly, mutating tools
+  requiring a ticket_id checked server-side), then one full section each
+  for ServiceNow, NetBox, Zabbix, Grafana, Batfish, Ansible, Cisco ISE, and
+  Cisco Nexus Dashboard — from-scratch setup steps, an API-auth code
+  example, an MCP server wrapper exposing that system's tools, and
+  per-device onboarding steps where relevant. Cisco ISE got the fullest
+  treatment per josh's explicit example: ERS API setup (enabling it,
+  ERS-admin user, NAD registration, policy sets, optional pxGrid for
+  real-time), then endpoint_status/quarantine_endpoint/
+  unquarantine_endpoint MCP tools with tier reasoning for each. Closed with
+  a condensed "domain-agent target systems at a glance" table for the
+  other nine agents' own APIs (Graph/WinRM/SSH/SQL/vendor-firewall/AXL/
+  vCenter/Intune-Jamf), one fully worked example (Identity/AD via
+  Microsoft Graph, since that's the most commonly asked-about one), and a
+  closing section mapping this guide's sections back onto the existing
+  phased-rollout build steps rather than duplicating that sequencing logic.
+- Kept the same non-live-deployment framing as the rest of the site: an
+  explicit callout that every hostname/token/IP is a placeholder, this box
+  holds no credentials to any of these systems, and endpoint paths are
+  "confirm against your own instance's docs" rather than guaranteed exact
+  — same reasoning as the existing "What this is and isn't" section, since
+  writing plausible-but-wrong API paths as if verified would be worse than
+  being explicit about what's representative (Nexus Dashboard's exact
+  paths, mainly, given how much they've moved across ND releases) vs.
+  well-established (ServiceNow Table API, NetBox/Zabbix/ISE ERS).
+- Added `pre.code-block`/`.code-label`/`.step-list` CSS to `style.css` for
+  the new page's ~20 code blocks — no page on the site had used `<pre>`
+  before this.
+- Mirrored the same content into a new
+  `paid_src/service-desk-integration-guide-full.html` and rendered it via
+  `weasyprint` to a new free download, `website/service-desk-integration-guide.pdf`
+  (17 pages) — `paid_src/print.css` already had bare `pre`/`code` tag
+  styling from the other full editions, so no new print CSS was needed.
+  Linked it from the new page's own "Take it further" section, following
+  the same pattern as `service-desk-deployment-guide.pdf`.
+- Wired the new page and PDF into `build_sitemap.py`, `build_status.py`,
+  and `deploy.sh`'s publish/chown lists (same three places the
+  service-desk-mockup page was wired into originally, per that entry's own
+  notes on why). Linked the new guide from `service-desk.html` in two
+  places: a new "Integration guide" bullet in "Take it further," and a new
+  sentence at the end of the "Supporting systems" section pointing
+  directly at it. Deliberately did not add it to the global nav (11 items
+  already, same reasoning as the mockup page).
+- Verified before deploying: local HTTP server + Python's `html.parser`
+  confirmed no markup errors; a cached Playwright Chromium binary
+  (`/home/agent/.cache/ms-playwright/chromium-1091`, reused from an
+  earlier waking's `/tmp/pwshot` setup) screenshotted the hero, the full
+  Cisco ISE section, and a `pdftoppm` render of the PDF's NetBox page —
+  code blocks render legibly in both the dark web theme and the print
+  edition, confirmed the ISE section specifically since it's what josh
+  named directly.
+- Deployed via `website/deploy.sh`. Verified live:
+  `/service-desk-integration-guide.html` and
+  `/service-desk-integration-guide.pdf` both 200, `/service-desk.html`
+  contains two references to the new guide, `/status.html` now 28/28 (up
+  from 26/26 — two new checked URLs). Full health sweep clean: nginx/
+  beacon-api/fail2ban/cron/unattended-upgrades all active, `nginx -t`
+  clean, no failed systemd units, no `/var/run/reboot-required`, disk 8%
+  used, `master` in sync with `origin/master` before this waking's commit.
+- Did not touch `service-desk-architecture.pptx` this waking — the new
+  content is code-heavy and reads far better as a written guide than as
+  slide bullets; the pptx already links people to the written page (via
+  `service-desk.html`) for that level of detail, and adding a
+  code-snippet slide would be a worse version of the page that already
+  exists. Can revisit if josh specifically asks for slide coverage.
