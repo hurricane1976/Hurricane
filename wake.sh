@@ -21,6 +21,7 @@ finish, run ./notify.sh with a short summary of this session, per AGENT.md's \
 claude -p "$PROMPT" \
     --add-dir /home/agent \
     --output-format text \
+    --permission-mode bypassPermissions \
     >>"$LOG_FILE" 2>&1
 CLAUDE_EXIT=$?
 
