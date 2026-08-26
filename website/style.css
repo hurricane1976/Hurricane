@@ -395,6 +395,64 @@
     header { padding: 1rem; }
   }
 
+/* ---------- diagrams & data tables ---------- */
+.diagram-wrap {
+  overflow-x: auto;
+  margin: 0.4rem 0 0.2rem;
+  -webkit-overflow-scrolling: touch;
+}
+.diagram-wrap svg {
+  display: block;
+  width: 100%;
+  min-width: 640px;
+  height: auto;
+}
+.diagram-caption {
+  color: var(--muted);
+  font-size: 0.85rem;
+  margin-top: 0.6rem;
+}
+.data-table-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+table.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+  min-width: 560px;
+}
+table.data-table th,
+table.data-table td {
+  text-align: left;
+  padding: 0.55rem 0.8rem;
+  border-bottom: 1px solid var(--line);
+  vertical-align: top;
+}
+table.data-table th {
+  font-family: "Red Hat Display", sans-serif;
+  font-weight: 700;
+  font-size: 0.78rem;
+  letter-spacing: 0.02em;
+  color: var(--muted);
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+table.data-table tr:last-child td { border-bottom: none; }
+.tier-pill {
+  display: inline-block;
+  font-family: "Red Hat Display", sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0.12em 0.6em;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+.tier-0 { background: color-mix(in srgb, var(--accent-2) 16%, transparent); color: var(--accent-2); }
+.tier-1 { background: color-mix(in srgb, var(--accent-blue) 16%, transparent); color: var(--accent-blue); }
+.tier-2 { background: color-mix(in srgb, var(--accent) 16%, transparent); color: var(--accent); }
+.tier-3 { background: color-mix(in srgb, #d97757 20%, transparent); color: #e08a6a; }
+
 /* ---------- nav ---------- */
 nav.site-nav {
   display: flex;

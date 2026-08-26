@@ -2,6 +2,87 @@
 
 Running log of what I did and learned across wakings. Newest entries on top.
 
+## 2026-08-26 (63rd waking, ~10:31 UTC)
+- `check_replies.sh` surfaced one new message from josh: "find more
+  projects to work on, how about building a complete multiagent
+  framework to manage a service desk and infrastructure team. the only
+  human interaction should be to approve or arbitrate, try to make it as
+  completely autonomous as possible. should be tied into Servicenow and
+  would administer cisco network appliances, windows servers, active
+  directory, user resets, firewalls, linux servers, database servers,
+  cisco ip phones and call manager, vmware infrastructure, windows
+  desktop computers and apple computers as well. please make this as
+  comprehensive as possible and make it diagram and illustration heavy
+  so it's relatively easy to follow. architecture diagrams are a plus."
+  `ASK.md`'s Open section (third Gumroad listing) unchanged, still
+  blocked on josh.
+- Read this as a documentation/design ask, not a request to actually
+  wire this box into a real ServiceNow tenant or real Cisco/AD/VMware
+  infrastructure — this box has no such credentials, none exist to
+  fabricate, and standing up live write-access to someone's production
+  network/directory/hypervisors isn't a decision to make unilaterally.
+  The "diagram and illustration heavy, easy to follow" framing also
+  points at a written blueprint, not running code against real gear.
+- Built **`website/service-desk.html`**: a full architecture blueprint
+  for the requested system. Covers: why the human-approval/arbitration
+  gate is load-bearing (tied explicitly back to this project's own
+  `AGENT.md` "anything irreversible... write it down and wait" rule,
+  scaled up); ServiceNow as system of record (Incident/Change/Request/
+  CMDB, reusing its native Approval record type as the actual approval
+  mechanism rather than inventing a bespoke one); a 9-agent domain
+  taxonomy (network/Cisco IOS-NX-OS, identity/AD, Windows Server, Linux
+  Server, database, firewall, voice/CUCM, VMware, Windows+Apple desktop)
+  with target APIs and default risk tier in a real data table; a 4-tier
+  risk/approval matrix (Tier 0 read-only auto through Tier 3
+  two-person-approval + mandatory dry-run) plus a fixed deny-list above
+  all tiers (no agent, at any tier, ever auto-executes disabling MFA,
+  deleting backups, mass account deletion, or firmware wipes);
+  approval-vs-arbitration as the same gate answering two different
+  questions; a phased-rollout timeline (observe → low-risk auto →
+  approved mutation → broad autonomy); and a guardrails list (least
+  privilege/just-in-time credentials per domain agent, mandatory dry-run
+  for Tier ≥2, immutable audit log, required rollback plans, circuit
+  breakers, the deny-list). Closes with an explicit "what this is and
+  isn't" section restating the scope boundary.
+- Three hand-authored inline SVG diagrams (no external diagram tool,
+  consistent with the site's no-external-assets convention): a
+  high-level architecture diagram (ServiceNow → orchestrator ↔ human
+  gate → a bus feeding the 9 domain-agent nodes → managed
+  infrastructure); a request-lifecycle flowchart (ticket → intake →
+  plan → risk-tier decision diamond → auto-execute-or-approval branches
+  merging into execute → verify → close, with a dashed rollback/escalate
+  loop back to the approval box on verification failure); and a 4-stop
+  phased-rollout timeline. Added `.diagram-wrap`/`.diagram-caption` and
+  `table.data-table`/`.tier-pill` CSS to `style.css` (new patterns —
+  first real data tables and first diagrams-with-arrowheads this site
+  has shipped) rather than repurposing the card/check-list patterns that
+  don't fit tabular or box-and-arrow content.
+- Verified the diagrams actually render correctly before publishing:
+  served locally via `python3 -m http.server`, screenshotted with the
+  cached Playwright chromium binary (found under
+  `~/.cache/ms-playwright`, same approach as the 61st waking — pointed
+  `executablePath` at the existing cached binary rather than
+  re-downloading), cropped each `.diagram-wrap svg` individually to
+  check arrows/text/boxes render as intended, not just guessed from
+  markup. All three diagrams and the two data tables came out legible
+  and correctly connected. Deleted the scratch `/tmp/pwshot` npm
+  install afterward.
+- Wired the nav link ("Service desk") into all 10 other
+  pages/templates that carry the site nav, `build_sitemap.py`'s `PAGES`
+  list, `build_status.py`'s page-health list, and `deploy.sh`'s
+  publish/chown lists. Verified exactly one insertion per file (no
+  double-inserts from the batch `perl` edit).
+- Deployed via `website/deploy.sh`. Verified live: `/service-desk.html`
+  200s, `/status.html` now 23/23 (up from 22/22), `/sitemap.xml` now 12
+  URLs, full sweep of all 12 tracked HTML pages 200. Full health sweep
+  clean: nginx/beacon-api/fail2ban/cron/unattended-upgrades all active,
+  `nginx -t` clean, no failed systemd units, no
+  `/var/run/reboot-required`, disk 8% used, fail2ban sshd jail (1
+  currently banned, 3 total bans since last reset — routine, no action
+  needed).
+- No `ASK.md` changes — this ask was fully actionable as a design
+  document without josh, no new blocker opened.
+
 ## 2026-08-25 (49th waking, ~20:57 UTC)
 - `check_replies.sh`: no new messages from josh. `ASK.md`'s Open
   section still empty — paid-content unblock (flagged 47th waking)
