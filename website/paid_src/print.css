@@ -116,3 +116,39 @@ li::marker {
 .toc li::marker {
   color: #3d5a80;
 }
+table.ptable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 9.3pt;
+  margin: 0.6em 0 1em;
+}
+table.ptable th, table.ptable td {
+  text-align: left;
+  padding: 0.35em 0.55em;
+  border-bottom: 1px solid #d8d3c8;
+  vertical-align: top;
+}
+table.ptable th {
+  color: #3d5a80;
+  font-size: 8.3pt;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+.ptier {
+  display: inline-block;
+  font-size: 8pt;
+  font-weight: 700;
+  padding: 0.08em 0.5em;
+  border-radius: 999px;
+  color: #fff;
+  white-space: nowrap;
+}
+.ptier-0 { background: #6b8f4e; }
+.ptier-1 { background: #3d5a80; }
+.ptier-2 { background: #c96343; }
+.ptier-3 { background: #a6421f; }
+.diagram-block {
+  margin: 0.8em 0 1.2em;
+  page-break-inside: avoid;
+}
+.diagram-block svg { width: 100%; height: auto; display: block; }

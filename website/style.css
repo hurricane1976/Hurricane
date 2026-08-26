@@ -453,6 +453,86 @@ table.data-table tr:last-child td { border-bottom: none; }
 .tier-2 { background: color-mix(in srgb, var(--accent) 16%, transparent); color: var(--accent); }
 .tier-3 { background: color-mix(in srgb, #d97757 20%, transparent); color: #e08a6a; }
 
+/* ---------- wireframe mockups ---------- */
+.mock-window {
+  background: var(--bg-elev);
+  border: 1px solid var(--line);
+  border-radius: 0.9rem;
+  overflow: hidden;
+  margin: 0.6rem 0 1.4rem;
+  box-shadow: 0 16px 32px -24px rgba(0,0,0,0.6);
+}
+.mock-titlebar {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.6rem 0.85rem;
+  background: color-mix(in srgb, var(--card) 90%, black);
+  border-bottom: 1px solid var(--line);
+}
+.mock-titlebar .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--line); }
+.mock-titlebar .label {
+  margin-left: 0.5rem;
+  font-size: 0.76rem;
+  color: var(--muted);
+  font-family: "Red Hat Display", sans-serif;
+}
+.mock-body { padding: 1.1rem 1.2rem 1.3rem; }
+.mock-row { display: flex; gap: 0.9rem; flex-wrap: wrap; margin-bottom: 0.8rem; }
+.mock-field { flex: 1 1 200px; min-width: 0; }
+.mock-field label {
+  display: block;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  color: var(--muted);
+  margin-bottom: 0.25rem;
+  font-family: "Red Hat Display", sans-serif;
+}
+.mock-field .val {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--line);
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.7rem;
+  font-size: 0.85rem;
+  color: var(--fg);
+}
+.mock-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 1rem;
+  border-radius: 0.6rem;
+  font-family: "Red Hat Display", sans-serif;
+  font-weight: 700;
+  font-size: 0.82rem;
+  border: 1px solid var(--line);
+  background: rgba(255,255,255,0.04);
+  color: var(--fg);
+  cursor: default;
+}
+.mock-btn.primary { background: var(--accent-navy); border-color: var(--accent-navy); color: #f2ede2; }
+.mock-btn.approve { background: color-mix(in srgb, var(--accent-2) 22%, transparent); border-color: var(--accent-2); color: var(--accent-2); }
+.mock-btn.reject { background: color-mix(in srgb, #e08a6a 20%, transparent); border-color: #e08a6a; color: #e08a6a; }
+.mock-step {
+  display: flex;
+  gap: 0.7rem;
+  padding: 0.55rem 0;
+  border-bottom: 1px solid var(--line);
+  font-size: 0.86rem;
+  align-items: flex-start;
+}
+.mock-step:last-child { border-bottom: none; }
+.mock-step .t { color: var(--muted); font-size: 0.76rem; font-family: "Red Hat Display", sans-serif; min-width: 4.6rem; }
+.mock-diff-add { color: var(--accent-2); background: color-mix(in srgb, var(--accent-2) 10%, transparent); display: block; padding: 0.15rem 0.5rem; border-radius: 0.3rem; margin: 0.15rem 0; font-family: monospace; font-size: 0.8rem; }
+.mock-diff-rem { color: #e08a6a; background: color-mix(in srgb, #e08a6a 10%, transparent); display: block; padding: 0.15rem 0.5rem; border-radius: 0.3rem; margin: 0.15rem 0; font-family: monospace; font-size: 0.8rem; text-decoration: line-through; }
+.mock-gauge-wrap { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px,1fr)); gap: 0.9rem; }
+.mock-gauge { background: rgba(255,255,255,0.03); border: 1px solid var(--line); border-radius: 0.7rem; padding: 0.8rem 0.9rem; }
+.mock-gauge .n { font-family: "Red Hat Display", sans-serif; font-weight: 800; font-size: 1.5rem; }
+.mock-gauge .l { color: var(--muted); font-size: 0.76rem; margin-top: 0.1rem; }
+.mock-gauge .n.ok { color: var(--accent-2); }
+.mock-gauge .n.warn { color: #e08a6a; }
+
 /* ---------- nav ---------- */
 nav.site-nav {
   display: flex;

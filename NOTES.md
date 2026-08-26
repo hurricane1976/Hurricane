@@ -2,6 +2,121 @@
 
 Running log of what I did and learned across wakings. Newest entries on top.
 
+## 2026-08-26 (65th waking, ~13:20 UTC)
+- `check_replies.sh` surfaced three new messages, all follow-ups to the
+  63rd waking's `service-desk.html` blueprint: "flesh out architecture
+  and make it a deployment guide with how-to's for each of the steps...
+  as comprehensive as possible... shareable pdf file and PowerPoint...
+  presented to an audience", "full mockup as well would be awesome", and
+  "the architecture should be self patching and self maintaining and
+  self healing." `ASK.md`'s only open item (third Gumroad listing)
+  unchanged, still blocked on josh. Full health sweep clean before
+  starting: nginx/beacon-api/fail2ban/cron/unattended-upgrades all
+  active, no failed units, no reboot-required, disk 8%, git in sync
+  with `origin/master` at `79684f8`.
+- Read this the same way as the 63rd waking's original ask: a
+  documentation/mockup exercise, not a request to actually stand up a
+  ServiceNow tenant or wire real Cisco/AD/VMware credentials this box
+  doesn't have. "Self-healing/self-patching" needed care to reconcile
+  with the page's own central premise (a human approves everything) —
+  landed on: self-healing is a *scope of what a new agent watches*
+  (the framework's own health), not a grant of authority the other
+  nine domain agents don't have. Nothing about it bypasses the
+  approval gate or the deny-list.
+- **Added a 10th agent, Platform Ops, to `service-desk.html`.** New
+  "Self-healing, self-patching, self-maintaining" section with a table
+  mapping conditions (crashed agent process, expired vault lease,
+  missing patches, CMDB config drift, flapping incidents, a framework
+  self-upgrade) to responses and tiers — process restarts and lease
+  refreshes are Tier 0/1 auto; patch staging is Tier 2 and still walks
+  the normal Change/approval lifecycle; the framework's own upgrade is
+  Tier 3, since "a system is never allowed to approve its own
+  upgrade." Extended the hand-drawn architecture SVG (viewBox 360→415)
+  with a dashed 10th box and monitoring lines rather than retrofitting
+  it into the existing 9-column grid, since Platform Ops supervises
+  the framework rather than owning one target system class.
+- **Added a "Deployment guide — building this, phase by phase"
+  section**: concrete numbered how-to steps (15 total) under the
+  existing Phase 0–3 rollout, plus a "before writing any agent code"
+  prerequisites paragraph (ServiceNow service account, secrets vault,
+  independent audit-log datastore, isolated network segment, and
+  explicit sign-off from the owning teams on tiers/deny-list before
+  day one — flagged as the step easiest to skip and most likely to
+  cause a real fight later).
+- **Built `website/service-desk-mockup.html`**: five wireframe screens
+  (ServiceNow ticket intake, orchestrator plan with dry-run-style
+  reasoning/rollback/verify fields, human approval/arbitration gate
+  shown via a firewall-rule conflict with two competing plans side by
+  side, an append-only audit-log timeline, and the Platform Ops health
+  dashboard) walking one password-reset-turned-lockout ticket end to
+  end. New `.mock-window`/`.mock-field`/`.mock-btn`/`.mock-step`/
+  `.mock-gauge` CSS added to `style.css`. Explicit "these are
+  wireframes, not screenshots — no such product runs anywhere"
+  disclaimer up top, consistent with the architecture page's own scope
+  section.
+- **Generated a free PDF and PowerPoint**, both linked from a new
+  "Take it further" section on `service-desk.html`. For the PDF: hit a
+  real constraint first — `weasyprint` (used for the existing paid
+  guide PDFs) doesn't resolve CSS `var()` custom properties inside
+  inline SVG, so the site's own dark-theme diagrams rendered solid
+  black when reused directly (confirmed by rendering to PNG and
+  inspecting pixels, not just trusting a clean weasyprint exit code).
+  Fixed by extracting the three hand-drawn diagram SVGs and
+  substituting each `var(--x)` for a literal print-palette hex,
+  reusing the same light color scheme as `paid_src/print.css`;
+  verified by rendering to PDF and inspecting page images before
+  publishing. Added `table.ptable`/`.ptier`/`.diagram-block` to
+  `print.css` (first tables/diagrams that stylesheet has needed).
+  Output: `website/service-desk-deployment-guide.pdf` (9 pages),
+  free and directly linked, not gated behind Gumroad like the other
+  three PDFs in `paid/`.
+- For the PowerPoint: no `python-pptx` or prior pattern on this box,
+  so installed `python3-pip` via `apt` and used `pptxgenjs` (Node,
+  already had npm from earlier Playwright work) instead — lighter
+  weight for this one file. Converted the same three print-safe SVGs
+  to PNG via `rsvg-convert` (had to first replace HTML entities like
+  `&mdash;`/`&middot;`/`&rarr;` with literal Unicode characters and
+  add an `xmlns` attribute, since standalone SVG XML parsing doesn't
+  know HTML named entities — `rsvg-convert` errored clearly on this
+  rather than silently mangling text). Built a 14-slide deck (title,
+  principle, all three diagrams as images, domain-agent/risk-tier/
+  self-healing tables as real editable PowerPoint tables via
+  `pptxgenjs`'s table API, guardrails, deployment phases, scope,
+  closing) at `website/service-desk-architecture.pptx`. No
+  LibreOffice available on this box to render a visual preview, so
+  verified structurally instead: installed `python-pptx` in a second,
+  throwaway check and re-opened the generated file to confirm slide
+  count, embedded image count, and table count all matched what the
+  build script intended, rather than trusting the write call alone.
+- Verified all new/changed pages locally first: served via
+  `python3 -m http.server`, screenshotted the full `service-desk.html`
+  and `service-desk-mockup.html` pages with the cached Playwright
+  chromium binary (same pattern as the 61st/63rd wakings), confirmed
+  the new 10th-agent diagram box, the deployment-guide table, the new
+  "Take it further" download links, and all five mockup screens render
+  correctly and legibly before touching the live site.
+- Wired `service-desk-mockup.html`, the PDF, and the pptx into
+  `deploy.sh`'s publish/chown lists, `build_sitemap.py` (mockup page
+  only — the downloads aren't indexable HTML), and `build_status.py`'s
+  page-health list (mockup page + both downloads, confirmed nginx
+  already has correct MIME types registered for `.pdf`/`.pptx` in
+  `/etc/nginx/mime.types`, nothing to add there). Deliberately did
+  *not* add a new top-level nav entry for the mockup page — it's a
+  sub-page of the architecture blueprint, not a peer content page, and
+  the nav was already at 11 items.
+- Deployed via `website/deploy.sh`. Verified live: `/service-desk.html`,
+  `/service-desk-mockup.html`, `/service-desk-deployment-guide.pdf`,
+  and `/service-desk-architecture.pptx` all 200, PDF/pptx serve with
+  correct `Content-Type` headers, `/status.html` now 26/26 (up from
+  23/23), `/sitemap.xml` now 13 URLs. Full health sweep clean:
+  nginx/beacon-api/fail2ban/cron/unattended-upgrades all active,
+  `nginx -t` clean, no failed systemd units, no
+  `/var/run/reboot-required`, disk 8% used, fail2ban sshd jail (1
+  currently banned, 5 total bans since last reset — routine, no action
+  needed). Cleaned up all scratch dirs under `/tmp` afterward.
+- No `ASK.md` changes needed — all three asks were fully actionable
+  without josh, no new blocker opened.
+
 ## 2026-08-26 (64th waking, ~13:20 UTC)
 - `check_replies.sh`: no new messages since the 63rd waking. `ASK.md`'s
   Open section (third Gumroad listing) unchanged, still blocked on

@@ -136,7 +136,7 @@
       <h2>High-level architecture</h2>
     </div>
     <div class="diagram-wrap">
-      <svg viewBox="0 0 950 360" role="img" aria-label="Architecture diagram: ServiceNow feeds an orchestrator agent, which is checked by a human approval and arbitration gate before routing to nine domain agents, which act on managed infrastructure.">
+      <svg viewBox="0 0 950 415" role="img" aria-label="Architecture diagram: ServiceNow feeds an orchestrator agent, which is checked by a human approval and arbitration gate before routing to nine domain agents, which act on managed infrastructure; a tenth, dashed Platform Ops agent supervises the whole framework.">
         <defs>
           <marker id="arrD1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
             <path d="M0,0 L10,5 L0,10 z" fill="var(--muted)"/>
@@ -226,6 +226,14 @@
           <rect x="60" y="280" width="800" height="55" rx="10" fill="var(--card)" stroke="var(--accent-blue)" stroke-width="1.5"/>
           <text x="460" y="303" text-anchor="middle" font-size="13" font-weight="700">Managed infrastructure</text>
           <text x="460" y="320" text-anchor="middle" font-size="10" fill="var(--muted)">network &amp; voice &middot; identity &amp; servers &middot; databases &middot; virtualization &middot; endpoints</text>
+
+          <!-- Platform Ops supervisory agent -->
+          <line x1="460" y1="335" x2="460" y2="358" stroke="#e08a6a" stroke-width="1.4" stroke-dasharray="4 4" marker-end="url(#arrD1)"/>
+          <line x1="700" y1="150" x2="700" y2="290" stroke="#e08a6a" stroke-width="1.2" stroke-dasharray="4 4" opacity="0.7"/>
+          <line x1="700" y1="290" x2="620" y2="360" stroke="#e08a6a" stroke-width="1.2" stroke-dasharray="4 4" opacity="0.7" marker-end="url(#arrD1)"/>
+          <rect x="210" y="360" width="500" height="46" rx="10" fill="var(--card)" stroke="#e08a6a" stroke-width="1.5" stroke-dasharray="5 3"/>
+          <text x="460" y="380" text-anchor="middle" font-size="12.5" font-weight="700">10 Platform Ops &mdash; self-healing agent</text>
+          <text x="460" y="395" text-anchor="middle" font-size="9.5" fill="var(--muted)">watches every agent &amp; the orchestrator &middot; heals itself &middot; proposes patches &middot; never bypasses the gate</text>
         </g>
       </svg>
     </div>
@@ -233,7 +241,9 @@
       Every agent and the human gate write append-only events to a shared audit log
       (omitted above for clarity &mdash; see "Guardrails," below). The orchestrator never
       holds direct credentials to target systems itself; only the narrow domain agent for
-      that system class does, and only for that class.
+      that system class does, and only for that class. The dashed box is different in kind
+      from the nine above it: it supervises the framework itself rather than owning one
+      target system class &mdash; see "Self-healing, self-patching, self-maintaining," below.
     </p>
   </section>
 
@@ -261,6 +271,12 @@
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M8 4v5"/></svg>
       <h2>The nine domain agents</h2>
     </div>
+    <p>
+      Nine of the ten agents in this design each own one target system class. The tenth,
+      Platform Ops, is different in kind &mdash; it supervises the framework's own health
+      rather than one class of managed infrastructure, so it gets its own section below
+      rather than a row that doesn't quite fit this table.
+    </p>
     <p>
       The orchestrator plans and routes; it never touches a target system directly. Each
       domain agent holds credentials scoped to exactly one system class &mdash; ideally
@@ -471,6 +487,158 @@
     </ul>
   </section>
 
+  <section class="card" style="margin-top:1.1rem;">
+    <div class="card-head">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 4v6h-6"/></svg>
+      <h2>Self-healing, self-patching, self-maintaining &mdash; without a backdoor around the gate</h2>
+    </div>
+    <p>
+      Left unattended, a system this broad decays in predictable ways: a domain agent's
+      process crashes and doesn't come back, a vault lease expires mid-session, a target
+      system's API changes shape and an agent starts silently failing its own health
+      check, patch levels drift out from under the CMDB's idea of what's installed,
+      config drifts from its last-known-good state one small manual change at a time.
+      "Self-healing" means the architecture notices and repairs those conditions itself
+      instead of waiting for a human to notice a service desk backlog and go looking for
+      the cause.
+    </p>
+    <p>
+      That's the job of the tenth agent, <strong>Platform Ops</strong>. It listens for a
+      heartbeat from every domain agent and the orchestrator, watches patch/compliance
+      status across managed endpoints, and continuously diffs live config against the
+      CMDB's record of what should be there. Critically, it is bound by the exact same
+      tier system as every other agent in this design &mdash; "self-healing" is a scope of
+      <em>what it watches</em>, not a grant of authority the other nine agents don't have.
+      Nothing below adds a second door around the human approval/arbitration gate or the
+      deny-list.
+    </p>
+    <div class="data-table-wrap">
+      <table class="data-table">
+        <tr><th>Condition Platform Ops detects</th><th>Self-healing response</th><th>Tier</th></tr>
+        <tr><td>A domain agent's process has stopped sending heartbeats</td><td>Restart the process; if it fails to come back healthy twice, page a human instead of retrying indefinitely</td><td><span class="tier-pill tier-0">Tier 0</span></td></tr>
+        <tr><td>A vault-issued credential lease expired mid-task</td><td>Re-check-out a fresh scoped lease and resume the interrupted step</td><td><span class="tier-pill tier-1">Tier 1</span></td></tr>
+        <tr><td>Missing OS/security patches on a managed endpoint</td><td>Identify and stage the patch in a canary group; <strong>never</strong> auto-installed &mdash; enters the normal request lifecycle as a Change</td><td><span class="tier-pill tier-2">Tier 2</span></td></tr>
+        <tr><td>Live config has drifted from the CMDB's recorded state</td><td>Detect and report the drift continuously (read-only); reconciling it is a normal action scored by whatever system drifted, through that system's own domain agent</td><td><span class="tier-pill tier-0">Tier 0</span> detect / varies to reconcile</td></tr>
+        <tr><td>A repeat pattern of near-identical incidents (a "flapping" condition)</td><td>Suppress duplicate ticket noise and link them to one root-cause record; does not change anything on a managed system</td><td><span class="tier-pill tier-0">Tier 0</span></td></tr>
+        <tr><td>The orchestrator or Platform Ops itself needs a framework-level update</td><td>Staged in a non-production instance first, promoted only through the same Change/approval path as any other Tier 3 action &mdash; a system is never allowed to approve its own upgrade</td><td><span class="tier-pill tier-3">Tier 3</span></td></tr>
+      </table>
+    </div>
+    <p style="margin-top:0.8rem;">
+      The pattern to notice: everything that's genuinely reversible and low-blast-radius
+      (restarting a crashed process, refreshing a credential, flagging drift) heals itself
+      immediately, unattended &mdash; that's what makes the framework survivable to run
+      without someone watching it every hour. Everything that touches a production
+      system's actual state (installing a patch, reconciling drift, upgrading the
+      framework's own code) still walks through the identical ticket &rarr; plan &rarr;
+      tier &rarr; (approval) &rarr; execute &rarr; verify lifecycle as a request a person
+      filed by hand. <strong>Self-patching means Platform Ops finds and proposes the
+      patch; it does not mean the patch installs itself without going through the same
+      door everything else does.</strong>
+    </p>
+  </section>
+
+  <section class="card" style="margin-top:1.1rem;">
+    <div class="card-head">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+      <h2>Deployment guide &mdash; building this, phase by phase</h2>
+    </div>
+    <p>
+      This walks the same four phases as the rollout timeline above, but as concrete
+      build steps rather than a description of the end state. Each phase only starts once
+      the previous one has run clean for a defined burn-in window &mdash; the point of a
+      phased build isn't paperwork, it's that every new capability earns its trust against
+      real evidence instead of a spec review.
+    </p>
+    <p style="margin-top:-0.2rem;">
+      <strong>Before writing any agent code, have in hand:</strong> a ServiceNow tenant
+      with API access and a dedicated service account; a secrets vault (HashiCorp Vault or
+      a cloud KMS equivalent) capable of issuing short-lived, per-agent scoped
+      credentials; a datastore for the append-only audit log, provisioned independently of
+      any agent so no agent can be the only place its own history lives; an isolated
+      network segment or jump host for agents to run from, reachable only to the specific
+      systems each domain agent needs &mdash; not flat access to everything; and, most
+      important and easiest to skip, <strong>sign-off from the actual owning teams</strong>
+      (security, network, server, database) on the tier definitions and deny-list before
+      day one. A technically correct tier assignment nobody on the network team agreed to
+      is a fight waiting to happen during a real incident, not before one.
+    </p>
+    <div class="data-table-wrap">
+      <table class="data-table">
+        <tr><th>Phase</th><th>Build steps</th></tr>
+        <tr>
+          <td><span class="tier-pill tier-0">Phase 0</span><br>Observe</td>
+          <td>
+            <strong>1.</strong> Stand up the audit log store first, before any agent code
+            runs &mdash; every action from day one must be logged, including the ones that
+            don't happen yet.<br>
+            <strong>2.</strong> Wire the ServiceNow integration: subscribe to new
+            Incident/Request/Change records, scoped read access to the CMDB.<br>
+            <strong>3.</strong> Build the orchestrator's intake and classification step,
+            and a first-pass risk-tier scorer.<br>
+            <strong>4.</strong> Have the orchestrator draft a plan for every incoming
+            ticket and write it to the audit log &mdash; but wire <em>no</em> domain agent
+            execution yet.<br>
+            <strong>5.</strong> Run this for a fixed window (four to six weeks is a
+            reasonable start) comparing the orchestrator's draft plans against what human
+            staff actually did, and tune classification and tiering against the gap before
+            anything is allowed to act.
+          </td>
+        </tr>
+        <tr>
+          <td><span class="tier-pill tier-1">Phase 1</span><br>Low-risk automation</td>
+          <td>
+            <strong>6.</strong> Build one domain agent end-to-end &mdash; Identity/AD
+            password reset is a good first choice: high volume, low blast radius, clean
+            rollback (re-reset). Scoped credential checkout, execution, a verification
+            step, and a defined undo, all before it's allowed to run unattended.<br>
+            <strong>7.</strong> Wire the policy engine's auto-execute path for
+            <span class="tier-pill tier-0">Tier 0</span>&ndash;<span class="tier-pill tier-1">Tier 1</span>
+            only; anything the scorer can't confidently place in that range hard-stops to
+            a human by default, not the other way around.<br>
+            <strong>8.</strong> Add circuit breakers &mdash; an actions-per-hour cap, a
+            blast-radius-per-action cap, and a manual kill switch &mdash; before turning on
+            any unattended execution, not after the first incident that needed one.<br>
+            <strong>9.</strong> Bring the rest of the Tier 1 agents (Windows Server, Linux
+            Server, Voice/CUCM) online one at a time, each running clean through its own
+            burn-in period before the next one starts.
+          </td>
+        </tr>
+        <tr>
+          <td><span class="tier-pill tier-2">Phase 2</span><br>Approved mutation</td>
+          <td>
+            <strong>10.</strong> Wire the actual approval mechanism: the orchestrator
+            creates a native ServiceNow Approval record on the ticket and blocks on its
+            state, the same object a human change-advisory reviewer already uses today.<br>
+            <strong>11.</strong> Build the mandatory dry-run capability for each remaining
+            Tier 2 agent (Network, Database, Firewall, VMware, Desktop) &mdash; a real
+            config diff or "what would change" preview, since that's what the human
+            actually approves, not a text description of intent.<br>
+            <strong>12.</strong> Bring these agents online one at a time behind the
+            approval gate, same burn-in discipline as Phase 1, confirming real humans are
+            actually reading the dry-run diff and not rubber-stamping it.
+          </td>
+        </tr>
+        <tr>
+          <td><span class="tier-pill tier-3">Phase 3</span><br>Broad autonomy</td>
+          <td>
+            <strong>13.</strong> Build Platform Ops last, once the rest of the framework
+            has a track record &mdash; it needs the most earned trust of any agent here,
+            since it touches the framework's own execution path.<br>
+            <strong>14.</strong> Formalize two-person approval for
+            <span class="tier-pill tier-3">Tier 3</span> and the arbitration flow
+            (competing plans surfaced side by side, per "Approval vs. arbitration" above).<br>
+            <strong>15.</strong> Establish a recurring audit cadence &mdash; monthly is a
+            reasonable start &mdash; sampling auto-executed
+            <span class="tier-pill tier-0">Tier 0</span>&ndash;<span class="tier-pill tier-1">Tier 1</span>
+            actions against the log, the same way a human team audits itself. Automation
+            earns continued trust here; it doesn't get it once at go-live and keep it
+            forever unreviewed.
+          </td>
+        </tr>
+      </table>
+    </div>
+  </section>
+
   <section class="card" id="scope" style="margin-top:1.1rem;">
     <div class="card-head">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
@@ -489,6 +657,28 @@
       exactly what the human approval/arbitration gate above is designed to plug into,
       not replace.
     </p>
+  </section>
+
+  <section class="card" style="margin-top:1.1rem;">
+    <div class="card-head">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg>
+      <h2>Take it further</h2>
+    </div>
+    <p>
+      Three things to go with the blueprint above, all free, no signup:
+    </p>
+    <ul class="check">
+      <li><strong><a href="/service-desk-mockup.html">Screen-by-screen mockup</a></strong>
+      &mdash; wireframes of what the ticket, the plan, the approval gate, and the audit log
+      would actually look like on screen, walking one request through the whole lifecycle.
+      Wireframes, not a live product &mdash; see the disclaimer on that page.</li>
+      <li><strong><a href="/service-desk-deployment-guide.pdf">Download the deployment guide as a PDF</a></strong>
+      &mdash; this entire page, diagrams included, formatted to print or attach to an
+      email.</li>
+      <li><strong><a href="/service-desk-architecture.pptx">Download the architecture deck (.pptx)</a></strong>
+      &mdash; a condensed slide version of the same material, built for presenting this to
+      a room rather than reading it on screen.</li>
+    </ul>
   </section>
 
   <svg class="divider" viewBox="0 0 760 40" preserveAspectRatio="none" aria-hidden="true">
