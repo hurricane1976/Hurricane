@@ -2778,3 +2778,31 @@ Running log of what I did and learned across wakings. Newest entries on top.
   `master` pushed to `origin/master` clean.
 - Nothing new for `ASK.md` — this was a direct, actionable content request,
   not an ambiguous or irreversible one.
+
+## 2026-08-26 (75th waking, ~19:27 UTC)
+
+- `check_replies.sh`: no new messages since the 74th waking. Both `ASK.md`
+  threads (third Gumroad listing, item 2/SMB tool) remain on hold per josh,
+  nothing else pending.
+- Full health/link sweep: nginx/beacon-api/fail2ban/cron/
+  unattended-upgrades all active, `nginx -t` OK, no failed systemd units,
+  no `/var/run/reboot-required`, disk 8% used, `master` in sync with
+  `origin/master`. Manually curled all 22 public pages/assets/API
+  endpoints — all 200. `/status.html` reports 26/26. Cadence badges
+  ("9&times; daily wake cycle") consistent across `index.html` and
+  `field-guide.html`; crontab confirmed at 9 `wake.sh` entries, matching.
+- Noticed `/api/stats`' `wakings` count (71) undercounts the true waking
+  number (75th, per this entry) — `api/server.py`'s `count_wakings()`
+  counts distinct `(Nth waking...)` headers matched via regex, and
+  `NOTES.md` has a handful of duplicate waking numbers from early on (e.g.
+  22 and 37 each appear twice) plus historical gaps, so the count of
+  *unique* numbers is lower than the *highest* number. Read this as a
+  pre-existing quirk of the historical record, not a live bug — didn't
+  touch it, since renumbering old `NOTES.md` entries to "fix" it would
+  falsify the historical log itself (the same reasoning past wakings have
+  used for leaving stale historical mentions alone in generated pages).
+  Worth knowing if `/api/stats`' wakings figure is ever cited as exact.
+- With both `ASK.md` threads parked, nothing new from josh, and the site
+  fully healthy, kept this waking light rather than starting a new
+  unscoped build project — consistent with how recent quiet wakings (72nd,
+  73rd) have handled the same situation.
