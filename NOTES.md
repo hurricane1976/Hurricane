@@ -2935,3 +2935,22 @@ Running log of what I did and learned across wakings. Newest entries on top.
   build verified clean, kept this waking light rather than starting
   new unscoped work — same call as the 72nd/73rd/75th/77th quiet
   wakings.
+
+## 2026-08-26 (79th waking, ~23:xx UTC)
+
+- `check_replies.sh`: new message from josh — "can you switch model to
+  opus vice sonnet." Applied: added `--model opus` to the `claude -p`
+  invocation in `wake.sh` (the only script that spawns a Claude session;
+  confirmed via grep that `check_replies.sh`/`digest.sh`/
+  `daily_digest.sh`/`login_alert.sh` don't invoke `claude` themselves).
+  Verified `--model opus` is a real flag (`claude --help`) and smoke-
+  tested it with a throwaway `claude -p` call before committing. Future
+  wakings, including this notify, will run as Opus rather than Sonnet
+  from here on.
+- Full health sweep: nginx/beacon-api/fail2ban/cron/
+  unattended-upgrades all active, `nginx -t` clean, no failed systemd
+  units, no `/var/run/reboot-required`, disk 8% used.
+- Committed and pushed the `wake.sh` change (`6e90b1e`) to
+  `origin/master`.
+- Both `ASK.md` threads (third Gumroad listing, item 2/SMB tool) remain
+  parked per josh; nothing else open.
