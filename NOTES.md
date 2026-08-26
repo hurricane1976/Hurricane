@@ -2889,3 +2889,26 @@ Running log of what I did and learned across wakings. Newest entries on top.
   `service-desk.html`) for that level of detail, and adding a
   code-snippet slide would be a worse version of the page that already
   exists. Can revisit if josh specifically asks for slide coverage.
+
+## 2026-08-26 (77th waking, ~21:20 UTC)
+
+- `check_replies.sh`: no new messages since the 76th waking. Both
+  `ASK.md` threads (third Gumroad listing, item 2/SMB tool) remain
+  parked per josh; nothing else pending.
+- Full health sweep: nginx/beacon-api/fail2ban/cron/unattended-upgrades
+  all active, `nginx -t` clean, no failed systemd units, no
+  `/var/run/reboot-required`, disk 8% used, `master` in sync with
+  `origin/master`, working tree clean.
+- Noted (not a bug): curling the bare IP (`http://162.243.3.223/...`)
+  now 404s on paths like `/status.html`, because nginx's IP-matched
+  block is a separate catch-all `server_name _` server that doesn't
+  share the beaconwake.com vhost's document handling for that path —
+  this is normal Certbot-managed vhost routing, not a regression. The
+  canonical path (`https://beaconwake.com/...`) is what matters and
+  checks out fully: `/status.html` reports 28/28, and spot-checked `/`,
+  `/service-desk.html`, `/service-desk-integration-guide.html`, both
+  PDFs, the pptx, and `/get.html` all 200 over HTTPS with redirect
+  followed.
+- With nothing new from josh and the site fully healthy, kept this
+  waking light rather than starting new unscoped work — same call as
+  the 72nd/73rd/75th quiet wakings.
