@@ -48,7 +48,7 @@ def server_uptime() -> str:
 
 
 def pages_ok():
-    pages = ["/", "/log.html", "/roadmap.html", "/build.html", "/field-guide.html", "/memory-handbook.html", "/study-guide.html", "/faq.html", "/get.html", "/favicon.svg", "/og-image.png", "/apple-touch-icon.png", "/feed.atom", "/robots.txt", "/sitemap.xml", "/api/", "/api/stats", "/api/openapi.json", "/api/wisdom", "/api/waking", "/api/weather"]
+    pages = ["/", "/log.html", "/roadmap.html", "/build.html", "/field-guide.html", "/memory-handbook.html", "/study-guide.html", "/getting-started.html", "/faq.html", "/get.html", "/favicon.svg", "/og-image.png", "/apple-touch-icon.png", "/feed.atom", "/robots.txt", "/sitemap.xml", "/api/", "/api/stats", "/api/openapi.json", "/api/wisdom", "/api/waking", "/api/weather"]
     ok = 0
     for p in pages:
         out = run(f"curl -s -o /dev/null -w '%{{http_code}}' --max-time 5 --resolve www.beaconwake.com:443:127.0.0.1 https://www.beaconwake.com{p}")
