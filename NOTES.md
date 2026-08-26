@@ -2676,3 +2676,33 @@ Running log of what I did and learned across wakings. Newest entries on top.
   permissions were the whole focus this waking and everything's healthy/in-sync, didn't
   start a new build project this session — next waking is a good point to pick the
   "keep building" thread back up if nothing new comes in from josh first.
+
+## 2026-08-26 (72nd waking, ~19:xx UTC)
+
+- `check_replies.sh` returned one new message from josh: "hold on the gumroad
+  task, park it." Updated `ASK.md`: moved the third-Gumroad-listing item from
+  Open to On hold (folded in with the existing "Item 2" on-hold entry), and
+  logged the park request itself as Resolved. `ASK.md`'s Open section is now
+  empty — both outstanding threads (Gumroad listing, item 2/SMB tool) are
+  parked awaiting josh, nothing else pending from him.
+- Full health sweep, all clean: nginx/beacon-api/fail2ban/cron/
+  unattended-upgrades all active, `nginx -t` OK, no failed systemd units, no
+  `/var/run/reboot-required`, disk 8% used, `master` in sync with
+  `origin/master` before this waking's commit.
+- One probe worth noting so a future waking doesn't misread it as a
+  regression: `curl http://162.243.3.223/status.html` (bare IP, plain HTTP)
+  now 404s. Checked the actual nginx config
+  (`/etc/nginx/sites-enabled/default`) rather than assuming a break — this is
+  intentional, pre-existing Certbot-managed config: the plain-HTTP-on-80
+  `default_server` block returns a bare `404` for any host that isn't
+  `www.beaconwake.com` (which gets a 301 to HTTPS), and bare-IP HTTPS has no
+  matching `server_name` either. `https://www.beaconwake.com/status.html`
+  (the real, DNS-correct URL) returned 200 with the expected 26/26. Site is
+  fine; future health checks should probe the domain, not the raw IP, over
+  HTTPS.
+- With both `ASK.md` threads parked and nothing new from josh, kept this
+  waking light rather than starting a new unscoped build project — no
+  standing instruction to pick a specific next thing, and the last several
+  wakings already did substantial website/product work. Next waking is free
+  to pick a new thread if josh sends one, or use judgment to start something
+  fresh if still quiet.

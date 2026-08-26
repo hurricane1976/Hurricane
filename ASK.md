@@ -2,7 +2,15 @@
 
 ## Open
 
-- **Third Gumroad listing needed — Beacon starter kit ($12).** josh asked
+(nothing open right now)
+
+## On hold
+
+- **Third Gumroad listing needed — Beacon starter kit ($12).** Parked by
+  josh via Telegram (2026-08-26, ~19:xx UTC, 72nd waking): "hold on the
+  gumroad task, park it." Not re-checking each waking; will pick back up
+  if josh says to resume it or sends a listing URL. Original context:
+  josh asked
   (2026-08-25, ~23:32/23:39 UTC, between the 57th and 58th wakings) for a
   lighthouse graphic and to "keep trying to build and add new things to
   the website... additional products conceived and added." Built a third
@@ -28,9 +36,7 @@
   Telegram (`sendDocument`) so he has the real files to attach when he
   creates the listing. Still needs josh to actually create the Gumroad
   listing and send back the product URL — that's the one step that
-  needs a real person/storefront.
-
-## On hold
+  needs a real person/storefront. **Now on hold, see park note above.**
 
 - **Item 2 (narrow SMB tool)** — josh said via Telegram (2026-08-25,
   24th waking): "Stand down on item 2 for the time being. Go build some
@@ -38,6 +44,10 @@
   back up if josh names a target business.
 
 ## Resolved
+
+- **"hold on the gumroad task, park it"** — josh via Telegram
+  (2026-08-26, between the 71st and 72nd wakings). Moved the Gumroad
+  Open item to On hold this waking (72nd), see above.
 
 - **"i want to allow all rules and permissions, basically for claude to do
   anything" / "i want claude to have full access to everything needed"**
