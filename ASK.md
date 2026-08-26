@@ -2,17 +2,6 @@
 
 ## Open
 
-- **Unclear message: "claude --dangerously-skip-permissions"** josh sent this via Telegram
-  (2026-08-26, ~18:08 UTC), right after two clear service-desk asks (see Resolved below).
-  Read literally it's a CLI invocation, not a request in sentence form, so it's genuinely
-  ambiguous what action (if any) it's asking for — this box's own `wake.sh` already runs
-  Claude Code with `--permission-mode bypassPermissions` (the programmatic equivalent) for
-  every waking, so if this was about *this* agent's own permission mode, nothing changes.
-  Didn't guess and act on it since misreading a permissions-related message seemed like
-  exactly the kind of thing worth confirming first rather than assuming. If josh meant
-  something else (e.g. a note about a *different* Claude Code session he's running
-  himself), a one-line clarification would resolve this.
-
 - **Third Gumroad listing needed — Beacon starter kit ($12).** josh asked
   (2026-08-25, ~23:32/23:39 UTC, between the 57th and 58th wakings) for a
   lighthouse graphic and to "keep trying to build and add new things to
@@ -49,6 +38,35 @@
   back up if josh names a target business.
 
 ## Resolved
+
+- **"remove all permissions" / "i want all permissions removed from claude"** josh sent
+  both via Telegram (2026-08-26, arrived after the ~18:08 UTC "claude
+  --dangerously-skip-permissions" message logged below and this session's start) — this
+  resolves that earlier ambiguous item: it was about *this* agent's own permission mode.
+  Removed `--permission-mode bypassPermissions` from `wake.sh`'s `claude -p` invocation
+  (the only place it was set for this agent's own operation — a copy of the same flag
+  also exists in `website/paid_src/starter-kit/wake.sh`, but that's a template file
+  shipped to buyers building their *own* agent, not this instance's config, so left it
+  alone). Verified the practical effect with a throwaway `/tmp` test before reporting it
+  as done, rather than assuming: without the bypass flag, headless `claude -p` runs
+  auto-deny any file-modifying action (`Write` tool and `Bash` redirection into a file
+  both got denied outright, no prompt, no hang) but still auto-allow plain read/no-op
+  `Bash` commands (e.g. `echo`) and, by the same logic, `notify.sh` (a `curl` call with no
+  file writes). **Concrete consequence for future wakings:** cron-fired sessions can still
+  read files, browse the web, and message Telegram — but can no longer edit/write files,
+  `git commit`, or run `website/deploy.sh`'s copy step, since none of those can get an
+  interactive approval with nobody watching. In effect this turns the unattended cron
+  loop from "build and ship things autonomously" into "observe and report only" until/
+  unless josh grants specific permissions back (e.g. an allow-rule scoped to this repo
+  directory in `.claude/settings.json`, or re-adding the bypass flag). Flagged this
+  tradeoff to josh over Telegram rather than silently accepting a change that guts most
+  of what this project has been doing — if the intent was narrower (e.g. just "don't let
+  it touch anything outside `/home/agent/agent`"), a follow-up message can scope it back
+  down instead of an all-or-nothing bypass toggle.
+
+- **"Unclear message: 'claude --dangerously-skip-permissions'"** josh sent this via
+  Telegram (2026-08-26, ~18:08 UTC). Logged as ambiguous at the time; resolved by the two
+  follow-up messages above.
 
 - **"Maybe write a book about the beginning use of claude code or even
   maybe a study guide for the Claude Certified Architect - Foundations

@@ -2612,3 +2612,34 @@ Running log of what I did and learned across wakings. Newest entries on top.
 - **`ASK.md` update**: logged the ambiguous third message ("claude
   --dangerously-skip-permissions") as a new Open item rather than guessing at it. The
   Gumroad-listing item is unchanged, still blocked on josh.
+
+## 2026-08-26 (68th waking, ~18:24 UTC)
+
+- Checked `check_replies.sh` first thing: two new messages from josh since the last
+  waking's ambiguous-message log — "remove all permissions" and "i want all permissions
+  removed from claude". These read as a direct clarification of the 67th waking's
+  unresolved "claude --dangerously-skip-permissions" item: josh wants *this agent's own*
+  permission mode changed, not something about a separate session.
+- **Removed `--permission-mode bypassPermissions` from `wake.sh`'s `claude -p`
+  invocation** — the only place this agent's own cron-fired sessions set it. Left the copy
+  in `website/paid_src/starter-kit/wake.sh` untouched; that's a template shipped inside a
+  sold product for buyers building their *own* agent, not this instance's live config.
+- Before reporting this as done, verified what it actually does rather than assuming:
+  ran a throwaway `claude -p` in `/tmp` with the flag removed. A plain `Bash` command
+  (`echo`) ran with no prompt; a `Write` tool call and a `Bash` redirect into a file were
+  both auto-denied outright (no hang, no interactive prompt — headless mode can't ask, so
+  it just refuses). This means future unattended wakings can still read files, browse the
+  web, and message Telegram (`notify.sh` is a plain `curl` call, no file writes) but can
+  no longer edit/write files, `git commit`, or run `deploy.sh`'s publish step — the bulk
+  of what this project's wakings have actually been doing since the start.
+  **This session's own tool access is unaffected** — the cron job that launched today's
+  session started before this edit, under the old bypass flag — so this waking still
+  edited `ASK.md`/`NOTES.md` and can still commit/deploy normally. The behavior change
+  only takes effect starting with the *next* cron-fired waking.
+- Updated `ASK.md`: moved the resolved permissions item (with the full consequence
+  writeup) and the now-resolved ambiguous-message item into Resolved.
+- Told josh over Telegram exactly what this means in practice, since "remove all
+  permissions" as literally implemented turns future autonomous wakings from
+  "build/ship things" into "observe and report only" — flagged that tradeoff rather than
+  silently accepting a change that guts most of the project's ongoing work, in case the
+  intent was narrower (e.g. scoped to this repo only) than a full bypass-mode removal.

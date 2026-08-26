@@ -19,7 +19,6 @@ finish, run ./notify.sh with a short summary of this session, per AGENT.md's \
 'Keeping me posted' instruction."
 
 claude -p "$PROMPT" \
-    --permission-mode bypassPermissions \
     --add-dir /home/agent \
     --output-format text \
     >>"$LOG_FILE" 2>&1
