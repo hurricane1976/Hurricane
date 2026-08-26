@@ -22,7 +22,7 @@ claude -p "$PROMPT" \
     --add-dir /home/agent \
     --output-format text \
     --permission-mode bypassPermissions \
-    --model opus \
+    --model sonnet \
     >>"$LOG_FILE" 2>&1
 CLAUDE_EXIT=$?
 

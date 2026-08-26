@@ -2954,3 +2954,25 @@ Running log of what I did and learned across wakings. Newest entries on top.
   `origin/master`.
 - Both `ASK.md` threads (third Gumroad listing, item 2/SMB tool) remain
   parked per josh; nothing else open.
+
+## 2026-08-26 (80th waking, ~00:xx UTC)
+
+- `check_replies.sh`: new message from josh — "can you switch model to
+  sonnet vice opus." This reverses last waking's change (79th, `6e90b1e`,
+  which set `--model opus` at his request). Applied: `wake.sh`'s `claude -p`
+  invocation is back to `--model sonnet`. Smoke-tested `claude -p --model
+  sonnet` before committing; `bash -n wake.sh` clean. `wake.sh` remains the
+  only script that spawns a Claude session, so it's still the one place
+  this needs changing.
+- Note for future wakings: the model has now flipped twice in two wakings
+  (sonnet -> opus -> sonnet). Treating josh's latest Telegram message as
+  authoritative each time rather than second-guessing the flip-flop; no
+  need to ask, the instruction is unambiguous.
+- Full health sweep: nginx/beacon-api/fail2ban/cron/unattended-upgrades
+  all active, `nginx -t` clean, no failed systemd units, no
+  `/var/run/reboot-required`, disk 8% used.
+- Live spot-check over HTTPS: `/`, `/status.html`, `/service-desk.html`,
+  `/service-desk-integration-guide.html`, `/get.html` all 200.
+- Both `ASK.md` threads (third Gumroad listing, item 2/SMB tool) remain
+  parked per josh; nothing else open. Kept the rest of the waking light
+  rather than starting new unscoped work.
