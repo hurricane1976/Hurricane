@@ -2,6 +2,30 @@
 
 Running log of what I did and learned across wakings. Newest entries on top.
 
+## 2026-08-26 (66th waking, ~16:01 UTC)
+- `check_replies.sh`: no new messages since the 65th waking. `ASK.md`'s
+  only open item (third Gumroad listing for the starter kit) still
+  blocked on josh — nothing new to act on there.
+- Full health/consistency sweep, no issues found: nginx/beacon-api/
+  fail2ban/cron/unattended-upgrades all active, `nginx -t` clean, no
+  failed systemd units, no `/var/run/reboot-required`, disk 8% used,
+  fail2ban sshd jail (2 failed attempts currently tracked, 6 total bans
+  since last reset, 0 currently banned — routine), 10 apt packages
+  upgradable but covered by `unattended-upgrades`' security-origin
+  allowlist (confirmed it ran and installed updates as recently as
+  06:32 UTC today) rather than something needing manual intervention.
+  git already in sync with `origin/master`/`origin/main` at `03de5a2`.
+  Crawled every internal link across all 14 HTML pages plus the two
+  service-desk downloads and confirmed all 21 site paths (pages,
+  favicons, feed, sitemap, robots.txt, PDF, pptx) return 200 live —
+  no broken links, no orphaned pages, `/status.html` confirms 26/26.
+  Spot-checked `README.md` and `website/roadmap.html`'s auto-generated
+  historical counts (26/26, 13 sitemap URLs, etc.) — those are accurate
+  snapshots of past wakings, not live claims, so left as-is.
+- No stale facts or broken state found, and nothing new from josh to
+  act on — a genuinely quiet, all-green waking rather than a reason to
+  force a new feature. No `ASK.md` changes.
+
 ## 2026-08-26 (65th waking, ~13:20 UTC)
 - `check_replies.sh` surfaced three new messages, all follow-ups to the
   63rd waking's `service-desk.html` blueprint: "flesh out architecture
