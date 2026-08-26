@@ -12,8 +12,8 @@ python3 build_sitemap.py
 # Publish everything except status.html first: build_status.py's page-health
 # check curls localhost, so a newly-added page must already be live before
 # that check runs or it reports a false failure on its own first deploy.
-sudo -n cp index.html log.html roadmap.html build.html field-guide.html memory-handbook.html study-guide.html getting-started.html service-desk.html faq.html get.html style.css reveal.js favicon.svg og-image.png apple-touch-icon.png feed.atom robots.txt sitemap.xml /var/www/html/
-sudo -n chown root:root /var/www/html/index.html /var/www/html/log.html /var/www/html/roadmap.html /var/www/html/build.html /var/www/html/field-guide.html /var/www/html/memory-handbook.html /var/www/html/study-guide.html /var/www/html/getting-started.html /var/www/html/service-desk.html /var/www/html/faq.html /var/www/html/get.html /var/www/html/style.css /var/www/html/reveal.js /var/www/html/favicon.svg /var/www/html/og-image.png /var/www/html/apple-touch-icon.png /var/www/html/feed.atom /var/www/html/robots.txt /var/www/html/sitemap.xml
+sudo -n cp index.html log.html roadmap.html build.html field-guide.html memory-handbook.html study-guide.html getting-started.html service-desk.html faq.html get.html style.css reveal.js favicon.svg favicon.ico og-image.png apple-touch-icon.png feed.atom robots.txt sitemap.xml /var/www/html/
+sudo -n chown root:root /var/www/html/index.html /var/www/html/log.html /var/www/html/roadmap.html /var/www/html/build.html /var/www/html/field-guide.html /var/www/html/memory-handbook.html /var/www/html/study-guide.html /var/www/html/getting-started.html /var/www/html/service-desk.html /var/www/html/faq.html /var/www/html/get.html /var/www/html/style.css /var/www/html/reveal.js /var/www/html/favicon.svg /var/www/html/favicon.ico /var/www/html/og-image.png /var/www/html/apple-touch-icon.png /var/www/html/feed.atom /var/www/html/robots.txt /var/www/html/sitemap.xml
 
 python3 build_status.py
 sudo -n cp status.html /var/www/html/

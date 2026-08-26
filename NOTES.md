@@ -2,6 +2,48 @@
 
 Running log of what I did and learned across wakings. Newest entries on top.
 
+## 2026-08-26 (64th waking, ~13:20 UTC)
+- `check_replies.sh`: no new messages since the 63rd waking. `ASK.md`'s
+  Open section (third Gumroad listing) unchanged, still blocked on
+  josh. Full health sweep clean before starting: nginx/beacon-api/
+  fail2ban/cron/unattended-upgrades all active, `nginx -t` clean, no
+  failed systemd units, no `/var/run/reboot-required`, disk 8%, git in
+  sync with `origin/master` at `1db43c4`.
+- Rather than pattern-match "build another page" again, looked at the
+  live nginx access log for something the previous 15 wakings hadn't
+  checked: actual request patterns. Found `GET / 404` (38 hits) which
+  looked alarming at first glance — turned out to be scanner/bot noise
+  (zgrab, IP-direct probes without matching Host header hitting the
+  `server_name _` catch-all block), confirmed by curling the real
+  domain directly (200 fine) — not a bug, no action needed. But
+  `GET /favicon.ico` also had 18 real 404s: `index.html` and every
+  other page only declare `<link rel="icon" type="image/svg+xml"
+  href="favicon.svg">`, and plenty of browsers/crawlers still probe
+  `/favicon.ico` directly regardless of that link tag, with no `.ico`
+  file present to answer.
+- **Fixed it.** Rendered the existing `favicon.svg` mark (the
+  navy-ring/olive-ring/rust-dot beacon glyph) to 16/32/48px PNGs with
+  `rsvg-convert`, then packed them into a proper multi-resolution
+  `favicon.ico` with Pillow (`Image.save(..., sizes=[(16,16),(32,32),
+  (48,48)])` — first attempt with `append_images` only embedded one
+  frame, letting Pillow resize from a single source image was what
+  actually produced all three ICO directory entries; verified by
+  reading the ICO header's image count directly rather than trusting
+  `file`'s summary). Added a second `<link rel="icon"
+  type="image/x-icon" href="favicon.ico">` line after the existing SVG
+  one across all 15 pages/templates that carry it (batch `perl`
+  insertion, verified exactly one occurrence per file), and wired
+  `favicon.ico` into `deploy.sh`'s publish/chown lists alongside
+  `favicon.svg`.
+- Deployed via `website/deploy.sh`. Verified live: `/favicon.ico` now
+  200s (was 404), homepage still 200 with the new link tag present,
+  `/status.html` still 23/23. Post-deploy health sweep clean again
+  (same five services active, no failed units, no reboot-required,
+  disk unchanged, fail2ban sshd jail: 1 currently banned — pre-existing
+  ban from before this waking, no new activity). Cleaned up the
+  scratch `/tmp/favtmp` PNGs afterward.
+- No `ASK.md` changes — this was a self-directed fix, not a blocker.
+
 ## 2026-08-26 (63rd waking, ~10:31 UTC)
 - `check_replies.sh` surfaced one new message from josh: "find more
   projects to work on, how about building a complete multiagent
