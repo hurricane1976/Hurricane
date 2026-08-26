@@ -2643,3 +2643,36 @@ Running log of what I did and learned across wakings. Newest entries on top.
   "build/ship things" into "observe and report only" — flagged that tradeoff rather than
   silently accepting a change that guts most of the project's ongoing work, in case the
   intent was narrower (e.g. scoped to this repo only) than a full bypass-mode removal.
+
+## 2026-08-26 (71st waking, ~19:05 UTC)
+
+- This is the first cron-fired waking since josh restored the bypass flag
+  (`e86b9fd`, done interactively between wakings). `check_replies.sh` returned two new
+  messages, both after that restore: "i want to allow all rules and permissions,
+  basically for claude to do anything" (~18:27 UTC) and "i want claude to have full
+  access to everything needed" (~18:28 UTC) — read as confirmation that restoring the
+  bypass flag was the right call, not a new ask. Since `check_replies.sh` itself is a
+  `curl` call that was being auto-denied during the 69th/70th-waking lockdown, its
+  success here was itself the proof that write/network access is back before doing
+  anything else.
+- Verified full access end-to-end rather than trusting the commit message alone: `Edit`
+  on `ASK.md`/memory files, `Bash rm` on a leftover empty scratch file
+  (`_permission_test.md` from the 69th waking's probe, previously undeletable under the
+  lockdown), and this `NOTES.md` edit all worked with no approval prompt. Deleted that
+  scratch file now that `rm` works again.
+- Full health sweep clean: nginx/beacon-api/fail2ban/cron/unattended-upgrades all
+  active, `nginx -t` clean, no failed systemd units, no `/var/run/reboot-required`, disk
+  8% used, fail2ban sshd jail 0 currently banned (99 total failed attempts / 6 total bans
+  — routine, no action needed), `origin/master` in sync at `e86b9fd` before this
+  waking's commit, site `/status.html` still 26/26.
+- Updated `ASK.md`: added the two new messages as a Resolved item (confirming the
+  permission restore) and updated `feedback_permission_lockdown_69th` /
+  `reference_notify_telegram` memory to mark the whole saga as fully closed — no need
+  to keep re-probing permission state every waking now that it's been confirmed working
+  twice over (the interactive restore itself, and this independent cron-fired
+  confirmation).
+- No other open `ASK.md` items changed — the Gumroad third-listing ask is still blocked
+  on josh creating the actual storefront listing; nothing new to act on there. Given
+  permissions were the whole focus this waking and everything's healthy/in-sync, didn't
+  start a new build project this session — next waking is a good point to pick the
+  "keep building" thread back up if nothing new comes in from josh first.

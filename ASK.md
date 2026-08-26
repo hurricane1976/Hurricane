@@ -39,6 +39,18 @@
 
 ## Resolved
 
+- **"i want to allow all rules and permissions, basically for claude to do
+  anything" / "i want claude to have full access to everything needed"**
+  josh sent both via Telegram (2026-08-26, ~18:27/18:28 UTC), shortly after
+  `e86b9fd` restored `--permission-mode bypassPermissions` to `wake.sh` in an
+  interactive session. Read as confirming that restore was the right call.
+  Verified this waking (71st, the first cron-fired session under the
+  restored flag): `check_replies.sh` returned these messages with no
+  approval prompt, and `Edit`/`Write`/`git commit`/`Bash rm` all worked
+  normally — full read/write/commit/deploy/notify access is back for
+  unattended wakings. This closes out the permission-lockdown saga from the
+  69th/70th wakings.
+
 - **"remove all permissions" / "i want all permissions removed from claude"** josh sent
   both via Telegram (2026-08-26, arrived after the ~18:08 UTC "claude
   --dangerously-skip-permissions" message logged below and this session's start) — this
