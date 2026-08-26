@@ -2976,3 +2976,76 @@ Running log of what I did and learned across wakings. Newest entries on top.
 - Both `ASK.md` threads (third Gumroad listing, item 2/SMB tool) remain
   parked per josh; nothing else open. Kept the rest of the waking light
   rather than starting new unscoped work.
+
+## 2026-08-26 (81st waking, ~00:xx UTC)
+
+- `check_replies.sh`: new message from josh — "add another system: cisco
+  firepower management console, cisco catalyst center, vmware aria,
+  microsoft scom, azure monitor and MECM any any red hat linux control
+  consoles to the guides." Read as seven new systems to add to the two
+  service-desk guide pages, each extending an existing domain agent or
+  Platform Ops's monitoring role rather than becoming an eleventh agent:
+  Cisco Firepower Management Center (Firewall agent), Cisco Catalyst
+  Center (Network agent, SD-Access), VMware Aria (VMware agent, capacity/
+  automation), Microsoft SCOM and Azure Monitor (Platform Ops monitoring,
+  alongside Zabbix), MECM (Desktop agent, on-prem/co-managed Windows), and
+  Red Hat Satellite for "red hat linux control consoles" (Linux Server
+  agent, fleet-wide RHEL lifecycle — also noted Cockpit as the per-host
+  break-glass counterpart, not automated against).
+- `/service-desk.html`: added 7 rows to the "Supporting systems" table,
+  extended 5 of the 9 domain agents' "Talks to" cells (Network, Firewall,
+  VMware, Desktop, Linux Server), and restructured the hand-coded
+  architecture-diagram SVG's supporting-systems band from one row of 6 to
+  two rows of 7 (14 systems total) — recomputed all box/connector
+  coordinates, grew the viewBox from 480 to 535 tall, and shifted the
+  Platform Ops box/arrows down to match. Updated the "Take it further"
+  list and diagram aria-label.
+- `/service-desk-integration-guide.html`: inserted 7 new numbered sections
+  (11-17) between Nexus Dashboard and the domain-agent table, each with
+  setup steps, an API-auth code sample, and an MCP server tool (matching
+  the Nexus Dashboard section's depth, not the deeper Cisco ISE
+  worked-example). Renumbered the old sections 11/12 to 18/19, updated
+  every "seven tools/systems" reference to "fourteen," and fixed the
+  build-order section's cross-references.
+- Verified before publishing rather than trusting the coordinate math or
+  content mirroring: installed a scratch Playwright + Chromium (removed
+  after) and screenshotted the new two-row diagram, both updated tables,
+  and two of the new integration-guide sections — all rendered cleanly,
+  no overlap or clipping. Ran Python's `html.parser` over both files
+  (no markup errors) and grepped for duplicate `id` attributes (none).
+- **Also mirrored the changes into the two PDF sources**
+  (`paid_src/service-desk-full.html` and
+  `paid_src/service-desk-integration-guide-full.html` — hand-maintained,
+  condensed, print-CSS copies that `service-desk-deployment-guide.pdf`
+  and `service-desk-integration-guide.pdf` are rendered from) rather than
+  leaving the downloadable guides stale relative to the web pages:
+  same diagram/table changes in the print copy's literal hex-color
+  scheme, condensed setup-step lists for the 7 new sections in the
+  integration-guide mirror. Regenerated both PDFs via a scratch
+  `weasyprint` install (deployment guide stayed 12 pages; integration
+  guide grew 17 &rarr; 25 pages) and rendered pages to PNG with
+  `pdftoppm` to confirm the diagram and code blocks aren't clipped before
+  publishing.
+- **Extended `service-desk-architecture.pptx`** too, since its slide 3
+  (architecture diagram picture) and slide 4 (domain-agents table) had
+  gone stale relative to the content above: extracted the updated print
+  SVG from the regenerated PDF source, fixed named-entity escaping for
+  `rsvg-convert` (same `&mdash;`/`&amp;` re-escape gotcha noted on a past
+  waking), re-rendered it, and swapped in the new two-row diagram image
+  sized to fit the existing slide bounds. Updated the domain-agents
+  table's "Talks to" text for the 5 affected rows. For the
+  supporting-systems table, rather than cramming 7 more rows into a
+  table already sized for 8 (no way to visually preview a pptx on this
+  box, so an overflowing/clipped table would ship unverified), added a
+  new "Supporting systems (continued)" slide right after the existing
+  one, built from scratch with matching fonts/colors/table style and an
+  identical 8-row geometry (header + 7), so it reuses proportions already
+  known to fit rather than guessing at a taller table's layout. Verified
+  structurally (slide count 16&rarr;17, table/picture counts, zip
+  integrity via Python's `zipfile.testzip()`) since that's the only
+  verification available without LibreOffice on this box.
+- Deployed via `website/deploy.sh`. Verified live: all 5 changed files
+  200 over HTTPS, `/status.html` still 28/28, `service-desk.html` shows
+  the new supporting-systems rows and diagram boxes, integration guide's
+  section 18 correctly renumbered. No sitemap/status-check-list changes
+  needed since no new pages were added, only existing ones extended.

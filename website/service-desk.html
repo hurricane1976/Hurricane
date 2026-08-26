@@ -136,7 +136,7 @@
       <h2>High-level architecture</h2>
     </div>
     <div class="diagram-wrap">
-      <svg viewBox="0 0 950 480" role="img" aria-label="Architecture diagram: ServiceNow feeds an orchestrator agent, which is checked by a human approval and arbitration gate before routing to nine domain agents, which act on managed infrastructure; a supporting-systems band (NetBox, Zabbix/Grafana, Batfish, Ansible, Cisco ISE, Nexus Dashboard) feeds inventory, monitoring, and verification data across the framework; a tenth, dashed Platform Ops agent supervises the whole framework.">
+      <svg viewBox="0 0 950 535" role="img" aria-label="Architecture diagram: ServiceNow feeds an orchestrator agent, which is checked by a human approval and arbitration gate before routing to nine domain agents, which act on managed infrastructure; a two-row supporting-systems band (NetBox, Zabbix/Grafana, Batfish, Ansible, Cisco ISE, Nexus Dashboard, plus Cisco Firepower Management Center, Catalyst Center, VMware Aria, Microsoft SCOM, Azure Monitor, MECM, and Red Hat Satellite) feeds inventory, monitoring, and verification data across the framework; a tenth, dashed Platform Ops agent supervises the whole framework.">
         <defs>
           <marker id="arrD1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
             <path d="M0,0 L10,5 L0,10 z" fill="var(--muted)"/>
@@ -256,14 +256,35 @@
 
             <rect x="740" y="350" width="120" height="42" rx="7" fill="var(--card)" stroke="var(--accent-blue)" stroke-width="1.2" stroke-dasharray="3 3"/>
             <text x="800" y="368">Nexus Dash.</text><text x="800" y="381" fill="var(--muted)" font-size="8.5">DC fabric</text>
+
+            <rect x="83" y="402" width="99" height="42" rx="7" fill="var(--card)" stroke="var(--accent-blue)" stroke-width="1.2" stroke-dasharray="3 3"/>
+            <text x="132" y="420" font-size="9">Cisco FMC</text><text x="132" y="433" fill="var(--muted)" font-size="8">firewall policy</text>
+
+            <rect x="193" y="402" width="99" height="42" rx="7" fill="var(--card)" stroke="var(--accent-blue)" stroke-width="1.2" stroke-dasharray="3 3"/>
+            <text x="242" y="420" font-size="9">Catalyst Ctr.</text><text x="242" y="433" fill="var(--muted)" font-size="8">SD-Access</text>
+
+            <rect x="303" y="402" width="99" height="42" rx="7" fill="var(--card)" stroke="var(--accent-blue)" stroke-width="1.2" stroke-dasharray="3 3"/>
+            <text x="352" y="420" font-size="9">VMware Aria</text><text x="352" y="433" fill="var(--muted)" font-size="8">capacity &amp; automation</text>
+
+            <rect x="413" y="402" width="99" height="42" rx="7" fill="var(--card)" stroke="var(--accent-blue)" stroke-width="1.2" stroke-dasharray="3 3"/>
+            <text x="462" y="420" font-size="9">SCOM</text><text x="462" y="433" fill="var(--muted)" font-size="8">on-prem monitoring</text>
+
+            <rect x="523" y="402" width="99" height="42" rx="7" fill="var(--card)" stroke="var(--accent-blue)" stroke-width="1.2" stroke-dasharray="3 3"/>
+            <text x="572" y="420" font-size="9">Azure Monitor</text><text x="572" y="433" fill="var(--muted)" font-size="8">cloud monitoring</text>
+
+            <rect x="633" y="402" width="99" height="42" rx="7" fill="var(--card)" stroke="var(--accent-blue)" stroke-width="1.2" stroke-dasharray="3 3"/>
+            <text x="682" y="420" font-size="9">MECM</text><text x="682" y="433" fill="var(--muted)" font-size="8">endpoint mgmt</text>
+
+            <rect x="743" y="402" width="99" height="42" rx="7" fill="var(--card)" stroke="var(--accent-blue)" stroke-width="1.2" stroke-dasharray="3 3"/>
+            <text x="792" y="420" font-size="9">RH Satellite</text><text x="792" y="433" fill="var(--muted)" font-size="8">RHEL lifecycle</text>
           </g>
 
           <!-- Platform Ops supervisory agent -->
-          <line x1="460" y1="392" x2="460" y2="413" stroke="#e08a6a" stroke-width="1.4" stroke-dasharray="4 4" marker-end="url(#arrD1)"/>
-          <path d="M890,122 L920,122 L920,438 L712,438" fill="none" stroke="#e08a6a" stroke-width="1.2" stroke-dasharray="4 4" opacity="0.7" marker-end="url(#arrD1)"/>
-          <rect x="210" y="415" width="500" height="46" rx="10" fill="var(--card)" stroke="#e08a6a" stroke-width="1.5" stroke-dasharray="5 3"/>
-          <text x="460" y="435" text-anchor="middle" font-size="12.5" font-weight="700">10 Platform Ops &mdash; self-healing agent</text>
-          <text x="460" y="450" text-anchor="middle" font-size="9.5" fill="var(--muted)">watches every agent &amp; the orchestrator &middot; heals itself &middot; proposes patches &middot; never bypasses the gate</text>
+          <line x1="460" y1="444" x2="460" y2="465" stroke="#e08a6a" stroke-width="1.4" stroke-dasharray="4 4" marker-end="url(#arrD1)"/>
+          <path d="M890,122 L920,122 L920,490 L712,490" fill="none" stroke="#e08a6a" stroke-width="1.2" stroke-dasharray="4 4" opacity="0.7" marker-end="url(#arrD1)"/>
+          <rect x="210" y="467" width="500" height="46" rx="10" fill="var(--card)" stroke="#e08a6a" stroke-width="1.5" stroke-dasharray="5 3"/>
+          <text x="460" y="487" text-anchor="middle" font-size="12.5" font-weight="700">10 Platform Ops &mdash; self-healing agent</text>
+          <text x="460" y="502" text-anchor="middle" font-size="9.5" fill="var(--muted)">watches every agent &amp; the orchestrator &middot; heals itself &middot; proposes patches &middot; never bypasses the gate</text>
         </g>
       </svg>
     </div>
@@ -325,15 +346,15 @@
     <div class="data-table-wrap">
       <table class="data-table">
         <tr><th>#</th><th>Domain agent</th><th>Talks to</th><th>Typical actions</th><th>Default tier</th></tr>
-        <tr><td>1</td><td>Network</td><td>IOS/NX-OS via NETCONF/RESTCONF or Ansible; NetBox for inventory/IPAM, Batfish for pre-change verification, Nexus Dashboard for DC fabric</td><td>interface/VLAN checks, ACL review, config backup, port toggles</td><td><span class="tier-pill tier-2">Tier 2</span></td></tr>
+        <tr><td>1</td><td>Network</td><td>IOS/NX-OS via NETCONF/RESTCONF or Ansible; NetBox for inventory/IPAM, Batfish for pre-change verification, Nexus Dashboard for DC fabric, Cisco Catalyst Center for SD-Access campus/branch</td><td>interface/VLAN checks, ACL review, config backup, port toggles</td><td><span class="tier-pill tier-2">Tier 2</span></td></tr>
         <tr><td>2</td><td>Identity &amp; AD</td><td>LDAP/PowerShell over WinRM, Graph API, Cisco ISE for NAC/RADIUS</td><td>password resets, group membership, account unlock/disable</td><td><span class="tier-pill tier-1">Tier 1</span></td></tr>
         <tr><td>3</td><td>Windows Server</td><td>WinRM, PowerShell DSC</td><td>service restarts, patch status, disk/log cleanup</td><td><span class="tier-pill tier-1">Tier 1</span></td></tr>
-        <tr><td>4</td><td>Linux Server</td><td>SSH, Ansible</td><td>service restarts, package/patch checks, log rotation</td><td><span class="tier-pill tier-1">Tier 1</span></td></tr>
+        <tr><td>4</td><td>Linux Server</td><td>SSH, Ansible; Red Hat Satellite for fleet-wide RHEL patch/content lifecycle</td><td>service restarts, package/patch checks, log rotation</td><td><span class="tier-pill tier-1">Tier 1</span></td></tr>
         <tr><td>5</td><td>Database</td><td>native SQL drivers, read-replica first</td><td>query diagnostics, index/maintenance jobs, backup verification</td><td><span class="tier-pill tier-2">Tier 2</span></td></tr>
-        <tr><td>6</td><td>Firewall</td><td>vendor REST API (Palo Alto/Fortinet/ASA-style)</td><td>rule/NAT review, temporary rule add with expiry, log queries</td><td><span class="tier-pill tier-3">Tier 3</span></td></tr>
+        <tr><td>6</td><td>Firewall</td><td>vendor REST API (Palo Alto/Fortinet/ASA-style); Cisco Firepower Management Center for fleet-wide FTD/ASA policy</td><td>rule/NAT review, temporary rule add with expiry, log queries</td><td><span class="tier-pill tier-3">Tier 3</span></td></tr>
         <tr><td>7</td><td>Voice / collaboration</td><td>Cisco CUCM AXL/API</td><td>phone reprovisioning, line/extension changes, directory sync</td><td><span class="tier-pill tier-1">Tier 1</span></td></tr>
-        <tr><td>8</td><td>VMware</td><td>vCenter API / PowerCLI</td><td>VM power state, resource checks, snapshot management</td><td><span class="tier-pill tier-2">Tier 2</span></td></tr>
-        <tr><td>9</td><td>Desktop (Windows &amp; Apple)</td><td>Intune / Jamf APIs</td><td>app deploys, compliance checks, remote wipe requests</td><td><span class="tier-pill tier-2">Tier 2</span></td></tr>
+        <tr><td>8</td><td>VMware</td><td>vCenter API / PowerCLI; VMware Aria Operations/Automation for capacity analytics and workflows</td><td>VM power state, resource checks, snapshot management</td><td><span class="tier-pill tier-2">Tier 2</span></td></tr>
+        <tr><td>9</td><td>Desktop (Windows &amp; Apple)</td><td>Intune / Jamf APIs; Microsoft MECM for on-prem/co-managed Windows patching</td><td>app deploys, compliance checks, remote wipe requests</td><td><span class="tier-pill tier-2">Tier 2</span></td></tr>
       </table>
     </div>
     <p style="margin-top:0.8rem; font-size:0.88rem; color:var(--muted);">
@@ -368,6 +389,13 @@
         <tr><td><strong>Ansible</strong></td><td>Playbook-driven execution &amp; config management</td><td>Network and Linux Server agents &mdash; idempotent playbooks double as the paired rollback/undo step the guardrails already require</td></tr>
         <tr><td><strong>Cisco ISE</strong></td><td>Network access control &mdash; RADIUS/TACACS+, 802.1X posture, endpoint quarantine</td><td>Identity agent &mdash; extends it from "does this account exist" to "is this device allowed on the network right now"</td></tr>
         <tr><td><strong>Cisco Nexus Dashboard</strong></td><td>Data-center fabric (ACI/NX-OS) telemetry &amp; orchestration</td><td>Network agent, scoped to DC fabric &mdash; distinct from the box-by-box campus/branch config the base agent already handles</td></tr>
+        <tr><td><strong>Cisco Firepower Management Center</strong></td><td>Centralized policy management for Cisco FTD/ASA firewalls &mdash; access control, IPS rules, and fleet-wide deployment</td><td>Firewall agent &mdash; extends it from a single device's REST API to fleet-wide policy push, rollback, and centralized event/log query</td></tr>
+        <tr><td><strong>Cisco Catalyst Center</strong></td><td>SD-Access intent-based campus/branch network automation and assurance (formerly DNA Center)</td><td>Network agent &mdash; the campus/branch counterpart to Nexus Dashboard's DC-fabric role, fleet-wide assurance rather than box-by-box CLI</td></tr>
+        <tr><td><strong>VMware Aria</strong></td><td>Capacity/performance analytics (Aria Operations) and self-service automation workflows (Aria Automation), formerly vRealize</td><td>VMware agent &mdash; trend-based capacity planning and pre-built orchestration above raw vCenter/PowerCLI scripting</td></tr>
+        <tr><td><strong>Microsoft SCOM</strong></td><td>On-prem infrastructure and application monitoring via management packs</td><td>Platform Ops, alongside Zabbix &mdash; a SCOM alert can open a ServiceNow Incident directly, same as a Zabbix trigger</td></tr>
+        <tr><td><strong>Azure Monitor</strong></td><td>Cloud-native metrics, logs (Log Analytics/KQL), and alerting for Azure and Arc-connected hybrid resources</td><td>Platform Ops &mdash; the cloud counterpart to SCOM/Zabbix for workloads that have moved to Azure</td></tr>
+        <tr><td><strong>Microsoft MECM</strong></td><td>On-prem endpoint lifecycle management &mdash; OS deployment, patching, and software distribution (formerly SCCM)</td><td>Desktop agent &mdash; covers the on-prem/co-managed half of the Windows fleet that Intune's cloud-native MDM doesn't reach alone</td></tr>
+        <tr><td><strong>Red Hat Satellite</strong></td><td>Fleet-wide RHEL patch/content/subscription lifecycle management and Kickstart provisioning</td><td>Linux Server agent &mdash; the RHEL analogue of MECM for Windows, staging patches across host groups instead of one SSH session at a time</td></tr>
       </table>
     </div>
     <p style="margin-top:0.8rem; font-size:0.88rem; color:var(--muted);">
@@ -832,7 +860,9 @@
       <li><strong><a href="/service-desk-integration-guide.html">Integration guide</a></strong>
       &mdash; setup steps, API auth, and a working MCP server for each supporting system
       above (ServiceNow, NetBox, Zabbix, Grafana, Batfish, Ansible, Cisco ISE, Nexus
-      Dashboard) and for the nine domain-agent target systems, with real code for each.</li>
+      Dashboard, Cisco Firepower Management Center, Catalyst Center, VMware Aria, Microsoft
+      SCOM, Azure Monitor, MECM, and Red Hat Satellite) and for the nine domain-agent target
+      systems, with real code for each.</li>
       <li><strong><a href="/service-desk-mockup.html">Screen-by-screen mockup</a></strong>
       &mdash; wireframes of what the ticket, the plan, the approval gate, and the audit log
       would actually look like on screen, walking one request through the whole lifecycle.
