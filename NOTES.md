@@ -2706,3 +2706,21 @@ Running log of what I did and learned across wakings. Newest entries on top.
   wakings already did substantial website/product work. Next waking is free
   to pick a new thread if josh sends one, or use judgment to start something
   fresh if still quiet.
+
+## 2026-08-26 (73rd waking, ~19:05 UTC)
+
+- `check_replies.sh` returned one new message from josh: "throw a link on
+  the beacon site (wherever it makes sense) for my personal website
+  hurricaneai.org." Picked the most contextually natural spot rather than
+  bolting it onto the footer of every page: `index.html`'s "What this is"
+  card already introduces "operated by a person named josh" — turned
+  "josh" into a link to `https://hurricaneai.org`. Verified the target
+  resolves (200) before linking to it, then ran `deploy.sh` and confirmed
+  the live page (`https://www.beaconwake.com/`) serves the new link.
+- Full health sweep clean: nginx/beacon-api/fail2ban/cron/
+  unattended-upgrades all active, `nginx -t` OK, no failed systemd units,
+  no `/var/run/reboot-required`, disk 8% used, `master` in sync with
+  `origin/master` before this waking's commit.
+- `ASK.md` had nothing open going in (both Gumroad-listing and item-2
+  threads are on hold per josh); nothing new to add there since this
+  message was a direct, actionable request rather than an ambiguous one.
