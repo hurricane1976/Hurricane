@@ -2150,3 +2150,53 @@ Running log of what I did and learned across wakings. Newest entries on top.
   before this waking's commit.
 - No `ASK.md` changes needed — both new asks were fully actionable
   without josh, no new blockers opened.
+
+## 2026-08-26 (61st waking, ~05:24 UTC)
+- `check_replies.sh`: no new messages since the 60th waking. Only open
+  `ASK.md` item (third Gumroad listing) is genuinely blocked on josh
+  creating it — nothing new to act on there. Full health sweep clean
+  before starting: nginx/beacon-api/fail2ban/cron/unattended-upgrades
+  all active, no failed units, no reboot-required, disk 8%, git in
+  sync with `origin/master` at `be389eb`.
+- **Fixed a stale fact.** `field-guide.html`'s "The loop" section still
+  hardcoded "15&times;/day" from before the 60th waking dropped cadence
+  to 9x/day — `index.html`'s badge got updated then but this one was
+  missed. Fixed to 9&times;/day.
+- **Built `/faq.html`.** In the spirit of the standing "keep building"
+  ask, added a page answering the questions a first-time or
+  about-to-pay visitor would actually have: what Beacon is, whether
+  AI-written content is worth reading (pointing at the real incident
+  log as the actual value, not invented advice), who's behind it and
+  how to reach a real person, payment/privacy handling (checkout is
+  entirely on Gumroad — this site never touches card details, and
+  Gumroad's own buyer terms apply, not a policy invented here), and
+  the free-vs-paid distinction. Deliberately did NOT invent a specific
+  refund guarantee on josh's behalf — that's a real commitment to
+  paying customers and not mine to promise, so it points to Gumroad's
+  own terms instead. Wired the nav link into all 12 pages/templates,
+  `build_sitemap.py`, `build_status.py`'s page-health list, and
+  `deploy.sh`'s publish list.
+- Verified locally first: served the site with `python3 -m http.server`
+  and screenshotted with a cached Playwright chromium build (found
+  under `~/.cache/ms-playwright`, needed an explicit `executablePath`
+  since a freshly-`npm install`ed `playwright` package expected a
+  browser revision that wasn't downloaded — pointed it at the existing
+  cached binary instead of fetching a new one). Also scripted a
+  `page.evaluate()` check confirming all 7 Q&A cards actually render
+  with the right headings/content and correct layout heights, since a
+  naive full-page screenshot only showed 2 of 7 cards handled by the
+  existing site-wide `reveal.js` scroll-reveal IntersectionObserver
+  (opacity:0 until scrolled into view) not firing reliably under a fast
+  synthetic scroll in headless mode. That's a pre-existing mechanism
+  used unchanged on every other page already, not something this
+  waking introduced or needed to fix — real (slower) user scrolling
+  triggers it fine, and content is genuinely present with JS off per
+  the file's own comment. Cleaned up the scratch `npm install` in `/tmp`
+  afterward.
+- Deployed via `website/deploy.sh`. Verified live: `/faq.html` 200s
+  with all 7 cards, field guide now says "9&times;/day",
+  `/status.html` 21/21 (up from 20/20), `/sitemap.xml` now 10 URLs.
+  Post-deploy health sweep clean again (same five services active, no
+  failed units, no reboot-required, disk unchanged). Committed and
+  pushed to both `master` and `main` (`ff6e648`).
+- No `ASK.md` changes — nothing new opened or resolved this waking.
