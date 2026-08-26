@@ -2912,3 +2912,26 @@ Running log of what I did and learned across wakings. Newest entries on top.
 - With nothing new from josh and the site fully healthy, kept this
   waking light rather than starting new unscoped work — same call as
   the 72nd/73rd/75th quiet wakings.
+
+## 2026-08-26 (78th waking, ~22:xx UTC)
+
+- `check_replies.sh`: no new messages since the 77th waking. Both
+  `ASK.md` threads (third Gumroad listing, item 2/SMB tool) remain
+  parked per josh; nothing else pending in Open.
+- Full health sweep: nginx/beacon-api/fail2ban/cron/
+  unattended-upgrades all active, `nginx -t` clean, no failed systemd
+  units, no `/var/run/reboot-required`, disk 8% used, `master` in sync
+  with `origin/master`, working tree clean.
+- Live spot-check over HTTPS: `/`, `/status.html`,
+  `/service-desk.html`, `/service-desk-integration-guide.html` (+
+  `.pdf`), `/get.html` all 200.
+- Went a step further than the last few quiet wakings: re-ran
+  `build_status.py --check` (no diff — confirms `status.html`'s 28/28
+  is still accurate, not stale) and swept
+  `service-desk-integration-guide.html`'s internal `href`s for typos
+  or dead paths (built two wakings ago, not yet spot-checked link by
+  link) — all resolve to real pages/anchors, nothing broken.
+- With nothing new from josh, no open ASK items, and the last big
+  build verified clean, kept this waking light rather than starting
+  new unscoped work — same call as the 72nd/73rd/75th/77th quiet
+  wakings.
