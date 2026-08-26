@@ -35,9 +35,10 @@
   <li><a href="#arb">8. Approval vs. arbitration</a></li>
   <li><a href="#phases">9. Phased rollout</a></li>
   <li><a href="#healing">10. Self-healing, self-patching, self-maintaining</a></li>
-  <li><a href="#guardrails">11. Guardrails that make broad autonomy survivable</a></li>
-  <li><a href="#deploy">12. Deployment guide &mdash; building this, phase by phase</a></li>
-  <li><a href="#scope">13. What this is and isn't</a></li>
+  <li><a href="#walkthrough">11. Walkthrough: an alert firing, end to end</a></li>
+  <li><a href="#guardrails">12. Guardrails that make broad autonomy survivable</a></li>
+  <li><a href="#deploy">13. Deployment guide &mdash; building this, phase by phase</a></li>
+  <li><a href="#scope">14. What this is and isn't</a></li>
 </ul>
 
 <h2 id="why">1. Why a human still approves everything</h2>
@@ -422,7 +423,64 @@ is a scope of what it watches, not a grant of authority the other nine agents do
 the patch installs itself without going through the same door everything else does.</strong>
 </div>
 
-<h2 id="guardrails">11. Guardrails that make broad autonomy survivable</h2>
+<h2 id="walkthrough">11. Walkthrough: an alert firing, end to end</h2>
+<p>
+The tables above describe the pieces; this traces two real triggers through all of them,
+because "automatic" means different things at Tier 0 and Tier 2, and the difference is
+the whole point of the design. Both start the same way &mdash; a Zabbix trigger, not a
+person &mdash; and both end with a fully written audit trail. Where they diverge is
+whether a human clicks anything in between.
+</p>
+<p><strong>A &mdash; disk fills up on a managed Linux host (Tier 0, zero human touch):</strong></p>
+<ol>
+<li>Zabbix's own trigger fires on the host (disk use crosses its configured threshold)
+&mdash; this is Zabbix doing what it already does today, unmodified.</li>
+<li>The Zabbix &rarr; ServiceNow webhook opens an Incident automatically, tagged with the
+host and the metric that tripped. No person has filed anything yet.</li>
+<li>The orchestrator classifies the incident against known trigger signatures, routes it
+to the Linux Server agent, and scores it Tier 0: single host, fully reversible, matches a
+pre-approved action class (log rotation / temp cleanup).</li>
+<li>The Linux Server agent runs that cleanup playbook directly &mdash; no dry-run, no
+approval record, because Tier 0 by definition doesn't require one &mdash; and confirms
+disk usage is back under threshold.</li>
+<li>Platform Ops's flapping check means if the same host trips again within the next few
+minutes, it links to the same root-cause record instead of opening a second ticket.</li>
+<li>The trigger payload, the plan, the action taken, and the verification result are
+appended to the immutable audit log; the Incident auto-closes with that record attached.</li>
+</ol>
+<p>
+That's the entire loop for anything Tier 0: detect, act, verify, log, close. Nobody was
+paged, and nobody needed to be &mdash; the guardrail isn't a human in this loop, it's that
+only genuinely reversible, single-target actions are allowed to run unattended at all.
+</p>
+<p><strong>B &mdash; a missing security patch, same host class (Tier 2, one approval
+click, not manual patching):</strong></p>
+<ol>
+<li>A nightly Tier 0 compliance scan (Platform Ops, read-only) diffs installed package
+versions against the patch baseline in the CMDB and finds a host group missing a critical
+CVE fix &mdash; no ticket needed to trigger this, it runs on a schedule.</li>
+<li>The Linux Server agent stages the patch in a canary subset of that group and drafts a
+Change record with the dry-run output attached: the actual package-manager simulation
+diff, not a text summary of intent.</li>
+<li>The orchestrator opens a native ServiceNow Approval on that Change and waits &mdash;
+this is the one deliberate step in the whole sequence, and it's a single
+approve/reject/edit decision against a real diff, not a request to go patch a server by
+hand.</li>
+<li>Once approved, the agent installs on the canary host first, confirms it comes back
+healthy, then rolls to the rest of the group inside the approved maintenance window,
+verifying after each batch rather than all at once.</li>
+<li>Before/after package versions, the approval record, and every verification result are
+written to the audit log; the Change closes itself against that evidence.</li>
+</ol>
+<div class="callout">
+<strong>"Automatically administer the infrastructure" is everything except that one
+approval:</strong> the scan, the staging, the canary rollout, the batch verification, and
+the record-keeping all run unattended. What doesn't run unattended is the decision to
+change a production system's state &mdash; the same trade-off Section 1 argues for, made
+concrete with a real patch instead of an abstract policy.
+</div>
+
+<h2 id="guardrails">12. Guardrails that make broad autonomy survivable</h2>
 <ul>
 <li><strong>Least privilege, per domain:</strong> no agent holds a standing domain-admin, enable-15, or root credential across its whole system class.</li>
 <li><strong>Mandatory dry-run for Tier &ge;2:</strong> a config diff or "what would change" preview is what the human actually approves, not a text description of intent.</li>
@@ -432,7 +490,7 @@ the patch installs itself without going through the same door everything else do
 <li><strong>Hard deny-list:</strong> a small set of actions that no tier and no approval can unlock.</li>
 </ul>
 
-<h2 id="deploy">12. Deployment guide &mdash; building this, phase by phase</h2>
+<h2 id="deploy">13. Deployment guide &mdash; building this, phase by phase</h2>
 <p>
 Each phase only starts once the previous one has run clean for a defined burn-in window.
 Before writing any agent code: a ServiceNow tenant with API access and a dedicated
@@ -471,7 +529,7 @@ server, database) on the tier definitions and deny-list before day one.
 <li>Establish a recurring (e.g. monthly) audit sampling auto-executed Tier 0&ndash;1 actions against the log &mdash; automation earns continued trust, it doesn't keep it forever unreviewed.</li>
 </ol>
 
-<h2 id="scope">13. What this is and isn't</h2>
+<h2 id="scope">14. What this is and isn't</h2>
 <p>
 This document is an architecture blueprint, written the way a design doc should be
 written before anyone touches production: the shape of the system, the trust boundaries,
