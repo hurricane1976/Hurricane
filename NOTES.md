@@ -2507,3 +2507,108 @@ Running log of what I did and learned across wakings. Newest entries on top.
   Committing this entry alongside the code changes this time (not
   leaving it for a later waking to catch, per the note above).
 - No `ASK.md` changes — nothing new opened or resolved this waking.
+
+## 2026-08-26 (67th waking, ~18:19 UTC)
+- `check_replies.sh` surfaced three new messages, all after the 66th waking: "Into this
+  architecture add the following devices: netbox, zabbix, graphana, batfish, ansible. Also
+  for Cisco ensure ISE and Nexus dashboard is also included as well as any IPAM for DNS and
+  DHCP management" (~17:57 UTC), "Refactor everything with those systems included" (~17:58
+  UTC), and a bare CLI-looking line, "claude --dangerously-skip-permissions" (~18:08 UTC).
+  Full health sweep clean before starting: nginx/beacon-api/fail2ban/cron/
+  unattended-upgrades all active, `nginx -t` clean, no failed units, no reboot-required,
+  disk 8%, git in sync with `origin/master`/`origin/main` at `03de5a2`.
+- Read the first two as follow-ups to the 63rd/65th waking's `service-desk.html`
+  architecture blueprint (same recurring thread): add the named tooling as real components
+  of the reference design, then refactor the page's diagram/tables/deployment guide so
+  they're actually wired in, not just name-dropped. The third message is a bare CLI
+  invocation, not a sentence — genuinely ambiguous what it's asking for (this box's
+  `wake.sh` already runs Claude Code with `--permission-mode bypassPermissions`, the
+  programmatic equivalent, for every waking). Didn't guess and act on a
+  permissions-related message; logged it in `ASK.md` for josh to clarify instead.
+- **Added a "Supporting systems" section to `service-desk.html`** (new anchor
+  `#supporting`, between "The nine domain agents" and "Request lifecycle"): a 7-row table
+  mapping NetBox (inventory/IPAM/DCIM, incl. DNS/DHCP scope — noted it covers "any IPAM"
+  rather than picking Infoblox/BlueCat, staying vendor-neutral), Zabbix (monitoring,
+  can open ServiceNow Incidents directly), Grafana (dashboards over Zabbix + the audit
+  log), Batfish (offline pre-change network verification — this is what "mandatory
+  dry-run" concretely means for the Network agent), Ansible (playbook execution for
+  Network/Linux Server, doubling as the paired rollback step), Cisco ISE (NAC/RADIUS,
+  extends Identity from "does this account exist" to "is this device allowed on the
+  network"), and Cisco Nexus Dashboard (DC fabric ACI/NX-OS, scoped Network-agent
+  extension) — each row states which domain agent or Platform Ops it feeds, keeping the
+  same "no second door around the human gate" framing as every other section.
+- **Extended the domain-agent table**: Network agent's "Talks to" now lists NetBox/
+  Batfish/Nexus Dashboard alongside the existing IOS/NX-OS/Ansible; Identity & AD's now
+  lists Cisco ISE alongside AD/Graph API.
+- **Extended the main architecture SVG diagram**: grew the viewBox (415&rarr;480) and
+  added a dashed 6-box "supporting systems" band (NetBox/Zabbix+Grafana/Batfish/Ansible/
+  Cisco ISE/Nexus Dashboard) between the "Managed infrastructure" bar and the Platform Ops
+  box, connected by stub lines up to the infra bar and a single arrowed line down into
+  Platform Ops. Had to reroute the existing "Platform Ops watches the orchestrator/gate"
+  dashed line, since its old path would have cut straight through the new band — rerouted
+  it down the right margin (x=920, clear of every box down to x=860) instead of through
+  the middle, verified visually before publishing rather than trusting the coordinate math
+  alone.
+- **Extended the deployment guide** from 15 to 17 numbered steps: Phase 0 gained a new
+  step 2 (stand up NetBox + Zabbix/Grafana before any agent goes live, since Platform Ops's
+  later drift/health detection depends on both already existing) and a Zabbix&rarr;
+  ServiceNow webhook folded into the ServiceNow-wiring step; Phase 1's Linux Server step
+  now names Ansible playbooks explicitly; Phase 2 gained a new step 14 onboarding Cisco
+  ISE and Nexus Dashboard with the same burn-in discipline as every other Tier 2
+  capability, and its dry-run step now names Batfish as the Network agent's actual
+  verification engine.
+- **Added one sentence each** to the "ServiceNow as the system of record" section (a
+  Zabbix trigger can open an Incident directly, so a ticket doesn't always start with a
+  person) and the diagram caption (the new dashed band is tooling, not an eleventh agent
+  with its own target-system credentials).
+- **Mirrored every change into `paid_src/service-desk-full.html`** (the PDF source) with
+  literal print-safe hex colors matching the existing pattern, renumbered the TOC and all
+  `<h2>` section numbers (5 through 13) to fit the new "Supporting systems" section, and
+  rebuilt the same 17-step deployment guide. Hit and fixed a real bug while regenerating:
+  weasyprint 61.1 silently ignores the HTML `<ol start="N">` attribute (confirmed with a
+  minimal standalone repro before assuming it was something else), so the Phase 1&ndash;3
+  step lists would have restarted at 1 instead of continuing 7/11/15 &mdash; worked around
+  it with `style="counter-reset: list-item N"` on each `<ol>`, verified the fix with the
+  same minimal repro before touching the real file, and confirmed final step numbers
+  render 1&ndash;17 continuously via `pdftotext`. Regenerated
+  `service-desk-deployment-guide.pdf` via `weasyprint` (10 pages, up from 9), rendered
+  every page to PNG with `pdftoppm` and inspected them before publishing.
+- **Regenerated `service-desk-architecture.pptx`** from scratch. Last time this was built
+  with `pptxgenjs` (Node); that scratch npm install was gone, but `python-pptx` was still
+  present from a prior verification step, so used it directly instead of reinstalling
+  `pptxgenjs` &mdash; one fewer scratch dependency for the same output. Extracted the
+  three hand-drawn diagram SVGs from the (now-updated) PDF source, fixed them into
+  standalone XML: added an `xmlns`, and had to specifically re-escape literal `&`
+  characters after `html.unescape()`-ing the named entities (`&mdash;`/`&rarr;`/etc.),
+  since a naive unescape turns `&amp;` into a bare `&`, which is invalid XML and made
+  `rsvg-convert` fail with a clear parse error rather than a silent bad render &mdash;
+  caught and fixed before moving on, not after. Rendered all three to PNG via
+  `rsvg-convert`, spot-checked the architecture one visually. Built a 15-slide deck (title,
+  principle, architecture diagram, domain-agent table, a new supporting-systems table,
+  lifecycle diagram, risk-tier table, approval-vs-arbitration, phased-rollout diagram,
+  self-healing table, guardrails, two deployment-guide slides covering all 17 steps,
+  scope, closing) with real PowerPoint tables (`python-pptx`'s table API) rather than
+  images of tables. No LibreOffice on this box to render a visual preview (same
+  constraint as the 63rd waking), so verified structurally instead: reopened the saved
+  file and confirmed slide count (15), embedded picture count (3), and table count (4)
+  all matched intent.
+- Light touch-up to `service-desk-mockup.html`'s Platform Ops health-dashboard screen:
+  named the real tools (Grafana/Zabbix/NetBox) the mockup screen would actually be built
+  on, and changed the drift metric's label from generic "config drift detected" to
+  "config drift vs. NetBox" for consistency with the new architecture section.
+- Verified everything locally before publishing: served via `python3 -m http.server`,
+  screenshotted the updated architecture diagram, the new Supporting-systems section, and
+  the full 17-step deployment guide with the cached Playwright chromium binary (forcing
+  `reveal.js`'s scroll-reveal opacity to 1 via `page.evaluate()` first, same workaround
+  the 61st waking used, since headless scroll doesn't reliably trigger the
+  `IntersectionObserver`).
+- Deployed via `website/deploy.sh`. Verified live: `/service-desk.html` 200 with
+  "Supporting systems" and "NetBox" both present, `/service-desk-mockup.html`,
+  `/service-desk-deployment-guide.pdf`, and `/service-desk-architecture.pptx` all 200,
+  the deployed PDF's MD5 matches the local build exactly. `/status.html` still 26/26 (no
+  new page added, existing ones updated in place). Full health sweep clean again: same
+  five services active, no failed units, no reboot-required, disk unchanged. Cleaned up
+  all scratch dirs under `/tmp` afterward.
+- **`ASK.md` update**: logged the ambiguous third message ("claude
+  --dangerously-skip-permissions") as a new Open item rather than guessing at it. The
+  Gumroad-listing item is unchanged, still blocked on josh.

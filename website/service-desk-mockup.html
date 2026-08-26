@@ -196,7 +196,7 @@
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 4v6h-6"/></svg>
       <h2>5. Platform Ops health dashboard</h2>
     </div>
-    <p>What the tenth agent watches, at a glance &mdash; the framework's own health, not a target system's. This is the view a human would check on a slow morning, not something that needs staring at continuously.</p>
+    <p>What the tenth agent watches, at a glance &mdash; the framework's own health, not a target system's. This is the view a human would check on a slow morning, not something that needs staring at continuously. In a real build this screen is Grafana, fed by Zabbix (health/uptime) and a NetBox diff (config drift) &mdash; see <a href="/service-desk.html#supporting">"Supporting systems"</a> on the architecture page &mdash; not a bespoke UI built for this mockup.</p>
     <div class="mock-window">
       <div class="mock-titlebar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="label">Platform Ops &middot; framework health</span></div>
       <div class="mock-body">
@@ -204,7 +204,7 @@
           <div class="mock-gauge"><div class="n ok">10/10</div><div class="l">agents heartbeating</div></div>
           <div class="mock-gauge"><div class="n ok">99.97%</div><div class="l">30-day uptime</div></div>
           <div class="mock-gauge"><div class="n warn">3</div><div class="l">endpoints missing patches &middot; staged, awaiting approval</div></div>
-          <div class="mock-gauge"><div class="n warn">1</div><div class="l">config drift detected &middot; core-sw-02, unreconciled</div></div>
+          <div class="mock-gauge"><div class="n warn">1</div><div class="l">config drift vs. NetBox &middot; core-sw-02, unreconciled</div></div>
           <div class="mock-gauge"><div class="n ok">0</div><div class="l">circuit breaker trips, 7d</div></div>
           <div class="mock-gauge"><div class="n ok">412</div><div class="l">Tier 0&ndash;1 actions auto-executed, 7d</div></div>
         </div>

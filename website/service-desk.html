@@ -136,7 +136,7 @@
       <h2>High-level architecture</h2>
     </div>
     <div class="diagram-wrap">
-      <svg viewBox="0 0 950 415" role="img" aria-label="Architecture diagram: ServiceNow feeds an orchestrator agent, which is checked by a human approval and arbitration gate before routing to nine domain agents, which act on managed infrastructure; a tenth, dashed Platform Ops agent supervises the whole framework.">
+      <svg viewBox="0 0 950 480" role="img" aria-label="Architecture diagram: ServiceNow feeds an orchestrator agent, which is checked by a human approval and arbitration gate before routing to nine domain agents, which act on managed infrastructure; a supporting-systems band (NetBox, Zabbix/Grafana, Batfish, Ansible, Cisco ISE, Nexus Dashboard) feeds inventory, monitoring, and verification data across the framework; a tenth, dashed Platform Ops agent supervises the whole framework.">
         <defs>
           <marker id="arrD1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
             <path d="M0,0 L10,5 L0,10 z" fill="var(--muted)"/>
@@ -227,13 +227,43 @@
           <text x="460" y="303" text-anchor="middle" font-size="13" font-weight="700">Managed infrastructure</text>
           <text x="460" y="320" text-anchor="middle" font-size="10" fill="var(--muted)">network &amp; voice &middot; identity &amp; servers &middot; databases &middot; virtualization &middot; endpoints</text>
 
+          <!-- connectors: managed infra -> supporting systems band -->
+          <g stroke="var(--muted)" stroke-width="1.2">
+            <line x1="125" y1="335" x2="125" y2="350"/>
+            <line x1="260" y1="335" x2="260" y2="350"/>
+            <line x1="395" y1="335" x2="395" y2="350"/>
+            <line x1="530" y1="335" x2="530" y2="350"/>
+            <line x1="665" y1="335" x2="665" y2="350"/>
+            <line x1="800" y1="335" x2="800" y2="350"/>
+          </g>
+
+          <!-- Supporting systems & tooling band -->
+          <g font-size="10" text-anchor="middle">
+            <rect x="65" y="350" width="120" height="42" rx="7" fill="var(--card)" stroke="var(--accent-blue)" stroke-width="1.2" stroke-dasharray="3 3"/>
+            <text x="125" y="368">NetBox</text><text x="125" y="381" fill="var(--muted)" font-size="8.5">IPAM &middot; DCIM</text>
+
+            <rect x="200" y="350" width="120" height="42" rx="7" fill="var(--card)" stroke="var(--accent-blue)" stroke-width="1.2" stroke-dasharray="3 3"/>
+            <text x="260" y="368">Zabbix/Grafana</text><text x="260" y="381" fill="var(--muted)" font-size="8.5">monitoring</text>
+
+            <rect x="335" y="350" width="120" height="42" rx="7" fill="var(--card)" stroke="var(--accent-blue)" stroke-width="1.2" stroke-dasharray="3 3"/>
+            <text x="395" y="368">Batfish</text><text x="395" y="381" fill="var(--muted)" font-size="8.5">pre-change check</text>
+
+            <rect x="470" y="350" width="120" height="42" rx="7" fill="var(--card)" stroke="var(--accent-blue)" stroke-width="1.2" stroke-dasharray="3 3"/>
+            <text x="530" y="368">Ansible</text><text x="530" y="381" fill="var(--muted)" font-size="8.5">execution engine</text>
+
+            <rect x="605" y="350" width="120" height="42" rx="7" fill="var(--card)" stroke="var(--accent-blue)" stroke-width="1.2" stroke-dasharray="3 3"/>
+            <text x="665" y="368">Cisco ISE</text><text x="665" y="381" fill="var(--muted)" font-size="8.5">NAC &middot; RADIUS</text>
+
+            <rect x="740" y="350" width="120" height="42" rx="7" fill="var(--card)" stroke="var(--accent-blue)" stroke-width="1.2" stroke-dasharray="3 3"/>
+            <text x="800" y="368">Nexus Dash.</text><text x="800" y="381" fill="var(--muted)" font-size="8.5">DC fabric</text>
+          </g>
+
           <!-- Platform Ops supervisory agent -->
-          <line x1="460" y1="335" x2="460" y2="358" stroke="#e08a6a" stroke-width="1.4" stroke-dasharray="4 4" marker-end="url(#arrD1)"/>
-          <line x1="700" y1="150" x2="700" y2="290" stroke="#e08a6a" stroke-width="1.2" stroke-dasharray="4 4" opacity="0.7"/>
-          <line x1="700" y1="290" x2="620" y2="360" stroke="#e08a6a" stroke-width="1.2" stroke-dasharray="4 4" opacity="0.7" marker-end="url(#arrD1)"/>
-          <rect x="210" y="360" width="500" height="46" rx="10" fill="var(--card)" stroke="#e08a6a" stroke-width="1.5" stroke-dasharray="5 3"/>
-          <text x="460" y="380" text-anchor="middle" font-size="12.5" font-weight="700">10 Platform Ops &mdash; self-healing agent</text>
-          <text x="460" y="395" text-anchor="middle" font-size="9.5" fill="var(--muted)">watches every agent &amp; the orchestrator &middot; heals itself &middot; proposes patches &middot; never bypasses the gate</text>
+          <line x1="460" y1="392" x2="460" y2="413" stroke="#e08a6a" stroke-width="1.4" stroke-dasharray="4 4" marker-end="url(#arrD1)"/>
+          <path d="M890,122 L920,122 L920,438 L712,438" fill="none" stroke="#e08a6a" stroke-width="1.2" stroke-dasharray="4 4" opacity="0.7" marker-end="url(#arrD1)"/>
+          <rect x="210" y="415" width="500" height="46" rx="10" fill="var(--card)" stroke="#e08a6a" stroke-width="1.5" stroke-dasharray="5 3"/>
+          <text x="460" y="435" text-anchor="middle" font-size="12.5" font-weight="700">10 Platform Ops &mdash; self-healing agent</text>
+          <text x="460" y="450" text-anchor="middle" font-size="9.5" fill="var(--muted)">watches every agent &amp; the orchestrator &middot; heals itself &middot; proposes patches &middot; never bypasses the gate</text>
         </g>
       </svg>
     </div>
@@ -241,9 +271,12 @@
       Every agent and the human gate write append-only events to a shared audit log
       (omitted above for clarity &mdash; see "Guardrails," below). The orchestrator never
       holds direct credentials to target systems itself; only the narrow domain agent for
-      that system class does, and only for that class. The dashed box is different in kind
-      from the nine above it: it supervises the framework itself rather than owning one
-      target system class &mdash; see "Self-healing, self-patching, self-maintaining," below.
+      that system class does, and only for that class. The dashed supporting-systems band
+      feeding Platform Ops is inventory, monitoring, and verification tooling &mdash; see
+      "Supporting systems," above &mdash; not an eleventh agent with its own credentials to
+      target systems. The dashed Platform Ops box is different in kind from the nine domain
+      agents above it: it supervises the framework itself rather than owning one target
+      system class &mdash; see "Self-healing, self-patching, self-maintaining," below.
     </p>
   </section>
 
@@ -262,7 +295,10 @@
       bespoke dashboard bolted on the side; it's the orchestrator creating a real
       ServiceNow approval on the ticket and waiting on it, the same mechanism a human
       change-advisory-board reviewer already uses today. One system a human has to watch,
-      not a second inbox competing for their attention.
+      not a second inbox competing for their attention. A ticket also doesn't always start
+      with a person: a Zabbix alert (see "Supporting systems," below) can open an Incident
+      directly off a monitoring trigger, entering the exact same intake path as one a human
+      filed by hand.
     </p>
   </section>
 
@@ -289,8 +325,8 @@
     <div class="data-table-wrap">
       <table class="data-table">
         <tr><th>#</th><th>Domain agent</th><th>Talks to</th><th>Typical actions</th><th>Default tier</th></tr>
-        <tr><td>1</td><td>Network</td><td>Cisco IOS/NX-OS via NETCONF/RESTCONF, or Ansible</td><td>interface/VLAN checks, ACL review, config backup, port toggles</td><td><span class="tier-pill tier-2">Tier 2</span></td></tr>
-        <tr><td>2</td><td>Identity &amp; AD</td><td>LDAP/PowerShell over WinRM, Graph API</td><td>password resets, group membership, account unlock/disable</td><td><span class="tier-pill tier-1">Tier 1</span></td></tr>
+        <tr><td>1</td><td>Network</td><td>IOS/NX-OS via NETCONF/RESTCONF or Ansible; NetBox for inventory/IPAM, Batfish for pre-change verification, Nexus Dashboard for DC fabric</td><td>interface/VLAN checks, ACL review, config backup, port toggles</td><td><span class="tier-pill tier-2">Tier 2</span></td></tr>
+        <tr><td>2</td><td>Identity &amp; AD</td><td>LDAP/PowerShell over WinRM, Graph API, Cisco ISE for NAC/RADIUS</td><td>password resets, group membership, account unlock/disable</td><td><span class="tier-pill tier-1">Tier 1</span></td></tr>
         <tr><td>3</td><td>Windows Server</td><td>WinRM, PowerShell DSC</td><td>service restarts, patch status, disk/log cleanup</td><td><span class="tier-pill tier-1">Tier 1</span></td></tr>
         <tr><td>4</td><td>Linux Server</td><td>SSH, Ansible</td><td>service restarts, package/patch checks, log rotation</td><td><span class="tier-pill tier-1">Tier 1</span></td></tr>
         <tr><td>5</td><td>Database</td><td>native SQL drivers, read-replica first</td><td>query diagnostics, index/maintenance jobs, backup verification</td><td><span class="tier-pill tier-2">Tier 2</span></td></tr>
@@ -305,6 +341,40 @@
       agent &mdash; a Firewall agent's read-only log query is Tier 0; the same agent's
       permanent rule change is Tier 3. See the risk-tier matrix below for how tier is
       actually decided.
+    </p>
+  </section>
+
+  <section class="card" id="supporting" style="margin-top:1.1rem;">
+    <div class="card-head">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v6H4zM4 14h7v6H4zM14 14h6v3M14 20h6"/></svg>
+      <h2>Supporting systems &mdash; inventory, monitoring &amp; network assurance</h2>
+    </div>
+    <p>
+      The nine domain agents above are the actors; they don't operate blind. A handful of
+      existing operations tools do the sensing, verification, and execution work underneath
+      them &mdash; the architecture slots into these rather than reinventing what they
+      already do well. None of it opens a second door around the human approval/arbitration
+      gate: each tool below is a data source or execution backend for one specific domain
+      agent (or for Platform Ops), governed by the exact same credential-scoping and tier
+      rules as everything else in this design.
+    </p>
+    <div class="data-table-wrap">
+      <table class="data-table">
+        <tr><th>System</th><th>Role</th><th>Feeds / used by</th></tr>
+        <tr><td><strong>NetBox</strong></td><td>Inventory &amp; IPAM/DCIM &mdash; source of truth for device inventory, IP address space, and DNS/DHCP scope assignments</td><td>Network agent reads before it writes; Platform Ops diffs live config against NetBox the same way it diffs against the CMDB</td></tr>
+        <tr><td><strong>Zabbix</strong></td><td>Monitoring &amp; alerting across network, server, and hypervisor layers</td><td>Platform Ops (heartbeat/health source); a Zabbix trigger can open a ServiceNow Incident directly, so a ticket doesn't always start with a person</td></tr>
+        <tr><td><strong>Grafana</strong></td><td>Dashboards over Zabbix and the audit log</td><td>Human approvers &amp; Platform Ops &mdash; the actual screen behind the health-dashboard mockup, not a bespoke UI built for this project</td></tr>
+        <tr><td><strong>Batfish</strong></td><td>Offline network config verification &mdash; validates a proposed change against a modeled copy of the real topology before anything touches a device</td><td>Network agent &mdash; this is what "mandatory dry-run" concretely means for Tier &ge;2 network changes, not just a live-device diff</td></tr>
+        <tr><td><strong>Ansible</strong></td><td>Playbook-driven execution &amp; config management</td><td>Network and Linux Server agents &mdash; idempotent playbooks double as the paired rollback/undo step the guardrails already require</td></tr>
+        <tr><td><strong>Cisco ISE</strong></td><td>Network access control &mdash; RADIUS/TACACS+, 802.1X posture, endpoint quarantine</td><td>Identity agent &mdash; extends it from "does this account exist" to "is this device allowed on the network right now"</td></tr>
+        <tr><td><strong>Cisco Nexus Dashboard</strong></td><td>Data-center fabric (ACI/NX-OS) telemetry &amp; orchestration</td><td>Network agent, scoped to DC fabric &mdash; distinct from the box-by-box campus/branch config the base agent already handles</td></tr>
+      </table>
+    </div>
+    <p style="margin-top:0.8rem; font-size:0.88rem; color:var(--muted);">
+      IPAM's DNS/DHCP scope management is covered by NetBox's own IPAM module above rather
+      than a separate product &mdash; the architecture doesn't lock into one vendor there;
+      an Infoblox or BlueCat deployment slots into the same Network-agent role if that's
+      what a given environment already runs.
     </p>
   </section>
 
@@ -571,14 +641,20 @@
             <strong>1.</strong> Stand up the audit log store first, before any agent code
             runs &mdash; every action from day one must be logged, including the ones that
             don't happen yet.<br>
-            <strong>2.</strong> Wire the ServiceNow integration: subscribe to new
-            Incident/Request/Change records, scoped read access to the CMDB.<br>
-            <strong>3.</strong> Build the orchestrator's intake and classification step,
+            <strong>2.</strong> Stand up NetBox as the inventory/IPAM source of record and
+            Zabbix + Grafana as the monitoring stack &mdash; Platform Ops's drift and health
+            detection in later phases depend on both already existing, not bolted on after
+            agents go live.<br>
+            <strong>3.</strong> Wire the ServiceNow integration: subscribe to new
+            Incident/Request/Change records, scoped read access to the CMDB, and a Zabbix
+            &rarr; ServiceNow Incident webhook so monitoring alerts enter the same intake
+            path as a human-filed ticket.<br>
+            <strong>4.</strong> Build the orchestrator's intake and classification step,
             and a first-pass risk-tier scorer.<br>
-            <strong>4.</strong> Have the orchestrator draft a plan for every incoming
+            <strong>5.</strong> Have the orchestrator draft a plan for every incoming
             ticket and write it to the audit log &mdash; but wire <em>no</em> domain agent
             execution yet.<br>
-            <strong>5.</strong> Run this for a fixed window (four to six weeks is a
+            <strong>6.</strong> Run this for a fixed window (four to six weeks is a
             reasonable start) comparing the orchestrator's draft plans against what human
             staff actually did, and tune classification and tiering against the gap before
             anything is allowed to act.
@@ -587,47 +663,54 @@
         <tr>
           <td><span class="tier-pill tier-1">Phase 1</span><br>Low-risk automation</td>
           <td>
-            <strong>6.</strong> Build one domain agent end-to-end &mdash; Identity/AD
+            <strong>7.</strong> Build one domain agent end-to-end &mdash; Identity/AD
             password reset is a good first choice: high volume, low blast radius, clean
             rollback (re-reset). Scoped credential checkout, execution, a verification
             step, and a defined undo, all before it's allowed to run unattended.<br>
-            <strong>7.</strong> Wire the policy engine's auto-execute path for
+            <strong>8.</strong> Wire the policy engine's auto-execute path for
             <span class="tier-pill tier-0">Tier 0</span>&ndash;<span class="tier-pill tier-1">Tier 1</span>
             only; anything the scorer can't confidently place in that range hard-stops to
             a human by default, not the other way around.<br>
-            <strong>8.</strong> Add circuit breakers &mdash; an actions-per-hour cap, a
+            <strong>9.</strong> Add circuit breakers &mdash; an actions-per-hour cap, a
             blast-radius-per-action cap, and a manual kill switch &mdash; before turning on
             any unattended execution, not after the first incident that needed one.<br>
-            <strong>9.</strong> Bring the rest of the Tier 1 agents (Windows Server, Linux
-            Server, Voice/CUCM) online one at a time, each running clean through its own
-            burn-in period before the next one starts.
+            <strong>10.</strong> Bring the rest of the Tier 1 agents (Windows Server, Linux
+            Server via Ansible playbooks, Voice/CUCM) online one at a time, each running
+            clean through its own burn-in period before the next one starts.
           </td>
         </tr>
         <tr>
           <td><span class="tier-pill tier-2">Phase 2</span><br>Approved mutation</td>
           <td>
-            <strong>10.</strong> Wire the actual approval mechanism: the orchestrator
+            <strong>11.</strong> Wire the actual approval mechanism: the orchestrator
             creates a native ServiceNow Approval record on the ticket and blocks on its
             state, the same object a human change-advisory reviewer already uses today.<br>
-            <strong>11.</strong> Build the mandatory dry-run capability for each remaining
-            Tier 2 agent (Network, Database, Firewall, VMware, Desktop) &mdash; a real
-            config diff or "what would change" preview, since that's what the human
-            actually approves, not a text description of intent.<br>
-            <strong>12.</strong> Bring these agents online one at a time behind the
+            <strong>12.</strong> Build the mandatory dry-run capability for each remaining
+            Tier 2 agent (Network, Database, Firewall, VMware, Desktop) &mdash; for the
+            Network agent specifically, this is where Batfish gets wired in as the actual
+            pre-change verification engine against a modeled topology, not a generic live
+            diff; every other Tier 2 agent gets its own real config diff or "what would
+            change" preview, since that's what the human actually approves, not a text
+            description of intent.<br>
+            <strong>13.</strong> Bring these agents online one at a time behind the
             approval gate, same burn-in discipline as Phase 1, confirming real humans are
-            actually reading the dry-run diff and not rubber-stamping it.
+            actually reading the dry-run diff and not rubber-stamping it.<br>
+            <strong>14.</strong> Onboard Cisco ISE for the Identity agent's NAC actions
+            (quarantine/un-quarantine) and Nexus Dashboard for DC-fabric-scoped Network
+            actions &mdash; same burn-in discipline as every other Tier 2 capability; a
+            new integration doesn't earn a trust shortcut for arriving later.
           </td>
         </tr>
         <tr>
           <td><span class="tier-pill tier-3">Phase 3</span><br>Broad autonomy</td>
           <td>
-            <strong>13.</strong> Build Platform Ops last, once the rest of the framework
+            <strong>15.</strong> Build Platform Ops last, once the rest of the framework
             has a track record &mdash; it needs the most earned trust of any agent here,
             since it touches the framework's own execution path.<br>
-            <strong>14.</strong> Formalize two-person approval for
+            <strong>16.</strong> Formalize two-person approval for
             <span class="tier-pill tier-3">Tier 3</span> and the arbitration flow
             (competing plans surfaced side by side, per "Approval vs. arbitration" above).<br>
-            <strong>15.</strong> Establish a recurring audit cadence &mdash; monthly is a
+            <strong>17.</strong> Establish a recurring audit cadence &mdash; monthly is a
             reasonable start &mdash; sampling auto-executed
             <span class="tier-pill tier-0">Tier 0</span>&ndash;<span class="tier-pill tier-1">Tier 1</span>
             actions against the log, the same way a human team audits itself. Automation

@@ -2,6 +2,17 @@
 
 ## Open
 
+- **Unclear message: "claude --dangerously-skip-permissions"** josh sent this via Telegram
+  (2026-08-26, ~18:08 UTC), right after two clear service-desk asks (see Resolved below).
+  Read literally it's a CLI invocation, not a request in sentence form, so it's genuinely
+  ambiguous what action (if any) it's asking for — this box's own `wake.sh` already runs
+  Claude Code with `--permission-mode bypassPermissions` (the programmatic equivalent) for
+  every waking, so if this was about *this* agent's own permission mode, nothing changes.
+  Didn't guess and act on it since misreading a permissions-related message seemed like
+  exactly the kind of thing worth confirming first rather than assuming. If josh meant
+  something else (e.g. a note about a *different* Claude Code session he's running
+  himself), a one-line clarification would resolve this.
+
 - **Third Gumroad listing needed — Beacon starter kit ($12).** josh asked
   (2026-08-25, ~23:32/23:39 UTC, between the 57th and 58th wakings) for a
   lighthouse graphic and to "keep trying to build and add new things to
