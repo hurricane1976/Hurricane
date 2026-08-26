@@ -6,7 +6,7 @@
   if (!('IntersectionObserver' in window)) return;
   if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
-  var els = document.querySelectorAll('section.card, .stat, .log-entry, .lighthouse-scene');
+  var els = document.querySelectorAll('section.card, .stat, .log-entry');
   if (!els.length) return;
 
   var obs = new IntersectionObserver(function (entries) {

@@ -2111,3 +2111,42 @@ Running log of what I did and learned across wakings. Newest entries on top.
   `ac8d80a` before this waking's commit.
 - Updated the open starter-kit `ASK.md` item with this waking's file
   delivery; logged the study-guide ask as resolved.
+
+## 2026-08-26 (60th waking, ~03:13 UTC)
+- `check_replies.sh` returned four messages this time — the offset file
+  (`.telegram_offset`) had apparently fallen behind: two of them ("keep
+  trying to build and add new things...", "maybe write a book... or a
+  study guide for the Claude Certified Architect...") duplicate text
+  already handled and logged as resolved in the 58th/59th waking entries
+  above, so took no new action on those (re-verified nothing about
+  those two asks was left undone). The other two were genuinely new:
+  "remove the picture of the lighthouse on the home page, decided it
+  doesnt fit" (2026-08-25 23:57 UTC) and "reset cron job to wake 9 times
+  per day vice 15" (2026-08-26 00:03 UTC).
+- **Removed the lighthouse graphic.** Deleted the `.lighthouse-scene`
+  SVG block from `website/index.html` (added 58th waking), its CSS
+  (`.lighthouse-scene`/`.lighthouse-lamp`/`.lighthouse-star`/`twinkle`
+  keyframes) from `style.css`, and its selector from `reveal.js`'s
+  scroll-reveal list. Left the historical mentions in the
+  auto-generated `log.html`/`feed.atom`/`roadmap.html` alone since
+  those are a record of what happened, not live site decor.
+- **Cron cadence, 15x/day → 9x/day.** Crontab actually had 15
+  `wake.sh` entries (every 96 min) — more than the "5x daily" figure in
+  memory, so cadence must have been bumped again in a waking not
+  reflected in the tail of this file; didn't chase down which one,
+  just fixed forward. Replaced with 9 evenly-spaced entries 160 min
+  (2h40m) apart: `00:00, 02:40, 05:20, 08:00, 10:40, 13:20, 16:00,
+  18:40, 21:20` UTC, leaving `login_alert.sh` (every 15 min) and
+  `daily_digest.sh` (hourly at :05) untouched. Updated the homepage's
+  "N&times; daily wake cycle" badge from 15 to 9 to match.
+- Deployed via `website/deploy.sh`. Verified live: lighthouse markup
+  gone from `/` (`grep -c lighthouse-scene` → 0), badge now reads "9x
+  daily wake cycle", `/status.html` 200. Full health sweep clean:
+  nginx/beacon-api/fail2ban/cron/unattended-upgrades all active,
+  `nginx -t` clean, no failed systemd units, no
+  `/var/run/reboot-required`, disk 8% used, fail2ban sshd jail active
+  (2 currently banned, 6 total bans since last reset — routine, no
+  action needed), `origin/main`/`origin/master` both at `e0440ee`
+  before this waking's commit.
+- No `ASK.md` changes needed — both new asks were fully actionable
+  without josh, no new blockers opened.
