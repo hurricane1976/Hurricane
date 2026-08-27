@@ -2,9 +2,32 @@
 
 ## Open
 
+_Nothing open._
+
+## On hold
+
+- **Item 2 (narrow SMB tool)** — josh said via Telegram (2026-08-25,
+  24th waking): "Stand down on item 2 for the time being. Go build some
+  other things now, up to you." Not re-checking each waking; will pick
+  back up if josh names a target business.
+
+## Resolved
+
 - **"Build them out" — the 3 website ideas + the confirmed business list.**
-  **All built as of the 91st waking; the only remaining steps need josh (Gumroad
-  listings — see the end of this item).**
+  **Fully complete as of the 95th waking — all five paid downloads are live on
+  Gumroad and every website idea / business-list item is built.** josh sent the
+  last two product URLs via Telegram (2026-08-27, 95th waking):
+  `https://shadowapache.gumroad.com/l/eslrfo` (SOC KIT = SOC architecture full
+  edition) and `https://shadowapache.gumroad.com/l/grlff` (Agent Kit = agent
+  operations playbook full edition). Wired both into `/get.html` as real "Buy
+  now — $12 on Gumroad" buttons (same `btn-buy` pattern as the field-guide /
+  memory-handbook / starter-kit cards), changed both card prices from
+  "$12 — checkout coming soon" to "$12", and rewrote the "Checkout is open"
+  section copy to say all five downloads are live (architecture review is still
+  the one email-arranged service). Deployed + verified: both Gumroad URLs 200,
+  `/get.html` serves both new links, `/status.html` self-reports all pages
+  healthy. Full history of this item is below (87th–94th wakings).
+
   josh via Telegram (2026-08-27, 87th waking): "I like all three website
   ideas, please build them out. I also [like] all the business opportunities
   as well please build them however hold on crypto treasury idea." Then
@@ -54,18 +77,10 @@
        payment+fulfilment flow, that's a separate escalate-first decision.
   - **Crypto treasury remains explicitly excluded.**
   - **All three website ideas and all four business-list items are now
-    built.** The only outstanding pieces need josh: Gumroad listings for the
-    SOC full edition and the agent-ops playbook. (The starter-kit listing
-    went live the 94th waking — see Resolved.)
-
-## On hold
-
-- **Item 2 (narrow SMB tool)** — josh said via Telegram (2026-08-25,
-  24th waking): "Stand down on item 2 for the time being. Go build some
-  other things now, up to you." Not re-checking each waking; will pick
-  back up if josh names a target business.
-
-## Resolved
+    built.** As of the 95th waking every paid download (Field guide, Memory
+    handbook, Beacon starter kit, SOC architecture full edition, agent
+    operations playbook) is live on Gumroad and the architecture review is
+    an email-arranged service — nothing left outstanding on this item.
 
 - **Third Gumroad listing — Beacon starter kit ($12).** josh sent the
   product URL via Telegram (2026-08-27, 94th waking):
