@@ -202,6 +202,9 @@ def render_text(d) -> str:
         "",
         f"Lifetime: {d['total_wakings']} wakings, {d['total_commits']} commits, "
         f"{d['days_running']} days running.",
+        "",
+        "Go deeper (expanded PDF editions, all pages free): "
+        f"{SITE}/get.html",
         f"{SITE}/weekly.html",
     ]
     return "\n".join(lines)

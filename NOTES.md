@@ -3608,3 +3608,64 @@ Running log of what I did and learned across wakings. Newest entries on top.
 - **`ASK.md`:** updated the in-progress website item — SOC/IR architecture
   now done, only the interactive ticket-trace walkthrough left. Business
   list unchanged (still waiting on josh).
+
+## 2026-08-27 (89th waking, ~13:20 UTC)
+
+- `check_replies.sh`: one new message from josh — "build this please: Low-risk
+  / on-brand: the productized guides you already sell (add more: the SOC
+  architecture, an 'agent ops' playbook); a free weekly newsletter that
+  upsells them; paid 'architecture review' where the deliverable is a
+  generated report." This is josh quoting back the 86th waking's Telegram
+  shortlist and greenlighting it — i.e. the "business list" that `ASK.md`'s
+  open item was waiting on him to re-confirm. So the open item is no longer
+  blocked; it's now a concrete build list.
+- Health sweep first, all green: nginx/beacon-api/fail2ban/cron/
+  unattended-upgrades all active, `nginx -t` clean, no failed units, no
+  `/var/run/reboot-required`, disk 9%, `master` in sync with `origin/master`
+  at `628ada2`. fail2ban sshd: 0 currently banned, 6 lifetime.
+- Scoped this waking to the two most concrete, no-blocker pieces of that
+  list, done properly, rather than a thin pass at all four:
+- **Built the SOC architecture full edition PDF.** New
+  `website/paid_src/soc-architecture-full.html` (mirrors last waking's
+  `soc-architecture.html` content, restructured for print: cover, 15-section
+  TOC, `table.ptable`/`.ptier` pills, `.callout` boxes) rendered via the
+  system `weasyprint` to `website/paid/soc-architecture-full.pdf` — **13
+  pages**. All four diagrams ported into `.diagram-block` SVGs with the
+  literal print-hex palette (`var(--card)`→`#f7ede8`, `--accent`→`#c96343`,
+  `--accent-blue`→`#3d5a80`, `--accent-2`→`#6b8f4e`, `--muted`→`#5b6270`,
+  `--accent-violet`→`#7d5ba6`, `--line`→`#d8d3c8`, `#e08a6a` kept) — same
+  fix the service-desk/ops-SOP full editions use, since weasyprint doesn't
+  resolve CSS `var()` inside inline SVG. Verified by rendering the PDF to
+  PNGs at 70dpi and eyeballing every page: architecture diagram, lifecycle
+  flowchart (both diamonds + rollback loop), severity ladder, and rollout
+  timeline all render legibly in colour; cover, tables, and callouts styled
+  correctly. Added two sections the free page doesn't have: **"Credential
+  scope per agent"** (§5) and a **"90-day build order"** table (§14).
+- **Listed it on `/get.html`** as a new product card ("$12 — checkout
+  coming soon", same pattern the starter kit uses before its Gumroad
+  listing exists). Broadened the hero tagline and the "Checkout is open"
+  section copy to cover it. The PDF stays in `website/paid/` and is **not**
+  wired into `deploy.sh` — like the other paid PDFs it's delivered via
+  Gumroad, so josh uploads it when he creates the listing. Needs josh to
+  create a Gumroad listing + send the URL; then the "Buy now" button is a
+  one-line `get.html` edit, same flow as the field-guide/memory-handbook.
+- **Weekly digest now upsells the guides.** Added a "From the workshop" card
+  to `weekly.template.html` (links the SOC/Field-guide/Memory-handbook
+  full editions + the free companion architecture pages) and a "Go deeper"
+  line to `build_weekly.py`'s `--text` output (what `weekly_digest.sh`
+  sends to Telegram). Kept it low-key — "everything above is free and
+  always will be" up front; the paid editions are the go-deeper option, not
+  the pitch. First real Telegram send is still Monday 2026-08-31 ~08:00 ET.
+- Verified: `build_weekly.py --text` + HTML build both clean, `get.html`
+  and `weekly.html` tag-balanced. Deployed via `deploy.sh`; live checks —
+  `/get.html` 200 with the SOC card, `/weekly.html` 200 with the upsell
+  card, `/soc-architecture.html` still 200, `/status.html` still 33/33
+  (the paid PDF isn't a tracked page). Cleaned up `/tmp/socpdf`.
+- **`ASK.md`:** rewrote the open item. Business list is now confirmed and
+  itemised: (1) SOC full edition — **done this waking**; (2) "agent ops"
+  playbook — queued as the next paid guide; (3) weekly newsletter upsell —
+  **done this waking**; (4) paid "architecture review" service — queued,
+  and flagged that it commits to fulfilment work per request, so the build
+  is a landing/offer page (contact to arrange), not a live automated
+  payment+delivery pipeline, unless josh says otherwise. Website
+  ticket-trace walkthrough still queued from the 87th waking.

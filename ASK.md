@@ -2,35 +2,44 @@
 
 ## Open
 
-- **"Build them out" — the 3 website ideas + the autonomous-business ideas.**
-  josh via Telegram (2026-08-27, ~10:xx UTC, 87th waking): "I like all
-  three website ideas, please build them out. I also [like] all the
-  business opportunities as well please build them however hold on crypto
-  treasury idea." This is a reply to the 86th waking's Telegram message,
-  which proposed (website) an interactive ticket-trace walkthrough, a
-  second SOC / incident-response reference architecture, an agent-to-agent
-  protocol page, and a runnable starter repo; and (business) a grounded
-  take flagging that anything touching real money/custody hits AGENT.md's
-  escalate-first line.
-  - **Website — in progress.** 87th waking built idea #3, the
-    **agent-to-agent coordination protocol** page (`/agent-protocol.html`).
-    88th waking built the **SOC / incident-response reference architecture**
-    (`/soc-architecture.html`, live, linked from service-desk /
-    operations-sop / agent-protocol / integration-guide). Still to build:
-    the **interactive ticket-trace walkthrough** (a JS stepper over the
-    existing lifecycle) — planned for the next waking. The "runnable starter
-    repo" overlaps the parked Gumroad starter-kit item below — not reviving
-    that without a separate go.
-  - **Business — needs the specific list re-confirmed before building.**
-    The exact shortlist sent in the 86th waking's Telegram message was not
-    preserved verbatim in the repo (only a one-line summary survives), so
-    "build them all" doesn't map cleanly to concrete deliverables. Also,
-    most genuinely-autonomous business options route through payment
-    rails / accounts / a storefront, which per AGENT.md is escalate-first
-    even with a general "build them" — needs josh to name each one he
-    wants and confirm which (if any) involve real money he's authorising.
-    **Crypto treasury is explicitly excluded per this message.** Asked
-    josh over Telegram to re-send the specific business list.
+- **"Build them out" — the 3 website ideas + the confirmed business list.**
+  josh via Telegram (2026-08-27, 87th waking): "I like all three website
+  ideas, please build them out. I also [like] all the business opportunities
+  as well please build them however hold on crypto treasury idea." Then
+  (89th waking) he re-sent the business shortlist verbatim: "build this
+  please: Low-risk / on-brand: the productized guides you already sell (add
+  more: the SOC architecture, an 'agent ops' playbook); a free weekly
+  newsletter that upsells them; paid 'architecture review' where the
+  deliverable is a generated report."
+  - **Website ideas (from the 86th waking's message).** #3 agent-to-agent
+    coordination protocol page (`/agent-protocol.html`) — **done, 87th**.
+    #2 SOC / incident-response reference architecture (`/soc-architecture.html`)
+    — **done, 88th**. Still to build: the **interactive ticket-trace
+    walkthrough** (a JS stepper over the existing lifecycle). The "runnable
+    starter repo" overlaps the parked Gumroad starter-kit item below — not
+    reviving that without a separate go.
+  - **Business list (confirmed 89th waking):**
+    1. **SOC architecture as a paid guide** — **done, 89th.** Built
+       `paid_src/soc-architecture-full.html` → `paid/soc-architecture-full.pdf`
+       (13pp), listed on `/get.html` at "$12 — checkout coming soon".
+       **Needs josh:** create a Gumroad listing (upload the PDF from
+       `website/paid/`) and send the URL — then the "Buy now" button is a
+       one-line `get.html` edit, same as the field-guide/memory-handbook.
+    2. **"Agent ops" playbook** — queued as the next paid guide. Likely a
+       condensed operator's manual drawing on operations-sop + agent-protocol
+       + the service-desk Platform Ops material.
+    3. **Free weekly newsletter that upsells the guides** — **done, 89th.**
+       Added a "From the workshop" card to `weekly.template.html` and a
+       "Go deeper" line to the `weekly_digest.sh` Telegram body. (The
+       weekly digest itself was built the 86th waking.)
+    4. **Paid "architecture review" (deliverable = a generated report)** —
+       queued. This one commits to fulfilment work (someone pays, expects a
+       custom report back), so the plan is to build a landing/offer page
+       describing the service with "contact to arrange" (email already on
+       `/build.html`), **not** a live automated payment+delivery pipeline —
+       standing up recurring paid fulfilment is escalate-first. Will confirm
+       that read with josh before/at build.
+  - **Crypto treasury remains explicitly excluded.**
 
 ## On hold
 
