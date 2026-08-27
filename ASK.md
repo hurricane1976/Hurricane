@@ -55,49 +55,8 @@
   - **Crypto treasury remains explicitly excluded.**
   - **All three website ideas and all four business-list items are now
     built.** The only outstanding pieces need josh: Gumroad listings for the
-    SOC full edition, the agent-ops playbook, and the starter kit (parked).
-
-- **Third Gumroad listing needed — Beacon starter kit ($12). UNPARKED
-  2026-08-27 (93rd waking).** josh via Telegram: "send starter kit files
-  so i can upload" — read as resuming the parked Gumroad task. Re-sent
-  both deliverables (`website/paid/beacon-starter-kit.zip` and
-  `website/paid/beacon-starter-kit-full.pdf`, 5pp) over Telegram
-  `sendDocument` this waking (msg ids 280/281); both verified valid first
-  (zip `testzip` clean / 10 files, PDF `pdfinfo` clean) and both confirmed
-  up to date vs their `paid_src/` sources. **Still needs josh:** create
-  the Gumroad listing from those files and send back the product URL —
-  then the "Buy now" button on `/get.html` is a one-line edit, same flow
-  as the field-guide/memory-handbook/SOC/agent-ops listings.
-  Prior park note (2026-08-26, 72nd waking, "hold on the gumroad task,
-  park it") is now superseded. Original context:
-  josh asked
-  (2026-08-25, ~23:32/23:39 UTC, between the 57th and 58th wakings) for a
-  lighthouse graphic and to "keep trying to build and add new things to
-  the website... additional products conceived and added." Built a third
-  product the 58th waking: `website/paid/beacon-starter-kit.zip` — a
-  sanitized/generalized zip of this project's actual scripts (wake.sh,
-  notify.sh, digest.sh, check_replies.sh, an AGENT.md/NOTES.md/ASK.md/
-  memory-index template set) plus a copy-paste SETUP.md walkthrough.
-  Listed on `/get.html` as "$12 — checkout coming soon" (same pattern the
-  first two products used before their Gumroad links existed). Needs josh
-  to create a third Gumroad listing and send back the product URL,
-  same as the field-guide/memory-handbook flow — once it lands, wiring
-  the real "Buy now" button is a one-line edit to `get.html`.
-  **Update (59th waking):** josh replied via Telegram "provide a link to
-  the beacon starter kit, ensure it's in color like the rest" — read as
-  wanting the actual deliverable file(s) in hand (to upload when creating
-  the Gumroad listing), colorized like the two PDF guides. There's no
-  Gumroad API credential on this box to create a listing directly, so
-  instead: built a colorized companion PDF of the kit's `SETUP.md`
-  walkthrough (`website/paid_src/starter-kit-full.html` →
-  `website/paid/beacon-starter-kit-full.pdf`, same rust/navy/olive
-  `print.css` palette as the other two full editions), and sent both that
-  PDF and the existing `beacon-starter-kit.zip` directly to josh over
-  Telegram (`sendDocument`) so he has the real files to attach when he
-  creates the listing. Still needs josh to actually create the Gumroad
-  listing and send back the product URL — that's the one step that
-  needs a real person/storefront. **Update (93rd waking): unparked, files
-  re-sent — see the top of this item.**
+    SOC full edition and the agent-ops playbook. (The starter-kit listing
+    went live the 94th waking — see Resolved.)
 
 ## On hold
 
@@ -108,9 +67,28 @@
 
 ## Resolved
 
+- **Third Gumroad listing — Beacon starter kit ($12).** josh sent the
+  product URL via Telegram (2026-08-27, 94th waking):
+  "https://shadowapache.gumroad.com/l/cunjhm is the URL for the starter
+  kit". Wired it into `/get.html` as a real "Buy now" button ($12 on
+  Gumroad), same pattern as the field-guide/memory-handbook cards;
+  changed the card price from "$12 — checkout coming soon" to "$12" and
+  updated the "Checkout is open" section copy to list the starter kit
+  among the live products (SOC full edition + agent-ops playbook are the
+  two still awaiting listings). Deployed and verified: button live on
+  `https://www.beaconwake.com/get.html`, the Gumroad URL itself returns
+  200. History: third product built the 58th waking
+  (`website/paid/beacon-starter-kit.zip` — sanitized templates of this
+  project's real scripts + a `SETUP.md` walkthrough), colorized companion
+  PDF added the 59th (`beacon-starter-kit-full.pdf`, 5pp), files sent to
+  josh over Telegram the 59th and re-sent the 93rd; parked the 72nd
+  ("hold on the gumroad task, park it"), unparked the 93rd ("send starter
+  kit files so i can upload"). Now fully live.
+
 - **"hold on the gumroad task, park it"** — josh via Telegram
   (2026-08-26, between the 71st and 72nd wakings). Moved the Gumroad
-  Open item to On hold this waking (72nd), see above.
+  Open item to On hold this waking (72nd), see above. Superseded by the
+  93rd-waking unpark and resolved the 94th (starter-kit listing live).
 
 - **"i want to allow all rules and permissions, basically for claude to do
   anything" / "i want claude to have full access to everything needed"**
