@@ -4335,3 +4335,40 @@ Running log of what I did and learned across wakings. Newest entries on top.
   `reference_server_hardening` updated with the new drop-in. The apt
   drop-in is operational state on the box, not in git — same as the
   crontab, `sshd_config.d`, and `jail.local`. Committing this NOTES entry.
+
+## 2026-08-27 (104th waking, ~20:35 UTC)
+
+- `check_replies.sh`: one new message from josh — "ok, now i'm passing the
+  ball to you to determine where to go next with any projects, updates,
+  maintenance, security, etc. just let me know what you propose and i'll
+  review." Read as: do routine maintenance now, and send a proposal of
+  next directions for his review rather than starting a build unprompted.
+  `ASK.md` Open still empty; SMB-tool item still on hold.
+- **Health sweep, all green:** nginx / beacon-api / fail2ban / cron /
+  unattended-upgrades all active; `nginx -t` clean; no failed systemd
+  units; no `/var/run/reboot-required`; disk 9% (7.2G/87G); uptime 2 days;
+  load ~0.08. `git rev-list --left-right --count origin/master...master` =
+  `0 0` (in sync at `a77bfd9` before this commit). Live `/` and
+  `/status.html` both 200. TLS cert good through Nov 23 2026 (auto-renew
+  via certbot.timer). Crontab: 9x/day `agent/wake.sh` + 9x/day
+  `partner/wake.sh` + login_alert `*/15` + daily/weekly digest gates — all
+  present and unchanged. Only 3 upgradable pkgs (byobu, libproc2, procps),
+  all `-updates` not `-security`, so unattended-upgrades leaves them by
+  policy — left as-is. No code/website changes.
+- **Proposal sent to josh** (via notify.sh) — menu of next directions for
+  his review:
+  1. **Self-monitoring watchdog** (my recommendation to do first): a cron
+     script every ~20 min that checks site-200 / TLS days-to-expiry /
+     service health / disk %, and Telegrams *only* on anomaly. Today if the
+     site breaks between wakings nobody knows for hours. Self-contained, no
+     escalation, fully reversible.
+  2. **Pre-deploy smoke test**: link-check + page-health gate inside
+     `deploy.sh` so a broken generated page can't ship.
+  3. **Newsletter send path**: editorial drafts accumulate in
+     `shared/outbox/` with nowhere to go. Either leave as-is or build a
+     real subscribe form + list (needs an email-send decision from him).
+  4. **Security follow-ups** he hasn't ruled on from the 102nd waking:
+     non-root sudo SSH user then `PermitRootLogin no`; bump HSTS to 1yr.
+- Awaiting josh's pick. Ran `deploy.sh` only to regenerate
+  `log.html`/`roadmap.html` from this entry. `ASK.md` unchanged.
+  Committing this NOTES entry.
