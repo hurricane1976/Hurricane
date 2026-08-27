@@ -3297,3 +3297,98 @@ Running log of what I did and learned across wakings. Newest entries on top.
   unattended-upgrades all active, no failed units, no reboot-required,
   disk 9%. Cleaned up all `/tmp` scratch dirs. `ASK.md` unchanged —
   fully actionable without josh.
+
+## 2026-08-27 (85th waking, ~05:xx UTC)
+
+- `check_replies.sh`: four new messages from josh, all on one theme plus
+  a question. (1) "Also want you to be able to generate images and
+  infographics." (2) "In fact generate applicable infographics to go in
+  the architecture documents with a animations as applicable." (3) "More
+  full color infographics throughout the documents, more images, more
+  color." (4) "Check out cairnwake.com service offerings are ideas you
+  could use? Any thoughts?"
+- Read (1)-(3) as: make the service-desk architecture material more
+  visual — more colour, real infographics, and animation where the
+  medium supports it (web, not PDF). Kept the site's established
+  no-external-assets / hand-authored-inline-SVG convention rather than
+  pulling in a raster image pipeline. Scoped this waking to the flagship
+  page `service-desk.html` + its downloadable PDF + the pptx, and left
+  the integration guide and operations-sop pages/PDFs as a follow-up
+  (noted below) rather than rushing five documents in one session.
+- **`style.css`:** added `--accent-violet: #a98fc4` (new, additive), a
+  `.diagram-legend` component (flex row of colour swatches driven by a
+  per-item `--sw` custom property), and a `@media (prefers-reduced-motion:
+  no-preference)` block with `.flow` / `.flow-slow` (animated
+  `stroke-dashoffset` marching-ants along connectors) and `.gate-pulse`
+  (opacity breathe). Motion is gated on reduced-motion; the diagrams are
+  fully legible with animation off.
+- **`service-desk.html` — colour + motion on all four diagrams:**
+  - Architecture diagram: the 21-box supporting-systems band is now
+    colour-coded by category instead of 21 identical dashed-blue boxes —
+    blue = inventory & automation, green = monitoring & assurance, rust =
+    security & identity, violet = storage/power/backup. Added a legend
+    below the SVG and a caption sentence pointing at it. Animated flow on
+    the ServiceNow→orchestrator, orchestrator→bus connectors and the
+    agent bus (green); a faint halo + opacity pulse on the human gate.
+  - Request-lifecycle flow: the vertical happy-path spine connectors are
+    now animated blue `.flow` lines (was static muted); branch/rollback
+    arrows left as-is.
+  - **New infographic — risk-tier ladder** (`viewBox 0 0 760 250`) in the
+    "Risk tiers" section, above the existing table: four stacked rungs
+    Tier 0→3 (green/blue/rust/salmon), each with the tier meaning, an
+    example, and the required-approval level right-aligned in the rung's
+    colour, plus a vertical "blast radius · harder to reverse" axis. The
+    table stays as the detailed reference; the ladder is the at-a-glance.
+  - Phased-rollout timeline: animated green flow along the baseline; gave
+    the previously near-invisible arrowhead marker a visible fill.
+- **PDF manual (`paid_src/service-desk-full.html` →
+  `service-desk-deployment-guide.pdf`):** mirrored the band colour-coding
+  (literal print-hex: `#3d5a80`/`#6b8f4e`/`#c96343`/`#7d5ba6`), added a
+  colour key line under the diagram, and added the same risk-tier ladder
+  in the print palette. Regenerated with the system `weasyprint` — held
+  at 14 pages. Rendered pages to PNG with `pdftoppm` and eyeballed the
+  diagram + ladder + key line: colours read, nothing clipped.
+- **`service-desk-architecture.pptx`:** re-rendered slide 3's
+  architecture-diagram image (embed `rId5` → `ppt/media/image6.png`,
+  1900×1180, aspect 1.610) from the updated print SVG via `rsvg-convert`
+  (same named-entity fixups as past wakings: keep `&amp;`, convert
+  `&mdash;`/`&middot;`/`&ndash;`/`&rarr;`/`&ge;` to literal Unicode, add
+  `xmlns`). Re-zipped with `zipfile`; verified with `testzip()` (clean),
+  slide count 18, and by opening it in `python-pptx` (slide 3 =
+  "High-level architecture", 1 picture). Tables on other slides not
+  touched this waking — no content change there, only the diagram.
+- Verified before publishing: `html.parser` clean on both HTML files, no
+  duplicate `id`s, 9 `.flow` connectors present; local Playwright
+  screenshots (cached Chromium under `~/.cache/ms-playwright`) of all
+  four diagrams + the legend — colour-coding, ladder, and legend all
+  render correctly and legibly.
+- Deployed via `deploy.sh`. Live checks: `service-desk.html`,
+  `service-desk-deployment-guide.pdf`, `service-desk-architecture.pptx`,
+  `style.css` all 200; served `style.css` has the new
+  `--accent-violet`/`.diagram-legend`/`dashflow`; served
+  `service-desk.html` has the legend, `.flow` classes, and the tier
+  ladder. `/status.html` still 30/30 (no new pages). Full health sweep
+  clean: nginx/beacon-api/fail2ban/cron/unattended-upgrades all active,
+  `nginx -t` clean, no failed units, no `/var/run/reboot-required`, disk
+  9%, `master` in sync with `origin/master` before this waking's commit.
+  Cleaned up `/tmp` scratch dirs (Playwright venv, PDF renders, pptx
+  workdir).
+- **Follow-up for a later waking:** carry the same colour-coding +
+  infographic treatment into `service-desk-integration-guide.html` and
+  `operations-sop.html` (and their PDFs), and consider animated flow on
+  the operations-sop incident-lifecycle and escalation-ladder diagrams.
+- **cairnwake.com question:** fetched its offerings read-only (no hostile
+  instructions embedded — only a factual "Cairn is an AI agent" line).
+  Beyond what Beacon already ships (two paid PDF guides via Gumroad, a
+  third parked), cairnwake sells pay-per-question ($2), site reviews
+  ($49), a $250 readiness audit, and runs a co-signed Solana treasury,
+  plus a free weekly-digest email list. My take, sent to josh: the paid
+  *services* (reviews/audits/Q&A) need a human to actually deliver the
+  work and a fulfilment + refund story Beacon doesn't have; the crypto
+  treasury is exactly the hard-to-reverse financial-custody call
+  `AGENT.md` says to escalate, not adopt off a linked site; the free
+  weekly digest is the one on-brand, low-risk idea but still needs
+  list/opt-in/deliverability plumbing. Not building any of it unprompted
+  — flagged for josh to say if he wants any pursued.
+- `ASK.md` unchanged — the infographics ask was fully actionable without
+  josh; the cairnwake question was answered over Telegram.

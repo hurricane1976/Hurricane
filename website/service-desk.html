@@ -148,7 +148,7 @@
           <text x="460" y="36" text-anchor="middle" font-size="13" font-weight="700">ServiceNow</text>
           <text x="460" y="52" text-anchor="middle" font-size="10.5" fill="var(--muted)">Incident &middot; Change &middot; Request &middot; CMDB (system of record)</text>
 
-          <line x1="460" y1="65" x2="460" y2="92" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#arrD1)"/>
+          <line class="flow" x1="460" y1="65" x2="460" y2="92" stroke="var(--accent-blue)" stroke-width="1.6" marker-end="url(#arrD1)"/>
 
           <!-- Orchestrator -->
           <rect x="320" y="95" width="280" height="55" rx="10" fill="var(--card)" stroke="var(--accent)" stroke-width="1.5"/>
@@ -156,7 +156,8 @@
           <text x="460" y="135" text-anchor="middle" font-size="10.5" fill="var(--muted)">intake &middot; plan &middot; risk-tier &middot; route</text>
 
           <!-- Human gate -->
-          <rect x="630" y="95" width="260" height="55" rx="10" fill="var(--card)" stroke="#e08a6a" stroke-width="1.5"/>
+          <rect x="626" y="91" width="268" height="63" rx="12" fill="none" stroke="#e08a6a" stroke-width="1" opacity="0.4"/>
+          <rect class="gate-pulse" x="630" y="95" width="260" height="55" rx="10" fill="var(--card)" stroke="#e08a6a" stroke-width="1.8"/>
           <text x="760" y="118" text-anchor="middle" font-size="12.5" font-weight="700">Human approval &amp;</text>
           <text x="760" y="133" text-anchor="middle" font-size="12.5" font-weight="700">arbitration gate</text>
           <text x="760" y="147" text-anchor="middle" font-size="9.5" fill="var(--muted)">the one mandatory checkpoint</text>
@@ -164,10 +165,11 @@
           <line x1="600" y1="118" x2="628" y2="118" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#arrD1)"/>
           <line x1="628" y1="128" x2="600" y2="128" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#arrD1)"/>
 
-          <line x1="460" y1="150" x2="460" y2="178" stroke="var(--muted)" stroke-width="1.5" marker-end="url(#arrD1)"/>
+          <line class="flow" x1="460" y1="150" x2="460" y2="178" stroke="var(--accent)" stroke-width="1.6" marker-end="url(#arrD1)"/>
 
           <!-- bus -->
-          <line x1="60" y1="180" x2="860" y2="180" stroke="var(--line)" stroke-width="2"/>
+          <line x1="60" y1="180" x2="860" y2="180" stroke="var(--line)" stroke-width="4"/>
+          <line class="flow flow-slow" x1="62" y1="180" x2="858" y2="180" stroke="var(--accent-2)" stroke-width="2"/>
 
           <!-- 9 domain agents -->
           <g font-size="10" text-anchor="middle">
@@ -237,70 +239,70 @@
             <line x1="800" y1="335" x2="800" y2="350"/>
           </g>
 
-          <!-- Supporting systems & tooling band -->
-          <g font-size="10" text-anchor="middle">
-            <rect x="65" y="350" width="120" height="42" rx="7" fill="var(--card)" stroke="var(--accent-blue)" stroke-width="1.2" stroke-dasharray="3 3"/>
-            <text x="125" y="368">NetBox</text><text x="125" y="381" fill="var(--muted)" font-size="8.5">IPAM &middot; DCIM</text>
+          <!-- Supporting systems & tooling band — stroke colour = category -->
+          <g font-size="10" text-anchor="middle" stroke-width="1.5" stroke-dasharray="3 3">
+            <rect x="65" y="350" width="120" height="42" rx="7" fill="var(--card)" stroke="var(--accent-blue)"/>
+            <text x="125" y="368" stroke="none">NetBox</text><text x="125" y="381" stroke="none" fill="var(--muted)" font-size="8.5">IPAM &middot; DCIM</text>
 
-            <rect x="200" y="350" width="120" height="42" rx="7" fill="var(--card)" stroke="var(--accent-blue)" stroke-width="1.2" stroke-dasharray="3 3"/>
-            <text x="260" y="368">Zabbix/Grafana</text><text x="260" y="381" fill="var(--muted)" font-size="8.5">monitoring</text>
+            <rect x="200" y="350" width="120" height="42" rx="7" fill="var(--card)" stroke="var(--accent-2)"/>
+            <text x="260" y="368" stroke="none">Zabbix/Grafana</text><text x="260" y="381" stroke="none" fill="var(--muted)" font-size="8.5">monitoring</text>
 
-            <rect x="335" y="350" width="120" height="42" rx="7" fill="var(--card)" stroke="var(--accent-blue)" stroke-width="1.2" stroke-dasharray="3 3"/>
-            <text x="395" y="368">Batfish</text><text x="395" y="381" fill="var(--muted)" font-size="8.5">pre-change check</text>
+            <rect x="335" y="350" width="120" height="42" rx="7" fill="var(--card)" stroke="var(--accent-blue)"/>
+            <text x="395" y="368" stroke="none">Batfish</text><text x="395" y="381" stroke="none" fill="var(--muted)" font-size="8.5">pre-change check</text>
 
-            <rect x="470" y="350" width="120" height="42" rx="7" fill="var(--card)" stroke="var(--accent-blue)" stroke-width="1.2" stroke-dasharray="3 3"/>
-            <text x="530" y="368">Ansible</text><text x="530" y="381" fill="var(--muted)" font-size="8.5">execution engine</text>
+            <rect x="470" y="350" width="120" height="42" rx="7" fill="var(--card)" stroke="var(--accent-blue)"/>
+            <text x="530" y="368" stroke="none">Ansible</text><text x="530" y="381" stroke="none" fill="var(--muted)" font-size="8.5">execution engine</text>
 
-            <rect x="605" y="350" width="120" height="42" rx="7" fill="var(--card)" stroke="var(--accent-blue)" stroke-width="1.2" stroke-dasharray="3 3"/>
-            <text x="665" y="368">Cisco ISE</text><text x="665" y="381" fill="var(--muted)" font-size="8.5">NAC &middot; RADIUS</text>
+            <rect x="605" y="350" width="120" height="42" rx="7" fill="var(--card)" stroke="var(--accent)"/>
+            <text x="665" y="368" stroke="none">Cisco ISE</text><text x="665" y="381" stroke="none" fill="var(--muted)" font-size="8.5">NAC &middot; RADIUS</text>
 
-            <rect x="740" y="350" width="120" height="42" rx="7" fill="var(--card)" stroke="var(--accent-blue)" stroke-width="1.2" stroke-dasharray="3 3"/>
-            <text x="800" y="368">Nexus Dash.</text><text x="800" y="381" fill="var(--muted)" font-size="8.5">DC fabric</text>
+            <rect x="740" y="350" width="120" height="42" rx="7" fill="var(--card)" stroke="var(--accent-2)"/>
+            <text x="800" y="368" stroke="none">Nexus Dash.</text><text x="800" y="381" stroke="none" fill="var(--muted)" font-size="8.5">DC fabric</text>
 
-            <rect x="65" y="402" width="88" height="42" rx="7" fill="var(--card)" stroke="var(--accent-blue)" stroke-width="1.2" stroke-dasharray="3 3"/>
-            <text x="109" y="420" font-size="9">Cisco FMC</text><text x="109" y="433" fill="var(--muted)" font-size="8">firewall policy</text>
+            <rect x="65" y="402" width="88" height="42" rx="7" fill="var(--card)" stroke="var(--accent)"/>
+            <text x="109" y="420" stroke="none" font-size="9">Cisco FMC</text><text x="109" y="433" stroke="none" fill="var(--muted)" font-size="8">firewall policy</text>
 
-            <rect x="166" y="402" width="88" height="42" rx="7" fill="var(--card)" stroke="var(--accent-blue)" stroke-width="1.2" stroke-dasharray="3 3"/>
-            <text x="210" y="420" font-size="9">Catalyst Ctr.</text><text x="210" y="433" fill="var(--muted)" font-size="8">SD-Access</text>
+            <rect x="166" y="402" width="88" height="42" rx="7" fill="var(--card)" stroke="var(--accent-blue)"/>
+            <text x="210" y="420" stroke="none" font-size="9">Catalyst Ctr.</text><text x="210" y="433" stroke="none" fill="var(--muted)" font-size="8">SD-Access</text>
 
-            <rect x="267" y="402" width="88" height="42" rx="7" fill="var(--card)" stroke="var(--accent-blue)" stroke-width="1.2" stroke-dasharray="3 3"/>
-            <text x="311" y="420" font-size="9">VMware Aria</text><text x="311" y="433" fill="var(--muted)" font-size="8">capacity &amp; automation</text>
+            <rect x="267" y="402" width="88" height="42" rx="7" fill="var(--card)" stroke="var(--accent-blue)"/>
+            <text x="311" y="420" stroke="none" font-size="9">VMware Aria</text><text x="311" y="433" stroke="none" fill="var(--muted)" font-size="8">capacity &amp; automation</text>
 
-            <rect x="368" y="402" width="88" height="42" rx="7" fill="var(--card)" stroke="var(--accent-blue)" stroke-width="1.2" stroke-dasharray="3 3"/>
-            <text x="412" y="420" font-size="9">SCOM</text><text x="412" y="433" fill="var(--muted)" font-size="8">on-prem monitoring</text>
+            <rect x="368" y="402" width="88" height="42" rx="7" fill="var(--card)" stroke="var(--accent-2)"/>
+            <text x="412" y="420" stroke="none" font-size="9">SCOM</text><text x="412" y="433" stroke="none" fill="var(--muted)" font-size="8">on-prem monitoring</text>
 
-            <rect x="469" y="402" width="88" height="42" rx="7" fill="var(--card)" stroke="var(--accent-blue)" stroke-width="1.2" stroke-dasharray="3 3"/>
-            <text x="513" y="420" font-size="9">Azure Monitor</text><text x="513" y="433" fill="var(--muted)" font-size="8">cloud monitoring</text>
+            <rect x="469" y="402" width="88" height="42" rx="7" fill="var(--card)" stroke="var(--accent-2)"/>
+            <text x="513" y="420" stroke="none" font-size="9">Azure Monitor</text><text x="513" y="433" stroke="none" fill="var(--muted)" font-size="8">cloud monitoring</text>
 
-            <rect x="570" y="402" width="88" height="42" rx="7" fill="var(--card)" stroke="var(--accent-blue)" stroke-width="1.2" stroke-dasharray="3 3"/>
-            <text x="614" y="420" font-size="9">MECM</text><text x="614" y="433" fill="var(--muted)" font-size="8">endpoint mgmt</text>
+            <rect x="570" y="402" width="88" height="42" rx="7" fill="var(--card)" stroke="var(--accent-blue)"/>
+            <text x="614" y="420" stroke="none" font-size="9">MECM</text><text x="614" y="433" stroke="none" fill="var(--muted)" font-size="8">endpoint mgmt</text>
 
-            <rect x="671" y="402" width="88" height="42" rx="7" fill="var(--card)" stroke="var(--accent-blue)" stroke-width="1.2" stroke-dasharray="3 3"/>
-            <text x="715" y="420" font-size="9">RH Satellite</text><text x="715" y="433" fill="var(--muted)" font-size="8">RHEL lifecycle</text>
+            <rect x="671" y="402" width="88" height="42" rx="7" fill="var(--card)" stroke="var(--accent-blue)"/>
+            <text x="715" y="420" stroke="none" font-size="9">RH Satellite</text><text x="715" y="433" stroke="none" fill="var(--muted)" font-size="8">RHEL lifecycle</text>
 
-            <rect x="772" y="402" width="88" height="42" rx="7" fill="var(--card)" stroke="var(--accent-blue)" stroke-width="1.2" stroke-dasharray="3 3"/>
-            <text x="816" y="420" font-size="9">APC power</text><text x="816" y="433" fill="var(--muted)" font-size="8">UPS &middot; PDU</text>
+            <rect x="772" y="402" width="88" height="42" rx="7" fill="var(--card)" stroke="var(--accent-violet)"/>
+            <text x="816" y="420" stroke="none" font-size="9">APC power</text><text x="816" y="433" stroke="none" fill="var(--muted)" font-size="8">UPS &middot; PDU</text>
 
-            <rect x="65" y="454" width="88" height="42" rx="7" fill="var(--card)" stroke="var(--accent-blue)" stroke-width="1.2" stroke-dasharray="3 3"/>
-            <text x="109" y="472" font-size="9">CyberArk</text><text x="109" y="485" fill="var(--muted)" font-size="8">PAM &middot; vault</text>
+            <rect x="65" y="454" width="88" height="42" rx="7" fill="var(--card)" stroke="var(--accent)"/>
+            <text x="109" y="472" stroke="none" font-size="9">CyberArk</text><text x="109" y="485" stroke="none" fill="var(--muted)" font-size="8">PAM &middot; vault</text>
 
-            <rect x="166" y="454" width="88" height="42" rx="7" fill="var(--card)" stroke="var(--accent-blue)" stroke-width="1.2" stroke-dasharray="3 3"/>
-            <text x="210" y="472" font-size="9">CrowdStrike</text><text x="210" y="485" fill="var(--muted)" font-size="8">EDR</text>
+            <rect x="166" y="454" width="88" height="42" rx="7" fill="var(--card)" stroke="var(--accent)"/>
+            <text x="210" y="472" stroke="none" font-size="9">CrowdStrike</text><text x="210" y="485" stroke="none" fill="var(--muted)" font-size="8">EDR</text>
 
-            <rect x="267" y="454" width="88" height="42" rx="7" fill="var(--card)" stroke="var(--accent-blue)" stroke-width="1.2" stroke-dasharray="3 3"/>
-            <text x="311" y="472" font-size="9">Splunk</text><text x="311" y="485" fill="var(--muted)" font-size="8">SIEM</text>
+            <rect x="267" y="454" width="88" height="42" rx="7" fill="var(--card)" stroke="var(--accent)"/>
+            <text x="311" y="472" stroke="none" font-size="9">Splunk</text><text x="311" y="485" stroke="none" fill="var(--muted)" font-size="8">SIEM</text>
 
-            <rect x="368" y="454" width="88" height="42" rx="7" fill="var(--card)" stroke="var(--accent-blue)" stroke-width="1.2" stroke-dasharray="3 3"/>
-            <text x="412" y="472" font-size="9">NetApp</text><text x="412" y="485" fill="var(--muted)" font-size="8">storage</text>
+            <rect x="368" y="454" width="88" height="42" rx="7" fill="var(--card)" stroke="var(--accent-violet)"/>
+            <text x="412" y="472" stroke="none" font-size="9">NetApp</text><text x="412" y="485" stroke="none" fill="var(--muted)" font-size="8">storage</text>
 
-            <rect x="469" y="454" width="88" height="42" rx="7" fill="var(--card)" stroke="var(--accent-blue)" stroke-width="1.2" stroke-dasharray="3 3"/>
-            <text x="513" y="472" font-size="9">Dell storage</text><text x="513" y="485" fill="var(--muted)" font-size="8">PowerStore</text>
+            <rect x="469" y="454" width="88" height="42" rx="7" fill="var(--card)" stroke="var(--accent-violet)"/>
+            <text x="513" y="472" stroke="none" font-size="9">Dell storage</text><text x="513" y="485" stroke="none" fill="var(--muted)" font-size="8">PowerStore</text>
 
-            <rect x="570" y="454" width="88" height="42" rx="7" fill="var(--card)" stroke="var(--accent-blue)" stroke-width="1.2" stroke-dasharray="3 3"/>
-            <text x="614" y="472" font-size="9">Dell PSwitch</text><text x="614" y="485" fill="var(--muted)" font-size="8">top-of-rack</text>
+            <rect x="570" y="454" width="88" height="42" rx="7" fill="var(--card)" stroke="var(--accent-blue)"/>
+            <text x="614" y="472" stroke="none" font-size="9">Dell PSwitch</text><text x="614" y="485" stroke="none" fill="var(--muted)" font-size="8">top-of-rack</text>
 
-            <rect x="671" y="454" width="88" height="42" rx="7" fill="var(--card)" stroke="var(--accent-blue)" stroke-width="1.2" stroke-dasharray="3 3"/>
-            <text x="715" y="472" font-size="9">Backup</text><text x="715" y="485" fill="var(--muted)" font-size="8">Veeam/Cmvlt</text>
+            <rect x="671" y="454" width="88" height="42" rx="7" fill="var(--card)" stroke="var(--accent-violet)"/>
+            <text x="715" y="472" stroke="none" font-size="9">Backup</text><text x="715" y="485" stroke="none" fill="var(--muted)" font-size="8">Veeam/Cmvlt</text>
           </g>
 
           <!-- Platform Ops supervisory agent -->
@@ -312,7 +314,15 @@
         </g>
       </svg>
     </div>
+    <div class="diagram-legend" aria-hidden="true">
+      <span style="--sw:var(--accent-blue)">Inventory &amp; automation</span>
+      <span style="--sw:var(--accent-2)">Monitoring &amp; assurance</span>
+      <span style="--sw:var(--accent)">Security &amp; identity</span>
+      <span style="--sw:var(--accent-violet)">Storage, power &amp; backup</span>
+      <span style="--sw:#e08a6a">Human gate / Platform Ops</span>
+    </div>
     <p class="diagram-caption">
+      The supporting-systems band along the bottom is colour-coded by category (see legend).
       Every agent and the human gate write append-only events to a shared audit log
       (omitted above for clarity &mdash; see "Guardrails," below). The orchestrator never
       holds direct credentials to target systems itself; only the narrow domain agent for
@@ -462,17 +472,17 @@
           <rect x="80" y="10" width="340" height="44" rx="9" fill="var(--card)" stroke="var(--accent-blue)" stroke-width="1.4"/>
           <text x="250" y="28" text-anchor="middle" font-weight="700">Ticket created in ServiceNow</text>
           <text x="250" y="43" text-anchor="middle" font-size="10" fill="var(--muted)">Incident / Change / Request</text>
-          <line x1="250" y1="54" x2="250" y2="78" stroke="var(--muted)" stroke-width="1.4" marker-end="url(#arrD2)"/>
+          <line class="flow" x1="250" y1="54" x2="250" y2="78" stroke="var(--accent-blue)" stroke-width="1.6" marker-end="url(#arrD2)"/>
 
           <rect x="80" y="80" width="340" height="44" rx="9" fill="var(--card)" stroke="var(--accent-2)" stroke-width="1.4"/>
           <text x="250" y="98" text-anchor="middle" font-weight="700">Intake &amp; classification</text>
           <text x="250" y="113" text-anchor="middle" font-size="10" fill="var(--muted)">affected systems, request type</text>
-          <line x1="250" y1="124" x2="250" y2="148" stroke="var(--muted)" stroke-width="1.4" marker-end="url(#arrD2)"/>
+          <line class="flow" x1="250" y1="124" x2="250" y2="148" stroke="var(--accent-blue)" stroke-width="1.6" marker-end="url(#arrD2)"/>
 
           <rect x="80" y="150" width="340" height="44" rx="9" fill="var(--card)" stroke="var(--accent)" stroke-width="1.4"/>
           <text x="250" y="168" text-anchor="middle" font-weight="700">Orchestrator drafts a plan</text>
           <text x="250" y="183" text-anchor="middle" font-size="10" fill="var(--muted)">steps, target agent(s), risk tier</text>
-          <line x1="250" y1="194" x2="250" y2="212" stroke="var(--muted)" stroke-width="1.4" marker-end="url(#arrD2)"/>
+          <line class="flow" x1="250" y1="194" x2="250" y2="212" stroke="var(--accent-blue)" stroke-width="1.6" marker-end="url(#arrD2)"/>
 
           <polygon points="250,214 370,259 250,304 130,259" fill="var(--card)" stroke="#e08a6a" stroke-width="1.4"/>
           <text x="250" y="253" text-anchor="middle" font-size="10.5">Tier 0&ndash;1 &amp;</text>
@@ -484,24 +494,24 @@
           <text x="580" y="253" text-anchor="middle" font-weight="700">Auto-execute</text>
           <text x="580" y="268" text-anchor="middle" font-size="10" fill="var(--muted)">logged, reversible only</text>
 
-          <line x1="250" y1="304" x2="250" y2="328" stroke="var(--muted)" stroke-width="1.4" marker-end="url(#arrD2)"/>
+          <line class="flow" x1="250" y1="304" x2="250" y2="328" stroke="var(--accent-blue)" stroke-width="1.6" marker-end="url(#arrD2)"/>
           <text x="270" y="320" font-size="10" fill="var(--muted)">no</text>
           <rect x="80" y="330" width="340" height="50" rx="9" fill="var(--card)" stroke="#e08a6a" stroke-width="1.4"/>
           <text x="250" y="350" text-anchor="middle" font-weight="700">Human approval / arbitration</text>
           <text x="250" y="365" text-anchor="middle" font-size="10" fill="var(--muted)">approve &middot; reject &middot; edit the plan</text>
 
           <line x1="560" y1="280" x2="420" y2="406" stroke="var(--muted)" stroke-width="1.4" marker-end="url(#arrD2)"/>
-          <line x1="250" y1="380" x2="250" y2="404" stroke="var(--muted)" stroke-width="1.4" marker-end="url(#arrD2)"/>
+          <line class="flow" x1="250" y1="380" x2="250" y2="404" stroke="var(--accent-blue)" stroke-width="1.6" marker-end="url(#arrD2)"/>
 
           <rect x="80" y="406" width="340" height="44" rx="9" fill="var(--card)" stroke="var(--accent)" stroke-width="1.4"/>
           <text x="250" y="424" text-anchor="middle" font-weight="700">Domain agent executes</text>
           <text x="250" y="439" text-anchor="middle" font-size="10" fill="var(--muted)">scoped session; dry-run first for Tier &ge;2</text>
-          <line x1="250" y1="450" x2="250" y2="472" stroke="var(--muted)" stroke-width="1.4" marker-end="url(#arrD2)"/>
+          <line class="flow" x1="250" y1="450" x2="250" y2="472" stroke="var(--accent-blue)" stroke-width="1.6" marker-end="url(#arrD2)"/>
 
           <rect x="80" y="474" width="340" height="44" rx="9" fill="var(--card)" stroke="var(--accent-blue)" stroke-width="1.4"/>
           <text x="250" y="492" text-anchor="middle" font-weight="700">Verify target state</text>
           <text x="250" y="507" text-anchor="middle" font-size="10" fill="var(--muted)">matches the intended outcome</text>
-          <line x1="250" y1="518" x2="250" y2="540" stroke="var(--muted)" stroke-width="1.4" marker-end="url(#arrD2)"/>
+          <line class="flow" x1="250" y1="518" x2="250" y2="540" stroke="var(--accent-blue)" stroke-width="1.6" marker-end="url(#arrD2)"/>
 
           <rect x="80" y="542" width="340" height="44" rx="9" fill="var(--card)" stroke="var(--accent-2)" stroke-width="1.4"/>
           <text x="250" y="560" text-anchor="middle" font-weight="700">Close ServiceNow ticket</text>
@@ -523,6 +533,53 @@
       Tier is decided per <em>action</em>, computed from the plan's blast radius (how many
       systems/users it touches), reversibility (is there a clean rollback), and whether
       it's read-only. This is the actual gate the diamond in the lifecycle diagram checks.
+    </p>
+    <div class="diagram-wrap">
+      <svg viewBox="0 0 760 250" role="img" aria-label="Risk-tier ladder: Tier 0 read-only, no approval; Tier 1 low-risk reversible, logged only; Tier 2 medium risk, one human approval; Tier 3 high blast radius, two-person approval plus dry-run. Blast radius and difficulty of reversal increase from Tier 0 to Tier 3.">
+        <defs>
+          <marker id="arrTier" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+            <path d="M0,0 L10,5 L0,10 z" fill="var(--muted)"/>
+          </marker>
+        </defs>
+        <g font-family="-apple-system,Segoe UI,Helvetica,Arial,sans-serif">
+          <line x1="20" y1="238" x2="20" y2="14" stroke="var(--muted)" stroke-width="1.4" marker-end="url(#arrTier)"/>
+          <text x="14" y="128" font-size="10" fill="var(--muted)" text-anchor="middle" transform="rotate(-90 14 128)">blast radius &middot; harder to reverse</text>
+
+          <g font-size="12">
+            <!-- Tier 0 -->
+            <rect x="40" y="196" width="700" height="44" rx="8" fill="#9db877" fill-opacity="0.13" stroke="#9db877" stroke-width="1.4"/>
+            <rect x="40" y="196" width="6" height="44" rx="3" fill="#9db877"/>
+            <text x="62" y="214" font-weight="700" fill="var(--fg)">Tier 0 &mdash; read-only / diagnostic</text>
+            <text x="62" y="230" font-size="10" fill="var(--muted)">pull config &middot; check status &middot; query logs</text>
+            <text x="726" y="223" text-anchor="end" font-size="11" font-weight="700" fill="#9db877">no approval &mdash; always auto</text>
+
+            <!-- Tier 1 -->
+            <rect x="40" y="140" width="700" height="44" rx="8" fill="#83a9c4" fill-opacity="0.13" stroke="#83a9c4" stroke-width="1.4"/>
+            <rect x="40" y="140" width="6" height="44" rx="3" fill="#83a9c4"/>
+            <text x="62" y="158" font-weight="700" fill="var(--fg)">Tier 1 &mdash; low-risk, reversible, single-target</text>
+            <text x="62" y="174" font-size="10" fill="var(--muted)">password reset &middot; restart one service &middot; unlock one account</text>
+            <text x="726" y="167" text-anchor="end" font-size="11" font-weight="700" fill="#83a9c4">auto, logged &amp; notified after</text>
+
+            <!-- Tier 2 -->
+            <rect x="40" y="84" width="700" height="44" rx="8" fill="#d97757" fill-opacity="0.13" stroke="#d97757" stroke-width="1.4"/>
+            <rect x="40" y="84" width="6" height="44" rx="3" fill="#d97757"/>
+            <text x="62" y="102" font-weight="700" fill="var(--fg)">Tier 2 &mdash; medium risk or multi-target</text>
+            <text x="62" y="118" font-size="10" fill="var(--muted)">firewall rule w/ expiry &middot; VM resize &middot; patch a server group</text>
+            <text x="726" y="111" text-anchor="end" font-size="11" font-weight="700" fill="#d97757">one human approval first</text>
+
+            <!-- Tier 3 -->
+            <rect x="40" y="28" width="700" height="44" rx="8" fill="#e08a6a" fill-opacity="0.16" stroke="#e08a6a" stroke-width="1.6"/>
+            <rect x="40" y="28" width="6" height="44" rx="3" fill="#e08a6a"/>
+            <text x="62" y="46" font-weight="700" fill="var(--fg)">Tier 3 &mdash; high blast radius, hard/impossible to reverse</text>
+            <text x="62" y="62" font-size="10" fill="var(--muted)">AD schema change &middot; core switch config &middot; mass account change</text>
+            <text x="726" y="55" text-anchor="end" font-size="11" font-weight="700" fill="#e08a6a">two-person approval + dry-run</text>
+          </g>
+        </g>
+      </svg>
+    </div>
+    <p class="diagram-caption">
+      The <strong>deny-list</strong> below sits above every rung on this ladder &mdash; those
+      actions are never agent-executable no matter who approves.
     </p>
     <div class="data-table-wrap">
       <table class="data-table">
@@ -576,11 +633,12 @@
       <svg viewBox="0 0 900 130" role="img" aria-label="Timeline: Phase 0 observe, Phase 1 low-risk automation, Phase 2 approved mutation, Phase 3 broad autonomy.">
         <defs>
           <marker id="arrD3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-            <path d="M0,0 L10,5 L0,10 z" fill="var(--line)"/>
+            <path d="M0,0 L10,5 L0,10 z" fill="var(--accent-2)"/>
           </marker>
         </defs>
         <g font-family="-apple-system,Segoe UI,Helvetica,Arial,sans-serif">
-          <line x1="70" y1="40" x2="850" y2="40" stroke="var(--line)" stroke-width="2" marker-end="url(#arrD3)"/>
+          <line x1="70" y1="40" x2="850" y2="40" stroke="var(--line)" stroke-width="3"/>
+          <line class="flow flow-slow" x1="70" y1="40" x2="850" y2="40" stroke="var(--accent-2)" stroke-width="1.6" marker-end="url(#arrD3)"/>
           <g text-anchor="middle">
             <circle cx="90" cy="40" r="9" fill="var(--accent-2)"/>
             <text x="90" y="70" font-size="12" font-weight="700" fill="var(--fg)">Phase 0 &mdash; Observe</text>

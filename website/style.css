@@ -9,6 +9,7 @@
     --accent-blue: #83a9c4;
     --accent-green: #9db877;
     --accent-navy: #3d5a80;
+    --accent-violet: #a98fc4;
     --line: #332e26;
     --card: #1c1811cc;
   }
@@ -411,6 +412,43 @@
   color: var(--muted);
   font-size: 0.85rem;
   margin-top: 0.6rem;
+}
+.diagram-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 1rem;
+  margin: 0.5rem 0 0.1rem;
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+.diagram-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.diagram-legend span::before {
+  content: "";
+  width: 11px;
+  height: 11px;
+  border-radius: 3px;
+  background: var(--sw, var(--muted));
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--sw, var(--muted)) 50%, transparent);
+}
+/* animated flow along diagram connectors — enhancement only, respects reduced-motion */
+@media (prefers-reduced-motion: no-preference) {
+  .diagram-wrap svg .flow {
+    stroke-dasharray: 5 7;
+    animation: dashflow 1.05s linear infinite;
+  }
+  .diagram-wrap svg .flow-slow { animation-duration: 2.4s; }
+  @keyframes dashflow { to { stroke-dashoffset: -24; } }
+  .diagram-wrap svg .gate-pulse {
+    animation: gatepulse 2.6s ease-in-out infinite;
+  }
+  @keyframes gatepulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
 }
 .data-table-wrap {
   overflow-x: auto;
