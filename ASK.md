@@ -3,6 +3,8 @@
 ## Open
 
 - **"Build them out" — the 3 website ideas + the confirmed business list.**
+  **All built as of the 91st waking; the only remaining steps need josh (Gumroad
+  listings — see the end of this item).**
   josh via Telegram (2026-08-27, 87th waking): "I like all three website
   ideas, please build them out. I also [like] all the business opportunities
   as well please build them however hold on crypto treasury idea." Then
@@ -19,28 +21,41 @@
     **done, 90th**. All three website ideas now built. The "runnable
     starter repo" overlaps the parked Gumroad starter-kit item below — not
     reviving that without a separate go.
-  - **Business list (confirmed 89th waking):**
+  - **Business list (confirmed 89th waking; josh re-confirmed 91st via
+    Telegram "Complete agent ops and review landing page"):**
     1. **SOC architecture as a paid guide** — **done, 89th.** Built
        `paid_src/soc-architecture-full.html` → `paid/soc-architecture-full.pdf`
        (13pp), listed on `/get.html` at "$12 — checkout coming soon".
        **Needs josh:** create a Gumroad listing (upload the PDF from
        `website/paid/`) and send the URL — then the "Buy now" button is a
        one-line `get.html` edit, same as the field-guide/memory-handbook.
-    2. **"Agent ops" playbook** — queued as the next paid guide. Likely a
-       condensed operator's manual drawing on operations-sop + agent-protocol
-       + the service-desk Platform Ops material.
+    2. **"Agent ops" playbook** — **done, 91st.** Built free page
+       `/agent-ops.html` (operating loop, fleet register, five golden signals,
+       misbehaviour catalogue, intervention ladder, credentials, change mgmt,
+       human gate, incident response, game days, metrics, 30/60/90 path, one
+       control-loop diagram — zero new CSS) + full edition
+       `paid_src/agent-ops-playbook-full.html` → `paid/agent-ops-playbook.pdf`
+       (13pp, rendered via weasyprint), listed on `/get.html` at
+       "$12 — checkout coming soon". **Needs josh:** Gumroad listing + URL,
+       same flow as SOC.
     3. **Free weekly newsletter that upsells the guides** — **done, 89th.**
        Added a "From the workshop" card to `weekly.template.html` and a
        "Go deeper" line to the `weekly_digest.sh` Telegram body. (The
        weekly digest itself was built the 86th waking.)
     4. **Paid "architecture review" (deliverable = a generated report)** —
-       queued. This one commits to fulfilment work (someone pays, expects a
-       custom report back), so the plan is to build a landing/offer page
-       describing the service with "contact to arrange" (email already on
-       `/build.html`), **not** a live automated payment+delivery pipeline —
-       standing up recurring paid fulfilment is escalate-first. Will confirm
-       that read with josh before/at build.
+       **done, 91st** as a landing/offer page: `/architecture-review.html`
+       describes the service (send a design → written report, findings ranked
+       by risk, trust-boundary map, rollout-readiness call), arranged by email
+       (`apacheshadow1972@gmail.com`), fixed price per engagement. **Not** a
+       live automated payment+delivery pipeline — the page is explicit that
+       it's arranged by email, needs no live-system access, and is a design
+       review not an audit/pentest/cert. Linked from `/get.html` and
+       `/build.html` item 3. If josh later wants a real automated
+       payment+fulfilment flow, that's a separate escalate-first decision.
   - **Crypto treasury remains explicitly excluded.**
+  - **All three website ideas and all four business-list items are now
+    built.** The only outstanding pieces need josh: Gumroad listings for the
+    SOC full edition, the agent-ops playbook, and the starter kit (parked).
 
 ## On hold
 

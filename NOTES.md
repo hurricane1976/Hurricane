@@ -3746,3 +3746,92 @@ Running log of what I did and learned across wakings. Newest entries on top.
   all three website ideas from the 86th waking's list are now built. The
   business list's two remaining items ("agent ops" playbook, paid
   "architecture review" landing page) stay queued for the next wakings.
+
+## 2026-08-27 (91st waking, ~18:40 UTC)
+
+- `check_replies.sh`: one new message from josh — "Complete agent ops and
+  review landing page." Confirms the two remaining business-list items from
+  `ASK.md`'s open block: the "agent ops" playbook and the paid
+  "architecture review" landing page. Both were already scoped there (the
+  review page as a contact-to-arrange offer, explicitly *not* a payment
+  pipeline — josh's wording "landing page" matches that read).
+- Health sweep, all green: nginx/beacon-api/fail2ban/cron/
+  unattended-upgrades all active, `nginx -t` clean, no failed units, no
+  `/var/run/reboot-required`, disk 9%. `git rev-list --left-right --count
+  origin/master...master` = 0 0 (in sync at `48c27d9`).
+- **Built `website/agent-ops.html`** — free "Agent operations playbook",
+  the operator's-side companion to the architecture pages. Sections: what
+  agent ops is the job of (deploy/observe/intervene/govern/improve); the
+  four-beat operating loop (wake → act → report → async human review) with
+  the stateless-between-beats property called out; one hand-authored inline
+  control-loop SVG (fleet → telemetry → console + human gate → control
+  actions back); fleet inventory & ownership (register columns + review
+  cadence); the five golden signals for an agent (action rate,
+  approval-wait, verification-failure, escalation, heartbeat/queue); the
+  "is it misbehaving?" checklist (7 failure modes, ordered by damage
+  speed, in a data-table); the six-rung intervention ladder (pause → drain
+  → lower tier ceiling → circuit breaker → revoke creds → kill, with
+  `.tier-pill` colouring); credentials & least privilege; change
+  management for prompts/policies/models (shadow → canary → dual-run →
+  promote/rollback); the human gate in practice; when an agent causes an
+  incident; game days & drills; metrics that matter vs anti-metrics; a
+  30/60/90 adoption path; how-this-maps cross-links; a scope section.
+  Grounded in this project's own log (the permission-lockdown → observe-
+  only degradation, the out-of-order NOTES entries as a stale-context
+  bug). **Zero new CSS** — reused `.card`, `.callout-box`, `.step-list`,
+  `.check`, `.data-table`, `.tier-pill`, `.diagram-wrap`/`-caption`/
+  `-legend`, `.divider`.
+- **Built `website/paid_src/agent-ops-playbook-full.html` →
+  `website/paid/agent-ops-playbook.pdf`** (system `weasyprint`, **13
+  pages**). Expanded edition: cover + 15-section TOC, a fleet-register
+  row template, the golden-signals alerting spec as a table (alert-on
+  thresholds), the misbehaviour catalogue with a worked example per mode,
+  the intervention ladder with `.ptier` pills, a suspected-compromise
+  checklist, the change-management lifecycle as a table, five drill
+  runbooks each with a pass condition, the metrics/anti-metrics split, the
+  30/60/90 table. Control-loop diagram ported to a `.diagram-block` SVG
+  with the literal print-hex palette (same var()-in-SVG workaround the
+  service-desk/SOC full editions use). Verified by rendering to PNGs at
+  70dpi and eyeballing every page — diagram legible, tables/pills/callouts
+  styled. Listed on `/get.html` as a new product card ("$12 — checkout
+  coming soon"); the PDF stays in `website/paid/` and is **not** wired
+  into `deploy.sh` (Gumroad-delivered, like the other paid PDFs).
+  **Needs josh:** Gumroad listing + URL.
+- **Built `website/architecture-review.html`** — the paid architecture-
+  review offer page. What it is (a design review for systems where
+  software acts on its own), what it checks against (reversibility line,
+  human gate, least privilege, audit/state, failure handling, blast
+  radius/deny-list, rollout/ops), what you get back (an 8–15pp report:
+  summary + readiness call, system-as-understood, risk-ranked findings,
+  trust-boundary map, rollout adjustment, open questions; one follow-up
+  round included), the process (email → scope & fixed price → send
+  material → report → Q&A), and an explicit "what it isn't" (not an
+  audit/pentest/cert, no live-system access, not automated/instant, not a
+  compliance sign-off). Arranged via `mailto:apacheshadow1972@gmail.com`.
+  **Deliberately not a payment/fulfilment pipeline** — matches the
+  escalate-first read already in `ASK.md`. Zero new CSS.
+- Wiring: both pages into `deploy.sh` (cp + chown), `build_sitemap.py`
+  (**21 urls**), and `build_status.py`'s page-health list. Cross-links
+  added — one `/agent-ops.html` link each into the "Take it further" /
+  "how this maps" lists on `service-desk.html`, `soc-architecture.html`
+  (two lists on that page), `operations-sop.html`, `agent-protocol.html`,
+  and `ticket-trace.html`; `/architecture-review.html` linked from
+  `get.html` and `build.html` item 3. `get.html` hero tagline + "Checkout
+  is open" copy broadened to mention both. Neither is a top-nav item (nav
+  stays at 13) — same sub-page pattern as the other architecture pages.
+- Verified before deploy: `html.parser` clean on both new pages + all six
+  edited pages (no unclosed tags, no stray closes, no dup ids, no
+  unresolved `{{...}}`). Deployed via `deploy.sh` (`nginx -t` clean).
+  Live checks: `/agent-ops.html`, `/architecture-review.html`, `/get.html`,
+  and all six cross-linked siblings 200; `/sitemap.xml` has both new
+  pages (21 urls); `/status.html` now **36/36**. Playwright screenshots
+  (cached Chromium, `--host-resolver-rules=MAP www.beaconwake.com
+  127.0.0.1` — cleaner than the `route()` rewrite, which silently broke
+  `style.css` loading in the first attempt; `reducedMotion: 'reduce'`)
+  of both new pages + `get.html`: dark theme, nav, hero, callout, cards,
+  the control-loop diagram, and the four `get.html` product cards all
+  render correctly and legibly. Cleaned up `/tmp/aopdf`, `/tmp/aoshot`.
+- **`ASK.md`:** business list items 2 and 4 marked done. All three website
+  ideas and all four business-list items are now built — the only
+  outstanding pieces need josh (Gumroad listings for the SOC full
+  edition, the agent-ops playbook, and the parked starter kit).
