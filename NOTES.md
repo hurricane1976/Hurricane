@@ -4061,3 +4061,51 @@ Running log of what I did and learned across wakings. Newest entries on top.
   inert, and asked for (1) go/no-go on adding the cron line, (2) scope, and
   (3) whether to stay send-only or set up a second bot. Committed
   `partner-agent.md` + this NOTES entry.
+
+## 2026-08-27 (98th waking, ~20:00 UTC)
+
+- `check_replies.sh` surfaced one new message from josh, answering the 97th
+  waking's three partner-agent questions in one line: "go on creating and
+  cron, scope is the default, send on the same cron". Read as: (1) GO —
+  activate the partner by adding the cron line; (2) keep the default scope
+  (research / drafting / independent review, no production authority); (3)
+  stay send-only on the shared bot and run it on the **same** cron schedule
+  as Beacon (not the offset 4x/day I'd proposed).
+- **Activated the partner agent.** Added nine crontab lines running
+  `/home/agent/partner/wake.sh` at Beacon's exact times (`:00` of h0,16 /
+  `:40` of h2,10,18 / `:20` of h5,13,21). Honored "same cron" literally.
+  The overlap is safe because the two agents write to disjoint file trees —
+  the partner only ever writes under `/home/agent/partner/` and
+  `/home/agent/shared/`, Beacon owns everything else — so simultaneous runs
+  can't collide on a file. One crontab edit offsets them later if the two
+  concurrent `claude -p` processes ever prove a problem; flagged that option
+  to josh.
+- Reconciled the scaffold's docs with the "same cron" decision (they'd been
+  written assuming offset schedules): `partner/wake.sh` header comment,
+  `partner/AGENT.md` ("You wake ... the same 9x/day schedule as Beacon ...
+  safe because ... disjoint file trees"), `partner/README.md` (activation
+  section rewritten as done; "never edit at the same time" → "disjoint file
+  trees, so concurrent runs don't collide"), `partner/NOTES.md` (activation
+  entry above the seed), `shared/LOG.md` + `shared/TASKS.md` (activation
+  line; standing-job fallback since no task was assigned), and
+  `partner-agent.md` in this repo (new "Status: ACTIVATED" section, open
+  decisions marked resolved).
+- **First run test:** kicked off `/home/agent/partner/wake.sh` by hand right
+  after wiring cron, rather than waiting for the next slot and risking a
+  silent first failure. Ran clean (exit 0): the partner read its contract,
+  reviewed Beacon's commits `~w87–97` (found all green — 5 Gumroad links
+  live, site 200s, only note was `partner-agent.md` uncommitted mid-flight,
+  which is this waking's own edit), drafted an editorial weekly newsletter
+  to `/home/agent/shared/outbox/weekly-newsletter-2026-08-27.md`, appended
+  to `partner/NOTES.md` + `shared/LOG.md`, and sent its own `[Partner]`
+  Telegram summary. One harmless side effect: a stray `[test ignore]`
+  Telegram message during the partner's own `notify.sh` check — noted, not
+  recurring.
+- **Beacon health sweep, all green:** nginx/beacon-api/fail2ban/cron/
+  unattended-upgrades all active, `nginx -t` clean, no failed systemd units,
+  no `/var/run/reboot-required`, disk 9% (7.2G/87G), uptime 2 days, load
+  ~0.08. `git rev-list --left-right --count origin/master...master` = `0 0`
+  (in sync at `0c1f17e`). `/status.html` self-reports 36/36, homepage 200.
+- `ASK.md` unchanged (Open still empty; SMB-tool item still on hold).
+  Committed `partner-agent.md` + this NOTES entry. The partner dirs stay
+  out of git (operational state, like the crontab and `keys/`).

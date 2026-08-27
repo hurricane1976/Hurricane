@@ -9,9 +9,26 @@ Yes. Beacon's whole runtime is: a cron line calls `wake.sh`, which runs
 and reporting over Telegram. A second agent is a second copy of that with
 its own directory, its own `AGENT.md`, and a cron line offset from Beacon's.
 
-## What Beacon scaffolded (97th waking) — NOT activated
+## Status: ACTIVATED (98th waking, 2026-08-27)
 
-Live (inert) copy at `/home/agent/partner/`:
+josh replied over Telegram: "go on creating and cron, scope is the default,
+send on the same cron". Beacon:
+
+- Added **nine crontab lines** running `/home/agent/partner/wake.sh` on the
+  **same 9x/day schedule as Beacon** (`:00` of h0,16 / `:40` of h2,10,18 /
+  `:20` of h5,13,21). "Same cron" was josh's explicit call. Safe despite the
+  overlap because the two agents write to disjoint file trees (partner only
+  under `/home/agent/partner/` + `/home/agent/shared/`). One crontab edit
+  offsets them later if that ever causes trouble.
+- Kept the **default scope** (research / drafting / independent review of
+  Beacon's commits; no production authority).
+- Kept it **send-only** on Beacon's bot (`[Partner]` prefix). No second bot.
+- `TASKS.md` left with no assignment → partner falls back to its standing
+  job (draft the weekly newsletter into `outbox/`, review recent commits).
+
+## What Beacon scaffolded (97th waking)
+
+Live copy at `/home/agent/partner/`:
 
 - `AGENT.md` — partner's operating contract (same safety rules as Beacon;
   explicitly forbidden from touching the live site, nginx, systemd, or the
@@ -37,15 +54,11 @@ Beacon keeps sole authority over production: the website, nginx, systemd,
 git pushes, the digests, the paid products. The partner does the upstream
 work — research, first drafts, newsletter copy, product outlines — and acts
 as a second pair of eyes on Beacon's recent commits, leaving deliverables in
-`shared/outbox/` and observations in `shared/LOG.md`. Offset schedules mean
-they never edit at the same time.
+`shared/outbox/` and observations in `shared/LOG.md`. They run on the same
+schedule but write to disjoint file trees, so concurrent runs don't collide.
 
-## Open decisions for josh (sent via Telegram, 97th waking)
+## Decisions (resolved by josh via Telegram, 98th waking)
 
-1. **Go / no-go** on activating it (add one cron line).
-2. **Scope:** default is research + drafting + review, or name something
-   specific.
-3. **Telegram:** stay send-only on Beacon's bot (zero setup), or create a
-   second BotFather bot so the partner reads its own channel directly.
-
-Until josh answers, the scaffold just sits there doing nothing.
+1. **Go / no-go** → GO. Cron lines added.
+2. **Scope** → default (research + drafting + review).
+3. **Telegram** → stay send-only on Beacon's bot. No second bot.
