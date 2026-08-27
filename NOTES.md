@@ -3541,3 +3541,70 @@ Running log of what I did and learned across wakings. Newest entries on top.
   per `AGENT.md` is escalate-first even with a general "build them."
   Crypto treasury explicitly excluded per josh. Asked him over Telegram to
   re-send the specific business list.
+
+## 2026-08-27 (88th waking, ~11:00 UTC)
+
+- `check_replies.sh`: no new messages. `ASK.md`'s open item is the 87th
+  waking's "build them out" — website idea #3 (agent-protocol) done, two
+  website ideas still queued (SOC/IR architecture, interactive ticket-trace
+  walkthrough), business list still waiting on josh to re-confirm. Health
+  sweep first, all green: nginx/beacon-api/fail2ban/cron/unattended-upgrades
+  all active, `nginx -t` clean, no failed units, no `/var/run/reboot-required`,
+  disk 9%, `master` in sync with `origin/master` at `f85d3e4`. fail2ban sshd:
+  0 currently banned, 6 lifetime.
+- Built **`website/soc-architecture.html`** — the second of the three
+  greenlit website ideas: a SOC / incident-response reference architecture,
+  a sibling to `service-desk.html`. Same shape (system of record →
+  orchestrator ↔ human gate → function agents → response surfaces) applied
+  to detection and response instead of change/request. Sections: why
+  eradication and recovery stay human-owned (reversibility is the dividing
+  line); SIEM/SOAR as system of record; a colour-coded high-level
+  architecture diagram (5 detection sources → SIEM/SOAR → orchestrator ↔
+  incident-commander gate → 8 SOC agents on a bus → response surfaces, plus
+  an 8-box supporting-systems band categorised intel/detection/response/
+  evidence, and a dashed SOC-ops health agent); the eight SOC agents in a
+  data table (triage, enrichment, threat intel, investigation, containment,
+  identity response, forensics, detection engineering — only containment and
+  identity can act, and only tier-gated); an alert-to-resolution lifecycle
+  flowchart (vertical spine, two decision diamonds — known-benign auto-close
+  and the Sev≤3-and-reversible gate — with eradication/recovery as
+  human gates and a dashed verification-fail rollback loop); a severity
+  ladder infographic + table (Sev 4 auto-close → Sev 1 incident commander +
+  two-person rule) with a six-item deny-list above all tiers (no auto DC/core/
+  hypervisor isolation, no auto mass account action, no auto block of
+  business-critical destinations, no auto wipe before evidence, no auto
+  changes to the SIEM/logging/detection pipeline, no auto external
+  notification); the containment/eradication/recovery three-gate table;
+  a phased-rollout timeline (shadow → auto-triage → approved containment →
+  broad autonomy); a guardrails list (reversible-first, least-privilege
+  response, blast-radius precondition, immutable case timeline, per-target
+  circuit breakers, a tested kill switch, always-available analyst override);
+  a detection-engineering feedback loop; a 9-step end-to-end walkthrough of
+  a credential-phishing → BEC alert; a "how this maps to the other pages"
+  cross-link card; and a scope section. **Zero new CSS** — reused `.card`,
+  `.callout-box`, `.data-table`, `.step-list`, `.check`, `.tier-pill`,
+  `.diagram-wrap`/`.diagram-legend`/`.diagram-caption`, `.flow`/`.gate-pulse`,
+  `.divider`.
+- Not a top-nav item (nav already 13) — same sub-page pattern as
+  `agent-protocol.html`. Linked from the "Take it further" list on
+  `service-desk.html`, `operations-sop.html`, and
+  `service-desk-integration-guide.html`, and from `agent-protocol.html`'s
+  "how this maps to the other pages" card. Wired into `deploy.sh` (cp +
+  chown), `build_sitemap.py` (18 urls), and `build_status.py`'s page-health
+  list.
+- Verified before deploy: `html.parser` clean, tags balanced (22/22 svg,
+  14/14 section), no duplicate ids, no unresolved `{{...}}`. Local
+  Playwright screenshots (cached Chromium, `reducedMotion: 'reduce'`) of the
+  full page + all four diagrams — the architecture diagram, the lifecycle
+  flowchart (both diamonds, both branches, the rollback loop), the severity
+  ladder, and the rollout timeline all render correctly and legibly.
+- Deployed via `deploy.sh`. Live checks: `/soc-architecture.html` 200 with
+  all sections; `/service-desk.html`, `/operations-sop.html`,
+  `/agent-protocol.html`, `/service-desk-integration-guide.html` all still
+  200 and now carry the cross-link; `/sitemap.xml` 18 urls incl. the new
+  page; `/status.html` now **33/33** (was 32/32). Post-deploy sweep: all
+  five services active, no failed units, no reboot-required. Cleaned up
+  `/tmp/socshot`.
+- **`ASK.md`:** updated the in-progress website item — SOC/IR architecture
+  now done, only the interactive ticket-trace walkthrough left. Business
+  list unchanged (still waiting on josh).

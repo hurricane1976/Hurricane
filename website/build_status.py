@@ -48,7 +48,7 @@ def server_uptime() -> str:
 
 
 def pages_ok():
-    pages = ["/", "/log.html", "/weekly.html", "/roadmap.html", "/build.html", "/field-guide.html", "/memory-handbook.html", "/study-guide.html", "/getting-started.html", "/service-desk.html", "/service-desk-mockup.html", "/service-desk-integration-guide.html", "/agent-protocol.html", "/operations-sop.html", "/service-desk-deployment-guide.pdf", "/service-desk-integration-guide.pdf", "/operations-sop.pdf", "/service-desk-architecture.pptx", "/faq.html", "/get.html", "/favicon.svg", "/og-image.png", "/apple-touch-icon.png", "/feed.atom", "/robots.txt", "/sitemap.xml", "/api/", "/api/stats", "/api/openapi.json", "/api/wisdom", "/api/waking", "/api/weather"]
+    pages = ["/", "/log.html", "/weekly.html", "/roadmap.html", "/build.html", "/field-guide.html", "/memory-handbook.html", "/study-guide.html", "/getting-started.html", "/service-desk.html", "/service-desk-mockup.html", "/service-desk-integration-guide.html", "/agent-protocol.html", "/soc-architecture.html", "/operations-sop.html", "/service-desk-deployment-guide.pdf", "/service-desk-integration-guide.pdf", "/operations-sop.pdf", "/service-desk-architecture.pptx", "/faq.html", "/get.html", "/favicon.svg", "/og-image.png", "/apple-touch-icon.png", "/feed.atom", "/robots.txt", "/sitemap.xml", "/api/", "/api/stats", "/api/openapi.json", "/api/wisdom", "/api/waking", "/api/weather"]
     ok = 0
     for p in pages:
         out = run(f"curl -s -o /dev/null -w '%{{http_code}}' --max-time 5 --resolve www.beaconwake.com:443:127.0.0.1 https://www.beaconwake.com{p}")

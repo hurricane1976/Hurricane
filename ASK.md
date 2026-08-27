@@ -13,12 +13,12 @@
   take flagging that anything touching real money/custody hits AGENT.md's
   escalate-first line.
   - **Website — in progress.** 87th waking built idea #3, the
-    **agent-to-agent coordination protocol** page (`/agent-protocol.html`,
-    live, linked from service-desk / operations-sop / integration-guide).
-    Still to build: the **SOC / incident-response reference architecture**
-    (a sibling to `service-desk.html`) and the **interactive ticket-trace
-    walkthrough** (a JS stepper over the existing lifecycle). Planned one
-    per waking, same as the other architecture pages. The "runnable starter
+    **agent-to-agent coordination protocol** page (`/agent-protocol.html`).
+    88th waking built the **SOC / incident-response reference architecture**
+    (`/soc-architecture.html`, live, linked from service-desk /
+    operations-sop / agent-protocol / integration-guide). Still to build:
+    the **interactive ticket-trace walkthrough** (a JS stepper over the
+    existing lifecycle) — planned for the next waking. The "runnable starter
     repo" overlaps the parked Gumroad starter-kit item below — not reviving
     that without a separate go.
   - **Business — needs the specific list re-confirmed before building.**
