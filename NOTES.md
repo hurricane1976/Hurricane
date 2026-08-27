@@ -3461,3 +3461,83 @@ Running log of what I did and learned across wakings. Newest entries on top.
   touching real money/custody).
 - `ASK.md` unchanged — the weekly digest was fully actionable without
   josh; the two advisory asks were answered over Telegram.
+
+## 2026-08-27 (87th waking, ~10:40 UTC)
+
+- `check_replies.sh`: one new message from josh — "I like all three
+  website ideas, please build them out. I also line [like] all the
+  business opportunities as well please build them however hold on crypto
+  treasury idea." A reply to the 86th waking's Telegram message, which had
+  proposed four website ideas (interactive ticket-trace walkthrough, a
+  second SOC/incident-response reference architecture, an agent-to-agent
+  protocol page, a runnable starter repo) and a grounded take on
+  autonomous business options.
+- Full health sweep first, all green: nginx/beacon-api/fail2ban/cron/
+  unattended-upgrades all active, `nginx -t` clean, no failed units, no
+  `/var/run/reboot-required`, disk 9%, `master` in sync with
+  `origin/master` at `7ed6968`. fail2ban sshd: 0 currently banned, 6
+  lifetime.
+- Scoped this waking to **one** of the website ideas, done properly,
+  rather than three thin pages in one session (matches how every prior
+  architecture page was one-per-waking). Picked the **agent-to-agent
+  protocol** page — most self-contained, no raster/diagram pipeline
+  needed, and it fills a real gap: the service-desk and operations pages
+  describe the actors but never the wire format between them.
+- **Built `website/agent-protocol.html`** — "Agent-to-agent coordination
+  protocol." A transport-agnostic spec: the JSON message envelope (id,
+  schema_version, type, ticket_id, trace_id, causation_id, from/to, ts,
+  nonce, idempotency_key, payload, sig); a closed set of 12 message types
+  in a data-table (intent, plan.request, proposal, approval.request/grant/
+  deny, execute, result, verify, escalation, revoke, heartbeat) with a
+  deliberate note that there is no agent→agent `act` message — cross-domain
+  work always routes through the orchestrator; the bus model (fixed subject
+  shape, at-least-once delivery, per-ticket ordering, a *synchronous* audit
+  tee ahead of delivery, TTLs); handoff contracts as a sender-guarantees /
+  receiver-owns table; correlation/tracing/append-only-log rules; failure
+  handling (timeouts→escalation, idempotent retries, DLQ, per-target
+  circuit breakers, poison-message quarantine, partial-failure as a
+  first-class result); security (per-agent signing keys, least-privilege
+  topic ACLs, replay protection, the deny-list bound at the bus, creds
+  never on the wire); versioning (one semver for envelope+payloads,
+  additive-only minors, dual-read windows); one hand-authored inline SVG
+  sequence diagram (lockout ticket → intent → plan.request → proposal
+  (Tier 2) → approval.request → approval.grant → execute → result → verify
+  → close, with the green audit-tee shown on every message); a "how this
+  maps to the other pages" cross-link card; and a scope section. Reused
+  existing CSS only (`.card`, `.code-block`/`.code-label`, `table.data-table`,
+  `.diagram-wrap`/`.diagram-caption`/`.diagram-legend`, `.step-list`,
+  `.callout-box`) — **zero new CSS**.
+- Not a top-nav item — same sub-page pattern as `service-desk-mockup.html`
+  and `service-desk-integration-guide.html` (nav is already 13 items).
+  Linked instead from the "Take it further" list on `service-desk.html`,
+  `operations-sop.html`, and `service-desk-integration-guide.html`, and
+  wired into `deploy.sh` (cp + chown), `build_sitemap.py` (17 urls), and
+  `build_status.py`'s page-health list.
+- Verified locally before deploy: served via `python3 -m http.server`,
+  Playwright screenshot with the cached Chromium binary. Caught two
+  self-inflicted issues in the draft: a stray U+200B zero-width space in
+  the subject-shape example (`b​.<env>…` → fixed to `bus.<env>…`, and made
+  the example subjects match the stated shape), and a legend swatch using
+  the wrong custom prop (`--legend-color` → `--sw`, which is what
+  `.diagram-legend span::before` actually reads). Also trimmed the
+  envelope code-block's inline comments so no line overflows the card
+  width on desktop. Confirmed the fullPage screenshot's "missing middle
+  cards" was just the site-wide `reveal.js` scroll-reveal not firing on an
+  unscrolled capture (element-box probe showed all 14 sections laid out at
+  the right heights) — re-shot with `reducedMotion: 'reduce'` to confirm
+  the tables, code block, and diagram all render correctly.
+- Deployed via `deploy.sh`. Live checks: `/agent-protocol.html` 200 with
+  nav + all sections, `/service-desk.html` / `/operations-sop.html` /
+  `/service-desk-integration-guide.html` all still 200 and now carry the
+  cross-link, `/sitemap.xml` 17 urls incl. the new page, `/status.html`
+  now **32/32** (was 31/31). Post-deploy sweep: all five services still
+  active, no failed units. Cleaned up `/tmp/apshot`.
+- **`ASK.md`:** opened an item for josh's "build them out" message. The
+  agent-protocol page is done; the SOC/IR architecture and the interactive
+  ticket-trace walkthrough are queued for the next wakings. Flagged that
+  the *business* ideas need re-confirming — the exact shortlist from the
+  86th waking's Telegram message wasn't preserved verbatim in the repo,
+  and most autonomous-business options route through payment rails, which
+  per `AGENT.md` is escalate-first even with a general "build them."
+  Crypto treasury explicitly excluded per josh. Asked him over Telegram to
+  re-send the specific business list.

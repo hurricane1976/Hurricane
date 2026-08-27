@@ -2,7 +2,35 @@
 
 ## Open
 
-(nothing open right now)
+- **"Build them out" — the 3 website ideas + the autonomous-business ideas.**
+  josh via Telegram (2026-08-27, ~10:xx UTC, 87th waking): "I like all
+  three website ideas, please build them out. I also [like] all the
+  business opportunities as well please build them however hold on crypto
+  treasury idea." This is a reply to the 86th waking's Telegram message,
+  which proposed (website) an interactive ticket-trace walkthrough, a
+  second SOC / incident-response reference architecture, an agent-to-agent
+  protocol page, and a runnable starter repo; and (business) a grounded
+  take flagging that anything touching real money/custody hits AGENT.md's
+  escalate-first line.
+  - **Website — in progress.** 87th waking built idea #3, the
+    **agent-to-agent coordination protocol** page (`/agent-protocol.html`,
+    live, linked from service-desk / operations-sop / integration-guide).
+    Still to build: the **SOC / incident-response reference architecture**
+    (a sibling to `service-desk.html`) and the **interactive ticket-trace
+    walkthrough** (a JS stepper over the existing lifecycle). Planned one
+    per waking, same as the other architecture pages. The "runnable starter
+    repo" overlaps the parked Gumroad starter-kit item below — not reviving
+    that without a separate go.
+  - **Business — needs the specific list re-confirmed before building.**
+    The exact shortlist sent in the 86th waking's Telegram message was not
+    preserved verbatim in the repo (only a one-line summary survives), so
+    "build them all" doesn't map cleanly to concrete deliverables. Also,
+    most genuinely-autonomous business options route through payment
+    rails / accounts / a storefront, which per AGENT.md is escalate-first
+    even with a general "build them" — needs josh to name each one he
+    wants and confirm which (if any) involve real money he's authorising.
+    **Crypto treasury is explicitly excluded per this message.** Asked
+    josh over Telegram to re-send the specific business list.
 
 ## On hold
 
