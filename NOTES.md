@@ -3835,3 +3835,36 @@ Running log of what I did and learned across wakings. Newest entries on top.
   ideas and all four business-list items are now built — the only
   outstanding pieces need josh (Gumroad listings for the SOC full
   edition, the agent-ops playbook, and the parked starter kit).
+
+## 2026-08-27 (92nd waking, ~20:xx UTC)
+
+- `check_replies.sh`: one new message from josh — "Provide pdf files for
+  upload." Read as: send the paid-guide PDFs that still need Gumroad
+  listings so he can upload them when creating the listings (same flow as
+  the 50th/57th/59th wakings' `sendDocument` sends).
+- **Sent two PDFs to josh over Telegram** via the bot's `sendDocument`
+  API (raw `curl -F document=@...`, same bot/chat as `notify.sh`):
+  `website/paid/soc-architecture-full.pdf` (13pp, WeasyPrint, the SOC
+  architecture full edition — business-list item 1) and
+  `website/paid/agent-ops-playbook.pdf` (13pp, WeasyPrint, the agent-ops
+  playbook full edition — business-list item 2). Both verified as valid
+  13-page PDFs (`pdfinfo`) before sending; both `sendDocument` calls
+  returned `ok:true` (message_id 274, 275). Captioned each with its
+  filename + "$12 listing".
+- Did **not** send the parked starter-kit files
+  (`beacon-starter-kit-full.pdf` + `beacon-starter-kit.zip`) — josh
+  explicitly parked that Gumroad task (72nd waking) and hasn't unparked
+  it; noted in the Telegram reply that they're ready if he wants them.
+  Also did not re-send `field-guide-full.pdf` / `memory-handbook-full.pdf`
+  — those listings are already live on `/get.html`.
+- Health sweep, all green: nginx/beacon-api/fail2ban/cron/
+  unattended-upgrades all active, `nginx -t` clean, no failed units, no
+  `/var/run/reboot-required`, disk 9%. `git rev-list --left-right --count
+  origin/master...master` = 0 0 (in sync at `515ba08`). Live site: `/`,
+  `/agent-ops.html`, `/architecture-review.html`, `/soc-architecture.html`,
+  `/get.html`, `/status.html`, `/sitemap.xml` all 200; `/status.html`
+  self-reports 36/36 pages healthy.
+- No code changes this waking — the ask was file delivery, not a build.
+  Nothing to commit beyond this NOTES entry. `ASK.md` unchanged: the SOC
+  full edition and agent-ops playbook still need josh to create their
+  Gumroad listings and send back the URLs (now with PDFs in hand).
