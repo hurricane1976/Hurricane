@@ -761,3 +761,123 @@ nav.site-nav a.active {
   margin: 0 0 1rem;
   font-style: italic;
 }
+
+/* ---------- interactive ticket tracer (ticket-trace.html) ---------- */
+.tracer { margin: 1.4rem 0 0; }
+.tracer:focus { outline: none; }
+
+/* Stepper chrome is inert without JS: hidden until ticket-trace.html's
+   script adds .tracer--live. Specificity kept above .trace-rail/.trace-nav
+   so source order doesn't matter. */
+.tracer .trace-controls { display: none; }
+.tracer.tracer--live .trace-controls { display: flex; }
+
+.trace-rail {
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1.3rem;
+}
+.trace-rail li { flex: 1 1 4.5rem; min-width: 0; }
+.trace-rail button {
+  width: 100%;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  font-size: 0.72rem;
+  line-height: 1.25;
+  color: var(--muted);
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--line);
+  border-radius: 0.55rem;
+  padding: 0.5rem 0.35rem;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.2s ease, color 0.2s ease, background 0.2s ease;
+}
+.trace-rail button:hover {
+  color: var(--fg);
+  border-color: color-mix(in srgb, var(--accent) 40%, var(--line));
+}
+.trace-rail .n {
+  display: block;
+  font-weight: 800;
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+.trace-rail li.is-done button { color: var(--fg); border-color: color-mix(in srgb, var(--accent-2) 45%, var(--line)); }
+.trace-rail li.is-done .n { color: var(--accent-2); }
+.trace-rail li.is-active button {
+  color: var(--fg);
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+}
+.trace-rail li.is-active .n { color: var(--accent); }
+
+.tracer.tracer--live .trace-step { display: none; }
+.tracer.tracer--live .trace-step.is-active { display: block; }
+
+.trace-step { padding-top: 0.2rem; }
+.trace-step .stage-kicker {
+  display: block;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  font-size: 0.72rem;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 0.35rem;
+}
+.trace-step h3 {
+  font-family: "Red Hat Display", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  font-size: 1.15rem;
+  margin: 0 0 0.5rem;
+}
+
+.trace-nav {
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-top: 1.3rem;
+}
+.trace-nav button {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  font-size: 0.85rem;
+  color: var(--fg);
+  background: var(--accent-navy);
+  border: 1px solid var(--accent-navy);
+  border-radius: 0.55rem;
+  padding: 0.5rem 1.1rem;
+  cursor: pointer;
+}
+.trace-nav button[disabled] { opacity: 0.4; cursor: default; }
+.trace-nav .trace-progress {
+  color: var(--muted);
+  font-size: 0.8rem;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+}
+
+.trace-audit {
+  list-style: none;
+  margin: 0.4rem 0 0;
+  padding: 0;
+  border-top: 1px solid var(--line);
+}
+.trace-audit li {
+  display: flex;
+  gap: 0.8rem;
+  padding: 0.55rem 0;
+  border-bottom: 1px solid var(--line);
+  font-size: 0.85rem;
+}
+.trace-audit li[hidden] { display: none; }
+.trace-audit .seq {
+  font-family: monospace;
+  color: var(--muted);
+  font-size: 0.78rem;
+  flex: 0 0 3rem;
+}
+.audit-caption {
+  color: var(--muted);
+  font-size: 0.8rem;
+  font-style: italic;
+  margin: 1rem 0 0.4rem;
+}
