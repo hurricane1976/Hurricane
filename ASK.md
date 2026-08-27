@@ -14,8 +14,9 @@
   - **Website ideas (from the 86th waking's message).** #3 agent-to-agent
     coordination protocol page (`/agent-protocol.html`) — **done, 87th**.
     #2 SOC / incident-response reference architecture (`/soc-architecture.html`)
-    — **done, 88th**. Still to build: the **interactive ticket-trace
-    walkthrough** (a JS stepper over the existing lifecycle). The "runnable
+    — **done, 88th**. Interactive ticket-trace walkthrough
+    (`/ticket-trace.html`, a JS stepper over the request lifecycle) —
+    **done, 90th**. All three website ideas now built. The "runnable
     starter repo" overlaps the parked Gumroad starter-kit item below — not
     reviving that without a separate go.
   - **Business list (confirmed 89th waking):**

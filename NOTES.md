@@ -3669,3 +3669,80 @@ Running log of what I did and learned across wakings. Newest entries on top.
   is a landing/offer page (contact to arrange), not a live automated
   payment+delivery pipeline, unless josh says otherwise. Website
   ticket-trace walkthrough still queued from the 87th waking.
+
+## 2026-08-27 (90th waking, ~15:30 UTC)
+
+- `check_replies.sh`: no new messages. `ASK.md`'s open item is josh's
+  "build them out" list — of the three greenlit website ideas, two were
+  done (agent-protocol 87th, soc-architecture 88th) and the **interactive
+  ticket-trace walkthrough** was the last one still queued. Business list:
+  SOC full-edition PDF + weekly-digest upsell done 89th; "agent ops"
+  playbook and paid "architecture review" landing page still queued.
+- Health sweep, all green: nginx/beacon-api/fail2ban/cron/
+  unattended-upgrades all active, `nginx -t` clean, no failed units, no
+  `/var/run/reboot-required`, disk 9%. `git rev-list --left-right --count
+  origin/master...master` = 0 0 (in sync at `e38371a`). Noted a harmless
+  quirk: bare `git rev-parse master` / `origin/master` error with "Needed
+  a single revision" while the fully-qualified `refs/...` forms and
+  `git rev-list` work fine and `deploy.sh`/commit/push all work — not
+  chasing it, everything that matters resolves.
+- **Built `website/ticket-trace.html`** — the third and last greenlit
+  website idea. A JS stepper that runs one concrete ticket
+  (`INC0104729`, a platform engineer locked out after a self-service
+  password change, account in the protected `Server Operators` group)
+  down the request-lifecycle diagram from `service-desk.html`, one stage
+  at a time: (1) intake & classification, (2) enrichment (identity agent,
+  Tier 0 read-only), (3) draft a plan (`proposal` message), (4) risk-tier
+  decision — lands at Tier 2 because policy sets a floor of Tier 2 for any
+  mutating action on a protected-group member, not because of blast radius,
+  (5) human approval / arbitration (dry-run diff + `approval.grant`, with
+  an arbitration-branch note), (6) execute (`execute` → `result`),
+  (7) verify target state (with the rollback-loop branch note), (8) close.
+  An append-only audit log at the bottom of the card accretes entries as
+  you advance (1 line at stage 1 → all 9 by stage 8). Rail chips,
+  Previous/Next, and left/right arrow keys all navigate. Ties the bus
+  messages back to `/agent-protocol.html` and the lifecycle/tier model
+  back to `/service-desk.html`.
+- **Progressive enhancement, done carefully.** With JS off: all 8 stages
+  and the full 9-line log render stacked and fully readable; the rail and
+  prev/next chrome are hidden. Key gotcha caught in local testing: the
+  first pass hid the controls with the `hidden` attribute, but
+  `.trace-rail`/`.trace-nav`/`.trace-audit li` carry an explicit
+  `display: flex`, which overrides `[hidden]`'s `display: none` — so in a
+  JS-off browser the non-functional stepper chrome was still visible and
+  the audit log never filtered. Fixed by switching to class-based hiding
+  (`.tracer .trace-controls { display: none }` /
+  `.tracer.tracer--live .trace-controls { display: flex }`, specificity
+  kept above the component rules so source order is irrelevant) plus an
+  explicit `.trace-audit li[hidden] { display: none }`. Re-tested both
+  JS-on and JS-on-disabled via Playwright (`javaScriptEnabled: false`
+  context): confirmed rail/nav `display:none` and 8 steps + 9 audit rows
+  visible with JS off; `tracer--live`, 1 step, growing log, no console
+  errors with JS on.
+- Verified before deploy: `html.parser` balanced, no duplicate ids, no
+  unresolved `{{...}}`, `node --check` on the inline script clean.
+  Playwright screenshots (cached Chromium, `reducedMotion: 'reduce'` to
+  stop `reveal.js` hiding cards in an unscrolled fullPage capture — same
+  note as the 87th/88th wakings) of stages 1/4/5/8 and the JS-off full
+  page all render correctly and legibly.
+- Not a top-nav item (nav already 13) — same sub-page pattern as
+  `agent-protocol.html`/`soc-architecture.html`. Cross-linked from the
+  "Take it further" / "how this maps to the other pages" lists on
+  `service-desk.html`, `agent-protocol.html`, `soc-architecture.html`,
+  `operations-sop.html`, and `service-desk-mockup.html` (one link each,
+  verified live). Wired into `deploy.sh` (cp + chown),
+  `build_sitemap.py` (19 urls), and `build_status.py`'s page-health list.
+  Small stepper CSS block added to `style.css`; the page body otherwise
+  reuses existing components only (`.mock-*`, `.code-block`,
+  `.data-table`, `.tier-pill`, `.check`, `.callout-box`).
+- Deployed via `deploy.sh`. Live checks: `/ticket-trace.html` 200; all
+  five cross-linked siblings still 200 and each carries exactly one
+  `ticket-trace.html` link; `/sitemap.xml` 19 urls incl. the new page;
+  `/status.html` now **34/34** (was 33/33). Post-deploy sweep: all five
+  services active, no failed units, no reboot-required, disk 9%.
+  Committed (`de98eb0`) and pushed to `origin/master`. Cleaned up
+  `/tmp/httpd.*` and the scratch screenshots.
+- **`ASK.md`:** marked the interactive ticket-trace walkthrough done —
+  all three website ideas from the 86th waking's list are now built. The
+  business list's two remaining items ("agent ops" playbook, paid
+  "architecture review" landing page) stay queued for the next wakings.
