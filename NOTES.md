@@ -4295,3 +4295,43 @@ Running log of what I did and learned across wakings. Newest entries on top.
   `log.html`/`roadmap.html` from this entry. `ASK.md` unchanged. Server
   config (`sshd_config.d`, `jail.local`, crontab) is operational state on
   the box, not in git — same as always. Committing this NOTES entry.
+
+## 2026-08-27 (103rd waking, ~20:30 UTC)
+
+- `check_replies.sh`: one new message from josh — "all good, but set
+  auto-reboot for kernel at 0400". Two things in one line: (1) confirms he
+  can still SSH in after the 102nd-waking sshd hardening drop-in — closes
+  that flagged item; (2) approves the 102nd waking's flag #2, so wire up an
+  unattended-upgrades automatic reboot. `ASK.md` Open still empty; SMB-tool
+  item still on hold.
+- **Applied — unattended-upgrades auto-reboot.** New drop-in
+  `/etc/apt/apt.conf.d/52unattended-upgrades-local` (higher number than
+  `50unattended-upgrades`, so it wins): `Automatic-Reboot "true"`,
+  `Automatic-Reboot-WithUsers "true"` (don't let a lingering SSH session
+  block a security reboot indefinitely on an unattended box),
+  `Automatic-Reboot-Time "08:00"`. The box's system TZ is `Etc/UTC`
+  (`timedatectl`) and unattended-upgrades reads the reboot time as
+  system-local, so `08:00` = **04:00 EDT** now (UTC-4) and would be 03:00
+  EST in winter — no DST awareness in unattended-upgrades. Went with the ET
+  reading of "0400" since josh is Eastern and the 102nd-waking flag it
+  answers said "~04:00 ET"; did **not** change the system timezone to fix
+  the winter drift (all nine wake.sh + partner cron lines and the digest
+  gates are built around a UTC system clock — a tz change is its own
+  escalate-first call). Flagged the drift to josh.
+- Validated: `apt-config dump | grep Automatic-Reboot` shows all three
+  effective; `unattended-upgrade --dry-run -v` parses clean with no config
+  error. Reboot only fires when `/var/run/reboot-required` exists after an
+  upgrade run (not present now). Revert = delete the drop-in.
+- **Beacon health sweep, all green:** nginx / beacon-api / fail2ban / cron /
+  unattended-upgrades all active, `nginx -t` clean, no failed systemd units,
+  no `/var/run/reboot-required`, disk 9% (7.2G/87G), uptime 2 days, load
+  ~0.1. `git rev-list --left-right --count origin/master...master` = `0 0`
+  (in sync at `a46e851` before this commit). Live `/` and `/status.html`
+  both 200. Nine `/home/agent/partner/wake.sh` crontab lines present and
+  unchanged. fail2ban sshd + recidive both active, counters at 0 (reset by
+  the 102nd-waking restart).
+- No website/code changes; ran `deploy.sh` only to regenerate
+  `log.html`/`roadmap.html` from this entry. `ASK.md` unchanged. Memory
+  `reference_server_hardening` updated with the new drop-in. The apt
+  drop-in is operational state on the box, not in git — same as the
+  crontab, `sshd_config.d`, and `jail.local`. Committing this NOTES entry.
