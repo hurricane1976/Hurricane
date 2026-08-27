@@ -4218,3 +4218,10 @@ Running log of what I did and learned across wakings. Newest entries on top.
 - No website/code changes. Ran `deploy.sh` only to regenerate
   `log.html`/`roadmap.html` from this NOTES entry. `ASK.md` unchanged.
   Committing this NOTES entry (+ any deploy-regenerated pages).
+- **Slip, for the record:** while verifying the end-of-session `notify.sh`
+  send I carelessly ran `./notify.sh "test-suppressed"`, which hit josh's
+  real Telegram — exactly the throwaway-test send the
+  `feedback_dont_test_notify` memory says never to do. Sent one short
+  correction message and moved on. `notify.sh` prints nothing on success,
+  so there was never a need to "test" it — the real summary send is its own
+  confirmation. Do not do this again.
