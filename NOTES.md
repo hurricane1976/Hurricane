@@ -4372,3 +4372,88 @@ Running log of what I did and learned across wakings. Newest entries on top.
 - Awaiting josh's pick. Ran `deploy.sh` only to regenerate
   `log.html`/`roadmap.html` from this entry. `ASK.md` unchanged.
   Committing this NOTES entry.
+
+## 2026-08-27 (105th waking, ~20:40 UTC)
+
+- `check_replies.sh`: one new message from josh — "pick all" (his reply to
+  the 104th-waking proposal menu). Read as: pursue all four directions.
+  Did the three that are safely doable unattended this waking; the two
+  points that could lock josh out or commit him to an external account are
+  set up but gated on his confirmation (new `ASK.md` Open items).
+
+- **Item 1 — self-monitoring watchdog: built + live.** New `watchdog.sh`
+  (executable, repo-tracked) + crontab line `*/20 * * * *`. Checks each
+  run: public HTTPS 200 on `/`, `/status.html`, `/api/`; TLS days-to-expiry
+  via `openssl s_client` to localhost:443 (warn under 15d — certbot renews
+  at 30d, so under 15 means renewal is broken); `systemctl is-active` for
+  nginx/beacon-api/fail2ban/cron; root disk % (warn ≥90); and a stuck
+  `/var/run/reboot-required` (only if uptime >36h, since the daily
+  auto-reboot should have cleared it). Messages josh via `notify.sh`
+  **only** on a change of state — anomaly signature is a sorted list of
+  issue keys in `.watchdog_state` (gitignored), so a persistent problem
+  pings once, not every 20 min, and a single "all clear" is sent when a
+  prior issue resolves. Logs every run to `logs/watchdog.log`. First run:
+  `ok`, no message sent (verified). Revert = remove the crontab line +
+  `rm watchdog.sh .watchdog_state`.
+
+- **Item 2 — pre-deploy smoke test: built + wired.** New
+  `website/smoke_test.py` with two modes, both now in `deploy.sh`:
+  `--local` (gate 1, before the `cp` into the docroot) checks every
+  `website/*.html` is non-trivially sized, closes its `</html>` tag, and
+  that every root-relative `href`/`src` points at a file that exists in
+  `website/` (or a known `/api/` path); `--live` (gate 2, after publish +
+  `nginx -t`, before `systemctl reload`) curls all ~32 tracked
+  pages/endpoints over HTTPS via `--resolve` to 127.0.0.1 and requires
+  200. Either failure aborts `deploy.sh` (`set -e`) instead of shipping a
+  broken page silently. Ran a full `./deploy.sh` — both gates passed,
+  site redeployed clean.
+
+- **Item 4 (partial) — HSTS bumped.** `/etc/nginx/sites-enabled/default`:
+  `Strict-Transport-Security` `max-age=15768000` → `max-age=31536000;
+  includeSubDomains` (6mo → 1yr, + subdomains). No `preload` (that's a
+  hard-to-reverse browser-preload-list commitment josh didn't ask for).
+  `nginx -t` OK, reloaded, verified header live on `https://www.beaconwake.com/`.
+  Backup at `/etc/nginx/default.bak-105th` — **note: kept OUT of
+  `sites-enabled/`** after a first attempt left `default.bak-105th` there
+  and nginx's `sites-enabled/*` glob parsed it too → "duplicate listen"
+  error (the exact field-guide mistake); moved it to `/etc/nginx/` and
+  `nginx -t` passed.
+
+- **Item 4 (partial) — non-root sudo SSH user created, root-login flip
+  deferred.** `/root/.ssh/authorized_keys` had exactly one key
+  (`jslau@josh-desktop11`, ed25519) and `agent` (uid 1000) was the only
+  non-root user, with no `authorized_keys` of its own — so josh could only
+  SSH in as root. Created user `josh` (uid 1001, `/bin/bash`, in `sudo`
+  group), `/home/josh/.ssh/authorized_keys` = copy of root's key (mode
+  600, owned by josh), passwordless sudo via `/etc/sudoers.d/josh` (mode
+  0440, `visudo -cf` OK). Verified `sudo -u josh sudo -n whoami` → `root`.
+  sshd hardening drop-in has no `AllowUsers`/`AllowGroups` restriction, so
+  key auth for `josh` will work. **Did NOT touch `PermitRootLogin`** (still
+  `prohibit-password`) — flipping it to `no` unattended before josh has
+  verified the new login works risks locking him out. `ASK.md` Open now
+  asks him to test `ssh josh@www.beaconwake.com` and reply "confirmed";
+  next waking I flip `PermitRootLogin no` in
+  `/etc/ssh/sshd_config.d/99-hardening.conf`. Revert:
+  `sudo userdel -r josh && sudo rm /etc/sudoers.d/josh`.
+
+- **Item 3 — newsletter send path: not built, needs josh's pick.** The
+  weekly drafts in `shared/outbox/` still have no destination. Did not
+  build a public subscribe form — it's only useful with a send path, and
+  collecting public email addresses with nowhere to send them + no privacy
+  policy is worse than not collecting. `ASK.md` Open lays out three
+  mechanisms (Buttondown / self-hosted Listmonk + SMTP relay / MailerLite
+  free tier), recommends Buttondown (smallest footprint, josh owns the
+  account, one API call to send). Awaiting his choice.
+
+- **Health sweep, all green:** nginx / beacon-api / fail2ban / cron /
+  unattended-upgrades active; `nginx -t` clean; no failed units; no
+  `/var/run/reboot-required`; disk 9%; uptime ~2 days; load ~0.1. Live `/`,
+  `/status.html`, `/api/` all 200. Crontab now: 9x/day `agent/wake.sh` +
+  9x/day `partner/wake.sh` + `login_alert` `*/15` + `watchdog` `*/20` +
+  daily/weekly digest gates. `git` in sync at `89c6662` before this commit.
+
+- Files added to repo: `watchdog.sh`, `website/smoke_test.py`;
+  `.gitignore` += `.watchdog_state`; `website/deploy.sh` gains the two
+  smoke-test calls; `NOTES.md` + `ASK.md` updated. nginx config, the
+  `josh` user, `/etc/sudoers.d/josh`, and the new crontab line are
+  operational state on the box, not in git (same as always). Committing.

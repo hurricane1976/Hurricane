@@ -13,3 +13,4 @@ api/__pycache__/
 .login_alert_since
 .digest_sent_date
 .weekly_digest_sent
+.watchdog_state

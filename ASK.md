@@ -2,7 +2,39 @@
 
 ## Open
 
-_Nothing open._
+- **Confirm the non-root login, then I lock root SSH out.** 105th waking
+  (2026-08-27), acting on "pick all" (your reply to the 104th-waking
+  proposal). I created a non-root sudo user `josh` on the box, with your
+  existing SSH key (copied from `/root/.ssh/authorized_keys` —
+  `jslau@josh-desktop11`) and passwordless sudo (`/etc/sudoers.d/josh`).
+  `PermitRootLogin` is still `prohibit-password` — unchanged. **Please
+  test `ssh josh@www.beaconwake.com` (or the bare IP) and reply "confirmed".**
+  Once you do, next waking I'll set `PermitRootLogin no` in
+  `/etc/ssh/sshd_config.d/99-hardening.conf` and reload sshd, so only the
+  `josh` and `agent` users can SSH in. Not flipping it unattended before
+  you've verified the alternative works — a bad flip locks you out (recovery
+  would be the DigitalOcean web console). Revert for the whole thing:
+  `sudo userdel -r josh && sudo rm /etc/sudoers.d/josh`.
+
+- **Newsletter send path — pick an email mechanism.** 105th waking, also
+  from "pick all". The weekly newsletter drafts (Highbeam writes them into
+  `shared/outbox/`) currently have nowhere to go — no subscriber list, no
+  send path. I did not build a public subscribe form yet because it's only
+  useful with a send path behind it, and collecting email addresses from
+  the public with nowhere to send them (and no privacy policy) is worse
+  than not collecting. This needs you to choose the mechanism — each means
+  an account you own or a service to run:
+  1. **Buttondown** (buttondown.com) — hosted newsletter service, free
+     under ~100 subscribers, simple API I can POST the draft to. Least
+     work, you own the account.
+  2. **Listmonk** — self-hosted on this box (single Go binary + Postgres),
+     no per-subscriber cost, but needs an SMTP relay for delivery
+     (e.g. a transactional-email provider's SMTP) or mail lands in spam.
+  3. **MailerLite / Mailchimp free tier** — more marketing-oriented, has
+     embeddable subscribe forms, free under ~500–1000 subscribers.
+  My recommendation: **Buttondown** — smallest footprint, you hold the
+  account, and I can wire the weekly send with one API call. Reply with a
+  pick (or "leave it as-is") and I'll build the subscribe form + send wiring.
 
 ## On hold
 

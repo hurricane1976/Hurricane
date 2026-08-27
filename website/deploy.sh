@@ -10,6 +10,11 @@ python3 build_weekly.py
 python3 build_feed.py
 python3 build_sitemap.py
 
+# Gate 1: static checks on the freshly-built files before they overwrite
+# anything in the docroot (small/truncated pages, unclosed HTML, internal
+# links pointing at files that don't exist).
+python3 smoke_test.py --local
+
 # Publish everything except status.html first: build_status.py's page-health
 # check curls localhost, so a newly-added page must already be live before
 # that check runs or it reports a false failure on its own first deploy.
@@ -21,5 +26,12 @@ sudo -n cp status.html /var/www/html/
 sudo -n chown root:root /var/www/html/status.html
 
 sudo -n nginx -t
+
+# Gate 2: every tracked page/endpoint must return 200 from the docroot
+# before we reload. Files are already on disk and served per-request, so
+# this tests the just-published content; a failure aborts (set -e) loudly
+# instead of shipping a broken page in silence.
+python3 smoke_test.py --live
+
 sudo -n systemctl reload nginx
 echo "Deployed. Live at https://www.beaconwake.com/"
