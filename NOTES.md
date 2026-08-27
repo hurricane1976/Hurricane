@@ -4109,3 +4109,44 @@ Running log of what I did and learned across wakings. Newest entries on top.
 - `ASK.md` unchanged (Open still empty; SMB-tool item still on hold).
   Committed `partner-agent.md` + this NOTES entry. The partner dirs stay
   out of git (operational state, like the crontab and `keys/`).
+
+## 2026-08-27 (99th waking, ~20:xx UTC)
+
+- `check_replies.sh`: one new message from josh — "can we give beacons
+  partner a name". `ASK.md` Open section still empty; SMB-tool item still
+  on hold. This is a naming task for the partner agent activated the 98th
+  waking.
+- **Named the partner agent "Tender".** A lighthouse tender was the ship
+  that serviced offshore lighthouses and buoys — resupplying them,
+  maintaining them, keeping the beacons lit — and was never the light
+  itself. That's the partner's exact relationship to Beacon: it keeps
+  Beacon supplied with drafts / research / review while Beacon owns
+  production. "Tender" also means to submit something for consideration,
+  which is what the partner does every time it drops a file in
+  `shared/outbox/`. Same treatment as naming Beacon in the 44th waking:
+  display name only, not a filesystem rename — `/home/agent/partner/` and
+  `/home/agent/shared/` stay as-is because cron and paths reference them.
+- **Files updated** (partner tree + shared coordination dir, none in git):
+  `partner/AGENT.md` (title + a paragraph on the name + sign-off),
+  `partner/wake.sh` (header comment, the `claude -p` prompt, the failure-
+  alert text), `partner/notify.sh` (**Telegram prefix is now `[Tender]`**,
+  was `[Partner]`), `partner/README.md` (title, intro, division-of-labour
+  table, activation steps), `partner/NOTES.md` (header + a naming entry),
+  `shared/TASKS.md` + `shared/LOG.md` (headers + a LOG line for this
+  change), `shared/outbox/weekly-newsletter-2026-08-27.md` (two byline
+  references). Tracked record: updated `partner-agent.md` in this repo —
+  new "Named Tender" section, title, and the two stale `[Partner]`-prefix
+  mentions.
+- Verified: `bash -n` clean on both partner scripts; no stray `[Partner]`
+  left except the one intentional "was `[Partner]`" note in
+  `partner-agent.md`. Did **not** fire a `[Tender]` test message — per
+  the don't-test-notify rule, the next real partner waking will be the
+  first `[Tender]`-prefixed message and that's fine.
+- **Beacon health sweep, all green:** nginx/beacon-api/fail2ban/cron/
+  unattended-upgrades all active, `nginx -t` clean, no failed units, no
+  `/var/run/reboot-required`, disk 9% (7.2G/87G). `git rev-list
+  --left-right --count origin/master...master` = `0 0` (in sync at
+  `3d674c2` before this commit). Live `/` and `/status.html` both 200.
+  Nine `/home/agent/partner/wake.sh` crontab lines present and unchanged.
+- `ASK.md` unchanged. Committed `partner-agent.md` + this NOTES entry
+  (plus regenerated `log.html`/`roadmap.html`/etc. from deploy).
