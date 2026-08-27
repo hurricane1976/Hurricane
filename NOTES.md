@@ -4150,3 +4150,41 @@ Running log of what I did and learned across wakings. Newest entries on top.
   Nine `/home/agent/partner/wake.sh` crontab lines present and unchanged.
 - `ASK.md` unchanged. Committed `partner-agent.md` + this NOTES entry
   (plus regenerated `log.html`/`roadmap.html`/etc. from deploy).
+
+## 2026-08-27 (100th waking, ~20:xx UTC)
+
+- `check_replies.sh`: one new message from josh — "rename partner agent
+  HIGHBEAM". `ASK.md` Open section still empty; SMB-tool item still on hold.
+  A rename task for the partner agent that was named "Tender" the 99th waking.
+- **Renamed the partner agent "Tender" → "Highbeam".** A high beam is a
+  headlight's long-range setting — the light that shows the road far ahead
+  of where you are. Beacon holds the fixed near-field light of production;
+  the partner looks ahead: research, first drafts, next week's newsletter, a
+  second read on Beacon's recent commits. Still a light, like Beacon. Same
+  treatment as every naming here (Beacon 44th, Tender 99th): display name
+  only, not a filesystem rename — `/home/agent/partner/` and
+  `/home/agent/shared/` stay as-is (cron and paths reference them).
+- **Files updated** (partner tree + shared coordination dir, none in git):
+  `partner/AGENT.md` (title, the name paragraph, the `notify.sh` line,
+  sign-off), `partner/wake.sh` (header comment, `claude -p` prompt, failure-
+  alert text), `partner/notify.sh` (**Telegram prefix is now `[Highbeam]`**,
+  was `[Tender]`), `partner/README.md` (title, intro, division-of-labour
+  table, activation steps), `partner/NOTES.md` (header + a rename entry),
+  `shared/LOG.md` + `shared/TASKS.md` (headers + a LOG line), and
+  `shared/outbox/weekly-newsletter-2026-08-27.md` (two byline references).
+  Tracked record: `partner-agent.md` in this repo — new "Renamed Highbeam"
+  section, updated title, the two forward-looking `[Tender]` prefix mentions
+  now `[Highbeam]` (historical "Named Tender" section left intact).
+- Verified: `bash -n` clean on both partner scripts; nine
+  `/home/agent/partner/wake.sh` crontab lines present and unchanged. Did
+  **not** fire a `[Highbeam]` test message (don't-test-notify rule) — the
+  next real partner waking will carry the new prefix.
+- **Beacon health sweep, all green:** nginx/beacon-api/fail2ban/cron/
+  unattended-upgrades all active, `nginx -t` clean, no failed units, no
+  `/var/run/reboot-required`, disk 9% (7.2G/87G). `git rev-list --left-right
+  --count origin/master...master` = `0 0` (in sync at `4e58d90` before this
+  commit). Live `/` and `/status.html` both 200; `/status.html` self-reports
+  36/36 pages healthy.
+- `ASK.md` unchanged. Memory `project_partner_agent_scaffold` + `MEMORY.md`
+  updated with the new name. Committed `partner-agent.md` + this NOTES entry
+  (plus regenerated `log.html`/`roadmap.html`/etc. from deploy).

@@ -1,4 +1,4 @@
-# Tender (partner agent) — design notes
+# Highbeam (partner agent) — design notes
 
 josh asked over Telegram (2026-08-27, before the 97th waking): "is it
 possible to create a partner to beacon? i.e. another agent to provide
@@ -8,6 +8,20 @@ Yes. Beacon's whole runtime is: a cron line calls `wake.sh`, which runs
 `claude -p` with `AGENT.md` as the operating contract, writing to `NOTES.md`
 and reporting over Telegram. A second agent is a second copy of that with
 its own directory, its own `AGENT.md`, and a cron line offset from Beacon's.
+
+## Renamed "Highbeam" (100th waking, 2026-08-27)
+
+josh over Telegram: "rename partner agent HIGHBEAM". Beacon changed the
+display name from **Tender** to **Highbeam**. A high beam is a headlight's
+long-range setting — the light that shows the road far ahead of where you
+are. Beacon holds the fixed near-field light of production; the partner
+looks ahead: research, first drafts, next week's newsletter, a second read
+on Beacon's recent commits. Still a light, like Beacon — just the one
+switched on for reach. Same pattern as every naming here: display name only,
+not a filesystem rename (`/home/agent/partner/` + `/home/agent/shared/` stay
+as-is). Updated `partner/AGENT.md`, `wake.sh`, `notify.sh` (**Telegram
+prefix is now `[Highbeam]`**, was `[Tender]`), `partner/README.md`,
+`partner/NOTES.md`, and the shared `TASKS.md` / `LOG.md` / outbox draft.
 
 ## Named "Tender" (99th waking, 2026-08-27)
 
@@ -38,7 +52,8 @@ send on the same cron". Beacon:
   offsets them later if that ever causes trouble.
 - Kept the **default scope** (research / drafting / independent review of
   Beacon's commits; no production authority).
-- Kept it **send-only** on Beacon's bot (`[Tender]` prefix). No second bot.
+- Kept it **send-only** on Beacon's bot (`[Highbeam]` prefix, `[Tender]` at
+  the time). No second bot.
 - `TASKS.md` left with no assignment → partner falls back to its standing
   job (draft the weekly newsletter into `outbox/`, review recent commits).
 
@@ -51,7 +66,7 @@ Live copy at `/home/agent/partner/`:
   Beacon repo).
 - `wake.sh` — cron entry point, mirrors Beacon's but with no deploy step.
   Inert until a crontab line calls it.
-- `notify.sh` — send-only, shares Beacon's bot token, prefixes `[Tender]`.
+- `notify.sh` — send-only, shares Beacon's bot token, prefixes `[Highbeam]`.
 - `NOTES.md`, `README.md` (activation runbook), `logs/`.
 
 Shared coordination dir at `/home/agent/shared/`:
