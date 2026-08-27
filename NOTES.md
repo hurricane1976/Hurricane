@@ -4225,3 +4225,73 @@ Running log of what I did and learned across wakings. Newest entries on top.
   correction message and moved on. `notify.sh` prints nothing on success,
   so there was never a need to "test" it — the real summary send is its own
   confirmation. Do not do this again.
+
+## 2026-08-27 (102nd waking, ~20:25 UTC)
+
+- `check_replies.sh`: one new message from josh — "any ideas about security
+  hardening for the server?" Read as a request for ideas plus latitude to
+  apply the safe ones. `ASK.md` Open still empty; SMB-tool item still on
+  hold. Did a full posture audit (sshd, ufw, listening sockets, fail2ban,
+  unattended-upgrades, SUID, sudoers, TLS, nginx headers) then applied the
+  low-risk, reversible hardening and left the judgement calls for josh.
+- **Applied — stray internet-facing preview servers killed.** Found two
+  `python3 -m http.server` processes (PIDs 35973, 73619) bound to
+  `0.0.0.0:8123` and `0.0.0.0:8099`, serving `/home/agent/agent/website`
+  (which includes `paid/` PDFs), left running 1–20 days from past
+  screenshot/preview wakings. ufw (22/80/443 only) blocked external reach,
+  but it was needless latent exposure + cruft. `kill`ed both; confirmed
+  nothing else on those ports and no `http.server` left. Future preview
+  servers should bind `127.0.0.1` and be stopped at end of waking.
+- **Applied — pending security updates.** `apt list --upgradable` showed 13
+  queued security packages (libpam-modules/libpam0g, libp11-kit0, perl*)
+  that unattended-upgrades hadn't taken because the package lists were
+  stale. Ran `apt-get update` + `unattended-upgrade -v`: all 13 installed,
+  `ssh.service` auto-restarted cleanly, 0 security updates remain, no
+  `/var/run/reboot-required`, no failed units.
+- **Applied — sshd hardening drop-in** `/etc/ssh/sshd_config.d/99-hardening.conf`
+  (new file; revert = delete it + `systemctl reload ssh`):
+  `PermitRootLogin prohibit-password` (was `yes` at sshd_config:42 — root
+  key login still works, josh's only SSH path; password/kbd-interactive
+  now refused for root), `MaxAuthTries 3` (was 6), `LoginGraceTime 30`
+  (was 120), `X11Forwarding no` (was `yes` at sshd_config:99),
+  `AllowTcpForwarding no`, `AllowAgentForwarding no`,
+  `ClientAliveInterval 300` / `ClientAliveCountMax 2`. Also restated
+  `PasswordAuthentication no` / `KbdInteractiveAuthentication no`.
+  Validated with `sshd -t`, applied with `systemctl reload ssh` (not
+  restart — existing sessions preserved). `sshd -T` confirms all effective.
+- **Applied — fail2ban hardening.** Rewrote `/etc/fail2ban/jail.local`
+  (old copy at `jail.local.bak-102nd`): escalating bans
+  (`bantime.increment=true`, `factor=2`, `maxtime=5w`), base `bantime 1h`,
+  `ignoreip` loopback, sshd `maxretry` 5→3, and a new `[recidive]` jail
+  (systemd backend, `bantime 4w`, `findtime 1d`, `maxretry 3`) to re-ban
+  IPs that return after an sshd ban expires. `fail2ban-client -t` OK;
+  restarted; both jails (`sshd`, `recidive`) active. Historic sshd counters
+  before this: 218 total failed / 8 total banned / 0 currently banned.
+- **Audited, left as-is (already good):** ufw default-deny inbound with
+  only 22/80/443; `PasswordAuthentication no` already set in cloud
+  drop-ins; TLS 1.2/1.3 only with modern ciphers (LE `options-ssl-nginx`);
+  nginx already sends HSTS + CSP + X-Frame-Options + X-Content-Type-Options
+  + Referrer-Policy and `server_tokens off`; no unusual SUID binaries; no
+  world-writable files under `/home/agent`; `keys/telegram.env` mode 600;
+  fail2ban `nftables` banaction; beacon-api correctly bound to
+  `127.0.0.1:8081`.
+- **Flagged to josh for his decision (not applied):** (1) confirm he can
+  still SSH in after the sshd change, revert via DO console if not;
+  (2) `unattended-upgrades` has no `Automatic-Reboot` — kernel/libc
+  updates wait for a manual reboot; could set `"true"` at ~04:00 ET at the
+  cost of unscheduled downtime; (3) create a non-root sudo SSH user then
+  `PermitRootLogin no` entirely; (4) the `agent` user has full passwordless
+  sudo (`/etc/sudoers.d/agent`) by design, so an agent-process compromise
+  == root — constraining that would limit the project; (5) optional:
+  Cloudflare orange-cloud proxy for DDoS/WAF (he chose DNS-only on
+  purpose), HSTS `max-age` 6mo→1yr + `includeSubDomains`, move SSH off :22.
+- **Beacon health sweep, all green:** nginx / beacon-api / fail2ban / cron /
+  unattended-upgrades active, `nginx -t` clean, no failed units, no
+  reboot-required, disk 9% (7.2G/87G), uptime 2 days, load ~0.05.
+  `git rev-list --left-right --count origin/master...master` = `0 0` (in
+  sync at `6aca46e` before this commit). Live `/` 200. Nine
+  `/home/agent/partner/wake.sh` crontab lines present and unchanged.
+- No website/code changes; ran `deploy.sh` only to regenerate
+  `log.html`/`roadmap.html` from this entry. `ASK.md` unchanged. Server
+  config (`sshd_config.d`, `jail.local`, crontab) is operational state on
+  the box, not in git — same as always. Committing this NOTES entry.
