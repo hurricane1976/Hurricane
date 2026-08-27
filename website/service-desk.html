@@ -136,7 +136,7 @@
       <h2>High-level architecture</h2>
     </div>
     <div class="diagram-wrap">
-      <svg viewBox="0 0 950 535" role="img" aria-label="Architecture diagram: ServiceNow feeds an orchestrator agent, which is checked by a human approval and arbitration gate before routing to nine domain agents, which act on managed infrastructure; a two-row supporting-systems band (NetBox, Zabbix/Grafana, Batfish, Ansible, Cisco ISE, Nexus Dashboard, plus Cisco Firepower Management Center, Catalyst Center, VMware Aria, Microsoft SCOM, Azure Monitor, MECM, Red Hat Satellite, and APC power management) feeds inventory, monitoring, and verification data across the framework; a tenth, dashed Platform Ops agent supervises the whole framework.">
+      <svg viewBox="0 0 950 590" role="img" aria-label="Architecture diagram: ServiceNow feeds an orchestrator agent, which is checked by a human approval and arbitration gate before routing to nine domain agents, which act on managed infrastructure; a three-row supporting-systems band (NetBox, Zabbix/Grafana, Batfish, Ansible, Cisco ISE, Nexus Dashboard, plus Cisco Firepower Management Center, Catalyst Center, VMware Aria, Microsoft SCOM, Azure Monitor, MECM, Red Hat Satellite, APC power management, CyberArk, CrowdStrike, Splunk, NetApp and Dell storage, Dell PowerSwitch top-of-rack, and a backup/recovery platform) feeds inventory, monitoring, security, storage, and verification data across the framework; a tenth, dashed Platform Ops agent supervises the whole framework.">
         <defs>
           <marker id="arrD1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
             <path d="M0,0 L10,5 L0,10 z" fill="var(--muted)"/>
@@ -280,14 +280,35 @@
 
             <rect x="772" y="402" width="88" height="42" rx="7" fill="var(--card)" stroke="var(--accent-blue)" stroke-width="1.2" stroke-dasharray="3 3"/>
             <text x="816" y="420" font-size="9">APC power</text><text x="816" y="433" fill="var(--muted)" font-size="8">UPS &middot; PDU</text>
+
+            <rect x="65" y="454" width="88" height="42" rx="7" fill="var(--card)" stroke="var(--accent-blue)" stroke-width="1.2" stroke-dasharray="3 3"/>
+            <text x="109" y="472" font-size="9">CyberArk</text><text x="109" y="485" fill="var(--muted)" font-size="8">PAM &middot; vault</text>
+
+            <rect x="166" y="454" width="88" height="42" rx="7" fill="var(--card)" stroke="var(--accent-blue)" stroke-width="1.2" stroke-dasharray="3 3"/>
+            <text x="210" y="472" font-size="9">CrowdStrike</text><text x="210" y="485" fill="var(--muted)" font-size="8">EDR</text>
+
+            <rect x="267" y="454" width="88" height="42" rx="7" fill="var(--card)" stroke="var(--accent-blue)" stroke-width="1.2" stroke-dasharray="3 3"/>
+            <text x="311" y="472" font-size="9">Splunk</text><text x="311" y="485" fill="var(--muted)" font-size="8">SIEM</text>
+
+            <rect x="368" y="454" width="88" height="42" rx="7" fill="var(--card)" stroke="var(--accent-blue)" stroke-width="1.2" stroke-dasharray="3 3"/>
+            <text x="412" y="472" font-size="9">NetApp</text><text x="412" y="485" fill="var(--muted)" font-size="8">storage</text>
+
+            <rect x="469" y="454" width="88" height="42" rx="7" fill="var(--card)" stroke="var(--accent-blue)" stroke-width="1.2" stroke-dasharray="3 3"/>
+            <text x="513" y="472" font-size="9">Dell storage</text><text x="513" y="485" fill="var(--muted)" font-size="8">PowerStore</text>
+
+            <rect x="570" y="454" width="88" height="42" rx="7" fill="var(--card)" stroke="var(--accent-blue)" stroke-width="1.2" stroke-dasharray="3 3"/>
+            <text x="614" y="472" font-size="9">Dell PSwitch</text><text x="614" y="485" fill="var(--muted)" font-size="8">top-of-rack</text>
+
+            <rect x="671" y="454" width="88" height="42" rx="7" fill="var(--card)" stroke="var(--accent-blue)" stroke-width="1.2" stroke-dasharray="3 3"/>
+            <text x="715" y="472" font-size="9">Backup</text><text x="715" y="485" fill="var(--muted)" font-size="8">Veeam/Cmvlt</text>
           </g>
 
           <!-- Platform Ops supervisory agent -->
-          <line x1="460" y1="444" x2="460" y2="465" stroke="#e08a6a" stroke-width="1.4" stroke-dasharray="4 4" marker-end="url(#arrD1)"/>
-          <path d="M890,122 L920,122 L920,490 L712,490" fill="none" stroke="#e08a6a" stroke-width="1.2" stroke-dasharray="4 4" opacity="0.7" marker-end="url(#arrD1)"/>
-          <rect x="210" y="467" width="500" height="46" rx="10" fill="var(--card)" stroke="#e08a6a" stroke-width="1.5" stroke-dasharray="5 3"/>
-          <text x="460" y="487" text-anchor="middle" font-size="12.5" font-weight="700">10 Platform Ops &mdash; self-healing agent</text>
-          <text x="460" y="502" text-anchor="middle" font-size="9.5" fill="var(--muted)">watches every agent &amp; the orchestrator &middot; heals itself &middot; proposes patches &middot; never bypasses the gate</text>
+          <line x1="460" y1="496" x2="460" y2="517" stroke="#e08a6a" stroke-width="1.4" stroke-dasharray="4 4" marker-end="url(#arrD1)"/>
+          <path d="M890,122 L920,122 L920,542 L712,542" fill="none" stroke="#e08a6a" stroke-width="1.2" stroke-dasharray="4 4" opacity="0.7" marker-end="url(#arrD1)"/>
+          <rect x="210" y="519" width="500" height="46" rx="10" fill="var(--card)" stroke="#e08a6a" stroke-width="1.5" stroke-dasharray="5 3"/>
+          <text x="460" y="539" text-anchor="middle" font-size="12.5" font-weight="700">10 Platform Ops &mdash; self-healing agent</text>
+          <text x="460" y="554" text-anchor="middle" font-size="9.5" fill="var(--muted)">watches every agent &amp; the orchestrator &middot; heals itself &middot; proposes patches &middot; never bypasses the gate</text>
         </g>
       </svg>
     </div>
@@ -349,15 +370,15 @@
     <div class="data-table-wrap">
       <table class="data-table">
         <tr><th>#</th><th>Domain agent</th><th>Talks to</th><th>Typical actions</th><th>Default tier</th></tr>
-        <tr><td>1</td><td>Network</td><td>IOS/NX-OS via NETCONF/RESTCONF or Ansible; NetBox for inventory/IPAM, Batfish for pre-change verification, Nexus Dashboard for DC fabric, Cisco Catalyst Center for SD-Access campus/branch</td><td>interface/VLAN checks, ACL review, config backup, port toggles</td><td><span class="tier-pill tier-2">Tier 2</span></td></tr>
-        <tr><td>2</td><td>Identity &amp; AD</td><td>LDAP/PowerShell over WinRM, Graph API, Cisco ISE for NAC/RADIUS</td><td>password resets, group membership, account unlock/disable</td><td><span class="tier-pill tier-1">Tier 1</span></td></tr>
-        <tr><td>3</td><td>Windows Server</td><td>WinRM, PowerShell DSC</td><td>service restarts, patch status, disk/log cleanup</td><td><span class="tier-pill tier-1">Tier 1</span></td></tr>
-        <tr><td>4</td><td>Linux Server</td><td>SSH, Ansible; Red Hat Satellite for fleet-wide RHEL patch/content lifecycle</td><td>service restarts, package/patch checks, log rotation</td><td><span class="tier-pill tier-1">Tier 1</span></td></tr>
-        <tr><td>5</td><td>Database</td><td>native SQL drivers, read-replica first</td><td>query diagnostics, index/maintenance jobs, backup verification</td><td><span class="tier-pill tier-2">Tier 2</span></td></tr>
+        <tr><td>1</td><td>Network</td><td>IOS/NX-OS via NETCONF/RESTCONF or Ansible; NetBox for inventory/IPAM, Batfish for pre-change verification, Nexus Dashboard for DC fabric, Cisco Catalyst Center for SD-Access campus/branch, Dell PowerSwitch on SmartFabric OS10 for top-of-rack/leaf switching</td><td>interface/VLAN checks, ACL review, config backup, port toggles</td><td><span class="tier-pill tier-2">Tier 2</span></td></tr>
+        <tr><td>2</td><td>Identity &amp; AD</td><td>LDAP/PowerShell over WinRM, Graph API, Cisco ISE for NAC/RADIUS, CyberArk for privileged-account vaulting</td><td>password resets, group membership, account unlock/disable</td><td><span class="tier-pill tier-1">Tier 1</span></td></tr>
+        <tr><td>3</td><td>Windows Server</td><td>WinRM, PowerShell DSC; CrowdStrike Falcon sensor health; NetApp/Dell storage for volume capacity</td><td>service restarts, patch status, disk/log cleanup</td><td><span class="tier-pill tier-1">Tier 1</span></td></tr>
+        <tr><td>4</td><td>Linux Server</td><td>SSH, Ansible; Red Hat Satellite for fleet-wide RHEL patch/content lifecycle; CrowdStrike Falcon sensor health</td><td>service restarts, package/patch checks, log rotation</td><td><span class="tier-pill tier-1">Tier 1</span></td></tr>
+        <tr><td>5</td><td>Database</td><td>native SQL drivers, read-replica first; NetApp/Dell storage snapshots and the backup/recovery platform for backup verification</td><td>query diagnostics, index/maintenance jobs, backup verification</td><td><span class="tier-pill tier-2">Tier 2</span></td></tr>
         <tr><td>6</td><td>Firewall</td><td>vendor REST API (Palo Alto/Fortinet/ASA-style); Cisco Firepower Management Center for fleet-wide FTD/ASA policy</td><td>rule/NAT review, temporary rule add with expiry, log queries</td><td><span class="tier-pill tier-3">Tier 3</span></td></tr>
         <tr><td>7</td><td>Voice / collaboration</td><td>Cisco CUCM AXL/API</td><td>phone reprovisioning, line/extension changes, directory sync</td><td><span class="tier-pill tier-1">Tier 1</span></td></tr>
-        <tr><td>8</td><td>VMware</td><td>vCenter API / PowerCLI; VMware Aria Operations/Automation for capacity analytics and workflows</td><td>VM power state, resource checks, snapshot management</td><td><span class="tier-pill tier-2">Tier 2</span></td></tr>
-        <tr><td>9</td><td>Desktop (Windows &amp; Apple)</td><td>Intune / Jamf APIs; Microsoft MECM for on-prem/co-managed Windows patching</td><td>app deploys, compliance checks, remote wipe requests</td><td><span class="tier-pill tier-2">Tier 2</span></td></tr>
+        <tr><td>8</td><td>VMware</td><td>vCenter API / PowerCLI; VMware Aria Operations/Automation for capacity analytics and workflows; NetApp/Dell datastores; the backup/recovery platform for VM restore verification</td><td>VM power state, resource checks, snapshot management</td><td><span class="tier-pill tier-2">Tier 2</span></td></tr>
+        <tr><td>9</td><td>Desktop (Windows &amp; Apple)</td><td>Intune / Jamf APIs; Microsoft MECM for on-prem/co-managed Windows patching; CrowdStrike Falcon for endpoint EDR/containment</td><td>app deploys, compliance checks, remote wipe requests</td><td><span class="tier-pill tier-2">Tier 2</span></td></tr>
       </table>
     </div>
     <p style="margin-top:0.8rem; font-size:0.88rem; color:var(--muted);">
@@ -371,7 +392,7 @@
   <section class="card" id="supporting" style="margin-top:1.1rem;">
     <div class="card-head">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v6H4zM4 14h7v6H4zM14 14h6v3M14 20h6"/></svg>
-      <h2>Supporting systems &mdash; inventory, monitoring &amp; network assurance</h2>
+      <h2>Supporting systems &mdash; inventory, monitoring, security, storage &amp; network assurance</h2>
     </div>
     <p>
       The nine domain agents above are the actors; they don't operate blind. A handful of
@@ -400,6 +421,13 @@
         <tr><td><strong>Microsoft MECM</strong></td><td>On-prem endpoint lifecycle management &mdash; OS deployment, patching, and software distribution (formerly SCCM)</td><td>Desktop agent &mdash; covers the on-prem/co-managed half of the Windows fleet that Intune's cloud-native MDM doesn't reach alone</td></tr>
         <tr><td><strong>Red Hat Satellite</strong></td><td>Fleet-wide RHEL patch/content/subscription lifecycle management and Kickstart provisioning</td><td>Linux Server agent &mdash; the RHEL analogue of MECM for Windows, staging patches across host groups instead of one SSH session at a time</td></tr>
         <tr><td><strong>APC power management</strong></td><td>UPS/PDU telemetry and control via Network Management Cards and StruxureWare/EcoStruxure IT &mdash; battery status, load, runtime, and remote outlet switching for rack power</td><td>Platform Ops &mdash; a facilities-layer health source alongside Zabbix/SCOM/Azure Monitor, and the trigger for an orderly power-loss shutdown sequence handed to the Windows/Linux/VMware agents rather than a hard outage</td></tr>
+        <tr><td><strong>CyberArk</strong></td><td>Privileged access management &mdash; the vault that issues the short-lived, narrowly-scoped credential leases every domain agent checks out just-in-time, plus session isolation and recording for any human break-glass access</td><td>Every domain agent and the orchestrator &mdash; this is the concrete implementation of the "credentials checked out from a vault just-in-time and revoked immediately after" rule the design already assumes; Platform Ops watches lease issuance and expiry</td></tr>
+        <tr><td><strong>CrowdStrike Falcon</strong></td><td>Endpoint detection &amp; response &mdash; sensor telemetry, threat detection, and host containment across servers and desktops</td><td>Desktop, Windows Server, and Linux Server agents for sensor health and patch context; Platform Ops for security signal &mdash; a Falcon detection can open a ServiceNow Incident directly, and host isolation is a Tier 3 containment action, never auto-executed</td></tr>
+        <tr><td><strong>Splunk</strong></td><td>SIEM &amp; log analytics &mdash; cross-system event correlation, security analytics, and a query surface over the immutable audit log</td><td>Platform Ops, alongside Zabbix/SCOM/Azure Monitor &mdash; a correlation search can raise an Incident; it is also the search layer human reviewers use over the append-only audit log</td></tr>
+        <tr><td><strong>NetApp ONTAP</strong></td><td>Enterprise storage &mdash; NFS/SMB/iSCSI capacity, volume/LUN provisioning, snapshots, and SnapMirror replication via the ONTAP REST API</td><td>VMware, Database, Windows Server, and Linux Server agents for datastore/volume capacity and snapshot state; provisioning and any destructive volume/snapshot action is Tier 3</td></tr>
+        <tr><td><strong>Dell storage</strong></td><td>Enterprise storage &mdash; PowerStore/PowerMax/Unity arrays: capacity, provisioning, snapshots, and replication via the Dell REST API</td><td>Same consumers as NetApp &mdash; the design doesn't lock to one storage vendor; both slot into the same read-mostly telemetry role with provisioning gated at Tier 3</td></tr>
+        <tr><td><strong>Dell PowerSwitch (top-of-rack)</strong></td><td>Top-of-rack data-center switching on SmartFabric OS10 &mdash; leaf/ToR port, VLAN, and fabric configuration via the OS10 REST API or Ansible</td><td>Network agent, alongside Cisco IOS/NX-OS &mdash; Batfish models OS10 configs the same way, so pre-change dry-run coverage extends to the ToR layer</td></tr>
+        <tr><td><strong>Backup &amp; recovery</strong></td><td>Enterprise backup, immutable/air-gapped copies, and restore orchestration (Veeam/Commvault/Rubrik/Cohesity)</td><td>Database and VMware agents for backup-job status and restore verification; Platform Ops watches job success/failure &mdash; restores are Tier 2, and anything that deletes or shortens retention on a backup is on the deny-list, never auto-executed at any tier</td></tr>
       </table>
     </div>
     <p style="margin-top:0.8rem; font-size:0.88rem; color:var(--muted);">
@@ -628,6 +656,10 @@
         <tr><td>Live config has drifted from the CMDB's recorded state</td><td>Detect and report the drift continuously (read-only); reconciling it is a normal action scored by whatever system drifted, through that system's own domain agent</td><td><span class="tier-pill tier-0">Tier 0</span> detect / varies to reconcile</td></tr>
         <tr><td>A repeat pattern of near-identical incidents (a "flapping" condition)</td><td>Suppress duplicate ticket noise and link them to one root-cause record; does not change anything on a managed system</td><td><span class="tier-pill tier-0">Tier 0</span></td></tr>
         <tr><td>An APC UPS reports on-battery with runtime under its configured threshold</td><td>Trigger the pre-defined graceful shutdown sequence (VMware agent evacuates/suspends VMs, then Windows/Linux Server agents stop services and power down hosts in dependency order) before the battery is exhausted, not a hard outage</td><td><span class="tier-pill tier-1">Tier 1</span></td></tr>
+        <tr><td>A scheduled backup job failed, or a restore-test verification did not pass</td><td>Re-queue the job once; on a second failure open an Incident and page &mdash; Platform Ops never deletes a backup or shortens its retention to "fix" a job (deny-list)</td><td><span class="tier-pill tier-1">Tier 1</span></td></tr>
+        <tr><td>A CrowdStrike Falcon sensor has stopped reporting on a managed host</td><td>Flag the detection gap read-only immediately; re-deploy the sensor through the host's own domain agent on the normal Change path, not by a direct push from Platform Ops</td><td><span class="tier-pill tier-0">Tier 0</span> detect / <span class="tier-pill tier-2">Tier 2</span> remediate</td></tr>
+        <tr><td>A CyberArk credential lease failed to revoke after its task completed</td><td>Force-revoke the lease and alert &mdash; a lease that outlives its task is handled as a security event, not routine cleanup</td><td><span class="tier-pill tier-1">Tier 1</span></td></tr>
+        <tr><td>A storage volume (NetApp/Dell) crosses its capacity threshold</td><td>Alert and open a capacity Incident; expansion is a normal Tier 2 Change through the owning agent, never an auto-grow</td><td><span class="tier-pill tier-0">Tier 0</span> detect</td></tr>
         <tr><td>The orchestrator or Platform Ops itself needs a framework-level update</td><td>Staged in a non-production instance first, promoted only through the same Change/approval path as any other Tier 3 action &mdash; a system is never allowed to approve its own upgrade</td><td><span class="tier-pill tier-3">Tier 3</span></td></tr>
       </table>
     </div>
@@ -866,8 +898,10 @@
       &mdash; setup steps, API auth, and a working MCP server for each supporting system
       above (ServiceNow, NetBox, Zabbix, Grafana, Batfish, Ansible, Cisco ISE, Nexus
       Dashboard, Cisco Firepower Management Center, Catalyst Center, VMware Aria, Microsoft
-      SCOM, Azure Monitor, MECM, Red Hat Satellite, and APC power management) and for the
-      nine domain-agent target systems, with real code for each.</li>
+      SCOM, Azure Monitor, MECM, Red Hat Satellite, APC power management, CyberArk,
+      CrowdStrike Falcon, Splunk, NetApp ONTAP, Dell storage, Dell PowerSwitch, and the
+      backup/recovery platform) and for the nine domain-agent target systems, with real
+      code for each.</li>
       <li><strong><a href="/operations-sop.html">Operations model &amp; SOP</a></strong>
       &mdash; how this architecture actually gets run day to day once it's live: roles,
       on-call, incident response, change/maintenance windows, and periodic review cadence.</li>

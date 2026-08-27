@@ -193,6 +193,10 @@ approval.
 <tr><td>Voice / CUCM</td><td>After-hours only</td><td>Business-critical; no daytime reprovisioning at scale</td></tr>
 <tr><td>Identity &amp; AD</td><td>Any time for Tier 1 (reset/unlock)</td><td>Tier 2+ (bulk group changes) scheduled like any other Change</td></tr>
 <tr><td>APC power (UPS/PDU)</td><td>Quarterly UPS self-test, outside business hours</td><td>Annual battery-replacement check; a real on-battery event is never "scheduled"</td></tr>
+<tr><td>Storage (NetApp / Dell)</td><td>Firmware/ONTAP upgrades in a monthly window, 02:00&ndash;05:00</td><td>Takeover/giveback tested per node; volume/snapshot deletion is deny-list</td></tr>
+<tr><td>Network ToR (Dell PowerSwitch)</td><td>Same freeze as the Cisco fabric</td><td>OS10 changes get the same Batfish dry-run</td></tr>
+<tr><td>Backup &amp; recovery</td><td>Console/agent upgrades in a monthly window; schedule changes via Change</td><td>Restores are Tier 2, any time during an incident; retention/repository changes are deny-list</td></tr>
+<tr><td>Security tooling (CyberArk / CrowdStrike / Splunk)</td><td>CPM/sensor/forwarder upgrades in a monthly window, ring-deployed</td><td>Vault changes rehearsed in non-prod first; host containment is Tier 3</td></tr>
 </table>
 <div class="callout">
 <strong>Emergency change:</strong> an active outage doesn't wait for the next CAB. The human
@@ -215,21 +219,30 @@ and who it wakes up.
 <tr><td>Batfish</td><td>A proposed network change that fails pre-change verification</td><td>Blocks the change from reaching the approval gate at all &mdash; returned to the domain agent to replan</td></tr>
 <tr><td>Grafana</td><td>Trend lines a threshold alert wouldn't catch (slow capacity creep)</td><td>Weekly ops review, not a page</td></tr>
 <tr><td>Audit log</td><td>A write action with no matching approval record</td><td>Immediate page to the Security/Vault admin &mdash; this should be structurally impossible, so it firing at all is itself the incident</td></tr>
+<tr><td>Splunk</td><td>Correlation-search hits: out-of-window changes, Tier 3 actions without a paired approval, credential-retrieval spikes</td><td>Opens a ServiceNow Incident; feeds the monthly Tier 3 approval audit</td></tr>
+<tr><td>CrowdStrike Falcon</td><td>Detections on managed hosts; a sensor that has stopped reporting</td><td>Detection opens an Incident on the standard path; isolation is Tier 3. Coverage gap re-deploys via the host's domain agent</td></tr>
+<tr><td>CyberArk</td><td>Vault unreachable (agents fail closed); a credential lease that outlived its task</td><td>Vault-down pages the on-call engineer immediately; an un-revoked lease is force-revoked as a security event</td></tr>
+<tr><td>NetApp / Dell storage</td><td>Volume/aggregate crossing its capacity threshold; failed or lagging replication</td><td>Capacity opens a Tier 2 Change through the owning agent; replication lag pages per the SLA table</td></tr>
+<tr><td>Backup &amp; recovery</td><td>A failed or missed backup job; a restore-test that did not pass</td><td>Failed job opens an Incident; Platform Ops re-queues once, then pages. Deleting/shortening retention is deny-list</td></tr>
 </table>
 
 <h2 id="backup">7. Backup, audit log retention &amp; disaster recovery</h2>
 <ul>
 <li><strong>Audit log:</strong> append-only by design; retained a minimum of one year (or the organization's own compliance window, if longer), backed up nightly &mdash; the log is the architecture's entire evidentiary basis, so its own backup gets treated like a production database, not an afterthought.</li>
 <li><strong>CMDB / NetBox:</strong> nightly backup; Platform Ops's drift detection is only as trustworthy as the source of truth it's diffing against.</li>
-<li><strong>Vault:</strong> sealed-key backup per the vault vendor's standard procedure, with a documented unseal runbook that doesn't depend on any one person being reachable.</li>
+<li><strong>Vault (CyberArk):</strong> sealed-key / Master-key backup per the vendor's standard procedure, with a documented recovery runbook that doesn't depend on any one person being reachable; agents fail closed while it's unavailable rather than using a fallback credential.</li>
+<li><strong>Backup &amp; recovery platform:</strong> the backup catalog/config itself is backed up nightly; repository immutability / air-gap is enforced at the storage layer so retention can't be shortened even by a compromised console. A restore-test runs at least monthly &mdash; an untested backup is not a backup.</li>
+<li><strong>Storage arrays (NetApp / Dell):</strong> array config backed up on change; replication to a second site for Tier 1 workloads, with replication lag alarmed against its RPO.</li>
 <li><strong>DR testing:</strong> quarterly tabletop of "the orchestrator or the approval gate is unreachable." Annual full failover test of the orchestrator and approval-gate path specifically, since everything downstream of the gate is only as available as the gate itself.</li>
 </ul>
 <table class="ptable">
 <tr><th>Component</th><th>RPO</th><th>RTO</th></tr>
 <tr><td>Audit log</td><td>&le; 24h (nightly backup)</td><td>&le; 4h to restore read access</td></tr>
 <tr><td>ServiceNow (orchestration/approval)</td><td>Per existing ServiceNow HA/DR posture</td><td>Per existing ServiceNow HA/DR posture &mdash; this design adds no new requirement here</td></tr>
-<tr><td>Vault</td><td>0 &mdash; unseal keys don't "lose data" between backups</td><td>&le; 1h to unseal via documented runbook</td></tr>
+<tr><td>Vault (CyberArk)</td><td>0 &mdash; recovery keys don't "lose data" between backups</td><td>&le; 1h to recover via documented runbook</td></tr>
 <tr><td>CMDB / NetBox</td><td>&le; 24h</td><td>&le; 8h; drift detection degrades to read-only-unverified until restored</td></tr>
+<tr><td>Backup catalog / config</td><td>&le; 24h</td><td>&le; 4h; protected data stays on immutable repositories throughout</td></tr>
+<tr><td>Storage array (NetApp / Dell)</td><td>Per replication schedule for Tier 1 workloads (typically &le; 15&nbsp;min)</td><td>Per array failover runbook</td></tr>
 </table>
 
 <h2 id="security">8. Security operations</h2>
@@ -238,6 +251,8 @@ and who it wakes up.
 <li><strong>Quarterly access review:</strong> the Security/Vault admin audits every standing (non-leased) credential and every human account with approval-gate access, and removes anything that's outlived its reason for existing.</li>
 <li><strong>Tier 3 approval audit:</strong> monthly, the Change Advisory reviewer samples a portion of the month's Tier 3 approvals and checks the plan the human approved actually matches what the audit log shows executed &mdash; the control that catches an approval becoming a rubber stamp before it becomes a habit.</li>
 <li><strong>Deny-list review:</strong> quarterly check that the deny-list still reflects anything the organization has learned should never run unattended, including anything a post-mortem surfaced since the last review.</li>
+<li><strong>Privileged-session review (CyberArk):</strong> monthly review of every PSM-recorded human break-glass session &mdash; each one is an exception to "agents act, humans approve" and should be rare enough to read every entry.</li>
+<li><strong>Security signal pipeline:</strong> CrowdStrike detections and Splunk correlation searches feed the same ServiceNow intake as everything else; the weekly ops review includes a pass over low-severity detections and near-miss correlation hits.</li>
 </ul>
 
 <h2 id="capacity">9. Capacity &amp; lifecycle planning</h2>
@@ -245,6 +260,8 @@ and who it wakes up.
 <ul>
 <li>VMware Aria capacity trend review &mdash; monthly, ahead of the next maintenance window rather than reactive to a full datastore.</li>
 <li>Database storage headroom review &mdash; monthly.</li>
+<li>Storage array (NetApp / Dell) capacity, aggregate headroom, and snapshot-reserve trend &mdash; monthly; growth here is a procurement lead-time decision, so noticing it late is expensive.</li>
+<li>Backup window &amp; repository-capacity trend &mdash; monthly; a job whose runtime is creeping toward its window is a capacity problem before it's a failure.</li>
 <li>APC UPS runtime/load trend review &mdash; monthly; a UPS whose runtime has been quietly shrinking for months is a battery-replacement decision, not a Tier 1 shutdown-sequence decision.</li>
 <li>Vault lease volume &amp; agent request-rate trend &mdash; quarterly, the framework's own capacity plan for itself.</li>
 </ul>

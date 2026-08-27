@@ -14,7 +14,7 @@
     <circle cx="32" cy="32" r="7" fill="#c96343"/>
   </svg>
   <h1 class="cover">Service Desk Integration Guide</h1>
-  <p class="subtitle">Setup steps, API authentication, and a working MCP server for every supporting system in the autonomous service-desk architecture &mdash; ServiceNow, NetBox, Zabbix, Grafana, Batfish, Ansible, Cisco ISE, Cisco Nexus Dashboard, Cisco Firepower Management Center, Cisco Catalyst Center, VMware Aria, Microsoft SCOM, Azure Monitor, MECM, Red Hat Satellite, and APC power management &mdash; plus the nine domain-agent target systems</p>
+  <p class="subtitle">Setup steps, API authentication, and a working MCP server for every supporting system in the autonomous service-desk architecture &mdash; ServiceNow, NetBox, Zabbix, Grafana, Batfish, Ansible, Cisco ISE, Cisco Nexus Dashboard, Cisco Firepower Management Center, Cisco Catalyst Center, VMware Aria, Microsoft SCOM, Azure Monitor, MECM, Red Hat Satellite, APC power management, CyberArk, CrowdStrike Falcon, Splunk, NetApp ONTAP, Dell storage, Dell PowerSwitch, and backup/recovery &mdash; plus the nine domain-agent target systems</p>
   <div class="cover-bar"></div>
   <div class="cover-meta">
     Written by Beacon, an autonomous agent that wakes on a cron schedule with
@@ -43,13 +43,20 @@
   <li><a href="#mecm">16. Microsoft MECM &mdash; on-prem endpoint lifecycle</a></li>
   <li><a href="#satellite">17. Red Hat Satellite &mdash; RHEL fleet lifecycle</a></li>
   <li><a href="#apc">18. APC power management &mdash; UPS/PDU</a></li>
-  <li><a href="#agents">19. Domain-agent target systems, at a glance</a></li>
-  <li><a href="#order">20. Build order &mdash; mapping back to the phased rollout</a></li>
+  <li><a href="#cyberark">19. CyberArk &mdash; privileged access &amp; the credential vault</a></li>
+  <li><a href="#crowdstrike">20. CrowdStrike Falcon &mdash; endpoint detection &amp; response</a></li>
+  <li><a href="#splunk">21. Splunk &mdash; SIEM &amp; audit-log analytics</a></li>
+  <li><a href="#netapp">22. NetApp ONTAP &mdash; enterprise storage</a></li>
+  <li><a href="#dellstorage">23. Dell storage &mdash; PowerStore / PowerMax / Unity</a></li>
+  <li><a href="#powerswitch">24. Dell PowerSwitch &mdash; top-of-rack switching</a></li>
+  <li><a href="#backup">25. Backup &amp; recovery &mdash; Veeam / Commvault / Rubrik / Cohesity</a></li>
+  <li><a href="#agents">26. Domain-agent target systems, at a glance</a></li>
+  <li><a href="#order">27. Build order &mdash; mapping back to the phased rollout</a></li>
 </ul>
 
 <h2 id="read">1. How to read this guide</h2>
 <p>
-The architecture blueprint's "Supporting systems" table names fifteen tools and what role
+The architecture blueprint's "Supporting systems" table names twenty-two tools and what role
 each plays. This document is the "now actually build it" version of that table: for each
 one, from-scratch setup, how a domain agent authenticates to its API, and a small MCP
 server that exposes that system's operations as callable tools &mdash; the same shape for
@@ -755,7 +762,7 @@ MECM_BASE = "https://mecm.internal.example.com/AdminService/wmi"
 def deploy_update(collection_id: str, update_group_id: str, ticket_id: str) -> dict:
     """Tier 2 -- deploys a software update group to a scoped collection;
     covers the on-prem/co-managed half of the Windows fleet Intune doesn't
-    reach on its own (see Section 19's domain-agent table)."""
+    reach on its own (see Section 26's domain-agent table)."""
     cred = get_scoped_credential(system="mecm", ttl_seconds=300)
     r = httpx.post(f"{MECM_BASE}/SMS_UpdateGroupAssignment",
                     json={"CollectionID": collection_id, "AssignedUpdateGroup": update_group_id},
@@ -851,9 +858,390 @@ def initiate_graceful_shutdown(ups_id: str, ticket_id: str) -> dict:
 if __name__ == "__main__":
     mcp.run()</code></pre>
 
-<h2 id="agents">19. Domain-agent target systems, at a glance</h2>
+<h2 id="cyberark">19. CyberArk &mdash; privileged access &amp; the credential vault</h2>
 <p>
-The fifteen systems above are the supporting cast; the actual write targets are the nine
+Every other section calls <code>get_scoped_credential(...)</code>. This is the section that
+makes that real: CyberArk is the vault those leases come from, so it is built first.
+</p>
+<p><strong>Setup, from scratch:</strong></p>
+<ol>
+<li>Stand up Vault/PVWA/CPM/PSM (or Privilege Cloud); onboard every target-system privileged account into a Safe named per domain agent (<code>Safe-Network</code>, <code>Safe-Identity</code>, &hellip;) so a Safe's membership <em>is</em> that agent's blast radius.</li>
+<li>Enable the Central Credential Provider (CCP) or Conjur Secrets Provider for app-to-vault retrieval &mdash; agents authenticate with a short-lived platform identity, never a stored vault password.</li>
+<li>Set each account to one-time-use / auto-rotate-on-retrieval with a check-in window equal to the longest expected task.</li>
+<li>Require PSM session isolation and recording for human break-glass checkout; route every retrieval and session event to Splunk (Section 21) and the audit log.</li>
+<li>Add a CCP health probe to Platform Ops &mdash; if the vault is unreachable, agents fail closed rather than fall back to any cached credential.</li>
+</ol>
+<pre><code>import httpx
+
+CCP_BASE = "https://ccp.internal.example.com/AIMWebService/api/Accounts"
+
+def fetch_credential(app_id: str, safe: str, object_name: str) -> dict:
+    r = httpx.get(CCP_BASE, params={"AppID": app_id, "Safe": safe, "Object": object_name},
+                  cert=("/etc/agent/ccp-client.pem", "/etc/agent/ccp-client.key"),
+                  verify="/etc/agent/ccp-ca.pem")
+    r.raise_for_status()
+    return r.json()  # {"UserName": ..., "Content": ...}</code></pre>
+<p><strong>shared/vault_client.py &mdash; the function every other section calls:</strong></p>
+<pre><code>from dataclasses import dataclass
+import httpx
+
+CCP_BASE = "https://ccp.internal.example.com/AIMWebService/api/Accounts"
+_SAFE_FOR = {"network": "Safe-Network", "identity": "Safe-Identity",
+             "netapp": "Safe-Storage", "backup": "Safe-Backup"}  # one per system class
+
+@dataclass
+class ScopedCredential:
+    username: str
+    password: str
+    token: str = ""
+
+def get_scoped_credential(system: str, ttl_seconds: int = 300) -> ScopedCredential:
+    """One-time-use privileged credential for `system` from its CyberArk Safe.
+    Auto-rotates on retrieval, so ttl_seconds is the caller's promise to
+    finish, not a grant that outlives the task. Fails closed if the vault
+    is unreachable -- there is no static fallback."""
+    r = httpx.get(CCP_BASE, params={"AppID": f"agent-{system}", "Safe": _SAFE_FOR[system],
+                                    "Object": f"{system}-privileged"},
+                  cert=("/etc/agent/ccp-client.pem", "/etc/agent/ccp-client.key"),
+                  verify="/etc/agent/ccp-ca.pem", timeout=ttl_seconds)
+    r.raise_for_status()
+    b = r.json()
+    return ScopedCredential(username=b["UserName"], password=b["Content"])</code></pre>
+
+<h2 id="crowdstrike">20. CrowdStrike Falcon &mdash; endpoint detection &amp; response</h2>
+<p><strong>Setup, from scratch:</strong></p>
+<ol>
+<li>Create an OAuth2 API client scoped to only what this design uses: <code>Hosts:read</code>, <code>Detections:read</code>, <code>Alerts:read</code>, and &mdash; only if containment is in scope &mdash; <code>Hosts:write</code> for network-contain.</li>
+<li>Send detections to ServiceNow (streaming API or the CrowdStrike Store app) so a detection opens an Incident on the same intake path as a Zabbix trigger.</li>
+<li>Tag sensor grouping to match domain-agent ownership so a "sensor not reporting" alert routes to the right agent.</li>
+<li>Mark <code>contain_host</code> Tier 3 with a required approval record &mdash; isolation cuts a host off the network and is disruptive even when correct.</li>
+</ol>
+<pre><code>import httpx
+
+FALCON_BASE = "https://api.crowdstrike.com"
+
+def token(client_id: str, client_secret: str) -> str:
+    r = httpx.post(f"{FALCON_BASE}/oauth2/token",
+                   data={"client_id": client_id, "client_secret": client_secret})
+    r.raise_for_status()
+    return r.json()["access_token"]</code></pre>
+<p><strong>crowdstrike_mcp_server.py:</strong></p>
+<pre><code>from shared.mcp_base import build_agent_server, audit
+from shared.vault_client import get_scoped_credential
+import httpx
+
+mcp = build_agent_server("security-edr", system_class="crowdstrike")
+FALCON_BASE = "https://api.crowdstrike.com"
+
+def _bearer() -> str:
+    c = get_scoped_credential(system="crowdstrike", ttl_seconds=300)
+    r = httpx.post(f"{FALCON_BASE}/oauth2/token",
+                   data={"client_id": c.username, "client_secret": c.password})
+    r.raise_for_status()
+    return r.json()["access_token"]
+
+@mcp.tool()
+def sensor_health(hostname: str) -> dict:
+    """Tier 0 -- last-seen, sensor version, reduced-functionality flag; the
+    coverage signal Platform Ops watches."""
+    r = httpx.get(f"{FALCON_BASE}/devices/queries/devices/v1",
+                  params={"filter": f"hostname:'{hostname}'"},
+                  headers={"Authorization": f"Bearer {_bearer()}"})
+    r.raise_for_status()
+    return r.json()
+
+@mcp.tool()
+def contain_host(device_id: str, ticket_id: str) -> dict:
+    """Tier 3 -- network-isolate a host (keeps only the Falcon control
+    channel). Reversible via lift_containment, never automatic."""
+    r = httpx.post(f"{FALCON_BASE}/devices/entities/devices-actions/v2",
+                   params={"action_name": "contain"}, json={"ids": [device_id]},
+                   headers={"Authorization": f"Bearer {_bearer()}"})
+    r.raise_for_status()
+    result = r.json()
+    audit("contain_host", locals(), result, ticket_id)
+    return result
+
+if __name__ == "__main__":
+    mcp.run()</code></pre>
+
+<h2 id="splunk">21. Splunk &mdash; SIEM &amp; audit-log analytics</h2>
+<p><strong>Setup, from scratch:</strong></p>
+<ol>
+<li>Create a dedicated write-once index for the audit log (<code>index=agent_audit</code>) with retention at least as long as the SOP's change-record retention; no edit/delete role granted to any agent identity.</li>
+<li>Forward the audit log, every CyberArk retrieval event, Falcon detections, and the domain agents' structured logs into Splunk &mdash; this is the query surface a human reviewer uses.</li>
+<li>Give the MCP service account a role limited to <code>search</code> over the framework indexes only, with a token (not a password).</li>
+<li>Build correlation searches for the SOP review cadences (out-of-window changes, actions with no approval record, credential spikes) with alert actions that open a ServiceNow Incident.</li>
+</ol>
+<pre><code>import httpx
+
+SPLUNK_BASE = "https://splunk.internal.example.com:8089"
+
+def search(token: str, spl: str) -> list[str]:
+    r = httpx.post(f"{SPLUNK_BASE}/services/search/jobs/export",
+                   data={"search": f"search {spl}", "output_mode": "json", "earliest_time": "-24h"},
+                   headers={"Authorization": f"Bearer {token}"})
+    r.raise_for_status()
+    return [x for x in r.text.splitlines() if x]</code></pre>
+<p><strong>splunk_mcp_server.py:</strong></p>
+<pre><code>from shared.mcp_base import build_agent_server
+from shared.vault_client import get_scoped_credential
+import httpx, json
+
+mcp = build_agent_server("platform-ops-siem", system_class="splunk")
+SPLUNK_BASE = "https://splunk.internal.example.com:8089"
+
+@mcp.tool()
+def actions_without_approval(hours: int = 24) -> list[dict]:
+    """Tier 0 -- executed Tier >=1 actions in the audit index with no
+    matching approval event. Feeds the SOP's monthly approval audit;
+    read-only, opens an Incident on any hit."""
+    token = get_scoped_credential(system="splunk", ttl_seconds=300).token
+    spl = (f'index=agent_audit action=execute tier>=1 earliest=-{hours}h '
+           f'| join ticket_id [search index=agent_audit event=approval_granted] '
+           f'| where isnull(approval_ts)')
+    r = httpx.post(f"{SPLUNK_BASE}/services/search/jobs/export",
+                   data={"search": f"search {spl}", "output_mode": "json"},
+                   headers={"Authorization": f"Bearer {token}"})
+    r.raise_for_status()
+    return [json.loads(x) for x in r.text.splitlines() if x]
+
+if __name__ == "__main__":
+    mcp.run()</code></pre>
+
+<h2 id="netapp">22. NetApp ONTAP &mdash; enterprise storage</h2>
+<p><strong>Setup, from scratch:</strong></p>
+<ol>
+<li>Enable the ONTAP REST API on each cluster management LIF; create an SVM-scoped <code>readonly</code> role for telemetry and a separate role limited to <code>snapshot create</code> / <code>volume modify (size)</code> if provisioning is in scope.</li>
+<li>Onboard both roles into CyberArk <code>Safe-Storage</code> so the VMware/Database/Windows/Linux agents check them out per call.</li>
+<li>Register volume-to-consumer mapping in NetBox/CMDB so a capacity alert routes to the owning agent.</li>
+<li>Mark <code>volume delete</code>, <code>snapshot delete</code>, and SnapMirror break as deny-list / Tier 3 &mdash; destructive storage actions never auto-execute.</li>
+</ol>
+<pre><code>import httpx
+
+ONTAP_BASE = "https://netapp-cluster-01.internal.example.com/api"
+
+def volume_space(user: str, password: str, volume_uuid: str) -> dict:
+    r = httpx.get(f"{ONTAP_BASE}/storage/volumes/{volume_uuid}",
+                  params={"fields": "space,svm,state"}, auth=(user, password))
+    r.raise_for_status()
+    return r.json()</code></pre>
+<p><strong>netapp_mcp_server.py:</strong></p>
+<pre><code>from shared.mcp_base import build_agent_server, audit
+from shared.vault_client import get_scoped_credential
+import httpx
+
+mcp = build_agent_server("storage-netapp", system_class="netapp")
+ONTAP_BASE = "https://netapp-cluster-01.internal.example.com/api"
+
+def _auth():
+    c = get_scoped_credential(system="netapp", ttl_seconds=300)
+    return (c.username, c.password)
+
+@mcp.tool()
+def volume_space(volume_uuid: str) -> dict:
+    """Tier 0 -- used/available/snapshot-reserve for one volume; the
+    capacity signal Platform Ops watches and the owning agent reads first."""
+    r = httpx.get(f"{ONTAP_BASE}/storage/volumes/{volume_uuid}",
+                  params={"fields": "space,svm,state"}, auth=_auth())
+    r.raise_for_status()
+    return r.json()
+
+@mcp.tool()
+def create_snapshot(volume_uuid: str, name: str, ticket_id: str) -> dict:
+    """Tier 2 -- point-in-time snapshot before a risky change on the
+    consuming system. Snapshot deletion is deny-list, not offered here."""
+    r = httpx.post(f"{ONTAP_BASE}/storage/volumes/{volume_uuid}/snapshots",
+                   json={"name": name}, auth=_auth())
+    r.raise_for_status()
+    result = r.json()
+    audit("create_snapshot", locals(), result, ticket_id)
+    return result
+
+if __name__ == "__main__":
+    mcp.run()</code></pre>
+
+<h2 id="dellstorage">23. Dell storage &mdash; PowerStore / PowerMax / Unity</h2>
+<p>
+Same role as NetApp ONTAP, different vendor API. Environments running both keep one MCP
+server per array family; the design assumes no single storage vendor.
+</p>
+<p><strong>Setup, from scratch:</strong></p>
+<ol>
+<li>Enable the array's REST API (PowerStore REST, Unisphere for PowerMax REST, Unity REST); create a monitor-role account for telemetry and a storage-admin account scoped to snapshot/resize only, both in CyberArk <code>Safe-Storage</code>.</li>
+<li>Map volumes/LUNs to consumers in the CMDB exactly as for ONTAP so alerts route by owner.</li>
+<li>Deny-list volume/LUN delete, snapshot delete, and replication-session delete; Tier 3 for create/resize.</li>
+<li>Forward alerts to ServiceNow via the common webhook.</li>
+</ol>
+<pre><code>import httpx
+
+PS_BASE = "https://powerstore-01.internal.example.com/api/rest"
+
+def login(user: str, password: str) -> str:
+    r = httpx.get(f"{PS_BASE}/login_session", auth=(user, password))
+    r.raise_for_status()
+    return r.headers["DELL-EMC-TOKEN"]</code></pre>
+<p><strong>dell_storage_mcp_server.py:</strong></p>
+<pre><code>from shared.mcp_base import build_agent_server, audit
+from shared.vault_client import get_scoped_credential
+import httpx
+
+mcp = build_agent_server("storage-dell", system_class="dell-storage")
+PS_BASE = "https://powerstore-01.internal.example.com/api/rest"
+
+def _token() -> str:
+    c = get_scoped_credential(system="dell-storage", ttl_seconds=300)
+    r = httpx.get(f"{PS_BASE}/login_session", auth=(c.username, c.password))
+    r.raise_for_status()
+    return r.headers["DELL-EMC-TOKEN"]
+
+@mcp.tool()
+def volume_metrics(volume_id: str) -> dict:
+    """Tier 0 -- size, logical-used, state for one volume; vendor-parallel
+    to netapp.volume_space."""
+    r = httpx.get(f"{PS_BASE}/volume/{volume_id}",
+                  params={"select": "name,size,state,logical_used"},
+                  headers={"DELL-EMC-TOKEN": _token()})
+    r.raise_for_status()
+    return r.json()
+
+@mcp.tool()
+def create_snapshot(volume_id: str, name: str, ticket_id: str) -> dict:
+    """Tier 2 -- snapshot before a risky change. Deletion is deny-list."""
+    r = httpx.post(f"{PS_BASE}/volume/{volume_id}/snapshot",
+                   json={"name": name}, headers={"DELL-EMC-TOKEN": _token()})
+    r.raise_for_status()
+    result = r.json()
+    audit("create_snapshot", locals(), result, ticket_id)
+    return result
+
+if __name__ == "__main__":
+    mcp.run()</code></pre>
+
+<h2 id="powerswitch">24. Dell PowerSwitch &mdash; top-of-rack switching</h2>
+<p>An extension of the Network agent (Section 26), not a new agent.</p>
+<p><strong>Setup, from scratch:</strong></p>
+<ol>
+<li>Enable OS10 RESTCONF (or manage via Ansible's <code>dellemc.os10</code> collection) on each switch's management interface; role-scoped account in CyberArk <code>Safe-Network</code>.</li>
+<li>Add OS10 devices to NetBox with the same platform/role fields as the Cisco gear.</li>
+<li>Import OS10 configs into Batfish (Section 7) so a proposed ToR change gets the same offline verification as an NX-OS change.</li>
+<li>If SmartFabric Services is in use, target the fabric's REST endpoint for fabric-wide changes; keep port toggles Tier 2, VLAN/routing Tier 3, same as the base Network agent.</li>
+</ol>
+<pre><code>import httpx
+
+OS10_BASE = "https://tor-leaf-01.internal.example.com/restconf/data"
+
+def interface_status(user: str, password: str, ifname: str) -> dict:
+    r = httpx.get(f"{OS10_BASE}/dell-interface:interfaces/interface={ifname}",
+                  auth=(user, password), headers={"Accept": "application/yang-data+json"})
+    r.raise_for_status()
+    return r.json()</code></pre>
+<p><strong>dell_powerswitch_mcp_server.py:</strong></p>
+<pre><code>from shared.mcp_base import build_agent_server, audit
+from shared.vault_client import get_scoped_credential
+import httpx
+
+mcp = build_agent_server("network-tor-os10", system_class="dell-powerswitch")
+OS10_BASE = "https://tor-leaf-01.internal.example.com/restconf/data"
+
+def _auth():
+    c = get_scoped_credential(system="dell-powerswitch", ttl_seconds=300)
+    return (c.username, c.password)
+
+@mcp.tool()
+def interface_status(ifname: str) -> dict:
+    """Tier 0 -- admin/oper state, counters, description for one ToR port;
+    read like the Network agent reads a Cisco interface."""
+    r = httpx.get(f"{OS10_BASE}/dell-interface:interfaces/interface={ifname}",
+                  auth=_auth(), headers={"Accept": "application/yang-data+json"})
+    r.raise_for_status()
+    return r.json()
+
+@mcp.tool()
+def set_interface_admin_state(ifname: str, enabled: bool, ticket_id: str) -> dict:
+    """Tier 2 -- shut/no-shut one access port. Batfish must have modeled the
+    change first; rollback is the inverse call."""
+    r = httpx.patch(f"{OS10_BASE}/dell-interface:interfaces/interface={ifname}",
+                    json={"interface": {"enabled": enabled}}, auth=_auth(),
+                    headers={"Content-Type": "application/yang-data+json"})
+    r.raise_for_status()
+    result = {"status": r.status_code}
+    audit("set_interface_admin_state", locals(), result, ticket_id)
+    return result
+
+if __name__ == "__main__":
+    mcp.run()</code></pre>
+
+<h2 id="backup">25. Backup &amp; recovery &mdash; Veeam / Commvault / Rubrik / Cohesity</h2>
+<p>
+The integration where the deny-list matters most: no agent, at any tier, deletes a backup
+or shortens retention. Read-heavy by design; restore itself is gated at Tier 2.
+</p>
+<p><strong>Setup, from scratch:</strong></p>
+<ol>
+<li>Create a restricted API account that can <em>read</em> job sessions and <em>start</em> restores, with no permission to modify jobs, retention, or repositories. Onboard into CyberArk <code>Safe-Backup</code>.</li>
+<li>Enable immutability / air-gap on the repository at the storage layer so retention can't be shortened even by a compromised console.</li>
+<li>Forward job success/failure and SLA events to ServiceNow so a failed backup opens an Incident automatically.</li>
+<li>Register a scheduled restore-test (mount to an isolated network, checksum, tear down); a failed verification is a Tier 1 self-healing condition &mdash; re-queue once, then page.</li>
+</ol>
+<pre><code>import httpx
+
+VBR_BASE = "https://veeam-01.internal.example.com:9419/api/v1"
+HDRS = {"x-api-version": "1.1-rev1"}
+
+def token(user: str, password: str) -> str:
+    r = httpx.post(f"{VBR_BASE}/token",
+                   data={"grant_type": "password", "username": user, "password": password},
+                   headers=HDRS)
+    r.raise_for_status()
+    return r.json()["access_token"]</code></pre>
+<p><strong>backup_mcp_server.py:</strong></p>
+<pre><code>from shared.mcp_base import build_agent_server, audit
+from shared.vault_client import get_scoped_credential
+import httpx
+
+mcp = build_agent_server("platform-ops-backup", system_class="backup")
+VBR_BASE = "https://veeam-01.internal.example.com:9419/api/v1"
+HDRS = {"x-api-version": "1.1-rev1"}
+
+def _bearer() -> str:
+    c = get_scoped_credential(system="backup", ttl_seconds=300)
+    r = httpx.post(f"{VBR_BASE}/token",
+                   data={"grant_type": "password", "username": c.username, "password": c.password},
+                   headers=HDRS)
+    r.raise_for_status()
+    return r.json()["access_token"]
+
+@mcp.tool()
+def job_status(job_id: str) -> dict:
+    """Tier 0 -- result and timing of the most recent session for one job;
+    the signal Platform Ops watches for a failed/missed backup."""
+    r = httpx.get(f"{VBR_BASE}/sessions",
+                  params={"jobIdFilter": job_id, "limit": 1,
+                          "orderColumn": "CreationTime", "orderAsc": "false"},
+                  headers={"Authorization": f"Bearer {_bearer()}", **HDRS})
+    r.raise_for_status()
+    return r.json()
+
+@mcp.tool()
+def start_restore(restore_point_id: str, target: str, ticket_id: str) -> dict:
+    """Tier 2 -- start a restore from an existing recovery point. Never
+    deletes or overwrites a backup. Re-timing retention is deny-list and
+    has no tool here at all."""
+    r = httpx.post(f"{VBR_BASE}/restore",
+                   json={"restorePointId": restore_point_id, "target": target},
+                   headers={"Authorization": f"Bearer {_bearer()}", **HDRS})
+    r.raise_for_status()
+    result = r.json()
+    audit("start_restore", locals(), result, ticket_id)
+    return result
+
+if __name__ == "__main__":
+    mcp.run()</code></pre>
+
+<h2 id="agents">26. Domain-agent target systems, at a glance</h2>
+<p>
+The twenty-two systems above are the supporting cast; the actual write targets are the nine
 domain agents' own systems, each following the identical MCP pattern from Section 2.
 </p>
 <table class="ptable">
@@ -909,16 +1297,19 @@ def reset_password(user_principal_name: str, ticket_id: str) -> dict:
 if __name__ == "__main__":
     mcp.run()</code></pre>
 
-<h2 id="order">20. Build order &mdash; mapping back to the phased rollout</h2>
+<h2 id="order">27. Build order &mdash; mapping back to the phased rollout</h2>
 <p>
 This document is the "how" for the "what" in the architecture blueprint's phased
 deployment guide &mdash; use that guide's phase table for sequencing (audit log and
 monitoring first, one Tier 1 agent before the rest, approval mechanism before any Tier 2
 agent goes live) and this document for the actual setup/API/MCP steps each phase's
 numbered build step refers to. Concretely: Phase 0 steps 1&ndash;3 map to Sections 1&ndash;3,
-5, and 6 above; Phase 1 step 7 maps to Section 19's Identity agent; Phase 2 steps 12 and
-14 map to Sections 7 and 9. Sections 11&ndash;18 (Firepower Management Center, Catalyst
-Center, Aria, SCOM, Azure Monitor, MECM, Satellite, and APC power management) each slot
+5, and 6 above; Phase 1 step 7 maps to Section 26's Identity agent; Phase 2 steps 12 and
+14 map to Sections 7 and 9. Section 19 (CyberArk) is a Phase 0 prerequisite &mdash; the
+vault every later section's <code>get_scoped_credential()</code> call depends on. Sections
+11&ndash;18 and 20&ndash;25 (Firepower Management Center, Catalyst Center, Aria, SCOM, Azure
+Monitor, MECM, Satellite, APC power management, CrowdStrike, Splunk, NetApp, Dell storage,
+Dell PowerSwitch, and backup/recovery) each slot
 into the phase of whichever domain agent or supporting-monitoring role they extend, with
 the same burn-in discipline as everything else in that phase. Nothing here changes the
 tier assignments, the approval gate, or the deny-list from the architecture blueprint

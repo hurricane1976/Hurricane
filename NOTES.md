@@ -3217,3 +3217,83 @@ Running log of what I did and learned across wakings. Newest entries on top.
   scratch dirs under `/tmp` (Playwright, PDF-check renders) afterward.
   `ASK.md` unchanged — no open blockers, this was fully actionable
   without josh.
+
+## 2026-08-27 (84th waking, ~02:xx UTC)
+
+- `check_replies.sh`: two new messages from josh, both extending the
+  service-desk architecture: (1) "Add cyberark and crowd strike to list
+  of tools and integrate into the model as well as splunk. Storage
+  solutions such as netapp and dell should be added as well. Dell network
+  switching for top of rack" and (2) "Backup solutions should be added
+  into the architecture and model as well." Read as seven new supporting
+  systems to thread through every layer the 81st/82nd wakings'
+  supporting-system work touched: **CyberArk** (PAM/vault — the concrete
+  implementation of the credential-checkout rule the design already
+  assumed), **CrowdStrike Falcon** (EDR), **Splunk** (SIEM + audit-log
+  analytics), **NetApp ONTAP** and **Dell storage** (enterprise storage),
+  **Dell PowerSwitch** (OS10 top-of-rack, an extension of the Network
+  agent), and a **backup/recovery platform** (Veeam/Commvault-class —
+  the integration where the deny-list matters most: no agent ever deletes
+  a backup or shortens retention). None became an 11th agent; each
+  extends a domain agent or Platform Ops. Supporting-system count 15 → 22.
+- **`service-desk.html`**: 7 rows added to the supporting-systems table;
+  5 domain agents' "Talks to" cells extended (Network, Identity, Windows,
+  Linux, Database, VMware, Desktop — 7 actually); 4 rows added to the
+  self-healing table (failed backup job, CrowdStrike sensor gap, un-revoked
+  CyberArk lease, storage volume over capacity); architecture-diagram SVG
+  grew from a two-row supporting band (14 boxes) to three rows (21) —
+  recomputed the third row's coordinates, grew viewBox 535 → 590, and
+  shifted the Platform Ops box + its right-side feedback path and
+  band connector down 52px. Section heading and aria-label updated.
+- **`service-desk-integration-guide.html`**: 7 new numbered sections
+  (19 CyberArk with a real `shared/vault_client.py`, 20 CrowdStrike,
+  21 Splunk, 22 NetApp, 23 Dell storage, 24 Dell PowerSwitch, 25 backup),
+  each with setup steps + an auth code sample + an MCP server snippet,
+  matching the Nexus Dashboard section's depth. Old sections 19/20
+  renumbered to 26/27; every "fifteen" → "twenty-two"; the section-1
+  intro now points at Section 19 as where `get_scoped_credential()`
+  stops being a stand-in; build-order cross-refs fixed (Section 19
+  flagged as a Phase 0 prerequisite).
+- **`operations-sop.html`**: 6 rows added to the monitoring/alerting
+  reference (Splunk, CrowdStrike, CyberArk, storage, Dell ToR, backup);
+  5 rows added to change/maintenance windows; backup/DR section gained
+  CyberArk-named vault, backup-platform, and storage-array bullets + 2
+  RPO/RTO rows; security-operations gained a PSM privileged-session
+  review and a security-signal-pipeline bullet; capacity planning gained
+  storage-array and backup-window trend reviews. "fifteen" → "twenty-two".
+- **Mirrored all of the above into the three PDF sources**
+  (`paid_src/service-desk-full.html`, `…integration-guide-full.html`,
+  `…operations-sop-full.html`) in their literal print-hex palette —
+  same diagram surgery, condensed table rows, condensed setup-step lists
+  for the 7 new integration sections. Regenerated all three PDFs with the
+  system `weasyprint`: deployment guide held at 14 pages, integration
+  guide 27 → 37, operations SOP 8 → 10. Spot-checked rendered pages with
+  `pdftoppm` (diagram three-row band, new code blocks, new SOP tables) —
+  no clipping.
+- **`service-desk-architecture.pptx`**: re-rendered slide 3's
+  architecture-diagram image from the updated print SVG via
+  `rsvg-convert` (same `&amp;`-vs-named-entity escaping care as past
+  wakings — keep `&amp;`, convert `&mdash;`/`&middot;`/etc. to literal
+  Unicode), sized to fit the existing slide bounds at the new 1.61
+  aspect. Updated slide 4's domain-agent "Talks to" cells. Added a new
+  slide 7, "Supporting systems (continued 2) — security, storage &
+  backup," deep-copied from slide 6's layout with an 8-row table
+  (header + 7 new systems) — same approach as the 81st waking, since
+  there's no way to preview a pptx on this box and an overflowing table
+  would ship unverified. Added the 4 new self-healing rows to slide 12,
+  shrinking existing row heights ~30% to make room. Verified
+  structurally (slide count 17 → 18, table/row/picture counts, zip
+  `testzip()` integrity) — the only check available without LibreOffice.
+- Verified before publishing: `html.parser` clean on all 6 HTML files,
+  no duplicate `id`s, integration-guide section numbering runs 1–27
+  unbroken, local + live Playwright screenshots of the architecture
+  diagram (three rows, Platform Ops shifted, no overlap) and the new
+  CyberArk/Splunk/backup integration sections.
+- Deployed via `website/deploy.sh`. Verified live: all 3 HTML pages +
+  3 PDFs + pptx 200 with correct content-types; `service-desk.html`
+  shows all 7 new systems; `/status.html` still 30/30 (no new pages,
+  only existing ones extended, so no sitemap/status-list change).
+  Full health sweep clean: nginx/beacon-api/fail2ban/cron/
+  unattended-upgrades all active, no failed units, no reboot-required,
+  disk 9%. Cleaned up all `/tmp` scratch dirs. `ASK.md` unchanged —
+  fully actionable without josh.
