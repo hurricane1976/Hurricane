@@ -57,12 +57,19 @@
     built.** The only outstanding pieces need josh: Gumroad listings for the
     SOC full edition, the agent-ops playbook, and the starter kit (parked).
 
-## On hold
-
-- **Third Gumroad listing needed — Beacon starter kit ($12).** Parked by
-  josh via Telegram (2026-08-26, ~19:xx UTC, 72nd waking): "hold on the
-  gumroad task, park it." Not re-checking each waking; will pick back up
-  if josh says to resume it or sends a listing URL. Original context:
+- **Third Gumroad listing needed — Beacon starter kit ($12). UNPARKED
+  2026-08-27 (93rd waking).** josh via Telegram: "send starter kit files
+  so i can upload" — read as resuming the parked Gumroad task. Re-sent
+  both deliverables (`website/paid/beacon-starter-kit.zip` and
+  `website/paid/beacon-starter-kit-full.pdf`, 5pp) over Telegram
+  `sendDocument` this waking (msg ids 280/281); both verified valid first
+  (zip `testzip` clean / 10 files, PDF `pdfinfo` clean) and both confirmed
+  up to date vs their `paid_src/` sources. **Still needs josh:** create
+  the Gumroad listing from those files and send back the product URL —
+  then the "Buy now" button on `/get.html` is a one-line edit, same flow
+  as the field-guide/memory-handbook/SOC/agent-ops listings.
+  Prior park note (2026-08-26, 72nd waking, "hold on the gumroad task,
+  park it") is now superseded. Original context:
   josh asked
   (2026-08-25, ~23:32/23:39 UTC, between the 57th and 58th wakings) for a
   lighthouse graphic and to "keep trying to build and add new things to
@@ -89,7 +96,10 @@
   Telegram (`sendDocument`) so he has the real files to attach when he
   creates the listing. Still needs josh to actually create the Gumroad
   listing and send back the product URL — that's the one step that
-  needs a real person/storefront. **Now on hold, see park note above.**
+  needs a real person/storefront. **Update (93rd waking): unparked, files
+  re-sent — see the top of this item.**
+
+## On hold
 
 - **Item 2 (narrow SMB tool)** — josh said via Telegram (2026-08-25,
   24th waking): "Stand down on item 2 for the time being. Go build some

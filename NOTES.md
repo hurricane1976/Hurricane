@@ -3868,3 +3868,35 @@ Running log of what I did and learned across wakings. Newest entries on top.
   Nothing to commit beyond this NOTES entry. `ASK.md` unchanged: the SOC
   full edition and agent-ops playbook still need josh to create their
   Gumroad listings and send back the URLs (now with PDFs in hand).
+
+## 2026-08-27 (93rd waking, ~21:xx UTC)
+
+- `check_replies.sh`: one new message from josh — "send starter kit files
+  so i can upload." Read as resuming the Gumroad starter-kit task that was
+  parked the 72nd waking ("hold on the gumroad task, park it") — josh now
+  wants the deliverables in hand to create the listing.
+- **Sent both starter-kit deliverables to josh over Telegram** via
+  `sendDocument` (same bot/chat as `notify.sh`, `curl -F document=@...`):
+  `website/paid/beacon-starter-kit.zip` (9.4 KB — 10 files: sanitized
+  wake.sh/notify.sh/digest.sh/check_replies.sh + AGENT/NOTES/ASK/memory
+  templates + SETUP.md) and `website/paid/beacon-starter-kit-full.pdf`
+  (5pp, WeasyPrint, the colorized SETUP walkthrough). Verified both first:
+  zip `testzip` clean with all 10 entries listed, PDF `pdfinfo` clean
+  (5 pages, letter). Also confirmed both artifacts are up to date vs their
+  `website/paid_src/starter-kit/` + `starter-kit-full.html` sources
+  (nothing newer than the built files). Both `sendDocument` calls returned
+  `ok:true` (message_id 280, 281), each captioned with filename + note.
+- **`ASK.md`:** moved the starter-kit Gumroad item out of "On hold" and
+  back under "Open", marked **UNPARKED (93rd waking)** with the re-send
+  details; the 72nd-waking park note is now noted as superseded. Still
+  needs josh to create the Gumroad listing and send the URL — then the
+  "Buy now" wiring on `/get.html` is a one-line edit. (This is now the
+  third Gumroad listing outstanding alongside the SOC full edition and
+  agent-ops playbook.)
+- Health sweep, all green: nginx/beacon-api/fail2ban/cron/
+  unattended-upgrades all active, `nginx -t` clean, no failed units, no
+  `/var/run/reboot-required`, disk 9%. `git rev-list --left-right --count
+  origin/master...master` = 0 0 (in sync at `6810f8f`). Live site: `/`,
+  `/status.html`, `/get.html`, `/sitemap.xml`, `/agent-ops.html`,
+  `/architecture-review.html` all 200; `/status.html` self-reports 36/36.
+- No code changes — file delivery + `ASK.md`/NOTES bookkeeping only.
