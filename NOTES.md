@@ -3152,3 +3152,68 @@ Running log of what I did and learned across wakings. Newest entries on top.
   table); `/sitemap.xml` includes the new URL (15 total, up from 14);
   `/status.html` now 29/29 (up from 28/28). Cleaned up all scratch dirs
   under `/tmp` (Playwright venv, artifacts, PDF-check renders) afterward.
+
+## 2026-08-27 (83rd waking, ~00:xx UTC)
+
+- `check_replies.sh`: one new message from josh — "you dont have to use
+  the diagrams as submitted, but it would be good if you made your own
+  and placed into the manuals(s) graphics helps." Read as confirming the
+  82nd waking's interpretation (redraw original diagrams rather than
+  reuse his literal stock PNGs) was right, plus a new ask: get more
+  original graphics into "the manual(s)" specifically — the downloadable
+  PDF/pptx documents, not just the web pages.
+- Audited the three existing downloadable "manuals"
+  (`service-desk-deployment-guide.pdf`, `service-desk-integration-guide.pdf`,
+  `service-desk-architecture.pptx`) against the web pages they mirror and
+  found the real gap: `operations-sop.html` (built last waking, with the
+  site's newest diagram, the incident-lifecycle SVG) had **no manual
+  counterpart at all** — it was the only guide-class page that never got
+  a PDF. That's the biggest "graphics helps the manuals" gap, bigger than
+  adding more diagrams to the two guides that already have plenty (3
+  diagrams each already).
+- **Added a second original diagram to `operations-sop.html`** itself
+  first, since the "On-call & escalation matrix" section was the one
+  remaining table-only section with no diagram: an "escalation ladder"
+  SVG synthesizing the six-row table into two lanes — a normal
+  SLA-timed queue (Platform Ops auto-response &rarr; on-call engineer/
+  on-shift approver &rarr; domain agent owner/CAB) versus a small
+  "immediate, bypasses the queue" lane for the two triggers that don't
+  get an SLA (an audit-log write with no approval record, an APC UPS
+  on-battery critical event) &mdash; both routing straight to an
+  incident commander. Same synthesis approach the incident-lifecycle
+  diagram used last waking (the general shape underneath specific rows,
+  not a literal one-box-per-row rendering). Verified with a scratch
+  Playwright screenshot before publishing — clean two-lane layout, no
+  overlap.
+- **Built `website/paid_src/operations-sop-full.html`**, a condensed
+  print-source mirror of the full page (cover page, 11-section TOC, both
+  diagrams re-rendered in the print palette's literal hex colors, same
+  `print.css`/`ptable`/`diagram-block` classes the other two guides use)
+  — the operations SOP's first-ever manual. Rendered via the
+  system-installed `weasyprint` (no scratch install needed this time,
+  already present) to `website/operations-sop.pdf`, 8 pages. Spot-checked
+  with `pdftoppm` before publishing: both diagrams (incident-lifecycle on
+  page 4, escalation-ladder on page 8) render cleanly, no clipping or
+  color issues.
+- Wired the new PDF into `deploy.sh`'s publish/chown lists (right after
+  `service-desk-integration-guide.pdf`, ahead of `status.html`'s build
+  step per the standing ordering rule) and `build_status.py`'s
+  page-health list. Added a "Download this SOP as a PDF" link to
+  `operations-sop.html`'s own "Take it further" section and a matching
+  "Download the operations SOP as a PDF" link to `service-desk.html`'s
+  take-it-further list (which now has 6 items — also fixed its stale
+  "Three things to go with the blueprint above" intro line, left over
+  from when the list was shorter, to "More to go with the blueprint
+  above").
+- Verified before publishing: `html.parser` clean on both changed HTML
+  files, no duplicate `id`s, `<section>`/`<svg>`/`<table>` tag counts
+  balanced, Playwright screenshots of the full `operations-sop.html`
+  page and `service-desk.html`'s updated take-it-further list both
+  render as intended.
+- Deployed via `website/deploy.sh`. Verified live: `/operations-sop.pdf`
+  200 with `Content-Type: application/pdf`, `/operations-sop.html` shows
+  the new escalation-ladder diagram, `/service-desk.html` shows the new
+  PDF link, `/status.html` now **30/30** (up from 29/29). Cleaned up all
+  scratch dirs under `/tmp` (Playwright, PDF-check renders) afterward.
+  `ASK.md` unchanged — no open blockers, this was fully actionable
+  without josh.

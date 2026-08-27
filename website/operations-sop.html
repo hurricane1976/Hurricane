@@ -414,6 +414,76 @@
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
       <h2>On-call &amp; escalation matrix</h2>
     </div>
+    <p>
+      Every row in the table below reduces to one of two lanes: a normal, SLA-timed queue
+      that climbs one step at a time, or a small set of triggers that skip the queue
+      entirely because waiting on it would defeat the point &mdash; a live security anomaly
+      or a UPS about to run out of runtime doesn't get a 30-minute SLA.
+    </p>
+    <div class="diagram-wrap">
+      <svg viewBox="0 0 950 305" role="img" aria-label="Escalation ladder diagram, two lanes. Queued lane: Platform Ops auto response escalates after a repeating loop or two failed restarts to the on-call engineer and on-shift approver, who escalate on a missed approval SLA to the domain agent owner and Change Advisory Board. Immediate lane: an audit log write with no approval record, or an APC UPS on-battery critical event, both bypass the queue straight to the incident commander, on-call engineer, and facilities.">
+        <defs>
+          <marker id="arrEsc1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 z" fill="var(--muted)"/>
+          </marker>
+          <marker id="arrEsc2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M0,0 L10,5 L0,10 z" fill="#e08a6a"/>
+          </marker>
+        </defs>
+        <g font-family="-apple-system,Segoe UI,Helvetica,Arial,sans-serif" fill="var(--fg)">
+          <text x="235" y="20" text-anchor="middle" font-size="12.5" font-weight="700" fill="var(--muted)">Queued &mdash; SLA-timed</text>
+          <line x1="40" y1="30" x2="430" y2="30" stroke="var(--muted)" stroke-width="1.5" opacity="0.5"/>
+          <text x="715" y="20" text-anchor="middle" font-size="12.5" font-weight="700" fill="#e08a6a">Immediate &mdash; bypasses the queue</text>
+          <line x1="520" y1="30" x2="910" y2="30" stroke="#e08a6a" stroke-width="1.5" opacity="0.5"/>
+          <line x1="475" y1="30" x2="475" y2="298" stroke="var(--line)" stroke-width="1.2" stroke-dasharray="3 3"/>
+
+          <g font-size="10" text-anchor="middle">
+            <rect x="40" y="45" width="390" height="54" rx="8" fill="var(--card)" stroke="var(--accent-blue)" stroke-width="1.3"/>
+            <text x="235" y="67">Platform Ops &mdash; auto response</text>
+            <text x="235" y="83" fill="var(--muted)" font-size="8.5">restart &middot; re-lease &middot; retry</text>
+
+            <line x1="235" y1="99" x2="235" y2="139" stroke="var(--muted)" stroke-width="1.3" marker-end="url(#arrEsc1)"/>
+            <text x="245" y="122" text-anchor="start" font-size="8.3" fill="var(--muted)">loop repeats &gt;3&times; or 2 failed</text>
+            <text x="245" y="133" text-anchor="start" font-size="8.3" fill="var(--muted)">restarts &mdash; immediate</text>
+
+            <rect x="40" y="140" width="390" height="54" rx="8" fill="var(--card)" stroke="var(--accent)" stroke-width="1.3"/>
+            <text x="235" y="162">On-call engineer / on-shift approver</text>
+            <text x="235" y="178" fill="var(--muted)" font-size="8.5">owns the page &middot; Tier 1 approvals</text>
+
+            <line x1="235" y1="194" x2="235" y2="234" stroke="var(--muted)" stroke-width="1.3" marker-end="url(#arrEsc1)"/>
+            <text x="245" y="217" text-anchor="start" font-size="8.3" fill="var(--muted)">approval SLA missed</text>
+            <text x="245" y="228" text-anchor="start" font-size="8.3" fill="var(--muted)">(30min&ndash;4h, by tier)</text>
+
+            <rect x="40" y="235" width="390" height="54" rx="8" fill="var(--card)" stroke="var(--accent-2)" stroke-width="1.3"/>
+            <text x="235" y="257">Domain agent owner &rarr; CAB</text>
+            <text x="235" y="273" fill="var(--muted)" font-size="8.5">Tier 2/3 escalation &middot; weekly change review</text>
+
+            <rect x="520" y="45" width="180" height="46" rx="8" fill="var(--card)" stroke="#e08a6a" stroke-width="1.3"/>
+            <text x="610" y="65" font-size="9">Audit log write,</text>
+            <text x="610" y="78" fill="var(--muted)" font-size="8.3">no approval record</text>
+
+            <rect x="730" y="45" width="180" height="46" rx="8" fill="var(--card)" stroke="#e08a6a" stroke-width="1.3"/>
+            <text x="820" y="65" font-size="9">APC UPS on-battery,</text>
+            <text x="820" y="78" fill="var(--muted)" font-size="8.3">runtime critical</text>
+
+            <line x1="630" y1="91" x2="675" y2="234" stroke="#e08a6a" stroke-width="1.3" marker-end="url(#arrEsc2)"/>
+            <line x1="800" y1="91" x2="755" y2="234" stroke="#e08a6a" stroke-width="1.3" marker-end="url(#arrEsc2)"/>
+            <text x="715" y="165" text-anchor="middle" font-size="8.3" fill="#e08a6a">bypasses the queue entirely</text>
+
+            <rect x="520" y="235" width="390" height="54" rx="8" fill="var(--card)" stroke="#e08a6a" stroke-width="1.5" stroke-dasharray="5 3"/>
+            <text x="715" y="257" font-weight="700">Incident commander</text>
+            <text x="715" y="273" fill="var(--muted)" font-size="8.5">+ on-call engineer &amp; facilities &middot; treated as live</text>
+          </g>
+        </g>
+      </svg>
+    </div>
+    <p class="diagram-caption">
+      The left lane is the common case &mdash; a page climbs one step at a time, each with a
+      fixed time-to-escalate. The right lane exists because a 30-minute SLA is the wrong
+      answer to "the audit log just proved something executed with no approval record" or
+      "the UPS runtime just crossed critical" &mdash; both go straight to a human, no queue
+      in between.
+    </p>
     <div class="data-table-wrap">
       <table class="data-table">
         <tr><th>Trigger</th><th>First responder</th><th>Escalates to (if unresolved)</th><th>Time to escalate</th></tr>
@@ -454,6 +524,8 @@
       <h2>Take it further</h2>
     </div>
     <ul class="check">
+      <li><strong><a href="/operations-sop.pdf">Download this SOP as a PDF</a></strong>
+      &mdash; same content, free, no signup.</li>
       <li><strong><a href="/service-desk.html">Architecture blueprint</a></strong>
       &mdash; the diagrams, risk tiers, guardrails, and phased rollout this document
       assumes is already built.</li>
