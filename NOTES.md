@@ -3392,3 +3392,72 @@ Running log of what I did and learned across wakings. Newest entries on top.
   — flagged for josh to say if he wants any pursued.
 - `ASK.md` unchanged — the infographics ask was fully actionable without
   josh; the cairnwake question was answered over Telegram.
+
+## 2026-08-27 (86th waking, ~08:00 UTC)
+
+- `check_replies.sh`: two new messages from josh. (1) "I would like the
+  weekly digest built. Also suggest any other ideas for building up the
+  website. I really like the multi agent architectures if that's a hint."
+  (2) "Some fully autonomous business options would be helpful too." Read
+  (1) as a direct follow-up to the 85th waking's note that "the free
+  weekly digest is the one on-brand, low-risk idea" from the cairnwake.com
+  comparison — build it. Read the rest as advisory (answer over Telegram).
+- Full health sweep first, all green: nginx/beacon-api/fail2ban/cron/
+  unattended-upgrades all active, `nginx -t` clean, no failed units, no
+  `/var/run/reboot-required`, disk 9%, `master` in sync with
+  `origin/master` at `de48da2`. fail2ban sshd: 2 currently banned, 6
+  lifetime — routine.
+- Interpreted "weekly digest" as a website feature (matches "building up
+  the website"), not an email newsletter — an email list would need
+  opt-in/list/deliverability plumbing this box doesn't have and sending
+  mail from here would mostly land in spam. Built it the same way as
+  `log.html` / `status.html` / `roadmap.html`: auto-generated from
+  repo data each deploy so it can't go stale by more than one wake cycle.
+- **Built `website/build_weekly.py` + `weekly.template.html` →
+  `/weekly.html`**: a rolling "week in review" covering the 7 days ending
+  now. Reuses `build_log.py`'s `parse_entries` and imports `PAGES` from
+  `build_sitemap.py` so there's no second copy of either. Shows four stat
+  tiles (wakings this week / commits this week / lines changed / public
+  pages live), a "What shipped this week" list (headline `**bold**`
+  bullets from NOTES.md whose first word is an action verb — filters out
+  bold spans used for inline emphasis like bare product names — each
+  linked to its `/log.html#waking-N` anchor), a "Commits this week" list
+  (git subjects, capped at 20 + a "and N more" line), and a "Since the
+  beginning" card (lifetime wakings/commits/days running). Currently
+  reads 83 wakings / 105 commits / +17.2k−1.5k lines for the week; "this
+  week" ≈ "lifetime" for now since the project is only 4 days old — that
+  diverges naturally as it ages, and it's honest, so left as-is.
+- **Built `weekly_digest.sh`**: same design as `daily_digest.sh` — run
+  hourly via cron (`7 * * * *`), self-gates on `TZ=America/New_York`
+  day-of-week (Monday) + hour (08) with an ISO-week state file
+  (`.weekly_digest_sent`, gitignored) so it sends exactly once a week.
+  Body is `build_weekly.py --text` (new `--text` mode on the same script,
+  so the Telegram digest and the web page never drift). Dry-ran it —
+  correctly no-ops on a Thursday. First real send: Monday 2026-08-31
+  ~08:00 ET.
+- Wiring: added `/weekly.html` to `deploy.sh` (build step + copy/chown
+  lists, ahead of the `status.html` build per the standing ordering
+  rule), `build_sitemap.py`'s `PAGES` (16 urls now), `build_status.py`'s
+  page-health list (`/status.html` now **31/31**), `.gitignore` (the
+  generated page + the new state file), and the site nav on all 15
+  nav-bearing source files (one `perl` insert each after "Activity log",
+  verified exactly one per file — nav is now 13 items). Added a small
+  `.wk-ref` link style to `style.css` for the "waking N" references and a
+  one-line cross-link from `log.html`'s lede to the new page.
+- Verified: `html.parser` clean on `weekly.html`, all `<section>`/`<div>`/
+  `<ul>`/`<svg>` tag counts balanced, no unresolved `{{...}}`, 4 stat
+  tiles + 3 cards present. Deployed via `deploy.sh`; live checks —
+  `/weekly.html` 200 with nav link + all sections, `/log.html` shows the
+  cross-link, `/sitemap.xml` has the URL (16), `/status.html` 31/31.
+  Skipped a scratch Playwright screenshot this time — the page reuses
+  only already-proven components (`.stat-grid`/`.stat`/`.card`/
+  `ul.check`/`.hero`/nav); the only new CSS is the ~10-line `.wk-ref`
+  inline-link rule.
+- Sent josh (over Telegram) the weekly-digest completion note plus
+  answers to his other two asks: a shortlist of website build ideas
+  leaning into the multi-agent-architecture theme he flagged, and a
+  grounded take on "fully autonomous business options" (what's actually
+  low-risk vs. what hits `AGENT.md`'s escalate-first line, e.g. anything
+  touching real money/custody).
+- `ASK.md` unchanged — the weekly digest was fully actionable without
+  josh; the two advisory asks were answered over Telegram.
