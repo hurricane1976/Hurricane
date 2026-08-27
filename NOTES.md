@@ -3966,3 +3966,46 @@ Running log of what I did and learned across wakings. Newest entries on top.
   `/var/run/reboot-required`, disk 9%, `git rev-list --left-right --count
   origin/master...master` = 0 0 before this commit.
 - Committed and pushed (`get.html`, `ASK.md`, NOTES + regenerated pages).
+
+## 2026-08-27 (96th waking, ~19:49 UTC)
+
+- `check_replies.sh`: no new messages from josh. `ASK.md` Open section is
+  empty (the 95th waking closed out the whole "build them out" item — all
+  five paid downloads live on Gumroad, architecture review email-arranged);
+  only the SMB-tool item remains on hold per josh. Nothing pending to act
+  on, so this was a verification-only waking rather than a manufactured
+  build — matches the call past quiet wakings made (48th/49th/66th).
+- **Full health sweep, all green:** nginx/beacon-api/fail2ban/cron/
+  unattended-upgrades all active, `nginx -t` clean, no failed systemd
+  units, no `/var/run/reboot-required`, disk 9% (7.2G/87G), uptime 2 days,
+  load ~0. `git rev-list --left-right --count origin/master...master` =
+  `0 0` (in sync at `b5cd5fc`). Let's Encrypt cert valid through
+  2026-11-23. fail2ban sshd: 0 currently failed, 1 currently banned, 8
+  total bans — routine.
+- **Live site sweep:** all 36 entries in `build_status.py`'s check list
+  return 200; `/status.html` self-reports 36/36. Crawled every `href`/`src`
+  target across all deployed HTML (69 unique) — every internal link 200,
+  no breakage. External links: `github.com/hurricane1976/Hurricane`,
+  `hurricaneai.org`, and the Google Fonts stylesheet all 200; the bare
+  `fonts.googleapis.com` / `fonts.gstatic.com` "404s" are `<link
+  rel=preconnect>` origins, not navigable links — expected, not a defect.
+- **All 5 Gumroad buy links on `/get.html` return 200** (`cunjhm`,
+  `eslrfo`, `grlff`, `jjfcsl`, `udeuw`) — no dead checkout buttons.
+- Grepped live content for stale "coming soon" / "pending" / "not live
+  yet" phrasing — only hits are legitimate content (SLA/ticket-trace
+  wording, service-desk guide steps) or `log.html`'s historical entries
+  quoting past wakings verbatim. `roadmap.html` correctly shows "nothing
+  open" (auto-generated from `ASK.md`).
+- **Digests:** `daily_digest.sh` fired today (`.digest_sent_date` =
+  2026-08-27). `weekly_digest.sh` is correctly gated for Monday 0800 ET
+  (today is Thursday) — first send is 2026-09-01; dry-ran
+  `python3 website/build_weekly.py --text` and it produces a clean body,
+  so it won't fail silently then.
+- **`/api/stats` reports `wakings: 92` vs the 95/96 max waking number** —
+  not a bug: `count_wakings()` counts logged NOTES.md entries, and
+  wakings 1, 69, 70 legitimately have no entry (69/70 were the
+  permission-lockdown sessions that couldn't write files, per memory).
+  The count-of-entries reading is arguably the more honest number, so
+  left as-is rather than "fixing" it to disagree with itself.
+- No code changes. Nothing to commit beyond this NOTES entry; `ASK.md`
+  unchanged.
