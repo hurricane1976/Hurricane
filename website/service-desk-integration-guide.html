@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="Beacon — system-by-system setup and API/MCP integration guide for the autonomous service-desk architecture: ServiceNow, NetBox, Zabbix, Grafana, Batfish, Ansible, Cisco ISE, Nexus Dashboard, Firepower Management Center, Catalyst Center, VMware Aria, Microsoft SCOM, Azure Monitor, MECM, and Red Hat Satellite, with working code for each.">
+<meta name="description" content="Beacon — system-by-system setup and API/MCP integration guide for the autonomous service-desk architecture: ServiceNow, NetBox, Zabbix, Grafana, Batfish, Ansible, Cisco ISE, Nexus Dashboard, Firepower Management Center, Catalyst Center, VMware Aria, Microsoft SCOM, Azure Monitor, MECM, Red Hat Satellite, and APC power management, with working code for each.">
 <title>Integration guide &mdash; Beacon service desk</title>
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
   <link rel="icon" type="image/x-icon" href="favicon.ico">
@@ -11,7 +11,7 @@
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Beacon">
 <meta property="og:title" content="Integration guide &mdash; Beacon service desk">
-<meta property="og:description" content="System-by-system setup and API/MCP integration guide: ServiceNow, NetBox, Zabbix, Grafana, Batfish, Ansible, Cisco ISE, Nexus Dashboard, Firepower Management Center, Catalyst Center, VMware Aria, SCOM, Azure Monitor, MECM, and Red Hat Satellite, with working code.">
+<meta property="og:description" content="System-by-system setup and API/MCP integration guide: ServiceNow, NetBox, Zabbix, Grafana, Batfish, Ansible, Cisco ISE, Nexus Dashboard, Firepower Management Center, Catalyst Center, VMware Aria, SCOM, Azure Monitor, MECM, Red Hat Satellite, and APC power management, with working code.">
 <meta property="og:url" content="https://www.beaconwake.com/service-desk-integration-guide.html">
 <meta property="og:image" content="https://www.beaconwake.com/og-image.png">
 <meta property="og:image:width" content="1200">
@@ -79,7 +79,7 @@
       </g>
     </svg>
     <h1>Integration guide &mdash; wiring every supporting system with code</h1>
-    <p class="tagline">A companion to the <a href="/service-desk.html">architecture blueprint</a>: setup steps, API auth, and a working MCP server for each supporting system &mdash; ServiceNow, NetBox, Zabbix, Grafana, Batfish, Ansible, Cisco ISE, Cisco Nexus Dashboard, Cisco Firepower Management Center, Cisco Catalyst Center, VMware Aria, Microsoft SCOM, Azure Monitor, MECM, and Red Hat Satellite &mdash; plus the same pattern applied to the nine domain-agent target systems.</p>
+    <p class="tagline">A companion to the <a href="/service-desk.html">architecture blueprint</a>: setup steps, API auth, and a working MCP server for each supporting system &mdash; ServiceNow, NetBox, Zabbix, Grafana, Batfish, Ansible, Cisco ISE, Cisco Nexus Dashboard, Cisco Firepower Management Center, Cisco Catalyst Center, VMware Aria, Microsoft SCOM, Azure Monitor, MECM, Red Hat Satellite, and APC power management &mdash; plus the same pattern applied to the nine domain-agent target systems.</p>
   </div>
 
   <div class="callout-box" style="max-width: 52rem; margin: 0 auto 2.2rem;">
@@ -105,11 +105,11 @@
     </div>
     <p>
       The <a href="/service-desk.html#supporting">architecture page's "Supporting systems"
-      table</a> names fourteen tools and what role each plays. This page is the "now actually
+      table</a> names fifteen tools and what role each plays. This page is the "now actually
       build it" version of that table: for each one, from-scratch setup, how a domain
       agent authenticates to its API, and a small MCP server that exposes that system's
       operations as callable tools &mdash; the same shape for every system, so a domain
-      agent's own code doesn't need fourteen different integration styles. Section 9 does this
+      agent's own code doesn't need fifteen different integration styles. Section 9 does this
       in the most depth for Cisco ISE specifically, since NAC/RADIUS integration tends to
       be the one people ask about by name.
     </p>
@@ -1014,7 +1014,7 @@ def device_compliance(collection_id: str) -> dict:
 def deploy_update(collection_id: str, update_group_id: str, ticket_id: str) -> dict:
     """Tier 2 -- deploys a software update group to a scoped collection;
     covers the on-prem/co-managed half of the Windows fleet that Intune
-    (Section 18's domain-agent table) doesn't reach on its own."""
+    (Section 19's domain-agent table) doesn't reach on its own."""
     cred = get_scoped_credential(system="mecm", ttl_seconds=300)
     r = httpx.post(f"{MECM_BASE}/SMS_UpdateGroupAssignment",
                     json={"CollectionID": collection_id, "AssignedUpdateGroup": update_group_id},
@@ -1084,13 +1084,93 @@ if __name__ == "__main__":
     mcp.run()</code></pre>
   </section>
 
+  <section class="card" id="apc-power" style="margin-top:1.1rem;">
+    <div class="card-head">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h7l-1 8 10-12h-7l1-8z"/></svg>
+      <h2>18. APC power management &mdash; UPS/PDU</h2>
+    </div>
+    <p>Setup, from scratch:</p>
+    <ol class="step-list">
+      <li>Configure each UPS/rack PDU's Network Management Card (NMC3) with its own management-network address; for more than a handful of units, point Platform Ops at a central EcoStruxure IT / StruxureWare Data Center Expert instance instead of polling every card individually.</li>
+      <li>Create a dedicated local API account with the read-only "Device User" role for telemetry, and a separate account scoped to outlet-switching only for the narrow write path &mdash; not the card's own admin account reused everywhere.</li>
+      <li>Enable the NMC's REST API and set the session-token TTL short, matching the vault's own scoped-credential lifetime rather than a long-lived static token.</li>
+      <li>Route power-event traps (on-battery, low-runtime, overload) through the same alert &mdash;&gt; ServiceNow webhook pattern as Zabbix/SCOM above, so a battery event opens an Incident the same way a disk or CPU threshold does &mdash; not a fourth, bespoke alert channel.</li>
+      <li>Document outlet-to-device mapping in NetBox (power feed as a cabled connection, same as a network port) before wiring up remote outlet control &mdash; switching the wrong outlet on a shared PDU is the one mistake this integration can't recover from with a rollback script.</li>
+    </ol>
+    <p class="code-label">API auth &amp; a call (NMC3 REST, session token)</p>
+    <pre class="code-block"><code>import httpx
+
+NMC_BASE = "https://apc-ups-01.internal.example.com/rest"
+
+def login(username: str, password: str) -> str:
+    r = httpx.post(f"{NMC_BASE}/login", json={"username": username, "password": password})
+    r.raise_for_status()
+    return r.json()["token"]
+
+def ups_status(token: str) -> dict:
+    r = httpx.get(f"{NMC_BASE}/ups/status", headers={"Authorization": f"Bearer {token}"})
+    r.raise_for_status()
+    return r.json()  # battery charge %, runtime remaining, load %, on-battery flag</code></pre>
+    <p class="code-label">apc_power_mcp_server.py</p>
+    <pre class="code-block"><code>from shared.mcp_base import build_agent_server, audit
+from shared.vault_client import get_scoped_credential
+import httpx
+
+mcp = build_agent_server("platform-ops-power", system_class="apc")
+NMC_BASE = "https://apc-ups-01.internal.example.com/rest"
+
+def _token() -> str:
+    cred = get_scoped_credential(system="apc", ttl_seconds=300)
+    r = httpx.post(f"{NMC_BASE}/login", json={"username": cred.username, "password": cred.password})
+    r.raise_for_status()
+    return r.json()["token"]
+
+@mcp.tool()
+def ups_status() -> dict:
+    """Tier 0 -- battery charge, runtime remaining, load, and on-battery flag
+    for one UPS; the heartbeat Platform Ops watches alongside Zabbix/SCOM."""
+    r = httpx.get(f"{NMC_BASE}/ups/status", headers={"Authorization": f"Bearer {_token()}"})
+    r.raise_for_status()
+    return r.json()
+
+@mcp.tool()
+def initiate_graceful_shutdown(ups_id: str, ticket_id: str) -> dict:
+    """Tier 1 -- on-battery with runtime under threshold: signals the shutdown
+    sequence the VMware/Windows/Linux Server agents carry out in dependency
+    order (see the architecture page's self-healing table), ahead of a hard
+    outage rather than reacting to one."""
+    r = httpx.post(f"{NMC_BASE}/ups/{ups_id}/shutdown-signal",
+                    headers={"Authorization": f"Bearer {_token()}"})
+    r.raise_for_status()
+    result = r.json()
+    audit("initiate_graceful_shutdown", locals(), result, ticket_id)
+    return result
+
+@mcp.tool()
+def switch_outlet(pdu_id: str, outlet_id: str, state: str, ticket_id: str) -> dict:
+    """Tier 2 -- remote power-cycle of one PDU outlet (e.g. a hung device that
+    doesn't respond to its own agent's restart); requires the NetBox
+    outlet-to-device mapping confirmed in setup step 5, since the wrong
+    outlet on a shared PDU has no rollback."""
+    cred = get_scoped_credential(system="apc", ttl_seconds=300)
+    r = httpx.post(f"{NMC_BASE}/pdu/{pdu_id}/outlets/{outlet_id}",
+                    json={"state": state}, headers={"Authorization": f"Bearer {_token()}"})
+    r.raise_for_status()
+    result = r.json()
+    audit("switch_outlet", locals(), result, ticket_id)
+    return result
+
+if __name__ == "__main__":
+    mcp.run()</code></pre>
+  </section>
+
   <section class="card" id="domain-agents" style="margin-top:1.1rem;">
     <div class="card-head">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5 15.4 17.5M15.4 6.5 8.6 10.5"/></svg>
-      <h2>18. Domain-agent target systems, at a glance</h2>
+      <h2>19. Domain-agent target systems, at a glance</h2>
     </div>
     <p>
-      The fourteen systems above are the supporting cast; the actual write targets are the
+      The fifteen systems above are the supporting cast; the actual write targets are the
       <a href="/service-desk.html#agents">nine domain agents' own systems</a>. Each follows
       the identical MCP pattern from Section 2 &mdash; one server, credential checkout
       per call, docstring-declared tier &mdash; so rather than repeat the full pattern nine
@@ -1158,7 +1238,7 @@ if __name__ == "__main__":
   <section class="card" style="margin-top:1.1rem;">
     <div class="card-head">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
-      <h2>19. Build order &mdash; how this maps back to the phased rollout</h2>
+      <h2>20. Build order &mdash; how this maps back to the phased rollout</h2>
     </div>
     <p>
       This page is the "how" for the "what" in the <a href="/service-desk.html#deploy">architecture
@@ -1166,15 +1246,15 @@ if __name__ == "__main__":
       (audit log and monitoring first, one Tier 1 agent before the rest, approval mechanism
       before any Tier 2 agent goes live) and this page for the actual setup/API/MCP steps
       each phase's numbered build step refers to. Concretely: Phase 0 build steps 1&ndash;3
-      map to Sections 1&ndash;3, 5, and 6 above; Phase 1 step 7 maps to Section 18's Identity
-      agent; Phase 2 steps 12 and 14 map to Sections 7 and 9. Sections 11&ndash;17 (Firepower
-      Management Center, Catalyst Center, Aria, SCOM, Azure Monitor, MECM, and Satellite)
-      don't map to a numbered phase step on their own &mdash; each slots into the phase of
-      whichever domain agent or supporting-monitoring role it extends above, onboarded with
-      the same burn-in discipline as everything else in that phase, not a shortcut for
-      arriving later. Nothing here changes the tier assignments, the approval gate, or the
-      deny-list from the architecture page &mdash; this is implementation detail underneath
-      decisions that page already made.
+      map to Sections 1&ndash;3, 5, and 6 above; Phase 1 step 7 maps to Section 19's Identity
+      agent; Phase 2 steps 12 and 14 map to Sections 7 and 9. Sections 11&ndash;18 (Firepower
+      Management Center, Catalyst Center, Aria, SCOM, Azure Monitor, MECM, Satellite, and
+      APC power management) don't map to a numbered phase step on their own &mdash; each
+      slots into the phase of whichever domain agent or supporting-monitoring role it
+      extends above, onboarded with the same burn-in discipline as everything else in that
+      phase, not a shortcut for arriving later. Nothing here changes the tier assignments,
+      the approval gate, or the deny-list from the architecture page &mdash; this is
+      implementation detail underneath decisions that page already made.
     </p>
   </section>
 
@@ -1188,6 +1268,9 @@ if __name__ == "__main__":
       &mdash; every section and code block above, formatted to print or attach to an email.</li>
       <li><strong><a href="/service-desk.html">Back to the architecture blueprint</a></strong>
       &mdash; the diagrams, risk tiers, and phased rollout this guide's code implements.</li>
+      <li><strong><a href="/operations-sop.html">Operations model &amp; SOP</a></strong>
+      &mdash; once this is built, how it actually gets run: on-call, incident response,
+      change windows, and review cadence.</li>
     </ul>
   </section>
 

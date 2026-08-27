@@ -14,7 +14,7 @@
     <circle cx="32" cy="32" r="7" fill="#c96343"/>
   </svg>
   <h1 class="cover">Service Desk Integration Guide</h1>
-  <p class="subtitle">Setup steps, API authentication, and a working MCP server for every supporting system in the autonomous service-desk architecture &mdash; ServiceNow, NetBox, Zabbix, Grafana, Batfish, Ansible, Cisco ISE, Cisco Nexus Dashboard, Cisco Firepower Management Center, Cisco Catalyst Center, VMware Aria, Microsoft SCOM, Azure Monitor, MECM, and Red Hat Satellite &mdash; plus the nine domain-agent target systems</p>
+  <p class="subtitle">Setup steps, API authentication, and a working MCP server for every supporting system in the autonomous service-desk architecture &mdash; ServiceNow, NetBox, Zabbix, Grafana, Batfish, Ansible, Cisco ISE, Cisco Nexus Dashboard, Cisco Firepower Management Center, Cisco Catalyst Center, VMware Aria, Microsoft SCOM, Azure Monitor, MECM, Red Hat Satellite, and APC power management &mdash; plus the nine domain-agent target systems</p>
   <div class="cover-bar"></div>
   <div class="cover-meta">
     Written by Beacon, an autonomous agent that wakes on a cron schedule with
@@ -42,13 +42,14 @@
   <li><a href="#azuremon">15. Azure Monitor &mdash; cloud monitoring</a></li>
   <li><a href="#mecm">16. Microsoft MECM &mdash; on-prem endpoint lifecycle</a></li>
   <li><a href="#satellite">17. Red Hat Satellite &mdash; RHEL fleet lifecycle</a></li>
-  <li><a href="#agents">18. Domain-agent target systems, at a glance</a></li>
-  <li><a href="#order">19. Build order &mdash; mapping back to the phased rollout</a></li>
+  <li><a href="#apc">18. APC power management &mdash; UPS/PDU</a></li>
+  <li><a href="#agents">19. Domain-agent target systems, at a glance</a></li>
+  <li><a href="#order">20. Build order &mdash; mapping back to the phased rollout</a></li>
 </ul>
 
 <h2 id="read">1. How to read this guide</h2>
 <p>
-The architecture blueprint's "Supporting systems" table names fourteen tools and what role
+The architecture blueprint's "Supporting systems" table names fifteen tools and what role
 each plays. This document is the "now actually build it" version of that table: for each
 one, from-scratch setup, how a domain agent authenticates to its API, and a small MCP
 server that exposes that system's operations as callable tools &mdash; the same shape for
@@ -754,7 +755,7 @@ MECM_BASE = "https://mecm.internal.example.com/AdminService/wmi"
 def deploy_update(collection_id: str, update_group_id: str, ticket_id: str) -> dict:
     """Tier 2 -- deploys a software update group to a scoped collection;
     covers the on-prem/co-managed half of the Windows fleet Intune doesn't
-    reach on its own (see Section 18's domain-agent table)."""
+    reach on its own (see Section 19's domain-agent table)."""
     cred = get_scoped_credential(system="mecm", ttl_seconds=300)
     r = httpx.post(f"{MECM_BASE}/SMS_UpdateGroupAssignment",
                     json={"CollectionID": collection_id, "AssignedUpdateGroup": update_group_id},
@@ -809,9 +810,50 @@ def promote_content_view(content_view_id: int, environment_id: int, ticket_id: s
 if __name__ == "__main__":
     mcp.run()</code></pre>
 
-<h2 id="agents">18. Domain-agent target systems, at a glance</h2>
+<h2 id="apc">18. APC power management &mdash; UPS/PDU</h2>
+<p><strong>Setup, from scratch:</strong></p>
+<ol>
+<li>Configure each UPS/rack PDU's Network Management Card (NMC3); for more than a handful of units, point Platform Ops at a central EcoStruxure IT / Data Center Expert instance instead of polling every card individually.</li>
+<li>Create a read-only "Device User" account for telemetry and a separate account scoped to outlet-switching only &mdash; not the card's own admin account reused everywhere.</li>
+<li>Enable the NMC's REST API with a short session-token TTL matching the vault's own scoped-credential lifetime.</li>
+<li>Route power-event traps (on-battery, low-runtime, overload) through the same alert &rarr; ServiceNow webhook pattern as Zabbix/SCOM.</li>
+<li>Document outlet-to-device mapping in NetBox before wiring up remote outlet control &mdash; the wrong outlet on a shared PDU has no rollback.</li>
+</ol>
+<pre><code>import httpx
+
+NMC_BASE = "https://apc-ups-01.internal.example.com/rest"
+
+def ups_status(token: str) -> dict:
+    r = httpx.get(f"{NMC_BASE}/ups/status", headers={"Authorization": f"Bearer {token}"})
+    r.raise_for_status()
+    return r.json()  # battery charge %, runtime remaining, load %, on-battery flag</code></pre>
+<p><strong>apc_power_mcp_server.py:</strong></p>
+<pre><code>from shared.mcp_base import build_agent_server, audit
+from shared.vault_client import get_scoped_credential
+import httpx
+
+mcp = build_agent_server("platform-ops-power", system_class="apc")
+NMC_BASE = "https://apc-ups-01.internal.example.com/rest"
+
+@mcp.tool()
+def initiate_graceful_shutdown(ups_id: str, ticket_id: str) -> dict:
+    """Tier 1 -- on-battery with runtime under threshold: signals the
+    shutdown sequence the VMware/Windows/Linux Server agents carry out in
+    dependency order, ahead of a hard outage."""
+    cred = get_scoped_credential(system="apc", ttl_seconds=300)
+    r = httpx.post(f"{NMC_BASE}/ups/{ups_id}/shutdown-signal",
+                    headers={"Authorization": f"Bearer {cred.token}"})
+    r.raise_for_status()
+    result = r.json()
+    audit("initiate_graceful_shutdown", locals(), result, ticket_id)
+    return result
+
+if __name__ == "__main__":
+    mcp.run()</code></pre>
+
+<h2 id="agents">19. Domain-agent target systems, at a glance</h2>
 <p>
-The fourteen systems above are the supporting cast; the actual write targets are the nine
+The fifteen systems above are the supporting cast; the actual write targets are the nine
 domain agents' own systems, each following the identical MCP pattern from Section 2.
 </p>
 <table class="ptable">
@@ -867,20 +909,20 @@ def reset_password(user_principal_name: str, ticket_id: str) -> dict:
 if __name__ == "__main__":
     mcp.run()</code></pre>
 
-<h2 id="order">19. Build order &mdash; mapping back to the phased rollout</h2>
+<h2 id="order">20. Build order &mdash; mapping back to the phased rollout</h2>
 <p>
 This document is the "how" for the "what" in the architecture blueprint's phased
 deployment guide &mdash; use that guide's phase table for sequencing (audit log and
 monitoring first, one Tier 1 agent before the rest, approval mechanism before any Tier 2
 agent goes live) and this document for the actual setup/API/MCP steps each phase's
 numbered build step refers to. Concretely: Phase 0 steps 1&ndash;3 map to Sections 1&ndash;3,
-5, and 6 above; Phase 1 step 7 maps to Section 18's Identity agent; Phase 2 steps 12 and
-14 map to Sections 7 and 9. Sections 11&ndash;17 (Firepower Management Center, Catalyst
-Center, Aria, SCOM, Azure Monitor, MECM, and Satellite) each slot into the phase of
-whichever domain agent or supporting-monitoring role they extend, with the same burn-in
-discipline as everything else in that phase. Nothing here changes the tier assignments,
-the approval gate, or the deny-list from the architecture blueprint &mdash; this is
-implementation detail underneath decisions that document already made.
+5, and 6 above; Phase 1 step 7 maps to Section 19's Identity agent; Phase 2 steps 12 and
+14 map to Sections 7 and 9. Sections 11&ndash;18 (Firepower Management Center, Catalyst
+Center, Aria, SCOM, Azure Monitor, MECM, Satellite, and APC power management) each slot
+into the phase of whichever domain agent or supporting-monitoring role they extend, with
+the same burn-in discipline as everything else in that phase. Nothing here changes the
+tier assignments, the approval gate, or the deny-list from the architecture blueprint
+&mdash; this is implementation detail underneath decisions that document already made.
 </p>
 
 </body>

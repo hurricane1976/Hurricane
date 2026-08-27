@@ -68,7 +68,7 @@ approval/arbitration gate before routing to nine domain agents acting on managed
 infrastructure. A tenth, supervisory Platform Ops agent watches the whole framework's
 own health (dashed, below).
 </p>
-<div class="diagram-block"><svg viewBox="0 0 950 535" role="img" aria-label="Architecture diagram: ServiceNow feeds an orchestrator agent, which is checked by a human approval and arbitration gate before routing to nine domain agents, which act on managed infrastructure; a two-row supporting-systems band (NetBox, Zabbix/Grafana, Batfish, Ansible, Cisco ISE, Nexus Dashboard, plus Cisco Firepower Management Center, Catalyst Center, VMware Aria, Microsoft SCOM, Azure Monitor, MECM, and Red Hat Satellite) feeds inventory, monitoring, and verification data across the framework; a tenth, dashed Platform Ops agent supervises the whole framework.">
+<div class="diagram-block"><svg viewBox="0 0 950 535" role="img" aria-label="Architecture diagram: ServiceNow feeds an orchestrator agent, which is checked by a human approval and arbitration gate before routing to nine domain agents, which act on managed infrastructure; a two-row supporting-systems band (NetBox, Zabbix/Grafana, Batfish, Ansible, Cisco ISE, Nexus Dashboard, plus Cisco Firepower Management Center, Catalyst Center, VMware Aria, Microsoft SCOM, Azure Monitor, MECM, Red Hat Satellite, and APC power management) feeds inventory, monitoring, and verification data across the framework; a tenth, dashed Platform Ops agent supervises the whole framework.">
         <defs>
           <marker id="arrD1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
             <path d="M0,0 L10,5 L0,10 z" fill="#5b6270"/>
@@ -189,26 +189,29 @@ own health (dashed, below).
             <rect x="740" y="350" width="120" height="42" rx="7" fill="#f7ede8" stroke="#3d5a80" stroke-width="1.2" stroke-dasharray="3 3"/>
             <text x="800" y="368">Nexus Dash.</text><text x="800" y="381" fill="#5b6270" font-size="8.5">DC fabric</text>
 
-            <rect x="83" y="402" width="99" height="42" rx="7" fill="#f7ede8" stroke="#3d5a80" stroke-width="1.2" stroke-dasharray="3 3"/>
-            <text x="132" y="420" font-size="9">Cisco FMC</text><text x="132" y="433" fill="#5b6270" font-size="8">firewall policy</text>
+            <rect x="65" y="402" width="88" height="42" rx="7" fill="#f7ede8" stroke="#3d5a80" stroke-width="1.2" stroke-dasharray="3 3"/>
+            <text x="109" y="420" font-size="9">Cisco FMC</text><text x="109" y="433" fill="#5b6270" font-size="8">firewall policy</text>
 
-            <rect x="193" y="402" width="99" height="42" rx="7" fill="#f7ede8" stroke="#3d5a80" stroke-width="1.2" stroke-dasharray="3 3"/>
-            <text x="242" y="420" font-size="9">Catalyst Ctr.</text><text x="242" y="433" fill="#5b6270" font-size="8">SD-Access</text>
+            <rect x="166" y="402" width="88" height="42" rx="7" fill="#f7ede8" stroke="#3d5a80" stroke-width="1.2" stroke-dasharray="3 3"/>
+            <text x="210" y="420" font-size="9">Catalyst Ctr.</text><text x="210" y="433" fill="#5b6270" font-size="8">SD-Access</text>
 
-            <rect x="303" y="402" width="99" height="42" rx="7" fill="#f7ede8" stroke="#3d5a80" stroke-width="1.2" stroke-dasharray="3 3"/>
-            <text x="352" y="420" font-size="9">VMware Aria</text><text x="352" y="433" fill="#5b6270" font-size="8">capacity &amp; automation</text>
+            <rect x="267" y="402" width="88" height="42" rx="7" fill="#f7ede8" stroke="#3d5a80" stroke-width="1.2" stroke-dasharray="3 3"/>
+            <text x="311" y="420" font-size="9">VMware Aria</text><text x="311" y="433" fill="#5b6270" font-size="8">capacity &amp; automation</text>
 
-            <rect x="413" y="402" width="99" height="42" rx="7" fill="#f7ede8" stroke="#3d5a80" stroke-width="1.2" stroke-dasharray="3 3"/>
-            <text x="462" y="420" font-size="9">SCOM</text><text x="462" y="433" fill="#5b6270" font-size="8">on-prem monitoring</text>
+            <rect x="368" y="402" width="88" height="42" rx="7" fill="#f7ede8" stroke="#3d5a80" stroke-width="1.2" stroke-dasharray="3 3"/>
+            <text x="412" y="420" font-size="9">SCOM</text><text x="412" y="433" fill="#5b6270" font-size="8">on-prem monitoring</text>
 
-            <rect x="523" y="402" width="99" height="42" rx="7" fill="#f7ede8" stroke="#3d5a80" stroke-width="1.2" stroke-dasharray="3 3"/>
-            <text x="572" y="420" font-size="9">Azure Monitor</text><text x="572" y="433" fill="#5b6270" font-size="8">cloud monitoring</text>
+            <rect x="469" y="402" width="88" height="42" rx="7" fill="#f7ede8" stroke="#3d5a80" stroke-width="1.2" stroke-dasharray="3 3"/>
+            <text x="513" y="420" font-size="9">Azure Monitor</text><text x="513" y="433" fill="#5b6270" font-size="8">cloud monitoring</text>
 
-            <rect x="633" y="402" width="99" height="42" rx="7" fill="#f7ede8" stroke="#3d5a80" stroke-width="1.2" stroke-dasharray="3 3"/>
-            <text x="682" y="420" font-size="9">MECM</text><text x="682" y="433" fill="#5b6270" font-size="8">endpoint mgmt</text>
+            <rect x="570" y="402" width="88" height="42" rx="7" fill="#f7ede8" stroke="#3d5a80" stroke-width="1.2" stroke-dasharray="3 3"/>
+            <text x="614" y="420" font-size="9">MECM</text><text x="614" y="433" fill="#5b6270" font-size="8">endpoint mgmt</text>
 
-            <rect x="743" y="402" width="99" height="42" rx="7" fill="#f7ede8" stroke="#3d5a80" stroke-width="1.2" stroke-dasharray="3 3"/>
-            <text x="792" y="420" font-size="9">RH Satellite</text><text x="792" y="433" fill="#5b6270" font-size="8">RHEL lifecycle</text>
+            <rect x="671" y="402" width="88" height="42" rx="7" fill="#f7ede8" stroke="#3d5a80" stroke-width="1.2" stroke-dasharray="3 3"/>
+            <text x="715" y="420" font-size="9">RH Satellite</text><text x="715" y="433" fill="#5b6270" font-size="8">RHEL lifecycle</text>
+
+            <rect x="772" y="402" width="88" height="42" rx="7" fill="#f7ede8" stroke="#3d5a80" stroke-width="1.2" stroke-dasharray="3 3"/>
+            <text x="816" y="420" font-size="9">APC power</text><text x="816" y="433" fill="#5b6270" font-size="8">UPS &middot; PDU</text>
           </g>
 
           <!-- Platform Ops supervisory agent -->
@@ -288,6 +291,7 @@ else in this design.
 <tr><td><strong>Azure Monitor</strong></td><td>Cloud-native metrics, logs, and alerting for Azure and Arc-connected hybrid resources</td><td>Platform Ops &mdash; the cloud counterpart to SCOM/Zabbix</td></tr>
 <tr><td><strong>Microsoft MECM</strong></td><td>On-prem endpoint lifecycle management (formerly SCCM)</td><td>Desktop agent &mdash; the on-prem/co-managed half of the Windows fleet Intune doesn't reach alone</td></tr>
 <tr><td><strong>Red Hat Satellite</strong></td><td>Fleet-wide RHEL patch/content/subscription lifecycle management</td><td>Linux Server agent &mdash; the RHEL analogue of MECM for Windows</td></tr>
+<tr><td><strong>APC power management</strong></td><td>UPS/PDU telemetry &amp; control via Network Management Cards and StruxureWare/EcoStruxure IT</td><td>Platform Ops &mdash; facilities-layer health source, and the trigger for an orderly power-loss shutdown sequence</td></tr>
 </table>
 <p>
 IPAM's DNS/DHCP scope management is covered by NetBox's own IPAM module above rather than
@@ -444,6 +448,7 @@ is a scope of what it watches, not a grant of authority the other nine agents do
 <tr><td>Missing OS/security patches</td><td>Stage in a canary group; never auto-installed &mdash; enters the normal Change lifecycle</td><td><span class="ptier ptier-2">Tier 2</span></td></tr>
 <tr><td>Config drift vs. the CMDB</td><td>Detect &amp; report continuously; reconciling goes through the drifted system's own domain agent</td><td><span class="ptier ptier-0">Tier 0</span> detect</td></tr>
 <tr><td>Repeat/flapping incident pattern</td><td>Suppress duplicate tickets, link to one root-cause record</td><td><span class="ptier ptier-0">Tier 0</span></td></tr>
+<tr><td>APC UPS on-battery, runtime under threshold</td><td>Trigger graceful shutdown sequence (VMware, then Windows/Linux Server agents) before battery exhausts</td><td><span class="ptier ptier-1">Tier 1</span></td></tr>
 <tr><td>Framework's own code needs an upgrade</td><td>Staged non-production first, promoted only through the normal Tier 3 Change path</td><td><span class="ptier ptier-3">Tier 3</span></td></tr>
 </table>
 <div class="callout">

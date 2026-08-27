@@ -3049,3 +3049,106 @@ Running log of what I did and learned across wakings. Newest entries on top.
   the new supporting-systems rows and diagram boxes, integration guide's
   section 18 correctly renumbered. No sitemap/status-check-list changes
   needed since no new pages were added, only existing ones extended.
+
+## 2026-08-27 (82nd waking, ~00:xx UTC)
+
+- `check_replies.sh`: three new messages from josh. (1) "Build a complete
+  operation model and SOP to operate and maintain the infrastructure
+  using the new architecture. Also add APC power management systems to
+  the list of devices to be automated." (2) Six photo messages, caption
+  "Here are several diagrams to add to the architecture" — six generic
+  stock/marketing infographics about multi-agent AI IT-operations-center
+  concepts (phased roadmap, a 4-phase incident workflow with a Triage/
+  RCA/Playbook/Communication/Post-mortem agent lineup, a dev/deploy
+  lifecycle wheel, a generic orchestrator+knowledge-base architecture,
+  and a Docker/K8s/vuln-scan/secrets deployment pipeline) — downloaded
+  via the Telegram `getFile` API to inspect. (3) "If can edit the
+  diagrams to match current architecture."
+- Read the diagram ask as: redraw the *concepts* from josh's reference
+  images against Beacon's actual architecture (its real ten agents,
+  real tools, real tier system), not literally recolor his six stock
+  PNGs — those are generic vendor-style templates with placeholder agent
+  names (e.g. "Agent A: Data Analyst") that don't map onto anything this
+  project has built. Flagged that interpretation choice in the
+  Telegram notification in case josh wanted the literal images edited
+  instead.
+- **Added APC power management (UPS/PDU) as the 15th supporting system**,
+  scoped to Platform Ops (facilities-layer health, not a new domain
+  agent) rather than one of the nine domain agents — it doesn't own a
+  target-system class the way Network/Windows/etc. do. Threaded through
+  every place the prior 14-system work touched: `service-desk.html`'s
+  supporting-systems table, the architecture diagram SVG (widened the
+  bottom row from 7 to 8 boxes, recomputed all x-coordinates), the
+  self-healing table (new row: UPS on-battery under runtime threshold to
+  triggers a graceful VM/host shutdown sequence, Tier 1), and the "Take
+  it further" list. `service-desk-integration-guide.html` got a new
+  numbered Section 18 (NMC3 REST API setup, auth code, and an
+  `apc_power_mcp_server.py` with `ups_status`/`initiate_graceful_shutdown`/
+  `switch_outlet` tools) with sections 18→19 and 19→20 renumbered and
+  every cross-reference and "fourteen"→"fifteen" mention updated.
+- Mirrored the same changes into `paid_src/service-desk-full.html` and
+  `paid_src/service-desk-integration-guide-full.html`, regenerated both
+  PDFs with `weasyprint` (deployment guide held at 12 pages; integration
+  guide grew 25→27), and spot-checked rendered pages with `pdftoppm` —
+  diagram and new section both clean, no clipping.
+- **Updated `service-desk-architecture.pptx`**: re-rendered the
+  architecture-diagram slide from the updated print SVG (same
+  `rsvg-convert` HTML-entity-escaping fix as past wakings), and added an
+  APC row to both the "Supporting systems (continued)" table (slide 5 —
+  shrank all 9 rows by ~7% to fit the added row in the same box height
+  rather than overlapping the caption below) and the self-healing table
+  (slide 10, which had headroom already). Used direct OOXML `<a:tr>`
+  cloning via `lxml` since python-pptx has no row-insert API; verified
+  structurally (cell text, zip integrity via `testzip()`) since there's
+  still no LibreOffice on this box to render a preview.
+- **Built the operations model & SOP as a new page**,
+  `website/operations-sop.html`, linked from `service-desk.html` and the
+  integration guide's "Take it further" sections (not added to the main
+  site nav, matching how the mockup/integration-guide sub-pages are
+  handled). Twelve sections: purpose/scope, roles &amp; responsibilities
+  (six roles, RACI-style table), daily operations (shift-start checklist
+  + an approval-SLA table keyed to the existing tier-pill styling),
+  change &amp; maintenance windows per domain/system (including APC),
+  a monitoring/alerting reference across all 15 supporting systems,
+  backup/audit-log-retention/DR (with an RPO/RTO table), security
+  operations (credential rotation, quarterly access review, monthly Tier
+  3 approval audit, deny-list review), capacity/lifecycle planning,
+  an on-call/escalation matrix, and a periodic-review-cadence table.
+- Added a custom incident-response-lifecycle SVG diagram to the SOP page
+  (id `incident-lifecycle`) — this is the "edited diagram": redrawn from
+  scratch in the site's existing visual language (same box/arrow/color
+  idiom as the architecture diagram), but the four phases (Detection &amp;
+  Triage / Diagnosis &amp; Plan / Remediation / Governance) are populated
+  with Beacon's actual components — Zabbix/SCOM/Azure Monitor/APC as the
+  triggers, the real orchestrator and domain agents, the human
+  approval/arbitration gate sitting between phases 2 and 3 for Tier ≥1,
+  and Platform Ops's flapping check plus the audit log for governance —
+  rather than the generic "Triage Agent/RCA Agent/Playbook Agent" agent
+  lineup from josh's reference image. A dashed feedback loop at the
+  bottom (post-incident findings → detection thresholds/playbooks/audit
+  log) mirrors the "continuous refinement" loop in his source image.
+- Added `id="self-healing"` to the architecture page's self-healing
+  section so the new SOP page's cross-link actually anchors (it didn't
+  have one before; two other pre-existing anchor gaps on that page,
+  `#agents` and `#deploy`, referenced from the integration guide, were
+  left alone as out of scope for this waking).
+- Verified before publishing: installed a scratch Playwright + the
+  already-cached Chromium build (from a past waking, still under
+  `~/.cache/ms-playwright`) to screenshot the new page's hero, the
+  incident-lifecycle diagram, and two of the longer tables (roles,
+  change/maintenance windows) — all rendered cleanly, no overflow or
+  clipping. `html.parser` clean on all touched HTML files;
+  `<section>`/`</section>`, `<svg>`/`</svg>`, and `<table>`/`</table>`
+  tag counts balanced on the new page.
+- Wired the new page into the build pipeline it was missing from:
+  added `/operations-sop.html` to `build_sitemap.py`'s and
+  `build_status.py`'s page lists and to `deploy.sh`'s copy/chown lists
+  (ahead of the `status.html` build step, same ordering rule noted on
+  the 81st waking so the health check doesn't false-fail against a page
+  that isn't live yet).
+- Deployed via `website/deploy.sh`. Verified live: `/operations-sop.html`
+  200, contains "Incident response lifecycle"; `/service-desk.html`
+  shows "APC power management" (3 occurrences: table, diagram, tier
+  table); `/sitemap.xml` includes the new URL (15 total, up from 14);
+  `/status.html` now 29/29 (up from 28/28). Cleaned up all scratch dirs
+  under `/tmp` (Playwright venv, artifacts, PDF-check renders) afterward.
