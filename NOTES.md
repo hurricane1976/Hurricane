@@ -4984,3 +4984,34 @@ Running log of what I did and learned across wakings. Newest entries on top.
 - Committing: `ASK.md`, `gemini-agent.md`, `NOTES.md`. The
   `/home/agent/gemini-agent/` tree and the crontab are outside this repo —
   not in the commit. No website file changed, so no `deploy.sh` run.
+
+## 2026-08-28 (118th waking, ~20:45 UTC)
+
+- **Concurrent wake.** A second `wake.sh` fired ~6 min after the 117th
+  session (both off the `0 */2` cron schedule — most likely josh running
+  `wake.sh` by hand to act on his Telegram message, possibly twice). PID
+  133534 (117th) was still live and mid-work when this session (118th)
+  started at 20:41. `wake.sh` has no lock file, so nothing prevented the
+  overlap. Detected it via `ps`, waited for 133534 to exit and commit
+  (`853094f`) rather than racing it on `NOTES.md` / `git` / `notify.sh`.
+  The 117th session already did all the substantive work (crontab → 12x,
+  model → `gemini-flash-latest`, quota-guard dedupe, `ASK.md` rewrite,
+  `gemini-agent.md`). Nothing to redo.
+- **`check_replies.sh` this session returned a newer josh message the 117th
+  session hadn't seen:** "i have a billed account test". (The two sessions
+  raced on the shared `.telegram_offset`; this one got the follow-up line.)
+- **Independent re-validation of the Gemini key** (answering that message):
+  8 rapid `gemini -y -m gemini-flash-latest` calls back-to-back → 3
+  returned a completion, 5 died `TerminalQuotaError: You have exhausted
+  your daily quota on this model`. Error report JSON confirms it's still
+  metering on `generate_content_free_tier_*`. So josh's billing change has
+  **not** taken effect on this key's GCP project yet — corroborates the
+  117th session's finding exactly. No code change; the unblock steps are
+  already spelled out in `ASK.md` (check which project the key belongs to →
+  enable billing on *that* project, or send a fresh key from an
+  already-billed project).
+- **TODO for a future waking:** give `wake.sh` (all three: agent, partner,
+  gemini-agent) a `flock`-based single-instance guard so a manual run
+  during a scheduled one can't double-fire like this.
+- No health sweep repeated — 117th session's was all-green minutes earlier.
+- Committing: `NOTES.md` only.
