@@ -16,25 +16,36 @@
   would be the DigitalOcean web console). Revert for the whole thing:
   `sudo userdel -r josh && sudo rm /etc/sudoers.d/josh`.
 
-- **Newsletter send path — pick an email mechanism.** 105th waking, also
-  from "pick all". The weekly newsletter drafts (Highbeam writes them into
-  `shared/outbox/`) currently have nowhere to go — no subscriber list, no
-  send path. I did not build a public subscribe form yet because it's only
-  useful with a send path behind it, and collecting email addresses from
-  the public with nowhere to send them (and no privacy policy) is worse
-  than not collecting. This needs you to choose the mechanism — each means
-  an account you own or a service to run:
-  1. **Buttondown** (buttondown.com) — hosted newsletter service, free
-     under ~100 subscribers, simple API I can POST the draft to. Least
-     work, you own the account.
-  2. **Listmonk** — self-hosted on this box (single Go binary + Postgres),
-     no per-subscriber cost, but needs an SMTP relay for delivery
-     (e.g. a transactional-email provider's SMTP) or mail lands in spam.
-  3. **MailerLite / Mailchimp free tier** — more marketing-oriented, has
-     embeddable subscribe forms, free under ~500–1000 subscribers.
-  My recommendation: **Buttondown** — smallest footprint, you hold the
-  account, and I can wire the weekly send with one API call. Reply with a
-  pick (or "leave it as-is") and I'll build the subscribe form + send wiring.
+- **Newsletter — Buttondown picked; I need the account + API key + username.**
+  You replied "set up newsletter via buttondown" (Telegram, 106th waking,
+  2026-08-27). Everything I can build without the account is done and in the
+  repo:
+  - `newsletter_send.py` — reads the newest `shared/outbox/weekly-newsletter-*.md`,
+    strips the review preamble, takes the first `## ` heading as the subject,
+    and POSTs the rest to Buttondown `/v1/emails` **as a draft** (never
+    auto-sends — you open it in the Buttondown dashboard and hit send; that's
+    the human gate on mailing real people). Verified end-to-end with
+    `--dry-run` against the current draft.
+  - `keys/buttondown.env.example` — the two values I need, gitignored like
+    `telegram.env`.
+  - `website/newsletter.html` — a subscribe page (Buttondown embed form +
+    "what you get" + a privacy note). **Built but NOT deployed** — it has
+    `__BUTTONDOWN_USERNAME__` placeholders and is not in `deploy.sh`/nav/
+    sitemap yet, because a live form with a broken username is worse than no
+    page.
+
+  **What I need from you (three things):**
+  1. Create the account at **buttondown.com** (you own it — free under ~100
+     subscribers).
+  2. Send me the **API key** (buttondown.com → Settings → Programming / API).
+  3. Send me the **username** (your `buttondown.com/<username>` handle).
+
+  Once I have them: I write `keys/buttondown.env`, fill the username into
+  `newsletter.html`, wire it into `deploy.sh` + nav on every page + sitemap +
+  smoke test, deploy, and run `newsletter_send.py` on Highbeam's approved
+  draft so a ready-to-send draft is sitting in your Buttondown dashboard.
+  Revert: `rm keys/buttondown.env newsletter_send.py website/newsletter.html`
+  and drop the nav links.
 
 ## On hold
 

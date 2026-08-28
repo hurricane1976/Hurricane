@@ -4457,3 +4457,72 @@ Running log of what I did and learned across wakings. Newest entries on top.
   smoke-test calls; `NOTES.md` + `ASK.md` updated. nginx config, the
   `josh` user, `/etc/sudoers.d/josh`, and the new crontab line are
   operational state on the box, not in git (same as always). Committing.
+
+## 2026-08-28 (107th waking, ~00:10 UTC)
+
+- **Found uncommitted work from an unlogged 106th waking and folded it in.**
+  The 105th waking committed at 20:39 UTC; 7 min later a session built the
+  Buttondown newsletter scaffolding (`newsletter_send.py`,
+  `keys/buttondown.env.example`, `website/newsletter.html`) and rewrote the
+  `ASK.md` newsletter item to "Buttondown picked — need account + API key +
+  username", then never committed, never wrote a NOTES entry, never sent a
+  digest. Reviewed all three files this waking: consistent with Beacon's
+  style, safe (`newsletter_send.py` creates Buttondown *drafts* only — the
+  real send stays a human action in the dashboard; `--send` is attended-only
+  and interactive-confirmed), `newsletter.html` is built but deliberately
+  NOT in `deploy.sh`/nav/sitemap because it still has `__BUTTONDOWN_USERNAME__`
+  placeholders. `keys/buttondown.env.example` is tracked (the `.gitignore`
+  `!keys/*.example` rule), the real `buttondown.env` is not. Committing this
+  scaffolding now with an accurate attribution rather than leaving it to rot
+  uncommitted. The `ASK.md` "Newsletter — Buttondown picked" Open item still
+  stands: blocked on josh creating the account and sending the API key +
+  username.
+- `check_replies.sh`: one new actionable message from josh — *"Currently we
+  use a centralized multi agent architecture in the documents. Can you build
+  a concept for a peer to peer or distributed architecture as well, ensure to
+  note when to use this over the centralized approach."* (The other message
+  it surfaced, "passing the ball to you…", was already handled in the
+  104th/105th wakings.)
+- **Built `/distributed-agents.html`** — "Peer-to-peer & distributed
+  multi-agent architecture", the decentralized counterpart to
+  `/agent-protocol.html`. Zero new CSS — reuses the existing
+  card/step-list/data-table/diagram-wrap/callout-box patterns. Sections:
+  the centralized model recapped and its hub costs; the peer-to-peer model
+  (contract-net task claiming with fencing tokens, shared state via
+  replicated log vs. CRDT, SWIM gossip membership, cross-signed local audit
+  logs, deny-list compiled into every agent); the human gate as a peer
+  capability; a side-by-side hub-vs-mesh SVG diagram; the same lockout
+  ticket worked end-to-end with no orchestrator; the hybrid/federated model
+  (centralized within a cell, peer-to-peer between cells) and why most real
+  fleets land there; a **decision guide** table (10 "if… → points toward…"
+  rows) and a **trade-offs** table (centralized vs P2P vs hybrid across 10
+  properties) — the "note when to use which" josh asked for; failure
+  handling without a hub (partition CP/AP choice, duplicate execution,
+  orphaned work, split-brain, gossip storms, stale policy); security with no
+  choke point (per-agent policy, cert-based membership as sybil defence,
+  short-lived capabilities, larger blast radius contained structurally,
+  credentials still never on the wire); a "what you give up / what you gain"
+  card; and a "how this maps to the other pages" card.
+- **Wired in:** added `/distributed-agents.html` to `build_sitemap.py`
+  (22 urls now), `website/smoke_test.py` `LIVE_PATHS`, and `deploy.sh`'s
+  `cp`+`chown` lists. Cross-linked from the "how this maps" / "related"
+  cards on `agent-protocol.html`, `service-desk.html`, `soc-architecture.html`,
+  `agent-ops.html`, `operations-sop.html`, and `ticket-trace.html`. Did
+  **not** add it to the global nav — consistent with the other architecture
+  pages (agent-protocol, soc-architecture, operations-sop, ticket-trace,
+  agent-ops), which are all reachable via cross-links, not the nav bar.
+- Ran `./deploy.sh` — both smoke-test gates passed, site redeployed clean.
+  Verified live: `https://www.beaconwake.com/distributed-agents.html` 200,
+  title correct, present in the live `sitemap.xml` and in
+  `agent-protocol.html`'s cross-link list.
+- **Health sweep, all green:** nginx / beacon-api / fail2ban / cron /
+  unattended-upgrades all active; no failed systemd units; no
+  `/var/run/reboot-required`; disk 9% (7.2G/87G); uptime 2d 4h; load ~0.14.
+  `watchdog.log` last 3 runs all `ok`. `git rev-list --left-right --count
+  origin/master...master` = `0 0` (in sync at `6e43af8` before this commit).
+- Committing: `website/distributed-agents.html` (new), the six cross-linked
+  pages, `build_sitemap.py`, `smoke_test.py`, `deploy.sh`, plus the folded-in
+  106th-waking newsletter scaffolding and its `ASK.md` edit, and this NOTES
+  entry. Deploy-regenerated pages (`log.html`, `roadmap.html`, `weekly.html`,
+  `feed.atom`, `sitemap.xml`, `status.html`) are gitignored — not in the
+  commit.
