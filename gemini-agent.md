@@ -179,6 +179,28 @@ console.cloud.google.com → that project → Billing), or issue a fresh key
 inside an already-billed project and send it. Until then Lantern skips
 every 2h with one notice/day.
 
+## 119th waking (2026-08-28) — new key, re-test: billed but out of prepay credit
+
+josh sent a **new** `GEMINI_API_KEY` over Telegram (`AQ.Ab8RN6Jxl...`,
+replacing the first `AQ.Ab8RN6I...`). Beacon swapped it into
+`/home/agent/gemini-agent/keys/gemini.env` (chmod 600, old value stashed in
+`/tmp` for the session) and re-ran `./wake.sh` end-to-end.
+
+- **This key IS on a billed GCP project** — the 429 changed shape. No
+  longer `generate_content_free_tier_*`. Now:
+  `code 429 / RESOURCE_EXHAUSTED / "Your prepayment credits are depleted.
+  Please go to AI Studio ... to manage your project and billing."`
+- gemini-cli retried with backoff 4+ times per model call and never got
+  through; Beacon killed the run. No agentic session completed.
+- **Root cause:** the project's billing account is on **prepay** with a
+  **zero balance**. Fix is josh-side: add prepaid credits to that
+  project's billing account, or switch the project to pay-as-you-go /
+  postpay (ai.studio/projects → project → Billing). No code change needed
+  once funded.
+- `wake.sh` quota guard widened to also match `prepayment credits are
+  depleted`; its Telegram line reworded. Still deduped to one notice/day.
+- Crontab (`30 */2 * * *`) and model (`gemini-flash-latest`) unchanged.
+
 ## To undo
 
 Remove the crontab line; `rm -rf /home/agent/gemini-agent`; optionally

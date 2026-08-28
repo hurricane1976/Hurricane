@@ -2,34 +2,31 @@
 
 ## Open
 
-- **Lantern still can't run — the Gemini key is still on the free tier.**
-  117th waking (2026-08-28): you said "keep 12x cadence i fixed the key,
-  test and validate". Beacon bumped Lantern's cron to 12x/day
-  (`30 */2 * * *`) and switched the model to `gemini-flash-latest` (the
-  scaffold's `gemini-2.5-flash` now 404s — "not available to new users").
-  **But validation failed:** every model the CLI can reach still meters on
-  `generate_content_free_tier_*` — `gemini-3.5-flash` 20 req/day,
-  `gemini-flash-latest` ~5-request burst + 250k input-tokens/day,
-  `gemini-3.1-pro` 0/day. One isolated call works; a full agentic waking
-  fires calls fast enough to hit the 429 within seconds. Whatever you
-  changed hasn't landed on **this key's** GCP project — `keys/gemini.env`
-  is unchanged on the box, so it looks like a console-side billing edit on
-  the wrong project, or it just hasn't propagated yet.
+- **Lantern still can't run — the billed Gemini project is out of prepay credit.**
+  119th waking (2026-08-28): you sent a **new** `GEMINI_API_KEY`
+  (`AQ.Ab8RN6Jxl...`). Beacon swapped it into `keys/gemini.env` and re-ran
+  `./wake.sh` end-to-end. **Progress:** this key IS on a billed GCP project
+  now — the 429 is no longer the free-tier one. **But it still 429s**, with:
 
-  **What actually unblocks it:**
-  1. Go to **aistudio.google.com/apikey**, click the existing key, and note
-     which **Google Cloud project** it belongs to.
-  2. In **console.cloud.google.com**, select **that exact project** →
-     **Billing** → link an active billing account. Paid tier then kicks in
-     automatically (can take 5–30 min).
-  3. *Or* create a **new** API key inside a project that already has
-     billing, and send it — Beacon will swap `keys/gemini.env`.
+  > `code 429 · RESOURCE_EXHAUSTED · "Your prepayment credits are depleted.
+  > Please go to AI Studio at https://ai.studio/projects to manage your
+  > project and billing."`
+
+  gemini-cli retried with backoff several times per call and never got
+  through; no agentic session completed.
+
+  **What unblocks it now (one of):**
+  1. **ai.studio/projects** → the project this key belongs to → **Billing**
+     → **add prepaid credits** (the balance is at zero).
+  2. *Or* switch that project's billing from **prepay** to
+     **pay-as-you-go / postpay**, so calls bill against a card instead of a
+     prepaid balance.
 
   Cost at this volume is cents/day (flash ≈ $0.30 per million tokens). Once
-  it's genuinely paid-tier, Lantern runs as-is; Beacon can also switch it
-  to `gemini-3.1-pro-preview` for stronger cross-model review. Until then
-  Lantern skips every 2h and sends you **one** "free-tier quota exhausted"
-  line per day (deduped this waking so it's not 12).
+  there's spend headroom, Lantern runs as-is — no code change needed; Beacon
+  can also move it to `gemini-3.1-pro-preview` for stronger cross-model
+  review. Until then Lantern skips every 2h and sends **one** "prepay
+  credits depleted" line per day (deduped).
 
 ## On hold
 

@@ -5062,3 +5062,58 @@ Running log of what I did and learned across wakings. Newest entries on top.
   josh over Telegram with the evidence and concrete things to try
   (different network / flush DNS / exact error text).
 - Committing: `NOTES.md` only. No website file changed → no `deploy.sh`.
+
+## 2026-08-28 (119th waking, ~21:35 UTC)
+
+- `check_replies.sh`: two messages from josh, same thread — "google api
+  key" / "google api key AQ.Ab8RN6Jxlx…". A **new** `GEMINI_API_KEY` for
+  Lantern (the Gemini third agent), replacing the free-tier key from the
+  116th waking. Read as: "here's the fixed key, re-run the test/validate
+  from the 117th."
+- **Swapped the key + re-ran the end-to-end test. Result: real progress,
+  still blocked — but on a different thing.**
+  - Wrote the new key into `/home/agent/gemini-agent/keys/gemini.env`
+    (chmod 600, that tree is outside git; old value stashed in `/tmp` for
+    the session). Old key started `AQ.Ab8RN6I…`, new one `AQ.Ab8RN6Jxl…` —
+    genuinely different.
+  - Ran `./wake.sh` (the gemini-agent one) end-to-end.
+  - **The new key IS on a billed GCP project now** — the 429 is no longer
+    `generate_content_free_tier_*`. It's now:
+    `code 429 · RESOURCE_EXHAUSTED · "Your prepayment credits are depleted.
+    Please go to AI Studio at https://ai.studio/projects to manage your
+    project and billing."`
+  - gemini-cli retried with backoff 4+ times per model call and never got
+    through; killed the run. No agentic Lantern session completed.
+  - **Root cause:** the project's billing account is **prepay** with a
+    **zero balance**. Unblock is josh-side: add prepaid credits to that
+    project, or switch it to pay-as-you-go / postpay billing
+    (ai.studio/projects → project → Billing). No code change needed once
+    funded.
+- **Doc + guard updates** (all in the non-git `/home/agent/gemini-agent/`
+  tree except `gemini-agent.md`/`ASK.md`/`NOTES.md`):
+  - `keys/gemini.env` + `keys/gemini.env.example` + `wake.sh` header:
+    rewrote the "free tier" notes to describe the prepay-balance state.
+  - `wake.sh` quota guard: grep widened to also match `prepayment credits
+    are depleted`; the deduped Telegram line reworded from "free-tier daily
+    quota exhausted" → "billed project's prepay credits depleted". Still
+    one notice per UTC day. `bash -n` clean.
+  - `gemini-agent.md` (repo design record): new "119th waking" section.
+  - `ASK.md`: rewrote the open Lantern item — title/detail now
+    "billed project is out of prepay credit", with the two concrete
+    unblock options.
+- Cron unchanged (`30 */2 * * *`, 12x/day); model unchanged
+  (`gemini-flash-latest`). Lantern keeps skipping until the billing
+  account is funded.
+- **`.quota_notice_date` was NOT written this session** (killed `wake.sh`
+  before it reached the guard), so josh gets a fresh single "prepay
+  credits depleted" line on the next real scheduled skip, not a duplicate.
+- **Health sweep, all green:** nginx / beacon-api / fail2ban / cron /
+  unattended-upgrades / certbot.timer all active; `nginx -t` clean; 0
+  failed systemd units; no `/var/run/reboot-required`; disk 9% (79G free);
+  uptime 3d 2h; load ~0.13. `logs/watchdog.log` last 3 runs `ok`.
+  `website/smoke_test.py --live` passes. `git` in sync with
+  `origin/master` at `1d3d8f4` before this commit.
+- Committing: `ASK.md`, `gemini-agent.md`, `NOTES.md`. The
+  `/home/agent/gemini-agent/` tree (key, wake.sh, NOTES, env.example) and
+  the crontab are outside this repo — not in the commit. No website file
+  changed → no `deploy.sh` run.
