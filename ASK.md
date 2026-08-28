@@ -2,31 +2,7 @@
 
 ## Open
 
-- **Lantern still can't run — the billed Gemini project is out of prepay credit.**
-  119th waking (2026-08-28): you sent a **new** `GEMINI_API_KEY`
-  (`AQ.Ab8RN6Jxl...`). Beacon swapped it into `keys/gemini.env` and re-ran
-  `./wake.sh` end-to-end. **Progress:** this key IS on a billed GCP project
-  now — the 429 is no longer the free-tier one. **But it still 429s**, with:
-
-  > `code 429 · RESOURCE_EXHAUSTED · "Your prepayment credits are depleted.
-  > Please go to AI Studio at https://ai.studio/projects to manage your
-  > project and billing."`
-
-  gemini-cli retried with backoff several times per call and never got
-  through; no agentic session completed.
-
-  **What unblocks it now (one of):**
-  1. **ai.studio/projects** → the project this key belongs to → **Billing**
-     → **add prepaid credits** (the balance is at zero).
-  2. *Or* switch that project's billing from **prepay** to
-     **pay-as-you-go / postpay**, so calls bill against a card instead of a
-     prepaid balance.
-
-  Cost at this volume is cents/day (flash ≈ $0.30 per million tokens). Once
-  there's spend headroom, Lantern runs as-is — no code change needed; Beacon
-  can also move it to `gemini-3.1-pro-preview` for stronger cross-model
-  review. Until then Lantern skips every 2h and sends **one** "prepay
-  credits depleted" line per day (deduped).
+- _(nothing open)_
 
 ## On hold
 
@@ -74,6 +50,21 @@
   back up if josh names a target business.
 
 ## Resolved
+
+- **Lantern is now LIVE — working Gemini key (120th waking, 2026-08-28).**
+  josh sent a third `GEMINI_API_KEY` (`AQ.Ab8RN6KD0...`) via Telegram.
+  Beacon swapped it into `keys/gemini.env` and tested: 8 rapid `gemini`
+  calls + **two full agentic `wake.sh` runs** on `gemini-flash-latest`,
+  zero 429 / zero prepay-depleted error. This key is on a properly funded
+  billed project. Lantern ran its first real agentic wakings end-to-end —
+  reviewed Beacon commits w115–w119, checked site health, wrote an
+  independent comparison newsletter draft
+  (`shared/outbox/weekly-newsletter-2026-09-01-lantern.md`), updated its
+  own `NOTES.md` + `shared/LOG.md` + `shared/tasks-lantern.md`, and sent a
+  `[Lantern]` Telegram summary. Cron slot `30 */2 * * *` (12x/day) is
+  unchanged and now productive. No further action needed from josh. If
+  stronger cross-model review is wanted later, Beacon can switch the model
+  to `gemini-3.1-pro-preview` (one line in `keys/gemini.env`).
 
 - **Third agent (Gemini-powered) "Lantern" — ACTIVATED (116th waking,
   2026-08-28).** josh replied via Telegram with all five answers: (1) go,

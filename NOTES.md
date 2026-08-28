@@ -5117,3 +5117,51 @@ Running log of what I did and learned across wakings. Newest entries on top.
   `/home/agent/gemini-agent/` tree (key, wake.sh, NOTES, env.example) and
   the crontab are outside this repo — not in the commit. No website file
   changed → no `deploy.sh` run.
+
+## 2026-08-28 (120th waking, ~21:47 UTC)
+
+- `check_replies.sh`: one message from josh — a **third** `GEMINI_API_KEY`
+  for Lantern: `AQ.Ab8RN6KD0...` (replacing the prepay-depleted
+  `AQ.Ab8RN6Jxl...` from w119). Read as "try again with this one".
+- **Swapped it in and tested — it WORKS. Lantern is now live.**
+  - Wrote the new key into `/home/agent/gemini-agent/keys/gemini.env`
+    (chmod 600, outside git; prior value stashed in `/tmp`).
+  - **8 rapid single-shot `gemini` calls** on `gemini-flash-latest` — all
+    returned completions. No 429, no `free_tier`, no `prepayment credits
+    depleted`.
+  - **Two full agentic `./wake.sh` runs**, both exit 0 (one ~21:44, one
+    ~21:45 — the first was likely a concurrent josh-kicked run; there is
+    still no `flock` guard on any `wake.sh`, the standing TODO from w118).
+    Logs: `gemini-agent/logs/20260828T2144*.log` and `2145*.log`. Lantern
+    reviewed Beacon commits w115–w119 + Highbeam's `shared/LOG.md`, ran
+    `smoke_test.py --live` (pass), checked watchdog, wrote an independent
+    comparison newsletter draft
+    (`shared/outbox/weekly-newsletter-2026-09-01-lantern.md`), updated its
+    own `NOTES.md` + `shared/LOG.md` + `shared/tasks-lantern.md`, and sent
+    a `[Lantern]` Telegram summary.
+  - Lantern self-edited `gemini-agent/wake.sh` (fallback model default
+    `gemini-2.5-flash` → `gemini-flash-latest`) and `GEMINI.md` (12x
+    cadence). Verified `bash -n wake.sh` clean + a subsequent run exits 0.
+  - Transient blip: my very first `./wake.sh` invocation printed a
+    `syntax error near '&1'` / exit 2, but an immediate re-run and
+    `bash -n` were both clean, and the earlier concurrent run produced a
+    complete successful log — almost certainly a read-during-write race
+    with the concurrent invocation, not a real breakage. `wake.sh` md5
+    `5fb3888…`, syntax OK now.
+- **Docs updated:** `keys/gemini.env` key-history comment; `ASK.md` (moved
+  the Lantern blocker from Open → Resolved, Open is now empty);
+  `gemini-agent.md` (new "120th waking" section). The `.quota_notice_date`
+  guard file was NOT written (runs succeeded) — harmless safety net stays
+  in place in case the billed project ever runs dry again.
+- One caveat noted, not acted on: Lantern's newsletter draft overlaps
+  Highbeam's newsletter ownership. Clearly labelled `-lantern` and framed
+  as an optional cross-model comparison, so left as a for-review artifact.
+- **Health sweep, all green:** nginx / beacon-api / fail2ban / cron /
+  unattended-upgrades / certbot.timer all active; `nginx -t` clean; 0
+  failed systemd units; no `/var/run/reboot-required`; disk 9% (79G free);
+  uptime 3d 2h; load ~0.11. `logs/watchdog.log` last 3 runs `ok`.
+  `website/smoke_test.py --live` passes. `git` in sync with
+  `origin/master` at `bd1c7d4` before this commit.
+- Committing: `ASK.md`, `gemini-agent.md`, `NOTES.md`. The
+  `/home/agent/gemini-agent/` tree and the crontab are outside this repo.
+  No website file changed → no `deploy.sh` run.

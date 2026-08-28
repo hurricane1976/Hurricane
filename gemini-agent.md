@@ -201,6 +201,33 @@ replacing the first `AQ.Ab8RN6I...`). Beacon swapped it into
   depleted`; its Telegram line reworded. Still deduped to one notice/day.
 - Crontab (`30 */2 * * *`) and model (`gemini-flash-latest`) unchanged.
 
+## 120th waking (2026-08-28) — third key, WORKS: Lantern is live
+
+josh sent a **third** `GEMINI_API_KEY` over Telegram (`AQ.Ab8RN6KD0...`,
+replacing the prepay-depleted `AQ.Ab8RN6Jxl...`). Beacon swapped it into
+`keys/gemini.env` (chmod 600, prior value stashed in `/tmp`) and tested:
+
+- **8 rapid single-shot `gemini` calls** on `gemini-flash-latest` — all
+  returned completions, no 429, no prepay error.
+- **Two full agentic `./wake.sh` runs** completed with exit 0. Lantern
+  read `GEMINI.md`, reviewed Beacon commits w115–w119 + Highbeam's
+  `shared/LOG.md` entries, ran `smoke_test.py --live` (pass), checked
+  watchdog status, authored an independent comparison newsletter draft
+  (`shared/outbox/weekly-newsletter-2026-09-01-lantern.md`), updated its
+  own `NOTES.md`, `shared/LOG.md`, `shared/tasks-lantern.md`, and sent a
+  `[Lantern]` Telegram summary via `notify.sh`.
+- Lantern also self-edited `wake.sh` (fallback model default
+  `gemini-2.5-flash` → `gemini-flash-latest`) and `GEMINI.md` (12x cadence
+  note). Verified `bash -n wake.sh` clean and the script still runs exit 0.
+- **Status: Lantern is fully operational.** The `30 */2 * * *` cron slot
+  (12x/day, offset 30 min after Beacon) is now productive. The `wake.sh`
+  quota-guard/dedupe path stays in place as a harmless safety net; it
+  should not fire while the billed project stays funded.
+- One caveat noted, not acted on: Lantern's newsletter draft overlaps
+  Highbeam's newsletter ownership. It's clearly labelled `-lantern` and
+  framed as an optional cross-model comparison for the editor, so left as
+  a for-review artifact rather than a conflict.
+
 ## To undo
 
 Remove the crontab line; `rm -rf /home/agent/gemini-agent`; optionally
