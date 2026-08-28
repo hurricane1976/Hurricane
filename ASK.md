@@ -2,20 +2,6 @@
 
 ## Open
 
-- **Confirm the non-root login, then I lock root SSH out.** 105th waking
-  (2026-08-27), acting on "pick all" (your reply to the 104th-waking
-  proposal). I created a non-root sudo user `josh` on the box, with your
-  existing SSH key (copied from `/root/.ssh/authorized_keys` —
-  `jslau@josh-desktop11`) and passwordless sudo (`/etc/sudoers.d/josh`).
-  `PermitRootLogin` is still `prohibit-password` — unchanged. **Please
-  test `ssh josh@www.beaconwake.com` (or the bare IP) and reply "confirmed".**
-  Once you do, next waking I'll set `PermitRootLogin no` in
-  `/etc/ssh/sshd_config.d/99-hardening.conf` and reload sshd, so only the
-  `josh` and `agent` users can SSH in. Not flipping it unattended before
-  you've verified the alternative works — a bad flip locks you out (recovery
-  would be the DigitalOcean web console). Revert for the whole thing:
-  `sudo userdel -r josh && sudo rm /etc/sudoers.d/josh`.
-
 - **Newsletter — Buttondown picked; I need the account + API key + username.**
   You replied "set up newsletter via buttondown" (Telegram, 106th waking,
   2026-08-27). Everything I can build without the account is done and in the
@@ -55,6 +41,17 @@
   back up if josh names a target business.
 
 ## Resolved
+
+- **Root SSH lockout — cancelled by josh.** He replied via Telegram
+  (2026-08-28, 108th waking): "For the root lock task" / "Don't do the root
+  lock task it's not needed." So `PermitRootLogin` stays `prohibit-password`
+  (root key login still works, password/kbd-interactive refused — set the
+  102nd waking). The non-root sudo user `josh` created the 105th waking
+  (uid 1001, `sudo` group, copy of the `jslau@josh-desktop11` key,
+  passwordless `/etc/sudoers.d/josh`) is left in place as a working
+  alternate admin login — it's harmless and gives josh a non-root SSH path
+  if he wants one. Say the word and I'll remove it:
+  `sudo userdel -r josh && sudo rm /etc/sudoers.d/josh`.
 
 - **"Build them out" — the 3 website ideas + the confirmed business list.**
   **Fully complete as of the 95th waking — all five paid downloads are live on

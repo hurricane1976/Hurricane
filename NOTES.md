@@ -4536,3 +4536,49 @@ Running log of what I did and learned across wakings. Newest entries on top.
   NOTES entry. Deploy-regenerated pages (`log.html`, `roadmap.html`, `weekly.html`,
   `feed.atom`, `sitemap.xml`, `status.html`) are gitignored — not in the
   commit.
+
+## 2026-08-28 (108th waking, ~02:41 UTC)
+
+- `check_replies.sh`: two messages from josh, same thread — "For the root
+  lock task" then "Don't do the root lock task it's not needed." Read as:
+  cancel the `PermitRootLogin no` flip that the 105th-waking `ASK.md` item
+  was gated on. Done — moved that Open item to Resolved. `PermitRootLogin`
+  stays `prohibit-password` (root key login works; password/kbd-interactive
+  refused, set the 102nd waking). Left the non-root sudo user `josh`
+  (created 105th, uid 1001, `sudo` group, copy of the `jslau@josh-desktop11`
+  key, passwordless `/etc/sudoers.d/josh`) in place as a working alternate
+  admin login — harmless, and gives him a non-root SSH path if he wants one.
+  Noted in `ASK.md` that I'll remove it on request
+  (`userdel -r josh && rm /etc/sudoers.d/josh`). `ASK.md` Open now has just
+  the one item: newsletter, still blocked on josh creating the Buttondown
+  account + sending the API key + username.
+- **Homepage — added a "Deeper reading" card.** The site has ~22 pages but
+  only ~13 are in the top nav; the longer reference write-ups
+  (`agent-protocol`, `distributed-agents`, `soc-architecture`,
+  `operations-sop`, `agent-ops`, `ticket-trace`, `architecture-review`)
+  were reachable only via scattered cross-links between those pages — a
+  visitor landing on `/` had no way to discover them. Added a fourth
+  `.card` to the homepage grid: a short intro + a `check` list linking all
+  seven with a one-line description each. Zero new CSS (reuses the existing
+  `card` / `card-head` / `check` patterns); the grid is `auto-fit` so the
+  4th card flows in. Single-file edit (`website/index.html`) — did NOT add
+  a nav link on every page (the nav is already 13 items, and these pages
+  follow the established "reachable by link, not in the nav bar"
+  convention). Ran `./deploy.sh` — both smoke-test gates passed, site
+  redeployed clean. Verified live: `https://www.beaconwake.com/` 200, the
+  card and its links present in the served HTML.
+- **Health sweep, all green:** nginx / beacon-api / fail2ban / cron /
+  unattended-upgrades all active; `nginx -t` clean; no failed systemd
+  units; no `/var/run/reboot-required`; disk 9% (7.2G/79G free); uptime
+  2d 7h; load ~0.07. `watchdog.log` last 5 runs all `ok`. TLS cert good
+  through Nov 23 2026. Live `/`, `/status.html`, `/api/`,
+  `/distributed-agents.html` all 200. Only 3 upgradable pkgs (byobu,
+  libproc2, procps), all `-updates` not `-security` — unattended-upgrades
+  leaves them by policy, left as-is. `git rev-list --left-right --count
+  origin/master...master` = `0 0` (in sync at `979a3d2` before this
+  commit).
+- Committing: `website/index.html` (new card), `ASK.md` (root-lock item
+  Open -> Resolved), and this NOTES entry. Deploy-regenerated pages
+  (`log.html`, `roadmap.html`, `weekly.html`, `feed.atom`, `sitemap.xml`,
+  `status.html`) are gitignored — not in the commit. sshd config / the
+  `josh` user / sudoers are operational state on the box, not in git.
