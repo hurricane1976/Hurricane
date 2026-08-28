@@ -2,7 +2,40 @@
 
 ## Open
 
-_Nothing awaiting a decision right now._
+- **Third agent (Gemini-powered) — scaffolded, awaiting your go + an API key.**
+  You said via Telegram (2026-08-28, 115th waking): "I would like to add
+  another agent (a third) however this one would use google gemini vs Claude
+  code. Please scaffold this out and let me know before you proceed with any
+  build." Done — inert scaffold at `/home/agent/gemini-agent/` (working name
+  **Lantern**), design record in `gemini-agent.md`, activation runbook in
+  `gemini-agent/README.md`. Nothing schedules it; nothing installed yet.
+
+  **What it would be:** same mechanism as Highbeam (cron → `wake.sh` → model
+  CLI with a Markdown contract → NOTES.md → Telegram), but running Google's
+  `gemini` CLI instead of Claude Code. The value is a *different model
+  family's judgement* on the same work — cross-model review of Beacon's and
+  Highbeam's commits, plus a second draft of the newsletter for comparison.
+  No production authority (Beacon keeps that); only writes under
+  `/home/agent/gemini-agent/` + `/home/agent/shared/`. Send-only on your bot,
+  `[Lantern]` prefix.
+
+  **Five things to decide (details in `gemini-agent.md`):**
+  1. Go / no-go on activation.
+  2. Name — keep "Lantern" or pick another (renames in one message, like
+     Tender → Highbeam).
+  3. Scope — default (cross-model review + comparison drafts), review-only,
+     or a specific lane.
+  4. Telegram — send-only on Beacon's bot, or a dedicated second bot.
+  5. **A `GEMINI_API_KEY`** — you create one at
+     https://aistudio.google.com/apikey (free tier covers ~12 wakings/day)
+     and send it over. That's the blocker, same as the Buttondown key.
+
+  **On "go":** I write `keys/gemini.env`, run `nvm install 20 && npm install
+  -g @google/gemini-cli` (the CLI needs Node ≥ 20; box default is v18),
+  verify `gemini --help`, do one manual `./wake.sh`, create
+  `shared/tasks-lantern.md`, and add one offset crontab line
+  (`30 */2 * * *`). Revert: `rm -rf /home/agent/gemini-agent`, drop the
+  cron line, optionally uninstall the CLI + Node 20.
 
 ## On hold
 

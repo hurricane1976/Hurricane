@@ -4824,3 +4824,51 @@ Running log of what I did and learned across wakings. Newest entries on top.
 - Committing: `.gitignore` (add `dist/`) + this NOTES entry. The `dist/`
   artifacts themselves are gitignored and were sent directly to josh, not
   committed. No website file changed, so no `deploy.sh` run.
+
+## 2026-08-28 (115th waking, ~20:00 UTC)
+
+- `check_replies.sh`: one message from josh — "I would like to add another
+  agent (a third) however this one would use google gemini vs Claude code.
+  Please scaffold this out and let me know before you proceed with any
+  build." Read as: build an inert scaffold now, activate only on a separate
+  go — the same play as Highbeam's 97th-waking scaffold-then-ask.
+- **Scaffolded a third agent, "Lantern", powered by the Google Gemini CLI**
+  (Beacon + Highbeam are both Claude; the point of #3 is a *different model
+  family's* judgement — cross-model review of the others' commits + a second
+  newsletter draft for comparison). Inert: nothing schedules it, nothing
+  installed.
+  - Live copy at `/home/agent/gemini-agent/` (outside this git repo —
+    operational state, same treatment as `/home/agent/partner/`, the
+    crontab, `keys/`): `GEMINI.md` (operating contract — named that so the
+    Gemini CLI auto-loads it; same safety rules as Beacon/Highbeam, no
+    production authority, only writes under `gemini-agent/` + `shared/`),
+    `wake.sh` (cron entry — `nvm use 20` since the CLI needs Node ≥ 20 and
+    the box default is v18; sources `keys/gemini.env`; runs
+    `gemini -y -m <model> -p`; shell-level failure alert; hard-exits with a
+    Telegram notice if `GEMINI_API_KEY` is absent), `notify.sh` (send-only,
+    shares Beacon's bot token, `[Lantern]` prefix), `keys/gemini.env.example`,
+    `NOTES.md`, `README.md` (activation runbook), `logs/`. `bash -n` clean
+    on both scripts.
+  - Tracked design record: `gemini-agent.md` in this repo (mirrors
+    `partner-agent.md`).
+  - `ASK.md` → new **Open** item with the five decisions for josh: go/no-go,
+    name, scope, Telegram (shared bot vs dedicated), and the `GEMINI_API_KEY`
+    (he creates it at aistudio.google.com/apikey — the blocker, like the
+    Buttondown key). On "go": write `keys/gemini.env`, `nvm install 20 &&
+    npm i -g @google/gemini-cli`, verify `gemini --help`, one manual
+    `./wake.sh`, create `shared/tasks-lantern.md`, add one offset crontab
+    line (`30 */2 * * *` — between Beacon's even `:00` and Highbeam's odd
+    `:00`).
+  - Working name **Lantern** is a placeholder (the lantern room houses a
+    lighthouse's lamp; also the light you carry to inspect something up
+    close). Renames in one message, like Tender → Highbeam. Did **not**
+    install the Gemini CLI or Node 20, did **not** touch the crontab —
+    josh said tell him before any build.
+- **Health sweep, all green:** nginx / beacon-api / fail2ban / cron /
+  unattended-upgrades all active; `nginx -t` clean; 0 failed units; no
+  `/var/run/reboot-required`; disk 9% (79G free); uptime 3d 0h; load ~0.02.
+  `logs/watchdog.log` last 3 runs all `ok`. `git` in sync with
+  `origin/master` at `c5dd4c5` before this commit.
+- Committing: `gemini-agent.md` (new), `ASK.md` (new Open item), `NOTES.md`.
+  The `/home/agent/gemini-agent/` scaffold is outside this repo — not in the
+  commit. No website file changed, so no `deploy.sh` run.
