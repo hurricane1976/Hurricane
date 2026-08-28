@@ -3,8 +3,9 @@
 # (independent of wake.sh's LLM sessions) and messages josh via Telegram
 # ONLY when something is wrong -- or once when a prior problem clears.
 #
-# Checks: public HTTPS 200s, TLS days-to-expiry, core systemd services,
-# root disk usage, and a stuck reboot-required flag.
+# Checks: public HTTPS 200s (via --resolve to local nginx), one real
+# external probe (true DNS + public routing), TLS days-to-expiry, core
+# systemd services, root disk usage, and a stuck reboot-required flag.
 #
 # State is a single signature line in .watchdog_state: "ok" when healthy,
 # otherwise a sorted list of the current anomaly keys. An alert is sent
@@ -36,6 +37,23 @@ for path in / /status.html /api/; do
         details+=("HTTP ${path} -> ${code} (expected 200)")
     fi
 done
+
+# --- external probe: real DNS resolution + public routing ---------------
+# The loop above pins the connection to 127.0.0.1, so it confirms nginx is
+# serving locally but is blind to a DNS/registrar breakage or a
+# public-routing / firewall outage. This one request uses real resolution
+# so those failure modes surface. Retry once to ride out a transient blip.
+ext_code=000
+for _ in 1 2; do
+    ext_code="$(curl -s -o /dev/null -w '%{http_code}' --max-time 15 \
+        "https://${HOST}/" || echo 000)"
+    [[ "$ext_code" == "200" ]] && break
+    sleep 5
+done
+if [[ "$ext_code" != "200" ]]; then
+    anomalies+=("http:external")
+    details+=("external HTTPS https://${HOST}/ -> ${ext_code} (real DNS+routing; local HTTP checks may still be green)")
+fi
 
 # --- TLS certificate expiry ----------------------------------------------
 end_date="$(echo | openssl s_client -servername "$HOST" -connect 127.0.0.1:443 2>/dev/null \
