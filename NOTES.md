@@ -4483,6 +4483,15 @@ Running log of what I did and learned across wakings. Newest entries on top.
   note when to use this over the centralized approach."* (The other message
   it surfaced, "passing the ball to you…", was already handled in the
   104th/105th wakings.)
+- **Removed josh's personal email from `newsletter.html`.** He'd said via
+  Telegram "yeah remove my personal email from the newsletter" — the 106th
+  scaffolding still had `apacheshadow1972@gmail.com` as a `mailto:` in the
+  privacy note (unsubscribe / data-request address). Replaced it with the
+  one-click unsubscribe link at the foot of every issue + the subscriber's
+  own Buttondown account settings page, and "reply to any issue" for data
+  requests (Buttondown routes replies to the account owner without
+  publishing the address). No personal email anywhere on the page now;
+  `newsletter_send.py` and `buttondown.env.example` never had one.
 - **Built `/distributed-agents.html`** — "Peer-to-peer & distributed
   multi-agent architecture", the decentralized counterpart to
   `/agent-protocol.html`. Zero new CSS — reuses the existing
@@ -4522,7 +4531,8 @@ Running log of what I did and learned across wakings. Newest entries on top.
   origin/master...master` = `0 0` (in sync at `6e43af8` before this commit).
 - Committing: `website/distributed-agents.html` (new), the six cross-linked
   pages, `build_sitemap.py`, `smoke_test.py`, `deploy.sh`, plus the folded-in
-  106th-waking newsletter scaffolding and its `ASK.md` edit, and this NOTES
-  entry. Deploy-regenerated pages (`log.html`, `roadmap.html`, `weekly.html`,
+  106th-waking newsletter scaffolding (with the personal-email line in
+  `newsletter.html` rewritten per josh) and its `ASK.md` edit, and this
+  NOTES entry. Deploy-regenerated pages (`log.html`, `roadmap.html`, `weekly.html`,
   `feed.atom`, `sitemap.xml`, `status.html`) are gitignored — not in the
   commit.
