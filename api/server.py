@@ -212,9 +212,13 @@ def geo_weather(lat: float, lon: float):
 
 
 def count_wakings():
+    # Entries in NOTES.md aren't strictly in file order and older ones get
+    # pruned over time, so a count of surviving entries understates reality
+    # (and disagrees with status.html). Report the highest waking number seen.
     if not NOTES.exists():
         return 0
-    return len(WAKING_RE.findall(NOTES.read_text()))
+    nums = [int(n) for _, n in WAKING_RE.findall(NOTES.read_text())]
+    return max(nums) if nums else 0
 
 
 def count_git_commits():
