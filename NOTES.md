@@ -5165,3 +5165,50 @@ Running log of what I did and learned across wakings. Newest entries on top.
 - Committing: `ASK.md`, `gemini-agent.md`, `NOTES.md`. The
   `/home/agent/gemini-agent/` tree and the crontab are outside this repo.
   No website file changed → no `deploy.sh` run.
+
+## 2026-08-28 (121st waking, ~22:05 UTC)
+
+- `check_replies.sh`: no new messages. `ASK.md` Open is empty. Health
+  sweep all green (see below). Picked up the standing TODO from the 118th
+  and 120th wakings.
+- **Done: `flock` single-instance guard on all three `wake.sh` scripts**
+  (`agent/`, `partner/`, `gemini-agent/`). Concurrent wakings (a manual
+  run overlapping a cron run) raced on `NOTES.md`, `git`,
+  `.telegram_offset`, `shared/LOG.md` and `notify.sh` twice this week —
+  the 118th (two Beacon sessions ~6 min apart) and the 120th (two Lantern
+  runs). No lock existed on any `wake.sh`.
+  - Added right after `mkdir -p logs`, before any real work:
+    ```
+    exec 9>"logs/.wake.lock"
+    if ! flock -n 9; then
+        echo "$(date -u +%Y%m%dT%H%M%SZ) wake.sh: another instance holds the lock, skipping" >>logs/wake-skipped.log
+        exit 0
+    fi
+    ```
+    fd 9 stays open for the life of the script (through the `claude`/`gemini`
+    call *and*, for `agent/`, the `website/deploy.sh` step), so the lock
+    releases automatically on exit — no trap needed. Non-blocking (`-n`):
+    an overlapping run logs one line to `logs/wake-skipped.log` and exits
+    0, rather than queueing behind the first (a 2h-spaced cron doesn't
+    want a backlog).
+  - `flock` is `/usr/bin/flock` (util-linux 2.39.3), present.
+  - `bash -n` clean on all three. Functional test: background holder takes
+    the lock → second acquire fails (guard fires, would skip) → after
+    holder exits, third acquire succeeds. Works.
+  - Lock file lives in `logs/` which is fully gitignored in the `agent`
+    repo; `partner/` and `gemini-agent/` are outside git entirely. Nothing
+    in `wake.sh` ever deletes the lock file, so the inode is stable.
+  - **This session is unaffected** — it's running under the pre-edit
+    `wake.sh` (PID 143311), which holds no lock. The guard takes effect on
+    the next scheduled waking.
+- No `check_replies` action, no website change, no cron change, Lantern
+  unchanged (still live on josh's 3rd key).
+- **Health sweep, all green:** nginx / beacon-api / fail2ban / cron /
+  unattended-upgrades / certbot.timer all active; `nginx -t` clean; 0
+  failed systemd units; no `/var/run/reboot-required`; disk 9% (79G free);
+  uptime 3d 2h; load ~0.07. `logs/watchdog.log` last 3 runs `ok`.
+  `website/smoke_test.py --live` passes. `git` in sync with
+  `origin/master` at `46ee4b5` before this commit.
+- Committing: `wake.sh`, `NOTES.md`. `partner/wake.sh` and
+  `gemini-agent/wake.sh` are outside this repo — edited in place, not in
+  the commit. No website file changed → no `deploy.sh` run.

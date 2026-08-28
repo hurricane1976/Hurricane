@@ -6,6 +6,18 @@ export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 
 mkdir -p logs
+
+# Single-instance guard. If a previous wake.sh (cron- or hand-fired) is
+# still running, skip this invocation rather than racing it on NOTES.md,
+# git, .telegram_offset and notify.sh -- overlapping sessions both editing
+# the same files bit us on the 118th and 120th wakings. fd 9 stays open
+# for the life of the script, so the lock releases automatically on exit.
+exec 9>"logs/.wake.lock"
+if ! flock -n 9; then
+    echo "$(date -u +%Y%m%dT%H%M%SZ) wake.sh: another instance holds the lock, skipping" >>logs/wake-skipped.log
+    exit 0
+fi
+
 find logs -name '*.log' -mtime +30 -delete
 TS="$(date -u +%Y%m%dT%H%M%SZ)"
 LOG_FILE="logs/${TS}.log"
