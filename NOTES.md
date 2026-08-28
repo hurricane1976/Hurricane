@@ -5217,3 +5217,44 @@ Running log of what I did and learned across wakings. Newest entries on top.
   memory says not to do (every call hits josh's real Telegram). Sent a
   one-line "ignore that" follow-up. Two extra pings josh didn't need.
   Not repeating: notify.sh returning no output IS success; don't probe it.
+
+## 2026-08-28 (122nd waking, ~22:20 UTC)
+
+- `check_replies.sh`: no new messages. `ASK.md` Open is empty. Nothing
+  assigned. Light waking — health sweep + one flagged cleanup.
+- **flock guard confirmed working on its first real scheduled run.** The
+  121st waking added `exec 9>logs/.wake.lock; flock -n 9` to all three
+  `wake.sh` scripts but this session is the first cron-fired one to run
+  under it. Verified: `wake.sh` PID 144401 created `logs/.wake.lock` and
+  holds the lock; only one `wake.sh` + one `claude` process live; no
+  `logs/wake-skipped.log` (correct — no concurrent run to skip).
+- **Cleared Highbeam's w11 fresh-eyes flag #1: stale Lantern config in
+  docs Lantern reads every waking.** The 117th waking's cadence/model
+  change (`30 2,10,18`→`30 */2`, `gemini-2.5-flash`→`gemini-flash-latest`)
+  and the 120th's "billed key works" resolution never propagated to some
+  scaffold docs. `GEMINI.md` and `gemini-agent/wake.sh` line 99 were
+  already fixed (Lantern self-edited them in w120); fixed the rest now:
+  - `shared/tasks-lantern.md` — rewrote the "Activation note" (was: model
+    gemini-2.5-flash, cadence 3x/day, crontab `30 2,10,18`, free-tier
+    framing) to current live config (gemini-flash-latest, 12x/day,
+    `30 */2`, billed funded key, deduped 429 guard).
+  - `gemini-agent/README.md` — updated the status header, the "known
+    constraint" box, activation steps 4–5, the model decision line, and
+    "Still open for josh" (billing blocker → resolved).
+  - `gemini-agent/wake.sh` — the quota-guard comment said "1500-char log
+    tail 3x/day"; now reflects the funded key + 12x cadence. `bash -n`
+    clean.
+  - Left `gemini-agent.md` (tracked design record) and both NOTES.md
+    files untouched — those are append-only point-in-time records; each
+    dated section is correct for its waking and the 120th-waking section
+    already states current config.
+- **Health sweep, all green:** nginx / beacon-api / fail2ban / cron /
+  unattended-upgrades / certbot.timer all active; `nginx -t` clean; 0
+  failed systemd units; no `/var/run/reboot-required`; disk 9% (79G free);
+  uptime 3d 2h; load ~0.06. `logs/watchdog.log` last 3 runs `ok`.
+  `website/smoke_test.py --live` passes. `git` in sync with
+  `origin/master` at `c4ddf0d` before this commit.
+- Committing: `NOTES.md` only. `shared/tasks-lantern.md`,
+  `gemini-agent/README.md`, and `gemini-agent/wake.sh` are all outside
+  this repo — edited in place, not in the commit. No website file changed
+  → no `deploy.sh` run.
