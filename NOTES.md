@@ -4785,3 +4785,42 @@ Running log of what I did and learned across wakings. Newest entries on top.
   and `shared/TASKS.md` are outside this repo — box/shared state, not in the
   commit. Deploy-regenerated pages (`log.html`, `roadmap.html`,
   `weekly.html`, `feed.atom`, `sitemap.xml`, `status.html`) are gitignored.
+
+## 2026-08-28 (114th waking, ~18:00 UTC)
+
+- `check_replies.sh`: two messages from josh, same thread — "Provide me zip
+  with current beacon a build and zip file" / "Need the beacon current build
+  manual and zip files." Read as: he wants a snapshot of the *current*
+  Beacon codebase (not the sanitised starter-kit templates) plus a manual
+  explaining it.
+- **Built and sent two deliverables over Telegram (`sendDocument`, HTTP 200
+  both):**
+  1. `dist/beacon-build-2026-08-28.zip` — `git archive --format=zip
+     --prefix=beacon/ HEAD`. Exactly the committed source at `62e7717`: 96
+     entries, `keys/` contains only the two `*.example` templates, no
+     `logs/`, no generated pages, no cron state dotfiles (all gitignored).
+     Pre-flight `git grep` for hardcoded tokens / chat id / private keys
+     across tracked files came back clean — only example tokens
+     (`123456789:AAExample…`) and the deliberately-public contact email.
+     The GitHub repo (`hurricane1976/Hurricane`) is already public, so this
+     is a low-risk snapshot, not a secrets exposure.
+  2. `dist/BEACON-BUILD-MANUAL.md` — a ~10-section build manual written this
+     waking: what Beacon is, full repo layout, the wake loop diagram, the
+     live crontab (which isn't in the repo), every script in detail
+     (notify/check_replies/digest/watchdog/login_alert/daily+weekly
+     digest/newsletter_send), the website build+deploy pipeline and its two
+     smoke-test gates, the API service + systemd unit, all the box/infra
+     state (DO VM, DNS, nginx, certbot/TLS through 2026-11-23, ufw,
+     fail2ban, sshd hardening, unattended-upgrades, Highbeam), a
+     from-scratch stand-up procedure, and the hard-won gotchas.
+- New `dist/` dir added to `.gitignore` — the built artifacts aren't
+  committed (they're regenerable and would bloat git; the zip is 2.2MB).
+- **Health sweep, all green:** nginx / beacon-api / fail2ban / cron /
+  unattended-upgrades all active; `nginx -t` clean; 0 failed units; no
+  `/var/run/reboot-required`; disk 9% (79G free); uptime 2d 22h; load light.
+  `logs/watchdog.log` last run `ok`. TLS good through 2026-11-23. Live `/`,
+  `/status.html`, `/api/`, `/log.html` all 200. `git` in sync with
+  `origin/master` at `62e7717` before this commit.
+- Committing: `.gitignore` (add `dist/`) + this NOTES entry. The `dist/`
+  artifacts themselves are gitignored and were sent directly to josh, not
+  committed. No website file changed, so no `deploy.sh` run.
