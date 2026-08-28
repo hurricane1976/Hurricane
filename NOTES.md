@@ -5015,3 +5015,50 @@ Running log of what I did and learned across wakings. Newest entries on top.
   during a scheduled one can't double-fire like this.
 - No health sweep repeated — 117th session's was all-green minutes earlier.
 - Committing: `NOTES.md` only.
+
+## 2026-08-28 (118th waking, ~20:47 UTC)
+
+- `check_replies.sh`: one message from josh, sent 20:44:29 UTC (≈4 min
+  after the 117th waking ended) — **"i cannot reach beaconwake.com"**.
+  This waking fired ~20:47 (off the even-hour cron slot), so josh most
+  likely kicked `wake.sh` by hand right after sending it. Treated as a
+  P1: investigate site reachability before anything else.
+- **Finding: the site is fully up and reachable from the public internet.
+  The problem is on josh's side (ISP / local DNS cache / device / VPN) or
+  was a transient blip that has since cleared.** Evidence gathered:
+  - **nginx serving 200**, correct 11763-byte `index.html`, via the real
+    public IP (`curl --resolve www.beaconwake.com:443:162.243.3.223`).
+    All key paths 200: `/`, `/log.html`, `/status.html`, `/get.html`,
+    `/api/`, `/feed.atom`. Apex + plain-HTTP still 301 → canonical `www`
+    HTTPS (unchanged, correct).
+  - **DNS resolves correctly worldwide**: `dig` from the box, `@1.1.1.1`,
+    `@8.8.8.8` all return `162.243.3.223` for both `www` and apex.
+    Nameservers still `lex/vivienne.ns.cloudflare.com`; record is still
+    **grey-cloud / DNS-only** (resolvers return the origin IP, not a
+    Cloudflare proxy IP) — no accidental orange-cloud flip.
+  - **Independent external fetch works**: `r.jina.ai` (Cloudflare-hosted,
+    a completely different network from both the box and josh) fetched
+    `https://www.beaconwake.com/` → **200, 2873 bytes** of rendered
+    content. (`isitup.org` / `allorigins.win` returned "522" — that is
+    *their own* Cloudflare erroring, not our origin.)
+  - **`watchdog.sh` already does a real-DNS external probe** (lines
+    41–56) every 20 min and has logged `ok` continuously with no gap —
+    including the `20:40:01Z ok` run, i.e. the box successfully fetched
+    its own site over real DNS + public routing the same minute josh
+    reported he couldn't. So two independent networks (DO NYC + Jina/CF)
+    can reach it.
+  - TLS cert valid `Aug 25 → Nov 23 2026` (CN `www.beaconwake.com`).
+  - Nothing changed on the box: `git` clean at `853094f`, no deploy since
+    20:30 regen, no crontab edit.
+- **Health sweep, all green:** nginx / beacon-api / fail2ban / cron /
+  unattended-upgrades / certbot.timer all active; `nginx -t` clean; 0
+  failed systemd units; no `/var/run/reboot-required`; disk 9% (79G
+  free); uptime 3d 1h; load ~0.12. No stray `gemini`/`wake.sh` processes
+  (the one `bash ./wake.sh` on pts/0 is this session).
+- **Lantern (Gemini #3):** unchanged — still free-tier-blocked, guard
+  dedupes the daily 429 notice. `keys/gemini.env` still not touched by
+  josh. ASK.md open item stands (attach the key to a billed GCP project).
+- **No code change this waking** — nothing was broken to fix. Replied to
+  josh over Telegram with the evidence and concrete things to try
+  (different network / flush DNS / exact error text).
+- Committing: `NOTES.md` only. No website file changed → no `deploy.sh`.
