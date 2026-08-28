@@ -4933,3 +4933,54 @@ Running log of what I did and learned across wakings. Newest entries on top.
   `/home/agent/gemini-agent/` scaffold, `/home/agent/shared/tasks-lantern.md`,
   and the crontab are all outside this repo — not in the commit. No website
   file changed, so no `deploy.sh` run.
+
+## 2026-08-28 (117th waking, ~20:40 UTC)
+
+- `check_replies.sh`: one message from josh — "go ahead and keep 12x
+  cadence i fixed the key, test and validate". About the ASK.md open item
+  on Lantern's free-tier thinness.
+- **Did what he asked, but the test failed — the Gemini key is still
+  free-tier.**
+  - **Crontab:** Lantern bumped `30 2,10,18` → `30 */2 * * *` (12x/day, 30
+    min after Beacon's even-hour slot, 30 min before Highbeam's odd-hour
+    slot). Old crontab saved to `/tmp/cron.old`.
+  - **Model:** `keys/gemini.env` `GEMINI_MODEL` `gemini-2.5-flash` →
+    `gemini-flash-latest`. Found that `gemini-2.5-flash` now 404s
+    ("no longer available to new users") **and** that gemini-cli 0.57.0
+    silently ignores model strings it doesn't recognise, falling back to its
+    built-in default `gemini-3.5-flash` — so the scaffold model never
+    actually ran; the CLI was on 3.5-flash all along. `gemini-flash-latest`
+    (→ `gemini-3.7-flash`) is the alias the CLI resolves to a live model.
+  - **Validation — FAILED.** Every model the CLI reaches still meters on
+    `generate_content_free_tier_*`: `gemini-3.5-flash` 20 req/day,
+    `gemini-flash-latest` ~5-request burst + 250k input-tokens/day,
+    `gemini-3.1-pro` 0/day. A single isolated `gemini-flash-latest` call
+    returns a completion (confirmed with a throwaway "OK7" prompt); a full
+    `./wake.sh` agentic session fires calls fast enough to 429 within
+    seconds. Ran `./wake.sh` twice end-to-end — both died on the free-tier
+    429. `keys/gemini.env` on the box is unchanged since Beacon's 08-28
+    write, so josh's "i fixed the key" is a console-side billing edit that
+    hasn't landed on **this key's** GCP project (wrong project, or not yet
+    propagated). Killed a retry-looping background `wake.sh` mid-run.
+  - **`gemini-agent/wake.sh` quota guard hardened:** the free-tier 429
+    Telegram notice now dedupes to one line per UTC day
+    (`.quota_notice_date`, mirroring `daily_digest.sh`'s `.digest_sent_date`
+    backstop) so 12x/day of skipped runs = 1 ping/day, not 12. `bash -n`
+    clean. Remove the guard once the key is genuinely billed.
+  - Updated the `gemini-agent/` tree docs (`wake.sh` header, `NOTES.md`,
+    `keys/gemini.env.example`) and the repo design record `gemini-agent.md`
+    with the model landscape + failure detail. Rewrote the `ASK.md` Open
+    item with the precise unblock steps (check which GCP project the key
+    belongs to; enable billing on **that** project; or send a fresh key
+    from an already-billed project).
+- josh got one `[Lantern] free-tier daily quota exhausted` line from the
+  first `./wake.sh` attempt's own guard (~20:37 UTC) before the dedupe was
+  in place — expected, not a bug.
+- **Health sweep, all green:** nginx / beacon-api / fail2ban / cron /
+  unattended-upgrades active; `nginx -t` clean; 0 failed units; no
+  `/var/run/reboot-required`; disk 9% (79G free); uptime 3d 1h; load ~0.16.
+  `logs/watchdog.log` last 3 runs `ok`. `smoke_test.py --live` passes.
+  `git` in sync with `origin/master` at `3bd0da7` before this commit.
+- Committing: `ASK.md`, `gemini-agent.md`, `NOTES.md`. The
+  `/home/agent/gemini-agent/` tree and the crontab are outside this repo —
+  not in the commit. No website file changed, so no `deploy.sh` run.

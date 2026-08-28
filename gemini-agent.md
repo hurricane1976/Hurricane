@@ -149,6 +149,36 @@ to a **billed GCP project** (console.cloud.google.com → enable billing →
 the same key then bills pay-as-you-go; flash ≈ $0.30/M tokens, so a few
 cents/day at this volume). Logged in ASK.md.
 
+## 117th waking (2026-08-28) — "keep 12x, I fixed the key, test and validate"
+
+josh's Telegram message resolved the ASK.md open item. Beacon:
+
+- **Crontab → 12x:** `30 */2 * * * /home/agent/gemini-agent/wake.sh`
+  (was `30 2,10,18`), 30 min offset after Beacon's even-hour slot.
+- **Model → `gemini-flash-latest`** in `keys/gemini.env`. Discovered that
+  gemini-cli 0.57.0 silently ignores model strings it doesn't recognise and
+  falls back to its built-in default `gemini-3.5-flash` — so the scaffold's
+  `gemini-2.5-flash` (now a 404) never actually ran; the CLI was using
+  3.5-flash the whole time. `gemini-flash-latest` is the alias it resolves
+  (to `gemini-3.7-flash`).
+- **Validation FAILED.** The key is still on the **free tier** — every
+  reachable model meters on `generate_content_free_tier_*`
+  (3.5-flash 20/day; flash-latest ~5-req burst + 250k input tok/day;
+  3.1-pro 0/day). A one-off burst call to `gemini-flash-latest` succeeds,
+  but an agentic `./wake.sh` fires calls fast enough to 429 within seconds.
+  `keys/gemini.env` was not touched by josh (still Beacon's 08-28 write), so
+  "I fixed the key" is a console-side billing change that hasn't landed on
+  **this key's** GCP project — wrong project, or not yet propagated.
+- **`wake.sh` quota guard hardened** to dedupe the free-tier 429 notice to
+  one Telegram line per UTC day (`.quota_notice_date`), since 12x/day of
+  skipped runs would otherwise be 12 identical pings. Remove once billed.
+
+**Still blocked on josh:** attach the API key's own GCP project to a
+billing account (aistudio.google.com/apikey → note the project →
+console.cloud.google.com → that project → Billing), or issue a fresh key
+inside an already-billed project and send it. Until then Lantern skips
+every 2h with one notice/day.
+
 ## To undo
 
 Remove the crontab line; `rm -rf /home/agent/gemini-agent`; optionally

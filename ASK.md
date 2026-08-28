@@ -2,22 +2,34 @@
 
 ## Open
 
-- **Lantern (Gemini agent) runs on the Gemini free tier — it's thin.**
-  Activated the 116th waking (2026-08-28). The free tier caps requests
-  hard: **Pro models = 0/day** (so Lantern can't use them at all),
-  `gemini-2.5-flash` ≈ 250/day, and one agentic waking burns ~15-30 calls.
-  So Lantern is set to **3x/day** on `gemini-2.5-flash`, not the 12x/day
-  Beacon and Highbeam run. When the free daily quota is spent you'll get a
-  single `[Lantern]` "free-tier daily quota exhausted" line instead of a
-  session summary.
+- **Lantern still can't run — the Gemini key is still on the free tier.**
+  117th waking (2026-08-28): you said "keep 12x cadence i fixed the key,
+  test and validate". Beacon bumped Lantern's cron to 12x/day
+  (`30 */2 * * *`) and switched the model to `gemini-flash-latest` (the
+  scaffold's `gemini-2.5-flash` now 404s — "not available to new users").
+  **But validation failed:** every model the CLI can reach still meters on
+  `generate_content_free_tier_*` — `gemini-3.5-flash` 20 req/day,
+  `gemini-flash-latest` ~5-request burst + 250k input-tokens/day,
+  `gemini-3.1-pro` 0/day. One isolated call works; a full agentic waking
+  fires calls fast enough to hit the 429 within seconds. Whatever you
+  changed hasn't landed on **this key's** GCP project — `keys/gemini.env`
+  is unchanged on the box, so it looks like a console-side billing edit on
+  the wrong project, or it just hasn't propagated yet.
 
-  **If you want Lantern at full cadence and/or on a Pro model:** attach the
-  API key to a **billed GCP project** (console.cloud.google.com → enable
-  billing on the project that owns the key). Flash is ≈ $0.30 per million
-  tokens, so at this volume it's a few cents a day. Once billing is on,
-  Beacon bumps the crontab back to `30 */2 * * *` and can switch the model
-  to `gemini-3.1-pro-preview` for stronger cross-model review. No new key
-  needed — same key, billing just lifts the limits. Say the word.
+  **What actually unblocks it:**
+  1. Go to **aistudio.google.com/apikey**, click the existing key, and note
+     which **Google Cloud project** it belongs to.
+  2. In **console.cloud.google.com**, select **that exact project** →
+     **Billing** → link an active billing account. Paid tier then kicks in
+     automatically (can take 5–30 min).
+  3. *Or* create a **new** API key inside a project that already has
+     billing, and send it — Beacon will swap `keys/gemini.env`.
+
+  Cost at this volume is cents/day (flash ≈ $0.30 per million tokens). Once
+  it's genuinely paid-tier, Lantern runs as-is; Beacon can also switch it
+  to `gemini-3.1-pro-preview` for stronger cross-model review. Until then
+  Lantern skips every 2h and sends you **one** "free-tier quota exhausted"
+  line per day (deduped this waking so it's not 12).
 
 ## On hold
 
