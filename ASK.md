@@ -2,40 +2,22 @@
 
 ## Open
 
-- **Third agent (Gemini-powered) — scaffolded, awaiting your go + an API key.**
-  You said via Telegram (2026-08-28, 115th waking): "I would like to add
-  another agent (a third) however this one would use google gemini vs Claude
-  code. Please scaffold this out and let me know before you proceed with any
-  build." Done — inert scaffold at `/home/agent/gemini-agent/` (working name
-  **Lantern**), design record in `gemini-agent.md`, activation runbook in
-  `gemini-agent/README.md`. Nothing schedules it; nothing installed yet.
+- **Lantern (Gemini agent) runs on the Gemini free tier — it's thin.**
+  Activated the 116th waking (2026-08-28). The free tier caps requests
+  hard: **Pro models = 0/day** (so Lantern can't use them at all),
+  `gemini-2.5-flash` ≈ 250/day, and one agentic waking burns ~15-30 calls.
+  So Lantern is set to **3x/day** on `gemini-2.5-flash`, not the 12x/day
+  Beacon and Highbeam run. When the free daily quota is spent you'll get a
+  single `[Lantern]` "free-tier daily quota exhausted" line instead of a
+  session summary.
 
-  **What it would be:** same mechanism as Highbeam (cron → `wake.sh` → model
-  CLI with a Markdown contract → NOTES.md → Telegram), but running Google's
-  `gemini` CLI instead of Claude Code. The value is a *different model
-  family's judgement* on the same work — cross-model review of Beacon's and
-  Highbeam's commits, plus a second draft of the newsletter for comparison.
-  No production authority (Beacon keeps that); only writes under
-  `/home/agent/gemini-agent/` + `/home/agent/shared/`. Send-only on your bot,
-  `[Lantern]` prefix.
-
-  **Five things to decide (details in `gemini-agent.md`):**
-  1. Go / no-go on activation.
-  2. Name — keep "Lantern" or pick another (renames in one message, like
-     Tender → Highbeam).
-  3. Scope — default (cross-model review + comparison drafts), review-only,
-     or a specific lane.
-  4. Telegram — send-only on Beacon's bot, or a dedicated second bot.
-  5. **A `GEMINI_API_KEY`** — you create one at
-     https://aistudio.google.com/apikey (free tier covers ~12 wakings/day)
-     and send it over. That's the blocker, same as the Buttondown key.
-
-  **On "go":** I write `keys/gemini.env`, run `nvm install 20 && npm install
-  -g @google/gemini-cli` (the CLI needs Node ≥ 20; box default is v18),
-  verify `gemini --help`, do one manual `./wake.sh`, create
-  `shared/tasks-lantern.md`, and add one offset crontab line
-  (`30 */2 * * *`). Revert: `rm -rf /home/agent/gemini-agent`, drop the
-  cron line, optionally uninstall the CLI + Node 20.
+  **If you want Lantern at full cadence and/or on a Pro model:** attach the
+  API key to a **billed GCP project** (console.cloud.google.com → enable
+  billing on the project that owns the key). Flash is ≈ $0.30 per million
+  tokens, so at this volume it's a few cents a day. Once billing is on,
+  Beacon bumps the crontab back to `30 */2 * * *` and can switch the model
+  to `gemini-3.1-pro-preview` for stronger cross-model review. No new key
+  needed — same key, billing just lifts the limits. Say the word.
 
 ## On hold
 
@@ -83,6 +65,27 @@
   back up if josh names a target business.
 
 ## Resolved
+
+- **Third agent (Gemini-powered) "Lantern" — ACTIVATED (116th waking,
+  2026-08-28).** josh replied via Telegram with all five answers: (1) go,
+  (2) keep the name "Lantern", (3) default scope, (4) send-only on Beacon's
+  shared bot, (5) a `GEMINI_API_KEY`. Beacon did the runbook: `nvm install
+  20` (Gemini CLI needs Node ≥ 20; box default is v18), `npm install -g
+  @google/gemini-cli` (0.57.0), wrote `keys/gemini.env` (chmod 600, in the
+  non-git `gemini-agent/` tree), created `/home/agent/shared/tasks-lantern.md`,
+  added the crontab line `30 2,10,18 * * * /home/agent/gemini-agent/wake.sh`.
+  Deviations from the scaffold, all forced by the live Gemini API:
+  Pro-model free quota is 0 so Lantern runs **`gemini-2.5-flash`**; cadence
+  is **3x/day not 12x** (free-tier request cap ≈ 250/day, one waking ≈
+  15-30 calls); `wake.sh` gained `--skip-trust` (0.57.0 headless trust
+  gate), `--include-directories` (0.57.0 sandboxes file tools to CWD, but
+  Lantern must reach `shared/`), and a terse-notify guard for the recurring
+  quota 429. Full detail in `gemini-agent.md`. **Not fully verified
+  end-to-end** — activation testing exhausted the day's free quota; the
+  02:30 UTC scheduled run is the real test. Free-tier thinness is now an
+  Open item above. **Revert:** drop the crontab line and `rm -rf
+  /home/agent/gemini-agent`; optionally `npm uninstall -g @google/gemini-cli`
+  and `nvm uninstall 20`.
 
 - **Root SSH lockout — cancelled by josh.** He replied via Telegram
   (2026-08-28, 108th waking): "For the root lock task" / "Don't do the root

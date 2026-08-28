@@ -4872,3 +4872,64 @@ Running log of what I did and learned across wakings. Newest entries on top.
 - Committing: `gemini-agent.md` (new), `ASK.md` (new Open item), `NOTES.md`.
   The `/home/agent/gemini-agent/` scaffold is outside this repo — not in the
   commit. No website file changed, so no `deploy.sh` run.
+
+## 2026-08-28 (116th waking, ~20:15 UTC)
+
+- `check_replies.sh`: one message from josh — all five Lantern decisions in
+  one line: **(1) go  (2) name — keep Lantern  (3) scope — default  (4)
+  Telegram — shared bot  (5) `GEMINI_API_KEY` `AQ.Ab8…`**. So this waking:
+  **activated Lantern**, the Gemini-powered third agent.
+- **Activation runbook, executed:**
+  - `nvm install 20` → Node v20.20.2 alongside the box default v18 (v18
+    stays default — that's where `claude` runs). `npm install -g
+    @google/gemini-cli` → **0.57.0**. `gemini --version` / `--help` OK.
+  - Wrote `/home/agent/gemini-agent/keys/gemini.env` (chmod 600; that tree
+    is not in git — same as `partner/`, the crontab, `keys/`). Key stays
+    off git and out of anything public per AGENT.md.
+  - Created `/home/agent/shared/tasks-lantern.md` (default-scope standing
+    job: cross-model review of Beacon's + Highbeam's commits, plus a
+    `-lantern` comparison newsletter draft).
+  - Crontab: added `30 2,10,18 * * * /home/agent/gemini-agent/wake.sh`.
+    Old crontab saved to `/tmp/cron.old`.
+  - Updated `GEMINI.md`, `NOTES.md`, `README.md` in the scaffold from
+    "SCAFFOLD" → "ACTIVE"; updated `gemini-agent.md` (repo design record)
+    with an "Activation — what actually happened" section.
+- **Verified working:** Node 20 + CLI installed; the API key authenticates;
+  `--skip-trust` is required for headless YOLO (0.57.0 exits 55 without it —
+  trusted-folders gate); flash models return completions.
+- **Could NOT verify end-to-end this waking:** a full agentic Lantern
+  session. Activation testing + one manual `./wake.sh` exhausted the Gemini
+  **free-tier daily request quota**. First real end-to-end test is the
+  **02:30 UTC scheduled run**, after the free quota resets (midnight
+  Pacific).
+- **Deviations from the scaffold, all forced by the live Gemini API
+  (2026-08-28), all documented in `wake.sh` + `gemini-agent.md`:**
+  1. **Model = `gemini-2.5-flash`.** `gemini-2.5-pro` → `ModelNotFoundError`
+     ("no longer available to new users"). Pro models
+     (`gemini-3.1-pro-preview`, `gemini-pro-latest`) → **free-tier quota 0**;
+     they need a billed GCP project. Flash free-tier per-day caps vary
+     hugely: `gemini-3.5-flash` ≈ 20/day (tried it first, one session blew
+     through it), `gemini-2.5-flash` ≈ 250/day (the pick), `-lite` ≈
+     1000/day.
+  2. **Cadence 3x/day, not 12x** like Beacon/Highbeam — one agentic waking
+     is ~15-30 model calls; 3x fits the ~250/day free budget.
+  3. `wake.sh` gained `--skip-trust`, `--include-directories
+     /home/agent/shared,/home/agent/agent,/home/agent/partner` (0.57.0
+     sandboxes file tools to CWD — the manual run hit "Path not in
+     workspace" reading `/home/agent/shared`), and a terse-notify guard so
+     a recurring quota-429 sends josh one line, not a 1500-char log tail
+     3x/day.
+- **New ASK.md Open item:** to run Lantern at full cadence and/or on a Pro
+  model, josh can attach the API key to a **billed GCP project** (no new
+  key; billing just lifts the caps; flash ≈ $0.30/M tokens = cents/day
+  here). Beacon then bumps the crontab back to `30 */2 * * *`.
+- **Health sweep, all green:** nginx / beacon-api / fail2ban / cron /
+  unattended-upgrades active; `nginx -t` clean; 0 failed units; no
+  `/var/run/reboot-required`; disk 9% (79G free); uptime 3d 1h; load ~0.02.
+  `logs/watchdog.log` last 3 runs `ok`. `smoke_test.py --live` passes;
+  `https://www.beaconwake.com/` 200. `git` in sync with `origin/master` at
+  `7c1fac9` before this commit.
+- Committing: `ASK.md`, `gemini-agent.md`, `NOTES.md`. The
+  `/home/agent/gemini-agent/` scaffold, `/home/agent/shared/tasks-lantern.md`,
+  and the crontab are all outside this repo — not in the commit. No website
+  file changed, so no `deploy.sh` run.
