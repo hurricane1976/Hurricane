@@ -4741,3 +4741,47 @@ Running log of what I did and learned across wakings. Newest entries on top.
 - Committing: `watchdog.sh` + this NOTES entry. No website file changed,
   so no `deploy.sh` run. `.watchdog_state` / `logs/watchdog.log` are
   gitignored box state, not in the commit.
+
+## 2026-08-28 (113th waking, ~16:02 UTC)
+
+- `check_replies.sh`: two messages from josh, same thread.
+  1. "In waiting on info from buttondown so park that activity nothing else
+     to pass. Continue your work." → moved the newsletter item in `ASK.md`
+     from **Open** to **On hold** (all buildable-without-the-account work is
+     already in the repo; picks back up when he sends the Buttondown API key
+     + username). `ASK.md` Open is now empty.
+  2. "Also can we fire the cron every 2 hours on a 24 hour day." → done.
+- **Crontab → every 2 hours.** Replaced the 9 hand-spaced `agent/wake.sh`
+  lines with a single `0 */2 * * * /home/agent/agent/wake.sh` (even hours,
+  12x/day). Also replaced the 9 `partner/wake.sh` lines with
+  `0 1-23/2 * * *` (odd hours, 12x/day) — kept Highbeam matched to the new
+  cadence per the "activated on Beacon's schedule" design, but offset by an
+  hour so the two agents no longer run concurrently and Highbeam reviews
+  each Beacon commit ~1h after it lands (field-guide lesson #3: two sessions
+  touching shared state want offset schedules). `login_alert.sh` (`*/15`),
+  `daily_digest.sh` (`5 * * * *`), `weekly_digest.sh` (`7 * * * *`), and
+  `watchdog.sh` (`*/20`) lines untouched. Old crontab saved to
+  `/tmp/cron.old` for the session. Noted the partner schedule change in
+  `shared/TASKS.md` so Highbeam isn't surprised.
+- **Fixed `cadence()` in `build_status.py`** (it would have reported the
+  new schedule as `2`, and was already wrong — showing `18` because it
+  counted every crontab line containing "wake.sh", Beacon's 9 + partner's
+  9). Rewrote it to (a) match only *this* agent's `wake.sh` full path, not
+  the partner's, and (b) expand the minute/hour cron fields
+  (`*`, `*/n`, `a-b`, `a-b/n`, `a,b,c`, single values) into a real
+  firings-per-day count instead of counting lines. Now `0 */2 * * *`
+  correctly yields 12. Verified: `status.html` and the homepage badge both
+  live-serve **12×/day** after deploy (homepage badge hand-updated from
+  `9×` — it's static copy, not generated).
+- Ran `./deploy.sh` — both smoke-test gates passed, site redeployed clean.
+- **Health sweep, all green:** nginx / beacon-api / fail2ban / cron /
+  unattended-upgrades all active; `nginx -t` clean; no failed systemd
+  units; no `/var/run/reboot-required`; disk 9% (7.2G/79G); uptime 2d 20h;
+  load ~0.13. `logs/watchdog.log` last 5 runs all `ok`. TLS cert good
+  through 2026-11-23 (87 days). `git` in sync with `origin/master` at
+  `62e7717` before this commit.
+- Committing: `website/build_status.py` (cadence rewrite), `website/index.html`
+  (badge 9→12), `ASK.md` (newsletter Open→On hold), `NOTES.md`. The crontab
+  and `shared/TASKS.md` are outside this repo — box/shared state, not in the
+  commit. Deploy-regenerated pages (`log.html`, `roadmap.html`,
+  `weekly.html`, `feed.atom`, `sitemap.xml`, `status.html`) are gitignored.

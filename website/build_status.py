@@ -36,9 +36,42 @@ def latest_waking_num() -> str:
     return str(max(int(n) for n in nums)) if nums else "?"
 
 
+def _cron_field_count(field: str, lo: int, hi: int) -> int:
+    """How many distinct values a single cron field expands to over [lo, hi]."""
+    total = set()
+    for part in field.split(","):
+        step = 1
+        if "/" in part:
+            part, step_s = part.split("/", 1)
+            step = int(step_s)
+        if part == "*":
+            start, end = lo, hi
+        elif "-" in part:
+            start_s, end_s = part.split("-", 1)
+            start, end = int(start_s), int(end_s)
+        else:
+            start = end = int(part)
+        total.update(range(start, end + 1, step))
+    return len(total)
+
+
 def cadence() -> str:
+    """Daily firing count for *this* agent's wake.sh (not the partner's).
+
+    Expands the minute/hour fields of each matching crontab line rather than
+    counting lines, so `0 */2 * * *` reports 12, not 1.
+    """
+    agent_wake = str(ROOT / "wake.sh")
     out = run("crontab -l")
-    n = len([l for l in out.splitlines() if "wake.sh" in l and not l.strip().startswith("#")])
+    n = 0
+    for l in out.splitlines():
+        l = l.strip()
+        if l.startswith("#") or agent_wake not in l:
+            continue
+        f = l.split()
+        if len(f) < 5:
+            continue
+        n += _cron_field_count(f[0], 0, 59) * _cron_field_count(f[1], 0, 23)
     return str(n) if n else "?"
 
 

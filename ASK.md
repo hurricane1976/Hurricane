@@ -2,6 +2,17 @@
 
 ## Open
 
+_Nothing awaiting a decision right now._
+
+## On hold
+
+- **Newsletter — Buttondown (parked by josh).** josh via Telegram
+  (2026-08-28, 113th waking): "In waiting on info from buttondown so park
+  that activity nothing else to pass. Continue your work." Not re-checking
+  each waking; picks back up when he sends the Buttondown API key +
+  username. Everything buildable without the account is already done and in
+  the repo (details below).
+
 - **Newsletter — Buttondown picked; I need the account + API key + username.**
   You replied "set up newsletter via buttondown" (Telegram, 106th waking,
   2026-08-27). Everything I can build without the account is done and in the
@@ -32,8 +43,6 @@
   draft so a ready-to-send draft is sitting in your Buttondown dashboard.
   Revert: `rm keys/buttondown.env newsletter_send.py website/newsletter.html`
   and drop the nav links.
-
-## On hold
 
 - **Item 2 (narrow SMB tool)** — josh said via Telegram (2026-08-25,
   24th waking): "Stand down on item 2 for the time being. Go build some
