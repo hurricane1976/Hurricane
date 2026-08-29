@@ -5861,3 +5861,72 @@ Running log of what I did and learned across wakings. Newest entries on top.
 - **Fleet:** Highbeam ran 17:00Z, Lantern ran 16:30Z — both fresh logs, both
   on schedule. Lantern picks up the retheme task next slot (18:30Z).
 - Committing: `ASK.md`, `NOTES.md`. `shared/` is outside this repo.
+
+## 2026-08-29 (134th waking, ~17:32 UTC)
+
+- `check_replies.sh`: **no new messages** from josh.
+- **Chose the PDF / print.css retheme** as this waking's work: self-contained,
+  explicitly flagged pending since w132 ("the 5 PDFs still on the old warm
+  palette — separate regen job"), and independent of the live-site `style.css`
+  rewrite Lantern is currently drafting for the w133 "exact hurricaneai.org"
+  task (so no merge conflict). Also clears the accumulated rendered-PDF review
+  findings Highbeam filed w20–w21.
+- **`website/paid_src/print.css` rewritten** to the hurricaneai.org / Tidal
+  house style, adapted for ink-on-white:
+  - `:root` tokens — `--ink-amber #b8500e` (headings, `h2` rule, `li::marker`,
+    `code`, `.toc a`, `pre` border), `--amber #ff8a3d` (decorative fills only:
+    cover bar gradient, `.ptier` chips), `--ink-teal #0f766e` (was navy
+    `#3d5a80`). Screen amber is too light for body-weight text on white, hence
+    the deepened ink amber. **Closes Highbeam #14** (9 scattered `#c96343`
+    rules → one token; `"Courier New"` → `"IBM Plex Mono", ui-monospace, …`).
+  - Fonts: Space Grotesk (headings 600) / IBM Plex Sans 300 (body) / IBM Plex
+    Mono (code) — all four families already in `~/.fonts`, weasyprint resolves
+    by family name.
+  - **Cover (Highbeam #10):** `h1.cover { line-height: 1.15 }` (was inheriting
+    body 1.55 → ~53pt gap on 2-line titles); logo mark `56→120px`;
+    `.cover-mark` margin `3.4→1.8cm`, `.cover-meta` `3→1.6cm` so the blurb
+    anchors under the bar. Cover-mark SVG recoloured in all 8 `*-full.html`
+    (literal hex — weasyprint won't resolve `var()` inside inline SVG).
+  - **TOC (Highbeam #11):** `list-style: none` (kills the double bullet, keeps
+    the hand-typed "N."); `leader('.') target-counter(attr(href), page)` dot-
+    leader page numbers in `#5b6270`/400; `page-break-inside: avoid` on
+    `ul.toc`.
+  - **Tables (Highbeam #13):** `nth-child(even)` zebra `#f7f4f1`;
+    `td:first-child 15%` / `td:last-child 22%` width hints; `overflow-wrap:
+    break-word` on cells.
+  - **Page counters (Highbeam #14):** `@page @bottom-right { counter(page)
+    " / " counter(pages) }`.
+  - `.ptier-*` → calm-to-hot ramp (teal/slate/mid-amber/deep-rust). `pre` uses
+    `overflow-wrap: anywhere` (weasyprint rejects `word-break: break-word`).
+- **Re-rendered all 8 full-edition PDFs** via system `weasyprint` 61.1, no
+  warnings. Page counts sane vs history: agent-ops 15, field-guide 10,
+  memory-handbook 6, soc 13, starter-kit 5, ops-sop 12, service-desk-
+  deployment 16, service-desk-integration 39.
+- **Verified** by rendering covers / TOCs / a wide table to PNG at 70–80dpi
+  and eyeballing: SOC + agent-ops + field-guide covers (tight leading, bigger
+  mark, blurb anchored), SOC + service-desk TOCs (dot leaders + page numbers,
+  single numbering, `pdftotext` text layer clean), SOC "eight agents" 4-col
+  table (last column wraps cleanly, zebra tracks rows). Counter present.
+- **Deployed** the 3 free PDFs (`operations-sop.pdf`,
+  `service-desk-deployment-guide.pdf`, `service-desk-integration-guide.pdf`)
+  via `deploy.sh` — all 200 `application/pdf`, `/status.html` **45/45**, local
+  + live smoke green, `nginx -t` ok. The 5 paid PDFs are re-rendered +
+  committed in `website/paid/`; josh re-uploads to Gumroad (w57/w59 flow).
+- **NOT done:** Highbeam #12 (section-4 SOC diagram too dense in print) — needs
+  Lantern's purpose-built `soc-architecture-diagram.svg`, which is itself
+  still on the old warm palette; folded into Lantern's retheme queue. The
+  inline diagram legends in the PDFs still show old-palette category swatches
+  (same root cause).
+- **Health sweep green:** nginx / beacon-api / fail2ban / cron / certbot.timer
+  active; 0 failed units; no `/var/run/reboot-required`; disk 9% (79G free);
+  uptime 3d 22h; load ~0.06. `logs/watchdog.log` last 3 `ok`; no
+  `wake-skipped.log`. `git` in sync with `origin/master` at `20c6acb` before
+  this commit.
+- **Fleet:** Lantern's w133 ⭐PRIORITY task (component-level `style.css`
+  rewrite → `shared/outbox/retheme-w133/`) **not yet delivered** — Lantern
+  last ran 16:30Z (worked diagrams; the retheme task was queued 17:16Z, after
+  that run). Next Lantern slot 18:30Z. Highbeam last ran 17:00Z. Nothing
+  blocking.
+- Committing: `website/paid_src/print.css`, 8 `website/paid_src/*-full.html`,
+  5 `website/paid/*.pdf`, 3 free `website/*.pdf`, `NOTES.md`. Generated pages
+  + `shared/` are outside this commit / repo.
