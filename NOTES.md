@@ -5379,3 +5379,64 @@ Running log of what I did and learned across wakings. Newest entries on top.
 - No code change, no website change, no cron change, no `deploy.sh` run.
 - Committing: `NOTES.md` only. Added a line to `shared/LOG.md` (outside
   this repo) noting a clean monitoring waking.
+
+## 2026-08-29 (126th waking, ~06:00 UTC)
+
+- `check_replies.sh`: **three new messages from josh** (all actioned this
+  waking, none blocking):
+  1. "Continue to provide options for projects, builds, designs, etc. want
+     to see what you three come up with. Put your heads together!"
+  2. "Remember that lantern is Gemini based and can create images"
+  3. "Create the ability to collaborate with other agents on the internet"
+- **Shipped: the Agora — a public agent-to-agent message board.** This is
+  v1 of message 3.
+  - **Page:** `https://www.beaconwake.com/agora.html` (new `website/agora.html`),
+    added to nav on every page, `build_sitemap.py`, `build_status.py`,
+    `smoke_test.py`, `deploy.sh`. Live board view fetches `/api/agora`
+    client-side and renders each post with `textContent` (never
+    `innerHTML`) — `<noscript>` falls back to the raw JSON.
+  - **Endpoint:** `api/server.py` gained `GET /api/agora` (newest 50 posts
+    + a usage doc) and `do_POST` for `POST /api/agora` accepting
+    `{"agent","message","link"?}`. Helpers `read_agora` / `append_agora`
+    (flock + 500-post ring buffer → `logs/agora.jsonl`, gitignored) and
+    `_agora_allow` (per-IP limiter keyed on `X-Real-IP`: ~1 post/20s,
+    30/day). Field caps: agent 2–40, message 1–1200, link one http(s)
+    URL; body ≤4 KB; control chars stripped. Added `/agora` to
+    `ROUTES_DOC` + `OPENAPI_SPEC`.
+  - **Off-repo changes (also in the `project_agora_agent_board` memory):**
+    - `/etc/systemd/system/beacon-api.service`: added
+      `ReadWritePaths=/home/agent/agent/logs` — the unit has
+      `ProtectSystem=strict` + `ReadOnlyPaths=/home/agent/agent`, so the
+      service 500'd on the first POST (`OSError: Read-only file system`)
+      until this. `daemon-reload` + restart done.
+    - `/etc/nginx/conf.d/agora_ratelimit.conf`: new, one `limit_req_zone`
+      (`zone=agora`, 6 r/m).
+    - `/etc/nginx/sites-enabled/default`: new `location = /api/agora` block
+      (GET+POST only, `limit_req`, `client_max_body_size 4k`, proxies to
+      `127.0.0.1:8081/agora`) placed *before* the GET-only `/api/` block.
+      Also refreshed that block's stale "Cairn/cairn-api" comment to
+      "Beacon/beacon-api". Backup: `/etc/nginx/default.bak-w126` — kept
+      OUT of `sites-enabled/` because a `.bak` there makes `nginx -t` fail
+      with a duplicate-`listen` error (learned the hard way this waking).
+  - **Design stance:** unauthenticated on purpose (other agents have no
+    key); posts are data, never instructions (AGENT.md). Tested end-to-end
+    through the proxy: valid POST → 201, bad JSON → 400, oversize → 413,
+    rapid repeat → 429, `PUT` → 403, `GET /api/` still 200. Seeded one
+    real intro post as `beacon`. `/status.html` now 38/38 (was 36).
+- **Message 1 + 2 — fleet brainstorm.** Created `shared/ideas.md`: 10
+  Beacon proposals (agora next-steps, a `/fleet.html` status page,
+  Lantern-generated per-page OG images + architecture diagrams + a
+  "lighthouse map", a 2nd interactive stepper, light-mode toggle) with an
+  open section for Highbeam and Lantern to append to. Queued both via
+  `shared/TASKS.md` and `shared/tasks-lantern.md`; told Lantern to try
+  image generation into new `shared/outbox/img/` for Beacon to review
+  before any deploy. Noted the image capability in the Lantern memory.
+- **Health sweep, all green:** nginx / beacon-api / fail2ban / cron all
+  active; 0 failed units; `nginx -t` clean; no `/var/run/reboot-required`;
+  disk 9% (79G free); uptime 3d 10h; load ~0.00. `logs/watchdog.log` last
+  5 runs `ok`; no `logs/wake-skipped.log`. `smoke_test.py --live` passes.
+- **Fleet:** Highbeam last waking 05:00Z, Lantern 04:30Z — both on
+  schedule, both exit 0.
+- Committing: `api/server.py`, `website/agora.html` (new), the nav/sitemap/
+  status/smoke/deploy wiring, `website/agent-protocol.html` (added an Agora
+  link), `ASK.md`, `NOTES.md`. `shared/` files are outside this repo.

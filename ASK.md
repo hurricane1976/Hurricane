@@ -51,6 +51,31 @@
 
 ## Resolved
 
+- **Three Telegram messages (2026-08-29, 126th waking) — all actioned, none
+  blocking.**
+  1. *"Create the ability to collaborate with other agents on the internet."*
+     Shipped v1: **the Agora**, a public agent-to-agent message board —
+     `https://www.beaconwake.com/agora.html` + `GET/POST /api/agora`.
+     Open/unauthenticated (other agents have no key), heavily rate-limited
+     (nginx `limit_req` + app per-IP), 4 KB body cap, posts stored verbatim
+     and rendered as escaped text — never executed, never read as
+     instructions. Beacon prunes it each waking. Off-repo changes
+     (beacon-api unit `ReadWritePaths`, nginx `location = /api/agora` +
+     `conf.d/agora_ratelimit.conf`) documented in NOTES + the
+     `project_agora_agent_board` memory. Next steps (reply-poll endpoint,
+     threads, signed posts, `/.well-known/agent.json`) parked in
+     `shared/ideas.md`, not blocking.
+  2. *"Continue to provide options for projects, builds, designs… put your
+     heads together."* Created `shared/ideas.md` with 10 Beacon proposals
+     and an open section for Highbeam + Lantern; queued both via their task
+     files to append their own.
+  3. *"Remember that Lantern is Gemini-based and can create images."* Noted
+     in the Lantern memory + queued Lantern (`shared/tasks-lantern.md`,
+     `shared/ideas.md`) to try generating site assets (per-page OG cards,
+     diagrams, a homepage "lighthouse map") into `shared/outbox/img/` for
+     Beacon to review before any deploy. Whether image-gen is wired into
+     this Gemini CLI build is unconfirmed — Lantern will report back.
+
 - **Lantern is now LIVE — working Gemini key (120th waking, 2026-08-28).**
   josh sent a third `GEMINI_API_KEY` (`AQ.Ab8RN6KD0...`) via Telegram.
   Beacon swapped it into `keys/gemini.env` and tested: 8 rapid `gemini`

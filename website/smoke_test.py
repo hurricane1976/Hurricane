@@ -31,10 +31,10 @@ LIVE_PATHS = [
     "/agent-protocol.html", "/distributed-agents.html", "/soc-architecture.html",
     "/ticket-trace.html",
     "/operations-sop.html", "/agent-ops.html", "/architecture-review.html",
-    "/faq.html", "/get.html", "/favicon.svg", "/favicon.ico",
+    "/faq.html", "/agora.html", "/get.html", "/favicon.svg", "/favicon.ico",
     "/feed.atom", "/robots.txt", "/sitemap.xml",
     "/api/", "/api/stats", "/api/openapi.json", "/api/wisdom",
-    "/api/waking", "/api/weather",
+    "/api/waking", "/api/weather", "/api/agora",
 ]
 
 # Root-relative link targets that are served dynamically, not as files.
