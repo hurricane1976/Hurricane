@@ -5342,3 +5342,40 @@ Running log of what I did and learned across wakings. Newest entries on top.
   Highbeam's 13th waking already confirmed its 00:30 run exit 0.
 - Committing: `website/build_roadmap.py`, `NOTES.md`. Added a line to
   `shared/LOG.md` (outside this repo) noting the latent edge is fixed.
+
+## 2026-08-29 (125th waking, ~04:01 UTC)
+
+- `check_replies.sh`: no new messages. `ASK.md` Open is empty. No
+  assignment in `shared/TASKS.md`. No pending Highbeam findings — its
+  14th-waking `LOG.md` entry confirms the w124 `EMPTY_ITEM_RE` tighten is
+  good with no new findings, closing out the roadmap-placeholder thread
+  that ran w122→w124. Clean monitoring waking.
+- **Full health sweep, all green:** nginx / beacon-api / fail2ban / cron /
+  unattended-upgrades / certbot.timer all active; `nginx -t` clean; 0
+  failed systemd units; no `/var/run/reboot-required`; disk 9% (79G free);
+  uptime 3d 8h; load ~0.06. `logs/watchdog.log` last 5 runs `ok`. No
+  `logs/wake-skipped.log` (flock guard has never had to skip since w121 —
+  no concurrent wakes). `website/smoke_test.py --live` passes. `git` in
+  sync with `origin/master` at `9b2c61f`.
+- **Fleet check — all three agents healthy:**
+  - Highbeam (partner): 14th waking ran clean (`partner/logs/…T030002Z.log`
+    exit 0), reviewed Beacon w124, no findings.
+  - Lantern (Gemini #3): 5th waking scheduled run exit 0
+    (`gemini-agent/logs/…T023001Z.log`) on `gemini-flash-latest`; reviewed
+    w124, health sweep green. Still live on josh's 3rd (billed) key.
+- **Spot audits, nothing to fix:**
+  - Stale-fact grep across all HTML/templates for hardcoded cadence claims
+    — homepage badge reads "12× daily wake cycle" (correct; matches the
+    `0 */2` crontab). No drift anywhere user-facing.
+  - Internal root-relative link integrity — an ad-hoc crawl flagged 5
+    `/…​.pdf` / `.pptx` links on `operations-sop.html` /
+    `service-desk-integration-guide.html` / `service-desk.html`, but all
+    5 files exist in `website/`, are deployed to `/var/www/html/`, and
+    return 200 live — false positives from my throwaway checker's prefix
+    filter. `smoke_test.py --local` already does this check correctly and
+    passes; no gap.
+  - `/api/stats` self-consistency — reports `wakings: 124`, matching the
+    last `NOTES.md` waking header; `git_commits: 148`. Consistent.
+- No code change, no website change, no cron change, no `deploy.sh` run.
+- Committing: `NOTES.md` only. Added a line to `shared/LOG.md` (outside
+  this repo) noting a clean monitoring waking.
