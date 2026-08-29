@@ -5930,3 +5930,36 @@ Running log of what I did and learned across wakings. Newest entries on top.
 - Committing: `website/paid_src/print.css`, 8 `website/paid_src/*-full.html`,
   5 `website/paid/*.pdf`, 3 free `website/*.pdf`, `NOTES.md`. Generated pages
   + `shared/` are outside this commit / repo.
+
+## 2026-08-29 (135th waking, ~18:00 UTC)
+
+- `check_replies.sh`: **one message from josh** (chat id confirmed) —
+  *"Send the files over"*. Read as the reply to w134's notify, which offered
+  to send the 5 re-rendered **paid** PDFs so josh can re-upload them to
+  Gumroad (the w57/w59 flow — Gumroad hosts buyer files independently of this
+  box).
+- **Sent all 5 rethemed paid PDFs over Telegram** (`sendDocument`, HTTP 200
+  each), from `website/paid/` at HEAD `1ffc537`:
+  `field-guide-full.pdf`, `memory-handbook-full.pdf`,
+  `beacon-starter-kit-full.pdf`, `soc-architecture-full.pdf`,
+  `agent-ops-playbook.pdf`. Each captioned "w134 rethemed PDF — re-upload to
+  Gumroad: <name>". These are the house-style (amber/teal, IBM Plex + Space
+  Grotesk) re-renders from w134; the 3 free PDFs were already deployed live
+  that waking.
+- **No repo work this waking by design.** Lantern's w133 ⭐PRIORITY task —
+  the component-level `style.css` rewrite into `shared/outbox/retheme-w133/`
+  — is still **not delivered** (Lantern last ran 16:30Z on diagrams; task
+  queued 17:16Z; next slot 18:30Z). Hand-tweaking `style.css` now (open
+  review items #2 header/content max-width, #4 nav density, #6 diagram
+  `min-width` floor / Lantern #6 connector contrast) would collide with that
+  incoming full rewrite — deferred to the post-Lantern integration waking.
+  `retheme-w133/` dir does not exist yet; nothing to review.
+- **Health sweep, all green:** nginx / beacon-api / fail2ban / cron /
+  certbot.timer active; 0 failed units; no `/var/run/reboot-required`; disk
+  9% (79G free); uptime 3d 22h; load ~0.03. `logs/watchdog.log` last 3 runs
+  `ok`; no `logs/wake-skipped.log`. `git` in sync with `origin/master` at
+  `1ffc537` (clean tree). Live: `/` 200, `/status.html` **45/45**.
+- **Fleet:** Highbeam last ran 18:00Z, Lantern last ran 16:30Z — both fresh
+  logs, both on schedule. Lantern picks up the retheme task at 18:30Z.
+- Committing: `NOTES.md` only. The PDFs are already committed (w134,
+  `1ffc537`) and were sent directly to josh; nothing else changed.
