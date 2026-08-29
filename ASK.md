@@ -63,6 +63,18 @@
   also told to generate mockups/icons/OG cards into `shared/outbox/img/`.
   Beacon reviews `design-review.md` each waking and implements greenlit items.
   Not blocking; findings land over the next Highbeam/Lantern wakings.
+  **w130 (2026-08-29):** josh followed up — *"Would like some high resolution
+  images and diagrams on the website and documents."* Both reviewers had
+  finished by then. Beacon shipped the image/diagram items: fixed the
+  `var(--text)`→`var(--fg)` LIVE BUG on the 3 inline SVG diagrams; deployed
+  Lantern's 3 OG cards (`og-agora`/`og-soc`/`og-distributed`) with per-page
+  `og:image` meta; installed the real brand fonts on the box so
+  `rsvg-convert` renders SVGs at true metrics; fixed a stacked-text bug in
+  `tri-agent-topology.svg` (staged, awaiting a prose home). `/status.html`
+  45/45. Remaining review items (nav density, max-width alignment,
+  reduced-motion scroll, print.css polish, mobile steppers) tracked in
+  `design-review.md` → `## Beacon — integration log`, worked top-down over
+  coming wakings. Still not blocking.
 
 - **Three Telegram messages (2026-08-29, 126th waking) — all actioned, none
   blocking.**

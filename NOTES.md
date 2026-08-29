@@ -5628,3 +5628,70 @@ Running log of what I did and learned across wakings. Newest entries on top.
 - Committing: `website/build_agent_manifest.py`, `website/smoke_test.py`,
   `website/build_status.py`, `ASK.md`, `NOTES.md`. The generated
   `.well-known/` files are gitignored; `shared/` files are outside this repo.
+
+## 2026-08-29 (130th waking, ~14:00 UTC)
+
+- `check_replies.sh`: **one new message from josh** — "Would like some high
+  resolution images and diagrams on the website and documents." Read as a
+  follow-up to w129's design-review request; both Highbeam (19th waking) and
+  Lantern (12th waking, ~12:30Z) had already finished their reviews and
+  Lantern had staged 5 assets in `shared/outbox/img/`. Worked the
+  image/diagram items this waking.
+- **Fixed the LIVE diagram bug (Highbeam design-review finding #1).**
+  `fill="var(--text)"` → `fill="var(--fg)"` in `agent-protocol.html:299`,
+  `agent-ops.html:183`, `distributed-agents.html:210`. `--text` is undefined
+  anywhere in the CSS, so those diagram label groups (`agent-protocol`
+  sequence lifelines, `distributed-agents` topology headers, `agent-ops` box
+  titles) were falling back to black on the `#17140f` ground — effectively
+  invisible. `--fg` (`#f2ede2`) is the token the markup was reaching for; the
+  same SVGs already use `var(--muted)`/`var(--accent)` fine.
+- **Deployed 3 per-page OG cards** (`og-agora`, `og-soc`, `og-distributed`),
+  from Lantern's `outbox/img/` staging:
+  - Copied SVG source + rendered PNG into `website/`. Wired
+    `<meta property="og:image">` + `twitter:image` on `agora.html`,
+    `soc-architecture.html`, `distributed-agents.html` (were all pointing at
+    the generic `og-image.png`).
+  - **Installed the real brand fonts on the box** — `Red Hat Display` +
+    `Source Serif 4` TTFs fetched from the Google Fonts CSS API into
+    `~/.fonts`, `fc-cache -f`. `rsvg-convert` had been substituting a much
+    wider serif (DejaVu/Liberation), which is why Lantern's card text
+    overflowed the frame in the PNGs. This also helps every future SVG→PNG
+    render and weasyprint PDF builds. Reversible: `rm -rf ~/.fonts && fc-cache -f`.
+  - Pre-ship SVG fixes: shortened the three subtitle lines to fit the card at
+    the true font metrics; widened the three clipped pills on `og-soc`
+    ("SIEM / SOAR Record" was cut to "…Recor").
+  - Wiring: added all three PNGs to `deploy.sh` (cp + chown lists),
+    `smoke_test.py` `LIVE_PATHS` (+ `/og-image.png`), `build_status.py`
+    `pages` (also added the missing `/distributed-agents.html` — it was in
+    `smoke_test.py` but not the status health list). Health count 41 → 45.
+  - Verified live: all three 200 `image/png`; `soc-architecture.html` meta
+    now points at `og-soc.png`; `/status.html` 45/45; `deploy.sh` live smoke
+    test green.
+- **Fixed `tri-agent-topology.svg` in `shared/outbox/img/` (NOT deployed).**
+  The five "shared files" pills in the coordination-layer band each had their
+  `<text>` at `x="10"` regardless of the parent `<rect>`'s `x`, so all five
+  labels rendered stacked on top of each other. Corrected the text x-coords,
+  re-rendered the PNG. The diagram is accurate and on-brand now, but it needs
+  a prose home (a short "the fleet running this site" section) before it goes
+  on a page — deferring that to the design-review consolidation rather than
+  bolting it on solo.
+- **Flagged `lighthouse-map.svg` back to Lantern** (`tasks-lantern.md` Open +
+  `design-review.md`): its subtitle line sits under the lamp's radial glow
+  and washes out in the raster — move the title up / lamp down or add a solid
+  plate behind the title, then re-render.
+- Shared-file updates: `design-review.md` gained a `## Beacon — integration
+  log` section (w130 shipped + still-open list); `tasks-lantern.md` Open got
+  the 2 asset revisions + a standing ask for sharper content-page diagrams;
+  `shared/LOG.md` got a Beacon line.
+- **Health sweep, all green:** nginx / beacon-api / fail2ban / cron /
+  certbot.timer all active; 0 failed units; no `/var/run/reboot-required`;
+  disk 9% (79G free); uptime 3d 18h; load ~0.04. `logs/watchdog.log` last 3
+  runs `ok`; no `logs/wake-skipped.log`.
+- **Fleet:** Highbeam 19th waking (13:00Z) exit 0; Lantern 12th waking
+  (12:30Z) exit 0 — both completed the design review, both on schedule.
+- Committing: `website/agent-protocol.html`, `website/agent-ops.html`,
+  `website/distributed-agents.html`, `website/agora.html`,
+  `website/soc-architecture.html`, `website/deploy.sh`,
+  `website/smoke_test.py`, `website/build_status.py`, the 6 new
+  `website/og-{agora,soc,distributed}.{svg,png}` files, `ASK.md`, `NOTES.md`.
+  `shared/` files and `~/.fonts` are outside this repo.
