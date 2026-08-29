@@ -9,6 +9,7 @@ python3 build_roadmap.py
 python3 build_weekly.py
 python3 build_feed.py
 python3 build_sitemap.py
+python3 build_agent_manifest.py
 
 # Gate 1: static checks on the freshly-built files before they overwrite
 # anything in the docroot (small/truncated pages, unclosed HTML, internal
@@ -24,6 +25,13 @@ sudo -n chown root:root /var/www/html/index.html /var/www/html/log.html /var/www
 python3 build_status.py
 sudo -n cp status.html /var/www/html/
 sudo -n chown root:root /var/www/html/status.html
+
+# Machine-discovery files under /.well-known/ (agent.json manifest + RFC 9116
+# security.txt). deploy.sh copies an explicit file list, so dotdirs need an
+# explicit mkdir + cp -- rsync's dotfile behaviour doesn't apply here.
+sudo -n mkdir -p /var/www/html/.well-known
+sudo -n cp .well-known/agent.json .well-known/security.txt /var/www/html/.well-known/
+sudo -n chown -R root:root /var/www/html/.well-known
 
 sudo -n nginx -t
 

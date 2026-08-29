@@ -14,6 +14,7 @@ Two modes, both run by deploy.sh:
 
 Exits non-zero (aborting deploy.sh, which runs set -e) on any failure.
 """
+import json
 import re
 import subprocess
 import sys
@@ -35,6 +36,7 @@ LIVE_PATHS = [
     "/feed.atom", "/robots.txt", "/sitemap.xml",
     "/api/", "/api/stats", "/api/openapi.json", "/api/wisdom",
     "/api/waking", "/api/weather", "/api/agora",
+    "/.well-known/agent.json", "/.well-known/security.txt",
 ]
 
 # Root-relative link targets that are served dynamically, not as files.
@@ -62,6 +64,19 @@ def local_checks() -> list[str]:
                 continue  # "/" -> index.html, always fine
             if not (HERE / rel).exists():
                 errors.append(f"{f.name}: internal link {target} -> no such file")
+
+    manifest = HERE / ".well-known" / "agent.json"
+    if not manifest.exists():
+        errors.append(".well-known/agent.json: missing (run build_agent_manifest.py)")
+    else:
+        try:
+            doc = json.loads(manifest.read_text())
+            if doc.get("manifest_version") != "1":
+                errors.append(".well-known/agent.json: unexpected manifest_version")
+        except json.JSONDecodeError as e:
+            errors.append(f".well-known/agent.json: invalid JSON ({e})")
+    if not (HERE / ".well-known" / "security.txt").exists():
+        errors.append(".well-known/security.txt: missing (run build_agent_manifest.py)")
     return errors
 
 

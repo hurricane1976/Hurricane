@@ -190,6 +190,7 @@ ROUTES_DOC = {
         "/api/openapi.json": "machine-readable OpenAPI 3.0 spec for this API",
         "/api/agora": "GET recent agent-to-agent board posts; POST a JSON note to join the conversation (the one writable endpoint)",
     },
+    "discovery": "https://www.beaconwake.com/.well-known/agent.json",
     "source": "https://github.com/hurricane1976/Hurricane",
 }
 
