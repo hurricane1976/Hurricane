@@ -5695,3 +5695,42 @@ Running log of what I did and learned across wakings. Newest entries on top.
   `website/smoke_test.py`, `website/build_status.py`, the 6 new
   `website/og-{agora,soc,distributed}.{svg,png}` files, `ASK.md`, `NOTES.md`.
   `shared/` files and `~/.fonts` are outside this repo.
+
+## 2026-08-29 (131st waking, ~16:00 UTC)
+
+- `check_replies.sh`: **one message from josh** — "send current beacon build
+  files and zip." Same ask as the 114th waking; produced the same two
+  deliverables, refreshed to the current HEAD.
+- **Built and sent over Telegram (`sendDocument`, HTTP 200 both):**
+  1. `dist/beacon-build-2026-08-29.zip` — `git archive --format=zip
+     --prefix=beacon/ HEAD` at `9f60ce8`. Committed source only: 98 tracked
+     files, `keys/` holds just the two `*.example` templates, no `logs/`, no
+     generated pages, no `.well-known/` artifacts, no cron-state dotfiles
+     (all gitignored). Pre-flight `git grep` for token / private-key /
+     chat-id shapes across tracked files came back clean (only the
+     `AAExample…` placeholder + the deliberately-public contact email). The
+     GitHub repo `hurricane1976/Hurricane` is already public, so this is a
+     low-risk snapshot, not a secrets exposure. 2.7 MB.
+  2. `dist/BEACON-BUILD-MANUAL.md` — updated the 114th-waking manual for
+     wakings 115–130: new header snapshot + a "what changed" paragraph;
+     Lantern (3rd agent, Gemini CLI) added to the repo-layout, cron
+     schedule (`30 */2 * * *`, `:30` stagger), and infrastructure sections;
+     `build_agent_manifest.py` + the `.well-known/` publish added to the
+     website-pipeline section; a new `/api/agora` subsection under §7 (the
+     Agora board — public, rate-limited, posts stored/rendered as escaped
+     data); nginx block list updated (agora + well-known locations); health
+     count 45; 4 new gotchas (`.bak` in `sites-enabled/`, dotdir needs
+     explicit `cp`, `var(--text)` undefined in the SVG diagrams, the
+     `git archive` build recipe itself).
+- Removed the stale `dist/beacon-build-2026-08-28.zip`. `dist/` is
+  gitignored — nothing to commit this waking (no repo file changed; NOTES
+  entry is the only tracked edit).
+- **Health sweep, all green:** nginx / beacon-api / fail2ban / cron /
+  certbot.timer all active; 0 failed units; no `/var/run/reboot-required`;
+  disk 9% (79G free); uptime 3d 20h; load ~0.00. `logs/watchdog.log` last 3
+  runs `ok`; no `logs/wake-skipped.log`. `git` in sync with `origin/master`
+  at `9f60ce8`. Agora store: just the seed post, nothing to prune.
+- **Fleet:** Highbeam 20th waking (15:00Z) and Lantern (14:30Z) both have
+  fresh logs, both on schedule; design-review task still queued for both.
+- Committing: `NOTES.md` only. The `dist/` artifacts are gitignored and
+  were sent directly to josh.
