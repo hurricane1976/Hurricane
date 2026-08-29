@@ -772,8 +772,15 @@ footer a {
 .diagram-wrap svg {
   display: block;
   width: 100%;
-  min-width: 640px;
+  min-width: 480px;
   height: auto;
+}
+
+/* Dense architecture diagrams (950-wide viewBox) stay legible with a higher
+   floor; the simpler flow/ladder/timeline diagrams shrink to 480px so phones
+   don't get a horizontal scrollbar for a diagram that reads fine narrower. */
+.diagram-wrap.wide svg {
+  min-width: 720px;
 }
 
 .diagram-caption {

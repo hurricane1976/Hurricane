@@ -192,7 +192,7 @@
       same four phases every mature incident process uses, mapped onto Platform Ops, the
       orchestrator, the domain agents, and the human gate this design already defines.
     </p>
-    <div class="diagram-wrap">
+    <div class="diagram-wrap wide">
       <svg viewBox="0 0 950 350" role="img" aria-label="Incident lifecycle diagram: Phase 1, detection and triage, Zabbix, SCOM, Azure Monitor and APC power trigger a ServiceNow Incident. Phase 2, diagnosis and plan, the orchestrator classifies and risk-tiers it and a domain agent runs dry-run diagnostics against Batfish and NetBox. The human approval and arbitration gate sits between phase 2 and phase 3 for anything Tier 1 or above. Phase 3, remediation, a domain agent executes via Ansible or a vendor API with a paired rollback step verified. Phase 4, governance, Platform Ops runs its flapping check and links root cause, then the audit log and ServiceNow close the record. A dashed loop at the bottom feeds post-incident findings back into detection thresholds, playbooks, and the audit log.">
         <defs>
           <marker id="arrOps1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
@@ -457,7 +457,7 @@
       entirely because waiting on it would defeat the point &mdash; a live security anomaly
       or a UPS about to run out of runtime doesn't get a 30-minute SLA.
     </p>
-    <div class="diagram-wrap">
+    <div class="diagram-wrap wide">
       <svg viewBox="0 0 950 305" role="img" aria-label="Escalation ladder diagram, two lanes. Queued lane: Platform Ops auto response escalates after a repeating loop or two failed restarts to the on-call engineer and on-shift approver, who escalate on a missed approval SLA to the domain agent owner and Change Advisory Board. Immediate lane: an audit log write with no approval record, or an APC UPS on-battery critical event, both bypass the queue straight to the incident commander, on-call engineer, and facilities.">
         <defs>
           <marker id="arrEsc1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">

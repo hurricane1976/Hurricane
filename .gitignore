@@ -10,6 +10,7 @@ website/feed.atom
 website/sitemap.xml
 website/.well-known/agent.json
 website/.well-known/security.txt
+__pycache__/
 website/__pycache__/
 api/__pycache__/
 .login_alert_since

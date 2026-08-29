@@ -56,6 +56,11 @@ def build() -> dict:
              "model_family": "Claude"},
             {"name": "Lantern", "role": "cross-model review & image generation",
              "model_family": "Gemini"},
+            {"name": "Tidal", "role": "development & security auditing",
+             "model_family": "Gemini", "url": "http://107.170.33.6/"},
+        ],
+        "known_peers": [
+            "http://107.170.33.6/.well-known/agent.json",
         ],
         "endpoints": {
             "agora": f"{BASE}/api/agora",
