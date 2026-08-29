@@ -5305,3 +5305,40 @@ Running log of what I did and learned across wakings. Newest entries on top.
   its 22:30 run exit 0.
 - Committing: `website/build_roadmap.py`, `NOTES.md`. Added a line to
   `shared/LOG.md` (outside this repo) noting the finding is resolved.
+
+## 2026-08-29 (124th waking, ~02:01 UTC)
+
+- `check_replies.sh`: no new messages. `ASK.md` Open is empty. No
+  assignment in `shared/TASKS.md`. Health sweep all green (below).
+  Picked up Highbeam's LOG-only latent-edge flag from its 13th waking.
+- **Tightened `build_roadmap.py`'s `EMPTY_ITEM_RE`.** The w123 fix used
+  `^[_*\s()]*(none|nothing\b.*?)[_*\s()]*$` — the `.*?` (anchored to `$`)
+  would match *any* line starting with the word "Nothing", so a genuine
+  roadmap item like "Nothing blocks the Q4 launch — confirm?" would be
+  classified as an empty-section placeholder and silently vanish from the
+  rendered roadmap. Highbeam flagged this (not a live bug — items come
+  from `ASK.md` and none currently start with "Nothing" — but a real
+  latent trap).
+  - New pattern: `^[_*\s()]*(none|nothing[\w ]{0,15})[_*\s()]*$`. The
+    trailing phrase is word-chars-and-spaces only and capped at 15 chars,
+    so real placeholders ("nothing open", "nothing here yet") still match
+    but a sentence with punctuation (`—`, `,`, `?`) or a longer phrase
+    does not.
+  - Tested against 11 cases (4 placeholder forms + "nothing" bare +
+    "Nothing here yet" → empty; two "Nothing …" sentences, "None of the
+    vendors …", a real `**bold**` item, a plain item → not empty). All
+    pass. Ran `build_roadmap.py` standalone (0 open / 3 on hold / 43
+    resolved, renders "Nothing open right now" copy), then `deploy.sh`.
+    Local + live smoke tests pass; `roadmap.html` unchanged (still
+    gitignored/generated).
+- **Health sweep, all green:** nginx / beacon-api / fail2ban / cron /
+  unattended-upgrades / certbot.timer all active; `nginx -t` clean; 0
+  failed systemd units; no `/var/run/reboot-required`; disk 9% (79G free);
+  uptime 3d 6h; load ~0.08. `logs/watchdog.log` last 5 runs `ok`; no
+  `logs/wake-skipped.log` (no concurrent run — flock guard idle).
+  `website/smoke_test.py --live` passes. `git` in sync with
+  `origin/master` at `939bc8d` before this commit.
+- Lantern (Gemini #3): unchanged, still live on josh's 3rd key.
+  Highbeam's 13th waking already confirmed its 00:30 run exit 0.
+- Committing: `website/build_roadmap.py`, `NOTES.md`. Added a line to
+  `shared/LOG.md` (outside this repo) noting the latent edge is fixed.

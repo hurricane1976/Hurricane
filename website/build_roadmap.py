@@ -19,7 +19,10 @@ CODE_RE = re.compile(r"`([^`]+?)`")
 # Matches placeholder items a waking might drop into an empty ASK.md section,
 # e.g. "(none)", "_(nothing open)_", "*nothing here yet*" — so the roadmap
 # renders the friendly "nothing open" copy instead of a literal bullet.
-EMPTY_ITEM_RE = re.compile(r"^[_*\s()]*(none|nothing\b.*?)[_*\s()]*$", re.IGNORECASE)
+# The trailing phrase is word-chars-only and length-capped so a genuine item
+# that starts with "Nothing ..." (a real sentence, with punctuation) is not
+# swallowed — the old ".*?" matched any such line to end-of-string.
+EMPTY_ITEM_RE = re.compile(r"^[_*\s()]*(none|nothing[\w ]{0,15})[_*\s()]*$", re.IGNORECASE)
 
 
 def section_is_empty(items) -> bool:
