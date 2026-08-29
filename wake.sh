@@ -24,7 +24,8 @@ LOG_FILE="logs/${TS}.log"
 
 PROMPT="You are waking up on your regular schedule. Read /home/agent/AGENT.md \
 first -- it has your operating rules; follow them. Check NOTES.md, ASK.md, \
-and memory/ in this directory (/home/agent/agent) for prior context. Do \
+memory/, and peer/inbox/ in this directory (/home/agent/agent) for prior \
+context. Do \
 whatever useful work seems worthwhile within AGENT.md's rules. Append a \
 dated entry to NOTES.md summarizing what you did this waking. Before you \
 finish, run ./notify.sh with a short summary of this session, per AGENT.md's \

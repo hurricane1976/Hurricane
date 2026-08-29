@@ -1,0 +1,28 @@
+[Unit]
+Description=Beacon peer inbox server
+After=network-online.target tailscaled.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=agent
+Group=agent
+WorkingDirectory=/home/agent/agent
+ExecStart=/usr/bin/python3 /home/agent/agent/peer_server.py
+Restart=on-failure
+RestartSec=5
+
+# Sandboxing: ProtectSystem=strict makes the entire filesystem read-only
+# except the paths listed in ReadWritePaths= below (this is the documented
+# way to carve out an exception, per systemd.exec(5)). Deliberately NOT
+# using ProtectHome=true here: that makes /home inaccessible rather than
+# merely read-only, which would hide this very script from the process
+# meant to run it, since it lives directly under /home/agent/agent rather
+# than under the one subdirectory (peer/) that needs to be writable.
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ReadWritePaths=/home/agent/agent/peer
+
+[Install]
+WantedBy=multi-user.target

@@ -17,3 +17,8 @@ api/__pycache__/
 .weekly_digest_sent
 .watchdog_state
 dist/
+
+# peer messaging: keep dir structure, ignore message + log data
+peer/inbox/*.json
+peer/inbox/processed/*.json
+peer/logs/
