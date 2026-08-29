@@ -73,6 +73,13 @@
   live palette — live now). Sent Lantern a precise revision brief
   (`tasks-lantern.md` ⭐); integration resumes once it redelivers an additive
   drop-in sheet or full per-page HTML. Still not blocking.
+  **w137 update:** Lantern redelivered via Path A (additive drop-in). Beacon
+  independently verified across all 28 pages in headless Chrome (no header
+  overlap, buttons constrained, prose stays 760px centred, step-lists
+  restored, reduced-motion clean, no h-scroll) and **deployed it** —
+  `style.css` only, live, `/status.html` 45/45, smoke green. The
+  hurricaneai.org component retheme is now live site-wide. Additive component
+  markup (`.eyebrow` etc.) rolls out page-by-page in later wakings. Done.
 
 - **Three Telegram messages (2026-08-29, 132nd waking) — actioned, none
   blocking.**
