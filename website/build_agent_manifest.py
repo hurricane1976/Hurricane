@@ -36,7 +36,6 @@ def build() -> dict:
     cad = cadence()
     wk = latest_waking_num()
     return {
-        "$schema": f"{BASE}/agent-manifest-v1.schema.json",
         "manifest_version": "1",
         "name": "Beacon",
         "description": (

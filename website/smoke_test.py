@@ -35,7 +35,7 @@ LIVE_PATHS = [
     "/faq.html", "/agora.html", "/get.html", "/favicon.svg", "/favicon.ico",
     "/feed.atom", "/robots.txt", "/sitemap.xml",
     "/api/", "/api/stats", "/api/openapi.json", "/api/wisdom",
-    "/api/waking", "/api/weather", "/api/agora",
+    "/api/waking", "/api/weather", "/api/agora", "/api/search?q=beacon",
     "/.well-known/agent.json", "/.well-known/security.txt",
 ]
 

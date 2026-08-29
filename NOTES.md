@@ -5572,3 +5572,59 @@ Running log of what I did and learned across wakings. Newest entries on top.
   so its localhost page-health curl 404'd the two new paths. Moved the block
   ahead of `build_status.py` (same rule the main `cp` block already follows).
   Redeploy → 40/40. Commits: `1a530ed` (manifest) + `e0892e0` (deploy order).
+
+## 2026-08-29 (129th waking, ~12:00 UTC)
+
+- `check_replies.sh`: **one new message from josh** — "Request highbeam and
+  lantern review existing website and work and provide improvements. Focusing
+  on visual appeal and graphics in the documents and visual site appeal i.e.
+  layout, style, etc. animations and icons to be reviewed as well."
+- **Actioned the review request (fleet task, not a Beacon build this waking).**
+  - Wrote **`shared/design-review.md`** — a full brief: scope (every live page +
+    the paid PDFs / `paid_src/print.css` + the loose `*.pdf`/`*.pptx`), the
+    axes to cover (layout/spacing/hierarchy, typography + color + contrast,
+    animations incl. `prefers-reduced-motion`, icons + the inline SVG diagrams,
+    print/PDF styling), and a "what a good finding looks like" format (where /
+    current state / proposed change / effort / risk, ranked). Highbeam and
+    Lantern each append under their own `## <name>` heading; Beacon works it
+    top-down and marks items done.
+  - Queued it as the **priority Open item** in `shared/TASKS.md` (Highbeam) and
+    `shared/tasks-lantern.md` (Lantern). Lantern additionally told to generate
+    mockups / sample icons / redesigned diagrams / OG cards as PNG+SVG into
+    `shared/outbox/img/` (same review gate as text) and to give a verdict on
+    the 3 assets already there (`og-agora`, `tri-agent-topology`,
+    `lighthouse-map`).
+  - `ASK.md`: logged under Resolved (actioned; findings land over the next
+    Highbeam/Lantern wakings, not blocking). `shared/LOG.md`: added a Beacon
+    line.
+- **Cleared all 3 of Highbeam's w128 discovery-manifest notes** (from its 18th
+  waking `LOG.md` entry):
+  1. **Dangling `$schema`.** `build_agent_manifest.py` emitted
+     `"$schema": "{BASE}/agent-manifest-v1.schema.json"` — that URL 404s (no
+     schema is published) and it was the one field not in the
+     `#discovery-manifest` mini-spec. Dropped the line; `manifest_version:"1"`
+     + the human mini-spec already cover versioning. Manifest now 16 top-level
+     fields, round-trips clean.
+  2. **`security.txt` charset.** RFC 9116 §3 wants `; charset=utf-8`. The
+     nginx block had `default_type "text/plain; charset=utf-8"` but the `.txt`
+     extension → `mime.types` `text/plain` was winning. Fix: added an empty
+     `types { }` block to `location = /.well-known/security.txt` so
+     `default_type` applies. Now serves `Content-Type: text/plain;
+     charset=utf-8`. Backup: `/home/agent/nginx-default.bak-w129` (kept OUT of
+     `sites-enabled/` — a `.bak` there fails `nginx -t`, learned w126).
+     `nginx -t` clean, reloaded.
+  3. **`/api/search` outside the health gate.** It's in the manifest's
+     `endpoints` but wasn't checked anywhere. Added `/api/search?q=beacon` to
+     `smoke_test.py` `LIVE_PATHS` and `build_status.py` `pages_ok()` (health
+     count 40 → 41). Verified live: `?q=beacon` → 200, no-query → 400.
+- **Health sweep, all green:** nginx / beacon-api / fail2ban / cron /
+  certbot.timer all active; 0 failed units; no `/var/run/reboot-required`;
+  disk 9% (79G free); uptime 3d 16h; load ~0.02. `logs/watchdog.log` last 5
+  runs `ok`; no `logs/wake-skipped.log` (flock guard idle). `git` in sync with
+  `origin/master` at `fcc90db` before this commit.
+- **Fleet:** Highbeam 18th waking (11:00Z) exit 0, reviewed w128, wrote the 3
+  notes handled above. Lantern 8th... 9th waking (10:30Z) exit 0. Both on
+  schedule; both now have the design-review task queued.
+- Committing: `website/build_agent_manifest.py`, `website/smoke_test.py`,
+  `website/build_status.py`, `ASK.md`, `NOTES.md`. The generated
+  `.well-known/` files are gitignored; `shared/` files are outside this repo.

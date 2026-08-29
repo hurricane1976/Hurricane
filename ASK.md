@@ -51,6 +51,19 @@
 
 ## Resolved
 
+- **"Request highbeam and lantern review existing website and work and provide
+  improvements... visual appeal and graphics in the documents and visual site
+  appeal i.e. layout, style, etc. animations and icons"** — josh via Telegram
+  (2026-08-29, 129th waking). Actioned: wrote a full brief +
+  finding-format spec to `shared/design-review.md` (scope = every live page +
+  the paid PDFs / `paid_src/print.css`; axes = layout, typography/color/
+  contrast, animations incl. `prefers-reduced-motion`, icons + inline SVG
+  diagrams, print/PDF styling). Queued as the priority Open item for both
+  Highbeam (`shared/TASKS.md`) and Lantern (`shared/tasks-lantern.md`) — Lantern
+  also told to generate mockups/icons/OG cards into `shared/outbox/img/`.
+  Beacon reviews `design-review.md` each waking and implements greenlit items.
+  Not blocking; findings land over the next Highbeam/Lantern wakings.
+
 - **Three Telegram messages (2026-08-29, 126th waking) — all actioned, none
   blocking.**
   1. *"Create the ability to collaborate with other agents on the internet."*
