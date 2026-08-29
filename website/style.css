@@ -1,17 +1,20 @@
   :root {
     color-scheme: dark;
-    --bg: #17140f;
-    --bg-elev: #201c16;
-    --fg: #f2ede2;
-    --muted: #a89d8c;
-    --accent: #d97757;
-    --accent-2: #9db877;
-    --accent-blue: #83a9c4;
-    --accent-green: #9db877;
-    --accent-navy: #3d5a80;
-    --accent-violet: #a98fc4;
-    --line: #332e26;
-    --card: #1c1811cc;
+    --bg: #0a0d13;
+    --bg-elev: #161d27;
+    --surface: #10151d;
+    --fg: #e8eaed;
+    --muted: #8b93a1;
+    --faint: #4d5562;
+    --accent: #ff8a3d;
+    --accent-dim: rgba(255,138,61,0.35);
+    --accent-2: #4fd1c5;
+    --accent-blue: #4fd1c5;
+    --accent-green: #4fd1c5;
+    --accent-navy: #ff8a3d;
+    --accent-violet: #8b93a1;
+    --line: rgba(232,234,237,0.10);
+    --card: #10151d;
   }
   * { box-sizing: border-box; }
   html { scroll-behavior: smooth; }
@@ -19,56 +22,61 @@
     margin: 0;
     background: var(--bg);
     color: var(--fg);
-    font-family: "Source Serif 4", Georgia, "Times New Roman", serif;
-    line-height: 1.65;
+    font-family: "IBM Plex Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    font-weight: 300;
+    line-height: 1.6;
     overflow-x: hidden;
   }
-  h1, h2, .brand, .log-num, .stat-value {
-    font-family: "Red Hat Display", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  h1, h2, h3, .brand, .log-num, .stat-value {
+    font-family: "Space Grotesk", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    font-weight: 600;
+    letter-spacing: -0.02em;
   }
-  nav.site-nav, .badge, .status-pill, .now-widget, .card-head h2, code, .log-date, .log-header, footer {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  nav.site-nav, .badge, .status-pill, .now-widget, .card-head h2,
+  .log-header, footer {
+    font-family: "IBM Plex Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  }
+  code, .log-date, .log-num, .stat-label, .code-label, .weight, .wk-ref,
+  .diagram-legend, .tier-pill, .stage-kicker, .mock-titlebar .label,
+  .mock-field label, .trace-rail button, .trace-progress {
+    font-family: "IBM Plex Mono", "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
   }
 
-  /* ---------- background ---------- */
+  /* ---------- background (fixed grid + amber/teal glow) ---------- */
   .backdrop {
     position: fixed;
     inset: 0;
     z-index: -1;
     background:
-      radial-gradient(700px 450px at 20% -10%, rgba(217,119,87,0.10), transparent 60%),
-      radial-gradient(600px 400px at 100% 110%, rgba(157,184,119,0.06), transparent 60%),
+      radial-gradient(ellipse 85% 55% at 50% 8%, transparent 30%, var(--bg) 80%),
+      linear-gradient(rgba(232,234,237,0.028) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(232,234,237,0.028) 1px, transparent 1px),
       var(--bg);
+    background-size: auto, 64px 64px, 64px 64px, auto;
   }
-  .backdrop svg {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    opacity: 0.18;
-  }
+  .backdrop svg { display: none; }
   .backdrop::before,
   .backdrop::after {
     content: "";
     position: absolute;
     border-radius: 50%;
-    filter: blur(90px);
+    filter: blur(120px);
     will-change: transform;
   }
   .backdrop::before {
-    width: 440px;
-    height: 440px;
-    top: -140px;
-    left: -120px;
-    background: radial-gradient(circle, rgba(217,119,87,0.32), transparent 70%);
+    width: 600px;
+    height: 600px;
+    top: -200px;
+    left: -100px;
+    background: radial-gradient(circle, rgba(255,138,61,0.22), transparent 70%);
     animation: drift1 24s ease-in-out infinite;
   }
   .backdrop::after {
-    width: 400px;
-    height: 400px;
+    width: 500px;
+    height: 500px;
     bottom: -160px;
-    right: -100px;
-    background: radial-gradient(circle, rgba(61,90,128,0.34), transparent 70%);
+    right: -150px;
+    background: radial-gradient(circle, rgba(79,209,197,0.16), transparent 70%);
     animation: drift2 28s ease-in-out infinite;
   }
   @keyframes drift1 {
@@ -94,7 +102,10 @@
     padding: 1.1rem 1.5rem;
     max-width: 920px;
     margin: 0 auto;
-    backdrop-filter: blur(10px);
+    gap: 0.5rem 1.25rem;
+    flex-wrap: wrap;
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--line);
   }
   .brand {
     display: flex;
@@ -112,21 +123,23 @@
     color: var(--muted);
     border: 1px solid var(--line);
     padding: 0.35rem 0.7rem;
-    border-radius: 999px;
+    border-radius: 2px;
     background: rgba(255,255,255,0.02);
+    white-space: nowrap;
+    flex-shrink: 0;
   }
   .dot {
     width: 7px;
     height: 7px;
     border-radius: 50%;
-    background: var(--accent-green);
-    box-shadow: 0 0 0 0 rgba(52,211,153,0.6);
+    background: var(--accent-2);
+    box-shadow: 0 0 0 0 rgba(79,209,197,0.6);
     animation: dotpulse 2.2s ease-out infinite;
   }
   @keyframes dotpulse {
-    0% { box-shadow: 0 0 0 0 rgba(52,211,153,0.55); }
-    70% { box-shadow: 0 0 0 7px rgba(52,211,153,0); }
-    100% { box-shadow: 0 0 0 0 rgba(52,211,153,0); }
+    0% { box-shadow: 0 0 0 0 rgba(79,209,197,0.55); }
+    70% { box-shadow: 0 0 0 7px rgba(79,209,197,0); }
+    100% { box-shadow: 0 0 0 0 rgba(79,209,197,0); }
   }
 
   main {
@@ -163,7 +176,7 @@
   }
   h1 {
     font-size: clamp(2.4rem, 6vw, 3.8rem);
-    font-weight: 800;
+    font-weight: 600;
     margin: 0 0 0.75rem;
     letter-spacing: -0.02em;
     color: var(--fg);
@@ -186,7 +199,7 @@
     color: var(--muted);
     border: 1px solid var(--line);
     padding: 0.4rem 0.85rem;
-    border-radius: 999px;
+    border-radius: 2px;
     background: rgba(255,255,255,0.02);
   }
   .now-widget {
@@ -202,7 +215,7 @@
   .now-item {
     border: 1px solid var(--line);
     padding: 0.35rem 0.8rem;
-    border-radius: 999px;
+    border-radius: 2px;
     background: rgba(255,255,255,0.02);
   }
   .now-item a { color: inherit; }
@@ -215,17 +228,16 @@
     margin-top: 1rem;
   }
   section.card {
-    background: var(--card);
+    background: var(--surface);
     border: 1px solid var(--line);
-    border-radius: 1.1rem;
+    border-radius: 6px;
     padding: 1.75rem 1.85rem;
-    box-shadow: 0 12px 28px -22px rgba(0,0,0,0.5);
-    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+    transition: transform 0.25s ease, border-color 0.25s ease, background 0.25s ease;
   }
   section.card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 22px 44px -22px rgba(0,0,0,0.65);
-    border-color: color-mix(in srgb, var(--accent) 35%, var(--line));
+    transform: translateY(-2px);
+    background: var(--bg-elev);
+    border-color: color-mix(in srgb, var(--accent-2) 45%, var(--line));
   }
   .card-head {
     display: flex;
@@ -236,21 +248,20 @@
   .card-head svg {
     width: 20px;
     height: 20px;
-    padding: 10px;
+    padding: 9px;
     box-sizing: content-box;
     flex-shrink: 0;
-    border-radius: 0.6rem;
+    border-radius: 4px;
     color: var(--accent);
-    background: color-mix(in srgb, currentColor 12%, transparent);
+    border: 1px solid color-mix(in srgb, currentColor 30%, var(--line));
+    background: color-mix(in srgb, currentColor 8%, transparent);
   }
-  /* rotate the icon-tile accent through the palette, card by card */
-  section.card:nth-of-type(4n+2) .card-head svg { color: var(--accent-blue); }
-  section.card:nth-of-type(4n+3) .card-head svg { color: var(--accent-2); }
-  section.card:nth-of-type(4n) .card-head svg { color: var(--accent-green); }
+  /* two-tone system: alternate the icon-tile accent card by card */
+  section.card:nth-of-type(2n) .card-head svg { color: var(--accent-2); }
   .price {
-    font-family: "Red Hat Display", sans-serif;
+    font-family: "Space Grotesk", sans-serif;
     font-size: 1.6rem;
-    font-weight: 800;
+    font-weight: 600;
     color: var(--accent);
     margin-top: 0.6rem;
   }
@@ -259,21 +270,19 @@
     align-items: center;
     gap: 0.5rem;
     margin-top: 0.9rem;
-    padding: 0.7rem 1.3rem;
-    background: var(--accent-navy);
-    color: #f2ede2;
-    font-family: "Red Hat Display", sans-serif;
-    font-weight: 700;
+    padding: 0.8rem 1.5rem;
+    background: var(--accent);
+    color: #0a0d13;
+    font-family: "Space Grotesk", sans-serif;
+    font-weight: 500;
     font-size: 0.92rem;
-    border-radius: 999px;
+    border-radius: 2px;
     text-decoration: none;
-    transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
-    box-shadow: 0 10px 24px -14px rgba(61,90,128,0.7);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
   }
   .btn-buy:hover {
-    background: color-mix(in srgb, var(--accent-navy) 85%, white);
-    transform: translateY(-2px);
-    box-shadow: 0 14px 30px -14px rgba(61,90,128,0.85);
+    transform: translateY(-1px);
+    box-shadow: 0 0 30px var(--accent-dim);
   }
   .btn-buy svg { width: 16px; height: 16px; flex-shrink: 0; }
   h2 {
@@ -300,19 +309,19 @@
   ul.check li:last-child { margin-bottom: 0; }
   .weight {
     display: inline-block;
-    font-family: "Red Hat Display", sans-serif;
+    font-family: "Space Grotesk", sans-serif;
     font-size: 0.68rem;
     font-weight: 700;
     letter-spacing: 0.02em;
     color: var(--accent);
     background: color-mix(in srgb, var(--accent) 12%, transparent);
     padding: 0.1em 0.55em;
-    border-radius: 999px;
+    border-radius: 2px;
     vertical-align: middle;
     margin-left: 0.3em;
   }
   .wk-ref {
-    font-family: "Red Hat Display", sans-serif;
+    font-family: "Space Grotesk", sans-serif;
     font-size: 0.72rem;
     font-weight: 700;
     letter-spacing: 0.02em;
@@ -326,7 +335,7 @@
     background: var(--card);
     border: 1px solid var(--line);
     border-left: 3px solid var(--accent-navy);
-    border-radius: 0.7rem;
+    border-radius: 6px;
     padding: 1.1rem 1.3rem;
     font-size: 0.92rem;
   }
@@ -342,7 +351,7 @@
     position: relative;
     background: var(--card);
     border: 1px solid var(--line);
-    border-radius: 1rem;
+    border-radius: 6px;
     padding: 1.3rem 1.3rem 1.2rem;
     box-shadow: 0 12px 28px -22px rgba(0,0,0,0.5);
     overflow: hidden;
@@ -363,7 +372,7 @@
   .stat:nth-of-type(4n+3)::before { background: var(--accent-2); }
   .stat:nth-of-type(4n)::before { background: var(--accent-green); }
   .stat-value {
-    font-weight: 800;
+    font-weight: 600;
     font-size: 1.7rem;
     color: var(--fg);
     line-height: 1.1;
@@ -401,6 +410,17 @@
     text-align: center;
   }
   footer a { color: var(--muted); }
+  .footer-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.4rem;
+    font-size: 0.8rem;
+  }
+  .footer-links a {
+    color: var(--muted);
+    transition: color 0.2s ease;
+  }
+  .footer-links a:hover { color: var(--accent); text-decoration: none; }
 
   @media (max-width: 520px) {
     section.card { padding: 1.4rem 1.3rem; }
@@ -479,7 +499,7 @@ table.data-table td {
   vertical-align: top;
 }
 table.data-table th {
-  font-family: "Red Hat Display", sans-serif;
+  font-family: "Space Grotesk", sans-serif;
   font-weight: 700;
   font-size: 0.78rem;
   letter-spacing: 0.02em;
@@ -490,7 +510,7 @@ table.data-table th {
 table.data-table tr:last-child td { border-bottom: none; }
 .tier-pill {
   display: inline-block;
-  font-family: "Red Hat Display", sans-serif;
+  font-family: "Space Grotesk", sans-serif;
   font-size: 0.72rem;
   font-weight: 700;
   padding: 0.12em 0.6em;
@@ -500,7 +520,7 @@ table.data-table tr:last-child td { border-bottom: none; }
 .tier-0 { background: color-mix(in srgb, var(--accent-2) 16%, transparent); color: var(--accent-2); }
 .tier-1 { background: color-mix(in srgb, var(--accent-blue) 16%, transparent); color: var(--accent-blue); }
 .tier-2 { background: color-mix(in srgb, var(--accent) 16%, transparent); color: var(--accent); }
-.tier-3 { background: color-mix(in srgb, #d97757 20%, transparent); color: #e08a6a; }
+.tier-3 { background: color-mix(in srgb, #ff8a3d 20%, transparent); color: #e08a6a; }
 
 /* ---------- code blocks (integration guide) ---------- */
 .code-label {
@@ -513,9 +533,9 @@ table.data-table tr:last-child td { border-bottom: none; }
   margin: 0.9rem 0 0.35rem;
 }
 pre.code-block {
-  background: #100e0a;
+  background: #0d1117;
   border: 1px solid var(--line);
-  border-radius: 0.6rem;
+  border-radius: 4px;
   padding: 0.9rem 1.1rem;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
@@ -524,7 +544,7 @@ pre.code-block {
 pre.code-block code {
   background: none;
   padding: 0;
-  color: #d8cdb8;
+  color: #c5ccd6;
   font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
   font-size: 0.8rem;
   line-height: 1.6;
@@ -537,7 +557,7 @@ pre.code-block code {
 .mock-window {
   background: var(--bg-elev);
   border: 1px solid var(--line);
-  border-radius: 0.9rem;
+  border-radius: 6px;
   overflow: hidden;
   margin: 0.6rem 0 1.4rem;
   box-shadow: 0 16px 32px -24px rgba(0,0,0,0.6);
@@ -555,7 +575,7 @@ pre.code-block code {
   margin-left: 0.5rem;
   font-size: 0.76rem;
   color: var(--muted);
-  font-family: "Red Hat Display", sans-serif;
+  font-family: "Space Grotesk", sans-serif;
 }
 .mock-body { padding: 1.1rem 1.2rem 1.3rem; }
 .mock-row { display: flex; gap: 0.9rem; flex-wrap: wrap; margin-bottom: 0.8rem; }
@@ -567,12 +587,12 @@ pre.code-block code {
   letter-spacing: 0.02em;
   color: var(--muted);
   margin-bottom: 0.25rem;
-  font-family: "Red Hat Display", sans-serif;
+  font-family: "Space Grotesk", sans-serif;
 }
 .mock-field .val {
   background: rgba(255,255,255,0.04);
   border: 1px solid var(--line);
-  border-radius: 0.5rem;
+  border-radius: 3px;
   padding: 0.5rem 0.7rem;
   font-size: 0.85rem;
   color: var(--fg);
@@ -582,8 +602,8 @@ pre.code-block code {
   align-items: center;
   gap: 0.4rem;
   padding: 0.5rem 1rem;
-  border-radius: 0.6rem;
-  font-family: "Red Hat Display", sans-serif;
+  border-radius: 4px;
+  font-family: "Space Grotesk", sans-serif;
   font-weight: 700;
   font-size: 0.82rem;
   border: 1px solid var(--line);
@@ -591,7 +611,7 @@ pre.code-block code {
   color: var(--fg);
   cursor: default;
 }
-.mock-btn.primary { background: var(--accent-navy); border-color: var(--accent-navy); color: #f2ede2; }
+.mock-btn.primary { background: var(--accent-navy); border-color: var(--accent-navy); color: #0a0d13; }
 .mock-btn.approve { background: color-mix(in srgb, var(--accent-2) 22%, transparent); border-color: var(--accent-2); color: var(--accent-2); }
 .mock-btn.reject { background: color-mix(in srgb, #e08a6a 20%, transparent); border-color: #e08a6a; color: #e08a6a; }
 .mock-step {
@@ -603,12 +623,12 @@ pre.code-block code {
   align-items: flex-start;
 }
 .mock-step:last-child { border-bottom: none; }
-.mock-step .t { color: var(--muted); font-size: 0.76rem; font-family: "Red Hat Display", sans-serif; min-width: 4.6rem; }
-.mock-diff-add { color: var(--accent-2); background: color-mix(in srgb, var(--accent-2) 10%, transparent); display: block; padding: 0.15rem 0.5rem; border-radius: 0.3rem; margin: 0.15rem 0; font-family: monospace; font-size: 0.8rem; }
-.mock-diff-rem { color: #e08a6a; background: color-mix(in srgb, #e08a6a 10%, transparent); display: block; padding: 0.15rem 0.5rem; border-radius: 0.3rem; margin: 0.15rem 0; font-family: monospace; font-size: 0.8rem; text-decoration: line-through; }
+.mock-step .t { color: var(--muted); font-size: 0.76rem; font-family: "Space Grotesk", sans-serif; min-width: 4.6rem; }
+.mock-diff-add { color: var(--accent-2); background: color-mix(in srgb, var(--accent-2) 10%, transparent); display: block; padding: 0.15rem 0.5rem; border-radius: 2px; margin: 0.15rem 0; font-family: monospace; font-size: 0.8rem; }
+.mock-diff-rem { color: #e08a6a; background: color-mix(in srgb, #e08a6a 10%, transparent); display: block; padding: 0.15rem 0.5rem; border-radius: 2px; margin: 0.15rem 0; font-family: monospace; font-size: 0.8rem; text-decoration: line-through; }
 .mock-gauge-wrap { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px,1fr)); gap: 0.9rem; }
-.mock-gauge { background: rgba(255,255,255,0.03); border: 1px solid var(--line); border-radius: 0.7rem; padding: 0.8rem 0.9rem; }
-.mock-gauge .n { font-family: "Red Hat Display", sans-serif; font-weight: 800; font-size: 1.5rem; }
+.mock-gauge { background: rgba(255,255,255,0.03); border: 1px solid var(--line); border-radius: 6px; padding: 0.8rem 0.9rem; }
+.mock-gauge .n { font-family: "Space Grotesk", sans-serif; font-weight: 600; font-size: 1.5rem; }
 .mock-gauge .l { color: var(--muted); font-size: 0.76rem; margin-top: 0.1rem; }
 .mock-gauge .n.ok { color: var(--accent-2); }
 .mock-gauge .n.warn { color: #e08a6a; }
@@ -655,7 +675,7 @@ nav.site-nav a.active {
   flex: 1;
   background: var(--bg-elev);
   border: 1px solid var(--line);
-  border-radius: 999px;
+  border-radius: 2px;
   padding: 0.6rem 1.1rem;
   color: var(--fg);
   font-family: inherit;
@@ -667,12 +687,12 @@ nav.site-nav a.active {
 }
 .log-search button {
   background: var(--accent);
-  color: var(--bg);
+  color: #0a0d13;
   border: none;
-  border-radius: 999px;
+  border-radius: 2px;
   padding: 0.6rem 1.3rem;
   font-family: inherit;
-  font-weight: 700;
+  font-weight: 500;
   font-size: 0.9rem;
   cursor: pointer;
 }
@@ -704,7 +724,7 @@ nav.site-nav a.active {
 .log-entry {
   background: var(--card);
   border: 1px solid var(--line);
-  border-radius: 1.1rem;
+  border-radius: 6px;
   padding: 1.5rem 1.75rem;
   box-shadow: 0 12px 28px -22px rgba(0,0,0,0.5);
   transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
@@ -727,6 +747,7 @@ nav.site-nav a.active {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
   .backdrop::before, .backdrop::after,
   .mark-lg, .mark-lg .pulse, .brand svg, .dot {
     animation: none !important;
@@ -788,7 +809,7 @@ nav.site-nav a.active {
   color: var(--muted);
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid var(--line);
-  border-radius: 0.55rem;
+  border-radius: 3px;
   padding: 0.5rem 0.35rem;
   text-align: center;
   cursor: pointer;
@@ -800,7 +821,7 @@ nav.site-nav a.active {
 }
 .trace-rail .n {
   display: block;
-  font-weight: 800;
+  font-weight: 600;
   font-size: 0.9rem;
   color: var(--muted);
 }
@@ -827,7 +848,7 @@ nav.site-nav a.active {
   margin-bottom: 0.35rem;
 }
 .trace-step h3 {
-  font-family: "Red Hat Display", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  font-family: "Space Grotesk", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
   font-size: 1.15rem;
   margin: 0 0 0.5rem;
 }
@@ -841,10 +862,10 @@ nav.site-nav a.active {
 .trace-nav button {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
   font-size: 0.85rem;
-  color: var(--fg);
+  color: #0a0d13;  font-weight: 500;
   background: var(--accent-navy);
   border: 1px solid var(--accent-navy);
-  border-radius: 0.55rem;
+  border-radius: 3px;
   padding: 0.5rem 1.1rem;
   cursor: pointer;
 }

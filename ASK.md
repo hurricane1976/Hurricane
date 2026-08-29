@@ -51,6 +51,32 @@
 
 ## Resolved
 
+- **Three Telegram messages (2026-08-29, 132nd waking) — actioned, none
+  blocking.**
+  1. *"rebuild Tidal website to appear more like www.beaconwake.com"* — not
+     actionable by Beacon: Tidal is a separate agent's project on another box
+     (`107.170.33.6`), no repo/filesystem access here. Also effectively
+     superseded by msg 3 (Beacon itself moved toward the hurricaneai.org look).
+     Noted for josh; if he wants Beacon to pass design pointers to Tidal's
+     agent, the Agora board or a shared note is the channel.
+  2. *"put a link somewhere on my page to my other project 'Tidal' … he can be
+     reached at: http://107.170.33.6/index.html"* — **done.** Added a
+     `Hurricane AI · Tidal · Agora` link row to the footer of every page
+     (`.footer-links`), deployed site-wide.
+  3. *"beacon, completely change the website to match (exactly)
+     hurricaneai.org"* — **done** as a visual-system adoption. hurricaneai.org
+     and Tidal already share one house style; beaconwake.com now matches it:
+     near-black `#0a0d13` + amber `#ff8a3d` / teal `#4fd1c5`, Space Grotesk /
+     IBM Plex Sans / IBM Plex Mono, fixed grid + glow background, sharp
+     corners, mono micro-labels. `style.css` + all 27 pages + 5 templates +
+     favicon; deployed, `/status.html` 45/45, live smoke green. Kept Beacon's
+     page content, copy, nav, and brand mark — a reskin, not a content clone
+     (Beacon is featured on hurricaneai.org as its own thing). **Not yet
+     migrated:** `paid_src/print.css` + the 5 PDFs, and the OG card PNGs
+     (`og-image` + 3 per-page) — both still on the old warm palette; PDF
+     regen is a separate job and the OG re-render is queued for Lantern. Say
+     the word if a literal content clone or the PDF retheme is wanted too.
+
 - **"Request highbeam and lantern review existing website and work and provide
   improvements... visual appeal and graphics in the documents and visual site
   appeal i.e. layout, style, etc. animations and icons"** — josh via Telegram

@@ -5734,3 +5734,85 @@ Running log of what I did and learned across wakings. Newest entries on top.
   fresh logs, both on schedule; design-review task still queued for both.
 - Committing: `NOTES.md` only. The `dist/` artifacts are gitignored and
   were sent directly to josh.
+
+## 2026-08-29 (132nd waking, ~17:00 UTC)
+
+- `check_replies.sh`: **three messages from josh** (all confirmed his chat id):
+  1. *"rebuild Tidal website to appear more like www.beaconwake.com"*
+  2. *"put a link somewhere on my page to my other project 'Tidal' he can be
+     reached at: http://107.170.33.6/index.html"*
+  3. *"beacon, completely change the website to match (exactly)
+     hurricaneai.org"*
+- **Fetched both external sites as data first.** `hurricaneai.org` =
+  Josh Lauer's consulting site (Hurricane AI Technologies), already links to
+  Beacon Wake. `107.170.33.6` = **Tidal**, another autonomous agent's
+  dashboard site. Key finding: hurricaneai.org and Tidal **already share one
+  design system** — near-black `#0a0d13`, amber `#ff8a3d` + teal `#4fd1c5`,
+  Space Grotesk / IBM Plex Sans / IBM Plex Mono, fixed 64px grid + blur-glow
+  bg, sharp 2–6px corners, IBM Plex Mono micro-labels. josh wants beaconwake
+  in that family. (Curl'd hurricaneai.org's full inline CSS for exact tokens.)
+- **Msg 3 — full retheme, shipped.** Precedent for "match this site" rethemes
+  without escalating: w18 (onetext), w43 (lovable template). Read "exactly" as
+  *adopt the visual system*, not *replace Beacon's content with consulting
+  copy* (that'd be destructive + nonsensical — Beacon is featured on
+  hurricaneai.org as its own project). Changes:
+  - `style.css`: `:root` palette remap (amber/teal two-tone; the old
+    4-accent card rotation collapsed to amber↔teal). Body font Source Serif 4
+    → IBM Plex Sans 300; headings Red Hat Display → Space Grotesk 600; a
+    dedicated IBM Plex Mono group for `code` / `.log-date` / `.stat-label` /
+    `.code-label` / `.weight` / `.wk-ref` / `.diagram-legend` / `.tier-pill` /
+    `.stage-kicker` / trace-rail buttons. `.backdrop` rewritten as a fixed
+    64px grid + top-fade radial + amber/teal blur glows (was a warm radial
+    wash; inner wavy `<svg>` hidden). Card radius 1.1rem→6px, `.stat` /
+    `.log-entry` / callout / mock-* radii tightened, pills→2px. `section.card`
+    hover = border-teal + bg-elevate (no more lift+shadow). `.btn-buy` /
+    `.log-search button` / `.trace-nav button` / `.mock-btn.primary` →
+    amber bg + `#0a0d13` text + 2px corners (were navy pills, low-contrast
+    light text). Header gained `border-bottom` + `flex-wrap` + gap;
+    `.status-pill` `white-space:nowrap` + `flex-shrink:0` (it was overlapping
+    the nav and wrapping "awake & / unattended"). New `.footer-links` style.
+    `@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto } }`.
+  - Per-page `<link>` font swap: `Source+Serif+4`/`Red+Hat+Display` →
+    `Space+Grotesk`/`IBM+Plex+Sans`/`IBM+Plex+Mono` across all 27 HTML + 5
+    `*.template.html` (one uniform line on every page).
+  - Inline hex literals in HTML/SVG remapped to the new palette
+    (`#d97757`→`#ff8a3d`, `#9db877`/`#83a9c4`/violets → teal/`#8b93a1`,
+    `#f2ede2`→`#e8eaed`, `#17140f`→`#0a0d13`, old `--muted`/`--navy`/`--card`,
+    etc.) — hero marks + inline diagram fills track. Diagram 3rd colour set to
+    `--muted` neutral so node types stay distinct in the 2-tone system; the
+    warn/reject coral `#e08a6a` kept as the one deliberate semantic exception.
+  - `favicon.svg` recoloured (near-black square, muted/teal rings, amber core).
+- **Msg 2 — Tidal link, shipped.** `Hurricane AI · Tidal · Agora` row inserted
+  before `</footer>` on every page (28 files), `.footer-links` fl-row style
+  added to `style.css`.
+- **Msg 1 — not actionable.** No access to Tidal's box/repo; logged in ASK.md.
+- **Verified:** rendered index / status / get / soc-architecture (incl. both
+  full-page SVG diagrams) / ticket-trace / agora locally via the bundled
+  chromium (`~/.cache/ms-playwright/chromium-1234/...`) before deploy —
+  palette coherent, diagram labels all legible, buy buttons readable,
+  header no longer overlaps. `deploy.sh` green: local + live smoke pass,
+  `nginx -t` ok, `/status.html` **45/45**. Live spot-check: `style.css`
+  serves `ff8a3d` + `Space Grotesk`, homepage head loads both font families,
+  Tidal link present in served HTML.
+- **NOT migrated (flagged in ASK.md + design-review.md, not blocking):**
+  `paid_src/print.css` + the 5 PDFs (separate regen); `og-image.png` + the 3
+  per-page OG PNGs (raster — reverted my half-migration of their `.svg`
+  sources for consistency; re-render queued for Lantern in `tasks-lantern.md`
+  with the new palette spec); `favicon.ico` / `apple-touch-icon.png` raster.
+- **Side effect on the open design-review:** closes item #3 (accent-repeat)
+  and #5 (reduced-motion scroll); eases #4 (nav no longer overlaps the pill,
+  though 14-item nav density still open). Logged in
+  `shared/design-review.md` → w132 section + `shared/LOG.md`.
+- **Health sweep, all green:** nginx / beacon-api / fail2ban / cron /
+  certbot.timer active; 0 failed units; no `/var/run/reboot-required`; disk
+  9% (79G free); uptime 3d 21h; load ~0.35. `logs/watchdog.log` last 3 runs
+  `ok`; no `logs/wake-skipped.log`. `git` was in sync with `origin/master`
+  at `cbf2ba7` before this commit.
+- **Fleet:** Highbeam 20th waking (15:00Z) + Lantern (14:30Z) both have fresh
+  logs, both on schedule. Lantern's task file updated with the new palette
+  tokens + a priority OG-card re-render task.
+- Committing: `website/style.css`, all 27 `website/*.html`, 5
+  `website/*.template.html`, `website/favicon.svg`, `ASK.md`, `NOTES.md`.
+  Generated pages (`log/roadmap/status/weekly.html`, `feed.atom`,
+  `sitemap.xml`) + OG `.svg` reverts are not staged; `shared/` is outside
+  this repo.
