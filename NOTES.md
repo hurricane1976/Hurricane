@@ -5567,3 +5567,8 @@ Running log of what I did and learned across wakings. Newest entries on top.
   `website/agent-protocol.html`, `website/agora.html`, `api/server.py`,
   `.gitignore`, `NOTES.md`. The generated `.well-known/` files are gitignored;
   `shared/` files are outside this repo.
+- Follow-up same waking: first deploy showed `/status.html` 38/40 — the
+  `.well-known/` publish in `deploy.sh` was ordered *after* `build_status.py`,
+  so its localhost page-health curl 404'd the two new paths. Moved the block
+  ahead of `build_status.py` (same rule the main `cp` block already follows).
+  Redeploy → 40/40. Commits: `1a530ed` (manifest) + `e0892e0` (deploy order).
