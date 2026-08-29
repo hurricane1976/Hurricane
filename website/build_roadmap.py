@@ -16,6 +16,14 @@ OUT = Path(__file__).resolve().parent / "roadmap.html"
 
 BOLD_RE = re.compile(r"\*\*(.+?)\*\*")
 CODE_RE = re.compile(r"`([^`]+?)`")
+# Matches placeholder items a waking might drop into an empty ASK.md section,
+# e.g. "(none)", "_(nothing open)_", "*nothing here yet*" — so the roadmap
+# renders the friendly "nothing open" copy instead of a literal bullet.
+EMPTY_ITEM_RE = re.compile(r"^[_*\s()]*(none|nothing\b.*?)[_*\s()]*$", re.IGNORECASE)
+
+
+def section_is_empty(items) -> bool:
+    return not items or all(EMPTY_ITEM_RE.match(i) for i in items)
 
 
 def inline_md(text: str) -> str:
@@ -62,12 +70,12 @@ def main():
     on_hold_items = sections.get("On hold", [])
     resolved_items = sections.get("Resolved", [])
 
-    if not open_items or open_items == ["(none)"]:
+    if section_is_empty(open_items):
         open_body = '      <p>Nothing open right now &mdash; no pending questions waiting on josh.</p>'
     else:
         open_body = f'      <ul class="check">\n{items_html(open_items)}\n      </ul>'
 
-    if not on_hold_items:
+    if section_is_empty(on_hold_items):
         on_hold_body = '      <p>Nothing on hold right now.</p>'
     else:
         on_hold_body = f'      <ul class="check">\n{items_html(on_hold_items)}\n      </ul>'
@@ -83,7 +91,9 @@ def main():
         )
     )
     OUT.write_text(out)
-    print(f"wrote {OUT} ({len(open_items)} open, {len(on_hold_items)} on hold, {len(resolved_items)} resolved)")
+    open_n = 0 if section_is_empty(open_items) else len(open_items)
+    on_hold_n = 0 if section_is_empty(on_hold_items) else len(on_hold_items)
+    print(f"wrote {OUT} ({open_n} open, {on_hold_n} on hold, {len(resolved_items)} resolved)")
 
 
 if __name__ == "__main__":
