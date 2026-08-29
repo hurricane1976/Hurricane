@@ -5816,3 +5816,48 @@ Running log of what I did and learned across wakings. Newest entries on top.
   Generated pages (`log/roadmap/status/weekly.html`, `feed.atom`,
   `sitemap.xml`) + OG `.svg` reverts are not staged; `shared/` is outside
   this repo.
+
+## 2026-08-29 (133rd waking, ~17:17 UTC)
+
+- `check_replies.sh`: **one message from josh** (chat id confirmed) —
+  *"have Lantern rework the site using the hurricaneai.org theme, make it
+  exact please. for another example see: http://107.170.33.6/index.html"*
+  Follow-up to w132's msg 3 ("match hurricaneai.org exactly"), now explicitly
+  routed to **Lantern**.
+- **Read the two reference sites as data.** Curl'd `hurricaneai.org` and
+  `http://107.170.33.6` (Tidal). Confirmed both ship the **identical** house
+  stylesheet foundation — same `:root` tokens, `.bg-grid`, `.glow`, sticky
+  `blur(12px)` header. w132 already migrated Beacon's *tokens* to this exact
+  system (palette, IBM Plex + Space Grotesk, 64px grid + amber/teal glow,
+  2–6px corners). The remaining gap is **component / layout level**: nav
+  height + treatment, `.eyebrow` mono kicker with the `::before` dash,
+  `.section-num` index, the 1px-gap card grid, `.btn-primary`/`.btn-ghost`,
+  the `.readout` strip, process/timeline/faq list rows, `.reveal` scroll
+  motion. A literal 1:1 clone is impossible (hurricaneai.org = one long
+  single-page site; beaconwake = 27 content pages) — logged that framing in
+  the task.
+- **Staged verbatim reference for Lantern** (Gemini web access is thin, so
+  no-fetch): `shared/outbox/hurricaneai-org.css` (full stylesheet, 14.9 KB),
+  `shared/outbox/hurricaneai-org.structure.txt` (290-line DOM outline),
+  `shared/outbox/tidal-107.170.33.6.css` (12 KB, the sibling example).
+- **Queued as ⭐PRIORITY in `shared/tasks-lantern.md`.** Deliverables land in
+  `shared/outbox/retheme-w133/`: (1) a rewritten `style.css` mapping
+  hurricaneai.org's component vocabulary onto Beacon's **existing** class
+  names (drop-in swap, no invented selectors), (2) a worked `homepage.html`
+  as the structural example, (3) a per-page checklist for the other 26
+  pages + 5 templates, (4) OG cards in the new palette (folds in the older
+  OG re-render task). Beacon owns `/home/agent/agent`, does all integration
+  + `deploy.sh` + the 45-check smoke gate, reports to josh. Lantern has no
+  prod/deploy access — it drafts, Beacon ships.
+- Updated `shared/LOG.md` (w133 entry) and `ASK.md` (Resolved: queued to
+  Lantern, not blocking).
+- **Replied to josh over Telegram** confirming the plan + the
+  drafts/ships split.
+- **Health sweep, all green:** nginx / beacon-api / fail2ban / cron /
+  certbot.timer active; 0 failed units; no `/var/run/reboot-required`; disk
+  9% (79G free); uptime 3d 21h; load ~0.25. `logs/watchdog.log` last 3 runs
+  `ok`; no `logs/wake-skipped.log`. `git` in sync with `origin/master` at
+  `d8b9b06`. Live: `/` 200, `/status.html` **45/45**.
+- **Fleet:** Highbeam ran 17:00Z, Lantern ran 16:30Z — both fresh logs, both
+  on schedule. Lantern picks up the retheme task next slot (18:30Z).
+- Committing: `ASK.md`, `NOTES.md`. `shared/` is outside this repo.

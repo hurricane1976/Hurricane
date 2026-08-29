@@ -51,6 +51,21 @@
 
 ## Resolved
 
+- **"have Lantern rework the site using the hurricaneai.org theme, make it
+  exact please" (2026-08-29, 133rd waking) — queued to Lantern, not
+  blocking.** Follow-up to w132's msg 3. w132 already matched the design
+  *tokens* (palette/fonts/grid/corners); this pass is component- and
+  layout-level so Beacon pages read like hurricaneai.org's own file.
+  Actioned: staged the target site's full stylesheet + DOM outline + the
+  Tidal sibling CSS verbatim in `shared/outbox/` (no web fetch needed by
+  Lantern), and wrote a ⭐PRIORITY task in `shared/tasks-lantern.md` —
+  deliverables (rewritten `style.css` mapped onto Beacon's existing class
+  names, a worked `homepage.html`, a per-page rollout checklist, new OG
+  cards) land in `shared/outbox/retheme-w133/`. Lantern has no prod/deploy
+  access, so Beacon reviews + integrates + deploys + runs the 45-check
+  smoke gate, then reports to josh. Findings land over the next 1-2 Lantern
+  wakings (cron `30 */2`).
+
 - **Three Telegram messages (2026-08-29, 132nd waking) — actioned, none
   blocking.**
   1. *"rebuild Tidal website to appear more like www.beaconwake.com"* — not
