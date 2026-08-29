@@ -5963,3 +5963,64 @@ Running log of what I did and learned across wakings. Newest entries on top.
   logs, both on schedule. Lantern picks up the retheme task at 18:30Z.
 - Committing: `NOTES.md` only. The PDFs are already committed (w134,
   `1ffc537`) and were sent directly to josh; nothing else changed.
+
+## 2026-08-29 (136th waking, ~19:10 UTC)
+
+- `check_replies.sh`: **no new messages** from josh.
+- **Lantern delivered the w133 retheme package** to
+  `shared/outbox/retheme-w133/` (its 18:30Z waking): rewritten `style.css`,
+  a worked `homepage.html`, a per-page rollout `NOTES.md`, and 4 re-rendered
+  OG cards + diagrams in `shared/outbox/img/`.
+- **Reviewed + rendered it before integrating.** Copied
+  `retheme-w133/style.css` over `website/style.css` (plus a `.step-list`
+  safety patch for the global `* { padding:0 }` reset), copied the 4 OG
+  cards in, and rendered 11 pages (index, field-guide, status, get,
+  soc-architecture, agora, ticket-trace, faq, agent-ops, distributed-agents,
+  study-guide) with the bundled headless Chrome
+  (`~/.cache/ms-playwright/chromium-1234/...`).
+- **The rewritten `style.css` is NOT a safe drop-in — reverted it.** It was
+  written against the restructured markup in Lantern's `homepage.html`, not
+  the HTML actually on the other 27 pages + 5 templates. Failures seen on
+  every page:
+  1. **Header nav overflow (all 28 pages).** Live `<header>` has 3 direct
+     children and **no `<div class="wrap">`**; live nav has **14** links
+     (Lantern's has 13). `header { height: 76px }` is fixed — the 14-item nav
+     wraps 2–3 rows and spills below the bar into page content.
+  2. **get.html `.btn-buy` → giant amber blocks.** Child `<svg>` cart icons
+     are unconstrained; `img,svg { max-width:100% }` balloons them to button
+     width.
+  3. **status.html `.stat::before` accent bars** render inset/staggered, not
+     flush to tile tops.
+  4. **1120px left-aligned `main`** leaves ~13 long-form prose pages as a
+     narrow column with a huge empty right half + oversized left `h1`
+     (current design is 760px centred).
+  5. `.step-list` dropped (8 pages); stray floating teal ring glyph mid-page
+     on index.
+- **Shipped this waking: only Lantern's 4 OG cards** (`og-image`, `og-agora`,
+  `og-soc`, `og-distributed`) — clean, on-brand, and they match the
+  *current live* amber/teal palette (the old ones were still warm-palette).
+  `deploy.sh` green: local + live smoke pass, `nginx -t` ok,
+  `/status.html` **45/45**. Live md5 of all 4 verified against local.
+- **Wrote Lantern a precise revision brief** in `shared/tasks-lantern.md`
+  (⭐ REVISION NEEDED): six concrete defects + two paths — **Path A**
+  (preferred) revise `style.css` into a genuinely *additive* drop-in over
+  unmodified HTML (no fixed-height header, `main` stays ~820px, button SVGs
+  constrained, `.step-list` restored, `.hero` stays centred, every new
+  component class no-ops when its markup is absent); **Path B** deliver all
+  28 pages + 5 templates as full files for one atomic swap. Asked it to
+  render index/get/status/field-guide and confirm the fixes before handing
+  back. Also flagged `homepage.html` needs the real 14-item nav, the
+  favicon.ico/apple-touch links, the hero lighthouse SVG (josh asked for it
+  twice), and no hard-coded cadence.
+- Updated `shared/LOG.md` (w136), `ASK.md` (w136 note under the w133
+  Resolved item), `NOTES.md`.
+- **Health sweep, all green:** nginx / beacon-api / fail2ban / cron /
+  certbot.timer active; 0 failed units; no `/var/run/reboot-required`; disk
+  10% (79G free); uptime 4d 0h; load ~0.32. `logs/watchdog.log` last 3 runs
+  `ok`; no `logs/wake-skipped.log`. `git` in sync with `origin/master` at
+  `a72a051` before this commit.
+- **Fleet:** Highbeam ran 19:00Z, Lantern ran 18:30Z (hit a paid-tier quota
+  429 mid-run but retried and completed exit 0) — both fresh logs, on
+  schedule. Lantern picks up the revision brief at 20:30Z.
+- Committing: 4 `website/og-*.png`, `NOTES.md`, `ASK.md`. Generated pages +
+  `shared/` are outside this commit / repo.

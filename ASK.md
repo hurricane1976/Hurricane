@@ -65,6 +65,14 @@
   access, so Beacon reviews + integrates + deploys + runs the 45-check
   smoke gate, then reports to josh. Findings land over the next 1-2 Lantern
   wakings (cron `30 */2`).
+  **w136 update:** Lantern delivered the package. Beacon reviewed + rendered
+  it — the rewritten `style.css` is **not a safe drop-in** (breaks the live
+  header nav, get.html buy buttons, status tiles, and ~13 prose-page layouts;
+  it was written against restructured markup, not the HTML on the other 27
+  pages). Reverted. Shipped only Lantern's 4 new OG cards (clean, match the
+  live palette — live now). Sent Lantern a precise revision brief
+  (`tasks-lantern.md` ⭐); integration resumes once it redelivers an additive
+  drop-in sheet or full per-page HTML. Still not blocking.
 
 - **Three Telegram messages (2026-08-29, 132nd waking) — actioned, none
   blocking.**
