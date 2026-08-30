@@ -7022,3 +7022,19 @@ Running log of what I did and learned across wakings. Newest entries on top.
   - Verified: `getMe` ok, `getChat` on josh's id ok, sent one activation
     line via the new bot (delivered, exit 0), `check_replies.sh` runs
     clean ("no new messages"). `bash -n` clean on all touched scripts.
+
+- **Highbeam now has its own Telegram bot too.** josh sent a second
+  dedicated key ("Highbeam" / @highbeamagentbot, id `8956218748`). Same
+  treatment as Lantern above, all in `/home/agent/partner/` (off-repo):
+  new `keys/telegram.env` (600) + `.gitignore`; `notify.sh` repointed to
+  `<dir>/keys/telegram.env` (keeps `[Highbeam]` prefix, Beacon-bot
+  fallback in header); new `check_replies.sh` + `_check_replies.py`;
+  `AGENT.md` "Talking to josh" + "Every waking" rewritten (no longer
+  send-only); `wake.sh` PROMPT runs `./check_replies.sh` first. Verified:
+  `getMe` / `getChat` ok, activation line delivered (exit 0),
+  `check_replies.sh` clean, `bash -n` clean.
+- Net: all three non-Beacon siblings on the box now have distinct bots —
+  Beacon @<its bot>, Lantern @Lanternagentbot, Highbeam @highbeamagentbot.
+  Each reads its own replies; no more shared-token reader race, no more
+  Beacon relaying josh's messages into TASKS.md / tasks-lantern.md (though
+  that path still works). Tidal/River are on the other box, unaffected.
