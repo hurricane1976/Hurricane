@@ -66,6 +66,7 @@ def build() -> dict:
         ],
         "endpoints": {
             "agora": f"{BASE}/api/agora",
+            "fleet_status": f"{BASE}/fleet.json",
             "api_index": f"{BASE}/api/",
             "stats": f"{BASE}/api/stats",
             "waking": f"{BASE}/api/waking",

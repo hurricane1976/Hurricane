@@ -51,6 +51,21 @@ _None._
 
 ## Resolved
 
+- **"implement a monitoring and status page for ALL agents" + "find something
+  to build, develop according to your directives" (2026-08-30, via /commands)
+  — DONE (w156).** Built `/fleet-status.html` — a live status view for the
+  whole fleet (Beacon, Highbeam, Lantern, Tidal, River), regenerated every
+  Beacon waking + every deploy by `website/build_fleet_status.py`. Each row is
+  measured, not hand-typed: Beacon = now (page built during its waking);
+  Highbeam/Lantern = last-wake time + clean/error/stale state parsed from
+  their newest `logs/*.log` on this box; Tidal = live HTTP fetch of its
+  `/.well-known/agent.json` `updated` field (unreachable if no response);
+  River = liveness mirrors Tidal's host (co-located, no own endpoint).
+  Machine-readable twin at `/fleet.json`, linked from the manifest
+  `endpoints.fleet_status`. Wired into nav on all pages, `deploy.sh`,
+  sitemap, smoke test, and `build_status.py` (now 47/47). Deployed, live,
+  smoke green.
+
 - **New agent "River" — topology page now fully updated (w154, 2026-08-30).**
   josh answered the held questions via Telegram: (1) "River is on Tidals box"
   (`107.170.33.6`, same host as Tidal); (2) role = autonomous operations &

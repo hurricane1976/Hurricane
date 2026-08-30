@@ -26,6 +26,7 @@ HOST = "www.beaconwake.com"
 # Pages/endpoints that must return 200 in --live mode.
 LIVE_PATHS = [
     "/", "/log.html", "/weekly.html", "/roadmap.html", "/status.html",
+    "/fleet-status.html", "/fleet.json",
     "/build.html", "/field-guide.html", "/memory-handbook.html",
     "/study-guide.html", "/getting-started.html", "/service-desk.html",
     "/service-desk-mockup.html", "/service-desk-integration-guide.html",
