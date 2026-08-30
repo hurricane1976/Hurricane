@@ -7370,3 +7370,59 @@ Running log of what I did and learned across wakings. Newest entries on top.
   cadence via `tidalwake.org`; River visible via Tidal's manifest + Agora.
 - Committing: `ASK.md` + `NOTES.md` only (product files + `shared/` task
   queues are outside this repo). Generated site files unchanged / gitignored.
+
+## 2026-08-30 (161st waking, ~20:15 UTC)
+
+- `check_replies.sh`: one queued `/commands` message from josh — **"Send me
+  the pdf versions"** (already appended to `ASK.md` by the poller). No other
+  Telegram. `peer/inbox/` empty (`processed/` 13). Agora not re-checked this
+  waking (nothing pending; last sweep w160 clean).
+
+- **Read of the command:** a PDF render of the template product staged w160
+  (`agent-instructions-pack/`, all Markdown) so josh can review it off a
+  phone. No existing markdown->PDF pipeline here — the 8 paid PDFs are all
+  hand-authored HTML -> weasyprint.
+
+- **Done: built `agent-instructions-pack.pdf`** (in the product dir, outside
+  this repo). One **30-page** PDF: cover + contents (dot-leader TOC) + all 12
+  pack docs (README, `00-GUIDE.md`, 5 templates, 2 annotated examples, 2
+  checklists, CHANGELOG), each starting on a fresh page with a mono
+  file-path eyebrow. Styled with the Beacon paid-document sheet
+  (`website/paid_src/print.css`) so it matches the other downloads (amber/
+  teal ink-on-white, Space Grotesk / IBM Plex).
+  - New `build-pdf.py` in the product dir: a self-contained Markdown->HTML
+    converter (headings, fenced code w/ escaping, pipe tables ->
+    `table.ptable`, blockquotes, ordered/unordered lists w/ `[ ]` checkbox
+    glyphs, `--- ` rules, inline code/bold/italic/links, HTML-comment strip,
+    leading-`# H1` strip since the divider supplies the heading) + weasyprint.
+    No new deps (`markdown` isn't installed and `pip` is PEP-668 locked). Re-run
+    it whenever the `.md` sources change.
+  - Verified: rendered 12 sample pages to PNG at 70dpi and eyeballed — cover,
+    TOC with correct page numbers, tables, nested lists, escaped `<PLACEHOLDER>`
+    / `<...>` in code blocks, teal-bordered blockquotes, checklist checkboxes
+    all render correctly. `pdfinfo`: 30pp / 127KB.
+  - Sanitisation: PDF is derived only from the already-clean w160 sources; no
+    new content. The intentional composites (`keys/telegram.env`,
+    `/home/dana/sentry` in the annotated "Sentry/Dana" example) are unchanged.
+
+- **Sent to josh over Telegram** via `sendDocument` (HTTP 200) with a caption
+  noting it's a review copy, the `.md` files stay the shipped format, and the
+  marketplace hold still stands. Updated `shared/outbox/products/
+  README-FOR-JOSH.md` (new bullet for the PDF + `build-pdf.py`).
+
+- **ASK.md:** "Send me the pdf versions" moved to `## Resolved` with full
+  detail; the Open "Template products" item gained a w161 line pointing at the
+  PDF. Nothing in this waking touches the marketplace (still on hold) or
+  product #2 (still queued for a later waking as an expanded starter-kit v2).
+
+- **No website changes** — product work is all in `shared/` (outside this
+  repo). Live spot check: `/`, `/guides.html`, `/get.html` all 200.
+
+- **Health sweep, all green:** nginx / beacon-api / beacon-peer / fail2ban /
+  cron / certbot.timer active; 0 failed units; no `/var/run/reboot-required`;
+  disk 10% (79G free); uptime 5d 0h; load ~0.06.
+- **Fleet:** Beacon w161 (now); Highbeam last 19:00Z (exit 0), next ~21:00Z;
+  Lantern last 18:30Z, next ~20:30Z; Tidal on 2h cadence via `tidalwake.org`;
+  River visible via Tidal's manifest + Agora.
+- Committing: `ASK.md` + `NOTES.md` only (PDF + `build-pdf.py` + `shared/`
+  are outside this repo). Generated site files unchanged / gitignored.

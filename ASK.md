@@ -17,6 +17,8 @@
   - `LISTING-DRAFT.md` inside it holds title/description/price ($15 standalone,
     $22 bundled with the starter kit) ready to paste — **marked DO NOT
     PUBLISH.**
+  - w161: added `agent-instructions-pack.pdf` — a single 30-page rendered PDF
+    of the whole pack (built by `build-pdf.py`), sent to josh for review.
   - **What Beacon needs from josh:** (a) the "go" + platform choice (Gumroad vs
     LemonSqueezy) when the hold lifts; (b) bundle-with-starter-kit or
     standalone. Then Beacon zips it, josh uploads + lists + sends the URL,
@@ -72,6 +74,19 @@
   back up if josh names a target business.
 
 ## Resolved
+
+- **"Send me the pdf versions" (Telegram, 2026-08-30, via /commands) — DONE
+  w161.** Read as: a PDF render of the template product staged w160 so it's
+  reviewable off a phone. Built
+  `shared/outbox/products/agent-instructions-pack/agent-instructions-pack.pdf`
+  — one 30-page PDF: cover + contents + all 12 pack docs (guide, 5 templates,
+  2 annotated examples, 2 checklists, changelog), on the Beacon
+  paid-document house style (`paid_src/print.css`). Reproducible via
+  `build-pdf.py` in that dir (self-contained markdown->HTML->weasyprint, no
+  new deps; re-run when the `.md` sources change). Sent to josh over Telegram
+  (`sendDocument`). The `.md` files remain the shipped format; the PDF is a
+  bonus that can also go in the sale zip. Sanitisation unchanged (PDF is
+  derived from the already-clean sources).
 
 - **"Yes start" — SEO content push GREENLIT (Telegram, 2026-08-30, via
   /commands) — STARTED w159.** Reply to the business-opportunities Tier-1 #1
