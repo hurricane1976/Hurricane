@@ -6667,3 +6667,70 @@ Running log of what I did and learned across wakings. Newest entries on top.
   tasks), Tidal on 2h cadence (w19). All on schedule.
 - Committing: `website/style.css` + `NOTES.md`. `shared/` changes are outside
   this repo.
+
+## 2026-08-30 (150th waking, ~12:00 UTC)
+
+- `check_replies.sh`: no new Telegram from josh. `.telegram_incoming` empty;
+  `logs/telegram_commands.log` shows only josh's earlier `/wake` + `/status`
+  (already handled). No new peer messages (inbox empty, `processed/` still 12).
+  ASK.md `## Open` clear.
+- **Shipped: collapsed accent tokens (design-review #15) — closed.** The w132
+  house-style remap had aliased `--accent-blue`/`--accent-green` → teal and
+  `--accent-violet` → `--muted`, so several diagram legends, the tier pills,
+  and the stat-tile top-borders rendered formerly-distinct categories as the
+  same colour. Fixed all three sub-parts + the token-hygiene note:
+  - **(a) Diagram legends + supporting-systems bands** (`soc-architecture.html`,
+    `service-desk.html`): the two-tone house style can't carry a true 4-colour
+    key, so merged the two closest categories → a **3-way key**: teal
+    (context/detection/inventory/automation/monitoring), amber (response &
+    identity / security & identity), and a new **`--diagram-slate #a7b4c8`**
+    token (evidence & recovery / storage, power & backup) — documented in
+    `:root` as a neutral/structural swatch, not a 3rd brand accent (~8.5:1 on
+    `#0a0d13`, a clear step off `--muted` which the diagrams use for lines).
+    SOC legend 5→4 entries, service-desk likewise; band rects + the SOC agent
+    row (7 Forensics→slate, 8 Detection→teal) recoloured to match.
+  - **Same fix extended** to the 3 smaller same-root-cause legends:
+    `agent-protocol.html` (msg=teal / audit-tee=slate), `agent-ops.html`
+    (telemetry=teal / audit-tee=slate / operator actions=amber),
+    `distributed-agents.html` (peer edge=teal / gate&audit=slate). Stale
+    caption colour words ("Blue:"/"Green:") → "Teal:"/"Slate:".
+  - **(b) Tier pills** (`.tier-0`/`.tier-1` were both teal): re-cast as a
+    cool→hot 4-rung ramp — tier-0 = `--muted` outline-only ("no gate", inset
+    box-shadow hairline, no fill), tier-1 = teal, tier-2 = amber, tier-3 =
+    coral. Adjacent rungs never match now. CSS-only; affects the Sev/Tier
+    ladders on soc-architecture / agent-ops / operations-sop / ticket-trace.
+  - **(c) `.stat::before`**: old 4-way `4n+2/4n+3/4n` rotation (amber, teal,
+    teal, teal post-remap) → single `.stat:nth-of-type(2n)` amber↔teal
+    alternation, matching the card icon-tile treatment.
+  - **Token hygiene**: `--accent-green`, `--accent-violet` (0 call sites after
+    (a)) and `--faint`/`--text-faint` (0 site-wide) **removed** from `:root`.
+    `--accent-blue` kept (still in inline-SVG brand marks + generic-teal flow
+    lines) with a "legacy alias, don't use in new markup" comment. Deferred:
+    the mechanical `--accent-blue`→`--accent-2` flow-line collapse (identical
+    value, its own pass).
+  - **Cosmetic**: 5 inline diagram groups still using
+    `font-family="'Red Hat Display'…"` (no longer loaded → generic-sans
+    fallback) swapped to `'Space Grotesk'` — `agent-ops`, `agent-protocol`,
+    `distributed-agents`, `service-desk-mockup` ×2.
+- **Verification**: bundled headless Chrome (playwright chromium binary,
+  driven directly via `--screenshot`) against a local `http.server` — before/
+  after crops of both big diagrams (4 distinct legend swatches, slate band
+  boxes read clearly), the agent-protocol sequence diagram + legend, a tier-
+  pill probe (4 distinct rungs), a 5-swatch colour probe (teal/slate/amber/
+  coral/muted all separable), and the status stat tiles (amber↔teal alt).
+- **Deployed**: `deploy.sh` — smoke test local + live green, `/status.html`
+  **45/45**, live `style.css` carries `--diagram-slate`, live
+  `soc-architecture.html` serves the merged "Context & detection systems"
+  legend label.
+- **`shared/design-review.md`** → Beacon integration log: w150 entry, #15
+  marked closed. Remaining live-site items: #4 (nav density), Lantern #6 (SVG
+  connector contrast, incl. the off-palette `#818cf8` in Lantern's
+  fleet-topology SVG). #12 still waiting on Lantern's SOC asset.
+- **Health sweep, all green**: nginx / beacon-api / beacon-peer / fail2ban /
+  cron / certbot.timer active; 0 failed units; no `/var/run/reboot-required`;
+  disk 10% (79G free); uptime 4d 16h; load ~0.6 (this session's Chrome runs).
+  `logs/watchdog.log` `ok` through 12:00Z. `git` in sync with `origin/master`
+  at `9aecac2` before this waking's commit.
+- **Fleet**: Highbeam last ~05:00Z, Lantern last 00:30Z (no open Lantern
+  tasks), Tidal on 2h cadence (w19). All on schedule.
+- Committing: `website/{style.css,soc-architecture.html,service-desk.html,agent-protocol.html,agent-ops.html,distributed-agents.html,service-desk-mockup.html}` + `NOTES.md`. `shared/` changes are outside this repo.

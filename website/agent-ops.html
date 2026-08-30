@@ -174,15 +174,15 @@
     <svg viewBox="0 0 760 360" role="img" aria-label="The operator control loop: a fleet of agents emits telemetry to an operator console and an append-only audit log; the operator and a human approval gate issue control actions — pause, drain, roll back, revoke, kill, re-scope — back to the fleet.">
       <defs>
         <marker id="ao-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-          <path d="M0 0L10 5L0 10z" fill="var(--accent-blue)"/>
-        </marker>
-        <marker id="ao-arrow-g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
           <path d="M0 0L10 5L0 10z" fill="var(--accent-2)"/>
         </marker>
+        <marker id="ao-arrow-g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M0 0L10 5L0 10z" fill="var(--diagram-slate)"/>
+        </marker>
       </defs>
-      <g font-family="'Red Hat Display', sans-serif" font-size="12.5" fill="var(--fg)" text-anchor="middle">
+      <g font-family="'Space Grotesk', sans-serif" font-size="12.5" fill="var(--fg)" text-anchor="middle">
         <!-- fleet -->
-        <rect x="40" y="130" width="150" height="100" rx="10" fill="none" stroke="var(--accent-blue)" stroke-width="1.6"/>
+        <rect x="40" y="130" width="150" height="100" rx="10" fill="none" stroke="var(--accent-2)" stroke-width="1.6"/>
         <text x="115" y="120">Agent fleet</text>
         <g font-family="ui-monospace, monospace" font-size="10.5" fill="var(--muted)">
           <rect x="58" y="148" width="114" height="20" rx="4" fill="none" stroke="var(--line)"/>
@@ -201,18 +201,18 @@
         <text x="390" y="196">Human gate</text>
         <text x="390" y="215" font-size="10.5" fill="var(--muted)">approve &middot; arbitrate</text>
         <!-- audit log -->
-        <rect x="590" y="110" width="150" height="80" rx="10" fill="none" stroke="var(--accent-2)" stroke-width="1.6"/>
+        <rect x="590" y="110" width="150" height="80" rx="10" fill="none" stroke="var(--diagram-slate)" stroke-width="1.6"/>
         <text x="665" y="145">Append-only</text>
         <text x="665" y="163">audit log</text>
       </g>
       <!-- telemetry edges -->
-      <g stroke="var(--accent-blue)" stroke-width="1.7" fill="none" marker-end="url(#ao-arrow)">
+      <g stroke="var(--accent-2)" stroke-width="1.7" fill="none" marker-end="url(#ao-arrow)">
         <path d="M190 160 C 250 150, 260 110, 303 100"/>
         <path d="M190 200 C 250 205, 260 200, 303 200"/>
       </g>
       <text x="243" y="128" font-family="ui-monospace, monospace" font-size="10" fill="var(--muted)" text-anchor="middle">telemetry</text>
       <!-- audit tee -->
-      <g stroke="var(--accent-2)" stroke-width="1.6" fill="none" marker-end="url(#ao-arrow-g)">
+      <g stroke="var(--diagram-slate)" stroke-width="1.6" fill="none" marker-end="url(#ao-arrow-g)">
         <path d="M475 100 C 540 100, 545 140, 588 140"/>
         <path d="M475 200 C 540 200, 545 165, 588 160"/>
       </g>
@@ -225,14 +225,14 @@
       <text x="228" y="250" font-family="ui-monospace, monospace" font-size="10" fill="var(--muted)" text-anchor="middle">pause &middot; drain &middot; roll back &middot; revoke &middot; kill &middot; re-scope</text>
     </svg>
     <p class="diagram-caption">
-      The control loop an operator runs. Blue: telemetry out of the fleet. Green: the
+      The control loop an operator runs. Teal: telemetry out of the fleet. Slate: the
       synchronous tee to an append-only log every action and decision passes through.
       Rust: control actions the operator and the human gate push back &mdash; the whole
       point of agent ops is that these stay fast and cheap to use.
     </p>
     <div class="diagram-legend">
-      <span style="--sw: var(--accent-blue);">telemetry</span>
-      <span style="--sw: var(--accent-2);">audit-log tee</span>
+      <span style="--sw: var(--accent-2);">telemetry</span>
+      <span style="--sw: var(--diagram-slate);">audit-log tee</span>
       <span style="--sw: var(--accent);">operator control actions</span>
     </div>
   </div>

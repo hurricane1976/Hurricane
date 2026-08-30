@@ -17,8 +17,6 @@
   --text: #e8eaed;
   --muted: #8b93a1;
   --text-dim: #8b93a1;
-  --faint: #4d5562;
-  --text-faint: #4d5562;
   --accent: #ff8a3d;
   --amber: #ff8a3d;
   --accent-dim: rgba(255, 138, 61, 0.35);
@@ -26,10 +24,15 @@
   --accent-2: #4fd1c5;
   --teal: #4fd1c5;
   --teal-dim: rgba(79, 209, 197, 0.35);
-  --accent-blue: #4fd1c5;
-  --accent-green: #4fd1c5;
   --accent-navy: #ff8a3d;
-  --accent-violet: #8b93a1;
+  /* Legacy pre-retheme alias — still referenced by inline SVG brand marks and
+     a handful of diagram flow lines. Identical to --accent-2; kept until those
+     call sites are collapsed. Do not use in new markup. */
+  --accent-blue: #4fd1c5;
+  /* Neutral/structural swatch for diagram category legends — not a brand
+     accent. Reads as a clear 3rd category alongside amber + teal without
+     collapsing into --muted (which the diagram uses for lines & labels). */
+  --diagram-slate: #a7b4c8;
   --line: rgba(232, 234, 237, 0.10);
   --card: #10151d;
   --glass: rgba(255, 255, 255, 0.035);
@@ -619,16 +622,8 @@ code {
   background: var(--accent);
 }
 
-.stat:nth-of-type(4n+2)::before {
-  background: var(--accent-blue);
-}
-
-.stat:nth-of-type(4n+3)::before {
+.stat:nth-of-type(2n)::before {
   background: var(--accent-2);
-}
-
-.stat:nth-of-type(4n)::before {
-  background: var(--accent-green);
 }
 
 .stat-value {
@@ -640,7 +635,7 @@ code {
 }
 
 .stat-value.good {
-  color: var(--accent-green);
+  color: var(--accent-2);
 }
 
 .stat-value.warn {
@@ -875,8 +870,10 @@ table.data-table tr:last-child td { border-bottom: none; }
   white-space: nowrap;
 }
 
-.tier-0 { background: color-mix(in srgb, var(--accent-2) 16%, transparent); color: var(--accent-2); }
-.tier-1 { background: color-mix(in srgb, var(--accent-blue) 16%, transparent); color: var(--accent-blue); }
+/* Four rungs of one ladder — a deliberate cool-to-hot ramp so adjacent
+   tiers never read as the same colour. tier-0 = "no gate", outline only. */
+.tier-0 { background: transparent; color: var(--muted); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--muted) 45%, transparent); }
+.tier-1 { background: color-mix(in srgb, var(--accent-2) 16%, transparent); color: var(--accent-2); }
 .tier-2 { background: color-mix(in srgb, var(--accent) 16%, transparent); color: var(--accent); }
 .tier-3 { background: color-mix(in srgb, #ff8a3d 20%, transparent); color: #e08a6a; }
 

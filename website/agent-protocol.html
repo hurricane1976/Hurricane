@@ -292,11 +292,11 @@
     <svg viewBox="0 0 760 430" role="img" aria-label="Sequence diagram: one password-reset-turned-lockout ticket flowing through the protocol messages, from intake through the human gate to execute, verify, and close, with every message copied to the audit log.">
       <defs>
         <marker id="ap-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-          <path d="M0 0L10 5L0 10z" fill="var(--accent-blue)"/>
+          <path d="M0 0L10 5L0 10z" fill="var(--accent-2)"/>
         </marker>
       </defs>
       <!-- lifelines -->
-      <g font-family="'Red Hat Display', sans-serif" font-size="12" fill="var(--fg)" text-anchor="middle">
+      <g font-family="'Space Grotesk', sans-serif" font-size="12" fill="var(--fg)" text-anchor="middle">
         <text x="70" y="26">Intake</text>
         <text x="235" y="26">Orchestrator</text>
         <text x="400" y="26">Identity agent</text>
@@ -312,7 +312,7 @@
       </g>
       <!-- messages -->
       <g font-family="ui-monospace, monospace" font-size="10.5" fill="var(--muted)">
-        <g stroke="var(--accent-blue)" stroke-width="1.6" marker-end="url(#ap-arrow)">
+        <g stroke="var(--accent-2)" stroke-width="1.6" marker-end="url(#ap-arrow)">
           <line x1="70" y1="60" x2="233" y2="60"/>
           <line x1="235" y1="104" x2="398" y2="104"/>
           <line x1="400" y1="148" x2="237" y2="148"/>
@@ -332,7 +332,7 @@
         <text x="316" y="362">verify &rarr; close</text>
       </g>
       <!-- audit tee ticks -->
-      <g stroke="var(--accent-2)" stroke-width="1.3" stroke-dasharray="2 3">
+      <g stroke="var(--diagram-slate)" stroke-width="1.3" stroke-dasharray="2 3">
         <line x1="150" y1="60" x2="700" y2="60"/>
         <line x1="316" y1="104" x2="700" y2="104"/>
         <line x1="316" y1="148" x2="700" y2="148"/>
@@ -342,7 +342,7 @@
         <line x1="316" y1="324" x2="700" y2="324"/>
         <line x1="316" y1="368" x2="700" y2="368"/>
       </g>
-      <g fill="var(--accent-2)">
+      <g fill="var(--diagram-slate)">
         <circle cx="700" cy="60" r="2.6"/><circle cx="700" cy="104" r="2.6"/>
         <circle cx="700" cy="148" r="2.6"/><circle cx="700" cy="192" r="2.6"/>
         <circle cx="700" cy="236" r="2.6"/><circle cx="700" cy="280" r="2.6"/>
@@ -351,13 +351,13 @@
     </svg>
     <p class="diagram-caption">
       One ticket &mdash; a password reset that turned into a lockout &mdash; as a sequence
-      of protocol messages. Blue: messages between actors, all sharing one
-      <code>trace_id</code>. Green: the synchronous tee to the append-only audit log that
+      of protocol messages. Teal: messages between actors, all sharing one
+      <code>trace_id</code>. Slate: the synchronous tee to the append-only audit log that
       every message passes through before delivery.
     </p>
     <div class="diagram-legend">
-      <span style="--sw: var(--accent-blue);">actor-to-actor message</span>
-      <span style="--sw: var(--accent-2);">audit-log tee (synchronous)</span>
+      <span style="--sw: var(--accent-2);">actor-to-actor message</span>
+      <span style="--sw: var(--diagram-slate);">audit-log tee (synchronous)</span>
     </div>
   </div>
 
