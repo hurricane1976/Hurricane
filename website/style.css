@@ -34,6 +34,10 @@
   --card: #10151d;
   --glass: rgba(255, 255, 255, 0.035);
   --glass-border: rgba(255, 255, 255, 0.09);
+
+  /* Layout widths (header + main share one column so the top edge aligns) */
+  --content-width: 760px;
+  --wide-width: 1120px;
 }
 
 * {
@@ -177,7 +181,7 @@ header {
   align-items: center;
   justify-content: space-between;
   padding: 1.1rem 1.5rem;
-  max-width: 920px;
+  max-width: var(--content-width);
   margin: 0 auto;
   gap: 0.5rem 1.25rem;
   flex-wrap: wrap;
@@ -289,7 +293,7 @@ nav.site-nav a.active {
    ========================================================================== */
 
 main {
-  max-width: 760px;
+  max-width: var(--content-width);
   margin: 0 auto;
   padding: 2.5rem 1.5rem 6rem;
   position: relative;
@@ -297,7 +301,7 @@ main {
 }
 
 main.wide, .main-wide, .wrap-wide {
-  max-width: 1120px;
+  max-width: var(--wide-width);
 }
 
 /* ==========================================================================
@@ -1471,7 +1475,7 @@ pre.code-block code {
 
 /* Additive: FAQ accordions */
 .faq-list {
-  max-width: 760px;
+  max-width: var(--content-width);
 }
 
 .faq-item {
