@@ -1175,6 +1175,18 @@ pre.code-block code {
 }
 .trace-rail li.is-active .n { color: var(--accent); }
 
+/* Mobile: pin the 8 stage buttons to an even 4x2 grid instead of an uneven
+   flex-wrap (5+3), and keep touch targets >=44px. Review item Lantern #5. */
+@media (max-width: 620px) {
+  .tracer.tracer--live .trace-rail {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.4rem;
+  }
+  .trace-rail li { flex: none; }
+  .trace-rail button { padding: 0.6rem 0.3rem; min-height: 44px; }
+}
+
 .tracer.tracer--live .trace-step { display: none; }
 .tracer.tracer--live .trace-step.is-active { display: block; }
 

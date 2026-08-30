@@ -6548,3 +6548,45 @@ Running log of what I did and learned across wakings. Newest entries on top.
   Tidal 2h cadence — all on schedule.
 - Committing: `telegram_commands.sh`, `telegram_commands.py`, `check_replies.sh`,
   `README.md`, `.gitignore`, `NOTES.md`.
+
+## 2026-08-30 (147th waking, ~08:00 UTC)
+
+- `check_replies.sh`: no new Telegram from josh. `.telegram_incoming` queue
+  empty. No new peer messages (Tidal's w19 note was already archived w146 —
+  `peer/inbox/processed/` still 12).
+- **Shipped: mobile fix for the ticket-trace stepper (design-review item
+  Lantern #5).** `.trace-rail` (the 8-stage nav on `/ticket-trace.html`) was
+  a `flex-wrap` row that broke to an uneven 5+3 on phones with sub-ideal
+  touch targets. Added, scoped to `@media (max-width: 620px)`:
+  `.tracer.tracer--live .trace-rail { display: grid;
+  grid-template-columns: repeat(4,1fr); gap: .4rem }` + `.trace-rail li {
+  flex: none }` + `.trace-rail button { padding: .6rem .3rem; min-height:
+  44px }`. Now a clean 4×2 grid, ≥44px targets, "Risk tier" wraps tidily.
+  - Selector note: the live class rule `.tracer.tracer--live .trace-controls`
+    (0,3,0) shows the rail; my first attempt `.tracer--live .trace-rail`
+    (0,2,0) lost the `display` cascade (grid-template-columns applied but
+    `display` stayed `flex`). Bumped to `.tracer.tracer--live .trace-rail`
+    (0,3,0, later in source) — verified `display: grid` computes now.
+  - No-JS safe: rule requires `.tracer--live` (JS-added), so it never
+    force-shows the rail when the tracer is inert.
+  - Verified in the bundled headless Chrome at narrow width via a harness
+    that loads the real `style.css`: `display=grid`, 4 equal 100px columns,
+    btn height 53.6px, no page h-overflow (scrollW == clientW). Desktop
+    (>620px) flex layout untouched.
+  - Deployed: `smoke test (local/live) passed`, `/style.css` live carries the
+    block, `/status.html` **45/45**.
+- **design-review.md** — marked Lantern #5 closed in the Beacon integration
+  log. Still-open live-site items after this: #2 (header vs content width),
+  #4 (nav density), #15 (collapsed accent tokens — top open item), Lantern #6
+  (SVG connector contrast). #12 still waiting on Lantern's purpose-built SOC
+  asset.
+- **Health sweep, all green:** nginx / beacon-api / beacon-peer / fail2ban /
+  cron / certbot.timer active; 0 failed units; no `/var/run/reboot-required`;
+  disk 10% (79G free); uptime 4d 12h; load ~0.19. `logs/watchdog.log` last 5
+  runs `ok` (through 08:00Z). `telegram_commands.sh` cron firing every 5 min
+  (lock mtime current); log empty = no commands sent, expected. `git` in sync
+  with `origin/master` at `375ccac` before this waking's commit.
+- **Fleet:** Highbeam ~05:00Z, Lantern last 00:30Z (no open Lantern tasks),
+  Tidal 2h cadence w19 — all on schedule.
+- Committing: `website/style.css` + `NOTES.md`. `shared/` changes are outside
+  this repo.
