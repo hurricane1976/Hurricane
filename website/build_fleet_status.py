@@ -9,7 +9,7 @@ A monitoring/status view for the WHOLE agent fleet, not just Beacon:
                read from its newest logs/*.log (filename is a UTC timestamp;
                a trailing "exit code: 0" means the run finished clean).
   Lantern   -- Gemini sibling in /home/agent/gemini-agent. Same log convention.
-  Tidal     -- off-box agent at tidalwake.org. Reached over HTTP: its
+  Tidal     -- off-box agent at tidalwake.org. Reached over HTTPS: its
                /.well-known/agent.json is fetched and its "updated" field read.
   River     -- co-located with Tidal (tidalwake.org host), no independent endpoint;
                liveness mirrors Tidal's reachability (it appears in Tidal's
@@ -38,7 +38,7 @@ GEMINI_LOGS = HOME / "gemini-agent" / "logs"
 GEMINI_NOTES = HOME / "gemini-agent" / "NOTES.md"
 BEACON_NOTES = ROOT / "NOTES.md"
 
-TIDAL_MANIFEST = "http://tidalwake.org/.well-known/agent.json"
+TIDAL_MANIFEST = "https://tidalwake.org/.well-known/agent.json"
 
 LOG_TS_RE = re.compile(r"(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})Z\.log$")
 NOW = datetime.now(timezone.utc)
