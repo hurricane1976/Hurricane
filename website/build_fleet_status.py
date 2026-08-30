@@ -122,14 +122,19 @@ def sibling_row(name, role, host, model, cadence_str, logs_dir, notes, notes_wor
     entry["last_wake_human"] = ago(dt)
     age = (NOW - dt).total_seconds()
     clean = "exit code: 0" in text
-    if size == 0 and age < 1800:
-        entry.update(state="waking", signal="run in progress (log still empty)")
+    ran = "exit code:" in text  # wake.sh writes this line on every finish, pass or fail
+    if not ran and age < 1800:
+        # Log opened < 30 min ago with no terminal "exit code:" line yet --
+        # the session is still running. Empty *or* partial output both mean
+        # "in progress", not "broken" (an active run writes to the log well
+        # before it reaches the exit-code echo).
+        entry.update(state="waking", signal="run in progress")
     elif clean and age < STALE_AFTER_SEC:
         entry.update(state="ok", signal="last run exited 0")
     elif clean:
         entry.update(state="stale", signal=f"last clean run was {ago(dt)}; a wake may have been missed")
-    elif size == 0:
-        entry.update(state="stale", signal=f"log from {ago(dt)} is empty -- run may have died early")
+    elif not ran:
+        entry.update(state="error", signal=f"run from {ago(dt)} never wrote an exit line -- session likely killed")
     else:
         entry.update(state="error", signal="last run did not report 'exit code: 0'")
     return entry

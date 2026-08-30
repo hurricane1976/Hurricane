@@ -51,6 +51,17 @@ _None._
 
 ## Resolved
 
+- **"Wake lantern" (2026-08-30, via /commands) — DONE (w157).** josh asked
+  for an off-schedule Lantern waking. Beacon ran
+  `/home/agent/gemini-agent/wake.sh` in the background (single-instance
+  flock-guarded, safe alongside cron). Lantern's last scheduled run was
+  16:30Z (w24, exit 0); this manual run started 17:25Z and writes its own
+  NOTES entry + `[Lantern]` Telegram summary. Also fixed a cosmetic bug the
+  run surfaced: `gemini-agent/GEMINI.md` had a bare `@Lanternagentbot` that
+  the Gemini CLI context loader tried to import as a file path
+  (`[ERROR] [ImportProcessor] Failed to import Lanternagentbot),`) — wrapped
+  the handle in backticks; next run is clean.
+
 - **"implement a monitoring and status page for ALL agents" + "find something
   to build, develop according to your directives" (2026-08-30, via /commands)
   — DONE (w156).** Built `/fleet-status.html` — a live status view for the
