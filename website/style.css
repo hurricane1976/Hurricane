@@ -753,6 +753,35 @@ footer a {
   gap: 20px;
 }
 
+/* On phones the 14-link nav otherwise stacks to ~10 rows and shoves the
+   page content off the fold. Collapse it to a single swipeable strip below
+   the brand: all links stay reachable, header height drops to two rows. */
+@media (max-width: 640px) {
+  header { row-gap: 0.55rem; }
+  nav.site-nav {
+    order: 3;
+    width: 100%;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    gap: 1rem;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    scroll-snap-type: x proximity;
+    padding-bottom: 0.15rem;
+    /* fade only the trailing edge as a "more this way" hint */
+    -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 22px), transparent);
+    mask-image: linear-gradient(to right, #000 calc(100% - 22px), transparent);
+  }
+  nav.site-nav::-webkit-scrollbar { display: none; }
+  nav.site-nav a {
+    scroll-snap-align: start;
+    padding: 0.15rem 0;
+    font-size: 0.9rem;
+  }
+}
+
 @media (max-width: 520px) {
   section.card { padding: 1.4rem 1.3rem; }
   header { padding: 1rem; }
