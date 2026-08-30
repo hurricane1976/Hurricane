@@ -7561,3 +7561,72 @@ Running log of what I did and learned across wakings. Newest entries on top.
   `website/metrics.template.html`, and the nav/wiring edits to 32 pages +
   4 templates + `deploy.sh` / `build_sitemap.py` / `build_status.py` /
   `smoke_test.py`. Generated `metrics.html` is gitignored.
+
+## 2026-08-30 (164th waking, ~22:05 UTC)
+
+- `check_replies.sh`: no new Telegram. `peer/inbox/` empty (`processed/` 13).
+  Agora not re-swept (nothing pending). No new sibling entries in `LOG.md`
+  since w163's tail.
+
+- **Focus:** the second half of josh's standing steer (w163 covered the
+  dashboards half with `/metrics.html`) — *"working on developing
+  collaboration with other agents and division of work."* Product #1 still
+  waiting on josh for the Gumroad listing URL; product #2 still held for his
+  "pdf versions plural" reply — so this waking went entirely to the fleet
+  coordination half.
+
+- **Done: wrote `/home/agent/shared/DIVISION-OF-WORK.md`** — a fleet charter
+  that gives every piece of work one owner and one reviewer, so the agents
+  stop doing the same job twice. Contents:
+  - **Agent table** — host / model / cadence / how each reaches josh, and why
+    the cadence is staggered (Beacon commits on the even hour, Highbeam
+    reviews ~1h later, Lantern cross-model pass on the half-hour; none run
+    concurrently, each `wake.sh` `flock`-guarded).
+  - **Who owns what** — Beacon = build/ship/coordinate and **sole committer /
+    only deployer**; Highbeam = commit review + SEO accuracy + newsletter +
+    research/pricing/deliverability; Lantern = cross-model review + visual
+    assets (OG cards, inline SVG diagrams) + comparison newsletter; Tidal +
+    River = off-box peers, coordinated only via the Tailscale peer channel /
+    Agora / manifests, never shared FS or deploy.
+  - **File-tree ownership table** — one writer per path; `shared/LOG.md` is
+    the append-only fleet timeline; `keys/**` never shared.
+  - **How a piece of work flows** — josh steer → Beacon files in `ASK.md` +
+    fans out to `TASKS.md` / `tasks-lantern.md` → sibling produces a review
+    or a deliverable into `LOG.md` / `outbox/` → Beacon integrates, commits,
+    deploys, runs the smoke gate, marks done.
+  - **Conflict rules** — one owner per artifact (Beacon decides ties and
+    records them here); no silent repo edits by siblings (review output is
+    advisory, safety boundary not hierarchy); don't re-review what `LOG.md`
+    already covers; don't hand-fire another agent's `wake.sh` unless asked.
+
+- **Wired it in so agents actually read it:**
+  - `agent/wake.sh` PROMPT — now also points at
+    `shared/DIVISION-OF-WORK.md` + the tail of `shared/LOG.md`.
+  - `partner/wake.sh` + `gemini-agent/wake.sh` PROMPTs — "read
+    `DIVISION-OF-WORK.md` first — it says what you own" ahead of the
+    task-file line.
+  - Header note added to `shared/TASKS.md` + `shared/tasks-lantern.md`
+    ("read the charter first; this file is just the live assignment queue on
+    top of it"). Also dropped the now-stale "Lantern is send-only on
+    Telegram" clause from the `tasks-lantern.md` header (own bot since w155).
+
+- **Also fixed a stale live fact on `/distributed-agents.html`:** the w145
+  fleet-topology inline SVG (and its aria-label) still described Highbeam and
+  Lantern as "Telegram: Send-Only" — both got their own bots w155 and read
+  replies now. SVG lines → "Telegram: Own Bot (r/w)"; aria-label → "its own
+  Telegram bot" ×2. HTML re-parsed clean, `grep` confirms 0 "send-only" left
+  on the page. Deployed via `website/deploy.sh` — `smoke_test.py` local +
+  live both green; `curl` of the live page confirms the new strings.
+
+- **Repo commit:** `wake.sh` + `website/distributed-agents.html` +
+  `ASK.md` + `NOTES.md`. `DIVISION-OF-WORK.md`, the two sibling `wake.sh`
+  files, and the `shared/` task-file edits are all outside this repo.
+  Generated site files unchanged / gitignored.
+
+- **Health sweep, all green:** nginx / beacon-api / beacon-peer / fail2ban /
+  cron / certbot.timer active; 0 failed units; no `/var/run/reboot-required`;
+  disk 10%; uptime ~5d 3h; load ~0.1. `git` was in sync with
+  `origin/master` at `8fd624a` before this waking's commit.
+- **Fleet:** Beacon w164 (now); Highbeam last ~21:00Z, next ~23:00Z; Lantern
+  last ~22:30Z (or imminent), next ~00:30Z; Tidal 2h cadence via
+  `tidalwake.org`; River via Tidal's manifest + Agora.

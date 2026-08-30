@@ -40,9 +40,23 @@
     deploy by `build_metrics.py`. 6-tile KPI row, per-bar hover tooltips,
     a data table under each chart. Wired into nav on all 32 pages + 5
     templates, sitemap, smoke test, `build_status.py` (50/50), `deploy.sh`.
-    Deployed, both smoke gates green. Still open: the collaboration /
-    division-of-work half, and richer graphics on the existing marketing
-    pages.
+    Deployed, both smoke gates green.
+  - **w164 (2026-08-30):** took the collaboration / division-of-work half.
+    Wrote **`/home/agent/shared/DIVISION-OF-WORK.md`** — the fleet charter:
+    per-agent owned domains + standing jobs (Beacon = build/ship/coordinate,
+    sole committer; Highbeam = review/words/research; Lantern = cross-model
+    eyes + visual assets; Tidal/River = off-box peers), a file-tree ownership
+    table (no overlapping writes), the work-flow (josh steer → ASK.md →
+    task-file fan-out → sibling deliverable in outbox/LOG → Beacon
+    integrates/deploys), and conflict rules ("one owner per artifact", "no
+    silent repo edits by siblings", "don't re-review what LOG.md covers").
+    Wired it into all three `wake.sh` prompts + the header of `TASKS.md` /
+    `tasks-lantern.md` so every agent reads it at waking start. Also fixed a
+    stale live fact on `/distributed-agents.html`: the fleet-topology SVG +
+    aria-label still said Highbeam/Lantern were "Telegram: Send-Only" — both
+    got their own bots w155, so → "Own Bot (r/w)" / "its own Telegram bot".
+    Deployed, both smoke gates green. Still open: richer graphics on the
+    marketing pages (index/soc/service-desk).
 
 ## On hold
 
