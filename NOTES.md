@@ -6494,3 +6494,57 @@ Running log of what I did and learned across wakings. Newest entries on top.
   All fresh, on schedule.
 - Committing: `website/distributed-agents.html` + `NOTES.md`. `shared/` +
   `peer/` JSON are outside this repo.
+
+## 2026-08-30 (146th waking, ~06:05 UTC)
+
+- **Telegram from josh: "Configure dynamic telegram commands."** Built it —
+  Beacon now handles `/commands` between wakings, matching the feature Tidal
+  shipped w16 (and whose security model Beacon reviewed w145).
+- **New: `telegram_commands.sh` + `telegram_commands.py`**, cron
+  `*/5 * * * *`, flock-guarded (`logs/.telegram_commands.lock`). This is now
+  the **primary consumer** of the bot's `getUpdates` stream (shares
+  `.telegram_offset`). For each new message from josh's exact chat id:
+  - first token exact-matches a **closed allowlist** → run the mapped action,
+    reply with its output (truncated to 3800 chars). Commands:
+    `/status` (git sync vs origin, systemd units, disk, uptime/load,
+    reboot-required, live HTTP on `/` + `/status.html`), `/health` (alias),
+    `/notes` (latest NOTES.md entry), `/ask` (ASK.md `## Open`),
+    `/watchdog` (runs `watchdog.sh`, reports), `/digest` (runs `digest.sh`),
+    `/wake` (detached `wake.sh` — no-ops under its own flock if a session is
+    live), `/help`.
+  - anything else → appended to `.telegram_incoming` (gitignored) + "logged
+    for the next waking" ack.
+  - **Security** (per the model Beacon gave Tidal w145): hard gate on both
+    `chat.id` AND `from.id` == `TELEGRAM_CHAT_ID`; command dict is closed;
+    leading token matched literally after stripping `/` and any `@botname`;
+    inbound text is **never** passed to a shell — every handler runs a fixed
+    argv list, no `shell=True`, no interpolation. Optional args unused except
+    where an int is parsed.
+- **`check_replies.sh` updated** — now drains `.telegram_incoming` first
+  (prints + clears), *then* runs its existing direct `getUpdates` poll
+  unchanged. Normal case: the poller already advanced the shared offset so the
+  direct poll returns nothing and the queue carries josh's text. If the poller
+  is ever stopped, `check_replies.sh` still works exactly as before —
+  strictly more robust than the old path, never less.
+- **Verified:** py + bash syntax clean; every handler unit-tested directly
+  (`/status` returns real box state, `/notes`/`/ask` slice the right
+  sections); message routing tested offline with fake update dicts — valid
+  command, `@botname`+args, unknown command → `/help`, freeform → queue+ack,
+  wrong `chat.id` ignored, right chat / wrong `from.id` ignored. Ran the live
+  poller 3× against the real API: exit 0, no new messages (josh's original
+  msg was already consumed by this waking's `check_replies.sh`), nothing sent,
+  offset stable. Cron line added and confirmed in `crontab -l`.
+- **Docs:** README.md (component list + layout block) and the
+  `reference_notify_telegram` memory updated.
+- **No website changes** — all repo-script work. `wake.sh`'s post-session
+  `deploy.sh` will run as usual; nothing new for it to publish.
+- **Health sweep, all green:** nginx / beacon-api / beacon-peer / fail2ban /
+  cron / certbot.timer active; disk 9% (84G free); uptime 4d 10h; load ~0.00;
+  no `/var/run/reboot-required`. `git` was in sync with `origin/master` at
+  `0a79a92` before this waking's commit. Live: `/` 200, `/status.html` 200.
+- **Fleet:** one peer message from Tidal (w19) — "everything functioning
+  flawlessly, 39 unit tests green, ARA + SOS scans 100%"; archived to
+  `peer/inbox/processed/` (now 12). Highbeam ~05:00Z, Lantern last 00:30Z,
+  Tidal 2h cadence — all on schedule.
+- Committing: `telegram_commands.sh`, `telegram_commands.py`, `check_replies.sh`,
+  `README.md`, `.gitignore`, `NOTES.md`.

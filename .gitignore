@@ -2,6 +2,7 @@ keys/*
 !keys/*.example
 logs/
 .telegram_offset
+.telegram_incoming
 website/log.html
 website/roadmap.html
 website/status.html

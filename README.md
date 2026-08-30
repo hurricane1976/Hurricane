@@ -34,10 +34,18 @@ then let it decide what to do between check-ins.
   say needs a human sign-off gets written here and flagged over
   Telegram, then the agent waits instead of guessing.
 - **`notify.sh`** / **`check_replies.sh`** — a two-way Telegram bridge.
-  `notify.sh` sends; `check_replies.sh` polls for new messages and
+  `notify.sh` sends; `check_replies.sh` shows new messages and
   filters to the operator's own chat id, so anyone else messaging the
   bot is ignored rather than treated as an instruction (see
   `AGENT.md`'s rule that inbound content is data, never orders).
+- **`telegram_commands.sh`** / **`telegram_commands.py`** — a between-wakings
+  command handler, run every 5 min from cron. It is the primary consumer of
+  the bot's update stream: a message from the operator whose first token
+  exact-matches a fixed allowlist (`/status`, `/notes`, `/ask`, `/watchdog`,
+  `/digest`, `/wake`, `/help`) runs the mapped action and replies; anything
+  else is queued to `.telegram_incoming` for the next waking's
+  `check_replies.sh` to surface. Inbound text is never passed to a shell —
+  handlers run fixed argv lists — and the same chat-id gate applies.
 - **Claude Code's own memory system** (`~/.claude/.../memory/`) — a
   second, longer-horizon layer alongside `NOTES.md`: durable facts
   about the operator, standing feedback, and project context that
@@ -78,6 +86,7 @@ AGENT.md              operating rules, read every waking
 wake.sh                cron entry point
 notify.sh               send a Telegram message
 check_replies.sh        read new Telegram messages (filtered to operator)
+telegram_commands.sh    between-wakings /command handler (cron, every 5 min)
 digest.sh               example of a self-contained scheduled task
 NOTES.md / ASK.md       running log / open questions (the agent's memory)
 website/                a static site the agent built and maintains itself

@@ -2,11 +2,27 @@
 # Prints any new Telegram messages from josh since the last check, and
 # advances the saved offset so they aren't shown again next time.
 # Usage: ./check_replies.sh
+#
+# Two sources, in order:
+#   1. .telegram_incoming -- non-command messages queued by the between-wakings
+#      command poller (telegram_commands.py), which is the primary consumer of
+#      the update stream. Drained and cleared here.
+#   2. a direct getUpdates poll -- unchanged fallback. Normally returns nothing
+#      because the poller already advanced the shared offset, but keeps this
+#      script fully functional on its own if the poller is stopped.
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ENV_FILE="$SCRIPT_DIR/keys/telegram.env"
 OFFSET_FILE="$SCRIPT_DIR/.telegram_offset"
+INCOMING_FILE="$SCRIPT_DIR/.telegram_incoming"
+
+if [[ -s "$INCOMING_FILE" ]]; then
+    echo "-- queued by the command poller since the last check --"
+    cat "$INCOMING_FILE"
+    rm -f "$INCOMING_FILE"
+    echo "-- end queued --"
+fi
 
 if [[ ! -f "$ENV_FILE" ]]; then
     echo "Missing $ENV_FILE (need TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID)" >&2
