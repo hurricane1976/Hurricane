@@ -7157,3 +7157,61 @@ Running log of what I did and learned across wakings. Newest entries on top.
   `.well-known/*`/`fleet-status.html`/`fleet.json`/`status.html`) are
   gitignored. `gemini-agent/` + `peer/` changes are outside this repo /
   untracked.
+
+## 2026-08-30 (158th waking, ~18:30 UTC)
+
+- `check_replies.sh`: one queued command from josh via `/commands` — "Explore
+  potential business opportunities and research with assistance for the agent
+  team. Need legitimate opportunity that are actionable and achievable by this
+  agent team." Already pre-queued into `ASK.md` `## Open` (with a stray
+  `_None._` line left above it — cleaned up this waking). No other Telegram
+  messages. No new peer messages (`peer/inbox/` empty, `processed/` 13). Agora:
+  10 posts, all legit fleet intros/status — nothing to prune.
+
+- **Delivered: ranked business-opportunities analysis (the ask) — research,
+  not a build.** New `shared/business-opportunities.md`:
+  - Capability inventory (what the team has actually demonstrated over 157
+    wakings) + hard constraints that kill the "obvious" ideas (the
+    never-claim-to-be-human rule rules out Upwork/Fiverr/faceless social;
+    josh is the money/contract gate; "passive" needs search rank OR an
+    audience OR a marketplace — all months out).
+  - **Tier 1 (actionable now, no dependency):** (1) SEO content moat in the
+    "running Claude Code / autonomous agents in production" niche — 2–3 deep
+    evergreen pages/week on the existing site, 3–6 mo to real organic
+    traffic, monetized via the $12 guides + newsletter + honest affiliate;
+    (2) templatize `architecture-review.html` into 2–3 fixed-scope fixed-price
+    "generated report" products (Claude Code project audit ~$75–150, agent
+    deployment readiness review ~$150–300); (3) self-serve digital templates
+    (AGENT.md/CLAUDE.md pack, "$6 VM agent" boilerplate sanitized from this
+    project, SOC doc templates) on Gumroad Discover / LemonSqueezy.
+  - **Tier 2 (needs josh):** (4) the Buttondown newsletter — still parked on
+    josh creating the account; flagged as the single highest-leverage unblock
+    he controls because it's the audience engine 1–3 depend on; (5)
+    sponsorship / "tools we run on" affiliate page, downstream of traffic.
+  - **Tier 3 (considered + rejected, with reasons):** freelance marketplaces,
+    faceless social channels, crypto, third-party security testing,
+    dropshipping/content mills.
+  - Recommended sequence + an open "Highbeam / Lantern — analysis" section.
+
+- **Queued the siblings:** `shared/TASKS.md` — Highbeam to add search-demand
+  validation, competitor scan, report-service pricing benchmarks, and
+  SPF/DKIM/DMARC deliverability notes (priority over the standing newsletter
+  job this waking). `shared/tasks-lantern.md` — Lantern to add a cross-model
+  take on the ranking, which template formats have the best marketplace
+  discovery, and conversion-lifting visual assets.
+
+- **ASK.md:** stray `_None._` removed; the open item rewritten to summarize
+  the analysis + the two concrete yes/no questions for josh (start the SEO
+  push next waking? spin up the template products?). Buttondown stays parked
+  under `## On hold`.
+
+- **Health sweep, all green:** nginx / beacon-api / beacon-peer / fail2ban /
+  cron / certbot.timer active; 0 failed units; no `/var/run/reboot-required`;
+  disk 10% (79G free); uptime 4d 22h; load ~0.0; `logs/watchdog.log` `ok`
+  through 18:00Z. `git` in sync with `origin/master` at `b0c7be0` before this
+  waking's commit.
+- **Fleet:** Beacon w158 (now); Highbeam last 17:00Z (w33, exit 0); Lantern
+  w25 manual 17:25Z exit 0 (next scheduled 18:30Z); Tidal on 2h cadence;
+  River visible via Tidal's manifest + Agora. All on schedule.
+- Committing: `ASK.md` + `NOTES.md` (generated site files gitignored).
+  `shared/` changes are outside this repo.

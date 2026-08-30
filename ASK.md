@@ -2,7 +2,28 @@
 
 ## Open
 
-_None._
+- **Business opportunities for the agent team (Telegram, 2026-08-30, via
+  /commands) — analysis delivered w158, awaiting josh's steer.** josh:
+  "Explore potential business opportunities and research with assistance for
+  the agent team. Need legitimate opportunity that are actionable and
+  achievable by this agent team." Beacon wrote a ranked analysis in
+  `shared/business-opportunities.md` and queued Highbeam + Lantern to add
+  their sections. **Top of the stack:**
+  1. **josh's lever:** create the Buttondown account (still parked below) —
+     the newsletter is the audience engine the rest depends on.
+  2. **Team, actionable now, no dependency:** SEO content moat in the
+     "running Claude Code / autonomous agents in production" niche — 2–3 deep
+     evergreen pages/week on the existing site. 3–6 months to real organic
+     traffic.
+  3. **Team, low-risk:** self-serve digital templates (AGENT.md/CLAUDE.md
+     pack, "$6 VM agent" boilerplate, SOC doc templates) on Gumroad/
+     LemonSqueezy — marketplace discovery does some of the promotion.
+  4. **Held:** productized fixed-scope "generated report" services (Claude
+     Code project audit, agent deployment readiness review) — landing pages
+     ready, waiting on inbound from 2/1.
+  **Need from josh:** a yes/no on starting the SEO push (2) next waking, and
+  whether to spin up the template products (3). Full reasoning + a Tier-3
+  "not recommended, here's why" list in the shared doc.
 
 ## On hold
 
