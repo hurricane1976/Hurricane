@@ -2,31 +2,36 @@
 
 ## Open
 
-- **Template products (business-opportunities Tier-1 #3) — building; marketplace
-  on hold per josh.** josh via Telegram (2026-08-30, via /commands): *"Good on
-  templates hold on marketplace while I await inform."* Read as: build/stage the
-  template products now, do **not** create or publish any marketplace listing
-  until he says go (he's awaiting info — likely the Buttondown/marketplace
-  decision). Actioned w160:
-  - First product staged: **`shared/outbox/products/agent-instructions-pack/`**
+- **Template products (business-opportunities Tier-1 #3) — product #1 packaged,
+  handed to josh for a Gumroad listing.** josh via Telegram (2026-08-30, via
+  /commands): *"Good on templates hold on marketplace while I await inform."*
+  then *"I will post on gumroad when I get the pdf versions."* Read now as:
+  abstract "marketplace" (LemonSqueezy / new platform) still on hold pending
+  info josh is awaiting — but **Gumroad is greenlit** (existing channel for the
+  other 5 downloads; josh will list it himself).
+  - Product #1 staged w160–161: **`shared/outbox/products/agent-instructions-pack/`**
     — an AGENT.md/CLAUDE.md template pack (guide + 5 fill-in templates + 2
-    annotated worked examples + review checklist + anti-patterns list). Written
-    clean, not copy-pasted; sanitisation grep (domain / operator name / chat id
-    / IP / peer-token) passes on every shippable file. Full status +
-    review notes in `shared/outbox/products/README-FOR-JOSH.md`.
-  - `LISTING-DRAFT.md` inside it holds title/description/price ($15 standalone,
-    $22 bundled with the starter kit) ready to paste — **marked DO NOT
-    PUBLISH.**
-  - w161: added `agent-instructions-pack.pdf` — a single 30-page rendered PDF
-    of the whole pack (built by `build-pdf.py`), sent to josh for review.
-  - **What Beacon needs from josh:** (a) the "go" + platform choice (Gumroad vs
-    LemonSqueezy) when the hold lifts; (b) bundle-with-starter-kit or
-    standalone. Then Beacon zips it, josh uploads + lists + sends the URL,
-    Beacon wires it into `/get.html`.
-  - Next waking: stage product #2 (the "$6 VM agent" boilerplate) as an
-    *expanded v2* of the existing starter kit (adds watchdog / hardening /
-    digest / Agora-manifest), not a near-duplicate — unless josh says leave the
-    kit alone.
+    annotated worked examples + 2 checklists) + a 30-page rendered PDF
+    (`agent-instructions-pack.pdf`, built by `build-pdf.py`). Written clean, not
+    copy-pasted.
+  - **w162:** added `LICENSE.txt` (use-in-your-work yes, redistribute no, no
+    warranty); built **`shared/outbox/products/agent-instructions-pack.zip`**
+    (148 KB — PDF + all 12 .md docs + LICENSE + CHANGELOG; excludes
+    LISTING-DRAFT / README-FOR-JOSH / build-pdf.py). Sanitisation regex +
+    identifier greps re-run over the exact zip contents — clean (only hits are
+    the review-checklist's own regex literals and the generic
+    `keys/telegram.env` in the fictional "Sentry/Dana" example, both accepted).
+    **Sent the zip to josh over Telegram (msg 581).**
+  - **What Beacon needs from josh:** (a) upload the zip to a new Gumroad
+    listing (paste-ready copy in `LISTING-DRAFT.md`); (b) price call — $15
+    standalone or $22 bundled w/ the starter kit (Beacon rec: $15 standalone
+    now, bundle later); (c) send the listing URL back → Beacon wires the "Buy
+    now" button into `/get.html`.
+  - **Product #2 still queued** (not done w162): the "$6 VM agent" boilerplate
+    as an *expanded v2* of the existing starter kit (adds watchdog / hardening
+    / digest / Agora-manifest), not a near-duplicate — unless josh says leave
+    the kit alone. Asked josh (msg 581) whether "pdf versions" plural meant he
+    also wants product #2 now.
 
 ## On hold
 

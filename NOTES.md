@@ -7426,3 +7426,73 @@ Running log of what I did and learned across wakings. Newest entries on top.
   River visible via Tidal's manifest + Agora.
 - Committing: `ASK.md` + `NOTES.md` only (PDF + `build-pdf.py` + `shared/`
   are outside this repo). Generated site files unchanged / gitignored.
+
+## 2026-08-30 (162nd waking, ~20:48 UTC)
+
+- `check_replies.sh`: one queued `/commands` message from josh — **"I will
+  post on gumroad when I get the pdf versions"** (already appended to `ASK.md`
+  by the poller). No other Telegram. `peer/inbox/` empty (`processed/` 13).
+  Agora not re-checked (nothing pending; last sweep w160 clean).
+
+- **Read of the command:** josh is going to list the template pack on Gumroad
+  himself and is waiting on the deliverable. The abstract "marketplace" hold
+  (LemonSqueezy / any new platform he's "awaiting inform" on) still stands,
+  but **Gumroad is greenlit** — it's the existing channel for the other 5
+  paid downloads. w161 already sent a review-copy PDF; this waking = turn the
+  staged pack into an actual upload-ready package.
+
+- **Done: packaged product #1 for Gumroad.**
+  - New `agent-instructions-pack/LICENSE.txt` — use in your own/commercial/
+    client work freely, no redistribution/resale, no warranty, "team" = one
+    company or one client engagement.
+  - Built **`shared/outbox/products/agent-instructions-pack.zip`** (148 KB)
+    via `python3 -m zipfile` (no `zip` binary on the box). Contents: the
+    30-page `agent-instructions-pack.pdf` + all 12 `.md` docs (README,
+    `00-GUIDE.md`, 5 templates, 2 annotated examples, 2 checklists, CHANGELOG)
+    + `LICENSE.txt`. Excludes `LISTING-DRAFT.md`, the parent
+    `README-FOR-JOSH.md`, and `build-pdf.py` (build tooling, not buyer-facing).
+  - **Sanitisation re-run over the exact staged zip contents** (not just the
+    source dir): the review-checklist secrets/PII regex + the
+    `beacon|josh|highbeam|lantern|tidal|apacheshadow|107.170|162.243|
+    telegram.env|peer-token|beaconwake` identifier grep. Only hits: the
+    review-checklist file quoting its own regex literals (`ghp_` etc.), and
+    the generic `keys/telegram.env` inside the fictional "Sentry/Dana" worked
+    example — both known and accepted at w160/w161. Eyeballed the example
+    again: clean composite, no real identifiers.
+  - **Sent the zip to josh over Telegram** via `sendDocument` (HTTP 200, msg
+    id 581) with a caption covering contents, the $15/$22 pricing rec, the
+    paste-ready `LISTING-DRAFT.md`, and the next step (he uploads + lists +
+    sends the URL, Beacon wires `/get.html`). Also asked in that message
+    whether "pdf versions" (plural) meant he also wants product #2 now.
+
+- **Staging docs updated** (all outside this repo):
+  `shared/outbox/products/README-FOR-JOSH.md` (status → w162, Gumroad
+  greenlit, what's needed from josh rewritten) and
+  `agent-instructions-pack/LISTING-DRAFT.md` (pre-list gate: 4 of 5 boxes now
+  checked — grep, identifier grep, LICENSE, zip+sent; only "josh created the
+  listing + URL back" remains).
+
+- **Product #2 NOT built this waking** — deliberately held one waking for
+  josh's reply on the "pdf versions" plural question rather than
+  speculatively building an expanded starter-kit v2 that touches the existing
+  live product. Still queued in `ASK.md`.
+
+- **ASK.md:** the standalone "I will post on gumroad…" line folded into the
+  Template-products Open item, which is rewritten to reflect product #1 being
+  packaged + handed off and product #2 still queued.
+
+- **No website changes** — all product work is in `shared/` (outside this
+  repo). Live spot check: `/`, `/guides.html`, `/get.html`,
+  `/fleet-status.html` all 200.
+
+- **Health sweep, all green:** nginx / beacon-api / beacon-peer / fail2ban /
+  cron / certbot.timer active; 0 failed units; no `/var/run/reboot-required`;
+  disk 10% (79G free); uptime 5d 1h; load ~0.01. `logs/watchdog.log` `ok`
+  through 20:40Z. `git` in sync with `origin/master` at `8eb69cb` before this
+  waking's commit.
+- **Fleet:** Beacon w162 (now); Highbeam last ~19:00Z (exit 0), next
+  ~21:00Z; Lantern last ~18:30Z, next ~20:30Z; Tidal on 2h cadence via
+  `tidalwake.org`; River visible via Tidal's manifest + Agora.
+- Committing: `ASK.md` + `NOTES.md` only (zip + `LICENSE.txt` + `shared/`
+  staging docs are outside this repo). Generated site files unchanged /
+  gitignored.
