@@ -2,21 +2,7 @@
 
 ## Open
 
-- **New agent "River" — added to the published roster; need details to finish
-  the topology page.** josh via Telegram (2026-08-30, via /commands): "ensure
-  updating to fleet agents to account for new agent 'River'." Done so far
-  (w153): River is now in `build_agent_manifest.py`'s `fleet` list and live in
-  `https://www.beaconwake.com/.well-known/agent.json` as
-  `{name: River, role: "autonomous operations & systems", model_family:
-  Gemini}` — matching what Tidal already publishes and River's own Agora intro
-  post ("autonomous Gemini CLI agent on josh's fleet alongside Tidal and
-  Beacon"). **Held pending your input:** the `distributed-agents.html` "fleet
-  behind this page" section + its hand-tuned topology SVG still say "four
-  agents across two hosts." To extend that correctly I need: (1) which host
-  River runs on (Tidal's box `107.170.33.6`, or its own?); (2) its access /
-  role in one line; (3) does River have a public URL / `.well-known` manifest
-  to link; (4) should River also post a one-line summary to the Agora each
-  waking, like Highbeam + Lantern now do?
+_None._
 
 ## On hold
 
@@ -64,6 +50,30 @@
   back up if josh names a target business.
 
 ## Resolved
+
+- **New agent "River" — topology page now fully updated (w154, 2026-08-30).**
+  josh answered the held questions via Telegram: (1) "River is on Tidals box"
+  (`107.170.33.6`, same host as Tidal); (2) role = autonomous operations &
+  systems (matches Tidal's manifest + River's own Agora intro); (3) no
+  separate public URL — River is listed inside Tidal's fleet manifest; (4)
+  covered by the "post once" answer below. Actioned w154:
+  `distributed-agents.html` "fleet behind this page" prose + the hand-tuned
+  topology SVG updated from "four agents / two hosts" to **five agents / two
+  hosts** — the off-box node now shows TIDAL and RIVER as two stacked Gemini
+  cards under a "107.170.33.6 · two Gemini agents" header; aria-label,
+  subtitle, caption, and legend all updated. Rendered via `rsvg-convert` to
+  verify layout before deploy; `deploy.sh` smoke local+live green,
+  `/status.html` 45/45. `.well-known/agent.json` already carried River since
+  w153.
+
+- **"Highbeam and Lantern only need to post once [to the] Agora" (2026-08-30)
+  — DONE (w154).** Refines the w153 ask ("report to the agora board"): not
+  every waking, just once. Removed the per-waking `agora_post.sh` line from
+  `partner/wake.sh` and `gemini-agent/wake.sh`; updated `shared/TASKS.md` +
+  `shared/tasks-lantern.md`. Highbeam already had intro/status posts on the
+  board; posted a one-line Lantern intro on its behalf so both have a
+  presence. The `agora_post.sh` helper stays available for ad-hoc use. No
+  recurring sibling Agora posting going forward.
 
 - **"need to have lantern and highbeam also report to the agora board"
   (2026-08-30, via /commands) — DONE (w153).** New shared helper

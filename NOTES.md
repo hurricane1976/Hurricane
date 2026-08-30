@@ -6896,3 +6896,64 @@ Running log of what I did and learned across wakings. Newest entries on top.
   River newly visible (first Agora post today). All on schedule.
 - Committing: `ASK.md`, `website/build_agent_manifest.py`, `NOTES.md`.
   `shared/` + `partner/` + `gemini-agent/` changes are outside this repo.
+
+## 2026-08-30 (154th waking, ~15:15 UTC)
+
+- `check_replies.sh`: two new Telegram messages from josh (via `/commands`),
+  both answers to w153's held items: (1) "River is on Tidals box", (2)
+  "Highbeam and lateen only need to post once agora". No new peer messages
+  (`peer/inbox/` empty, `processed/` still 12).
+
+- **Shipped: River fully wired into the topology page (ask 2 from w153) —
+  DONE.** josh confirmed River runs on **Tidal's box** (`107.170.33.6`), role
+  = autonomous operations & systems, no separate public URL (it's inside
+  Tidal's fleet manifest).
+  - `website/distributed-agents.html` "fleet behind this page":
+    - prose: "Four autonomous agents across two hosts" → "**Five** autonomous
+      agents across two hosts"; added a River clause to the Beacon/Highbeam/
+      Lantern/Tidal roll-call and to the coordination paragraph ("The off-box
+      host and its agents are reached only over…").
+    - hand-tuned topology SVG: off-box node container grown 275→310px tall,
+      header now `OFF-BOX SIBLING NODE` + `107.170.33.6 · TWO GEMINI AGENTS`;
+      the single 225px TIDAL card replaced by two stacked 122px cards —
+      **TIDAL** (`GEMINI · DEV & SECURITY`) and new **RIVER**
+      (`GEMINI · OPS & SYSTEMS`, bullets: autonomous ops & systems /
+      co-located with Tidal / in Tidal's fleet manifest). Both slate
+      (`#a7b4c8`), consistent with the w152 off-box palette.
+    - aria-label rewritten for five agents + the two-agent off-box host;
+      SVG subtitle "Four…"→"Five…"; caption "four agents"→"five agents" +
+      "River node added later by Beacon"; legend "Tidal — off-box peer" →
+      "Tidal / River — off-box peers".
+  - Verified: extracted the SVG and rendered it at 1400px with `rsvg-convert`
+    (brand fonts on box) — both off-box cards read cleanly, spacing balanced,
+    no overlap with the shared-coordination row.
+  - **Deployed:** `deploy.sh` — smoke local + live green, `/status.html`
+    **45/45**, live `distributed-agents.html` serves "Five autonomous agents"
+    + the RIVER card. `.well-known/agent.json` fleet already had River (w153):
+    `[Beacon, Highbeam, Lantern, Tidal, River]`.
+
+- **Shipped: siblings post to the Agora once, not every waking (refines w153
+  ask 1) — DONE.** josh: "Highbeam and lateen only need to post once agora."
+  - Removed the per-waking `agora_post.sh` instruction from `partner/wake.sh`
+    and `gemini-agent/wake.sh` (both `bash -n` clean); the w153 additions to
+    `shared/TASKS.md` / `shared/tasks-lantern.md` rewritten to "post once,
+    done" notes.
+  - Highbeam already had posts on the board (w153 test + a real w32 status
+    post at 15:04Z); posted a one-line **Lantern** intro via `agora_post.sh`
+    so both on-box siblings have a presence. Helper script left in place for
+    ad-hoc use. No recurring sibling Agora posting from here on.
+  - `ASK.md`: both items + the stale w153 "held" item moved to `## Resolved`;
+    `## Open` now clear.
+
+- **Health sweep, all green:** nginx / beacon-api / beacon-peer / fail2ban /
+  cron / certbot.timer active; 0 failed units; no `/var/run/reboot-required`;
+  disk 10% (79G free); uptime 4d 19h; load ~0.0. `logs/watchdog.log` `ok`
+  through 15:00Z. `git` in sync with `origin/master` at `8676b41` before this
+  waking's commit.
+- **Fleet:** Highbeam last ~15:04Z (w32), Lantern last 00:30Z, Tidal on 2h
+  cadence, River on Tidal's box (visible via Agora + Tidal's manifest). All on
+  schedule.
+- Committing: `ASK.md`, `website/distributed-agents.html` + regenerated
+  `log.html`/`roadmap.html`/`weekly.html`/`feed.atom`/`sitemap.xml`/
+  `.well-known/*` + `NOTES.md`. `shared/` + `partner/` + `gemini-agent/`
+  changes are outside this repo.
