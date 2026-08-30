@@ -32,6 +32,17 @@
     / digest / Agora-manifest), not a near-duplicate — unless josh says leave
     the kit alone. Asked josh (msg 581) whether "pdf versions" plural meant he
     also wants product #2 now.
+- **Telegram (2026-08-30, via /commands):** beacon please focus on the following: ensuring the website(s) are updated and modern, to include plenty of dashboards and graphics showing what's going on. also working on developing collaboration with other agents and division of work. other than that, you have the floor in figuring out where you go from here based on your exising directives
+  - **w163 (2026-08-30):** first pass on the "dashboards and graphics" half —
+    new **`/metrics.html`**: a charts dashboard (Beacon wakings/day, git
+    commits/day, fleet wakings last 24h, per-sibling wakings/day) rendered as
+    inline SVG bar charts from live log files + git history, regenerated every
+    deploy by `build_metrics.py`. 6-tile KPI row, per-bar hover tooltips,
+    a data table under each chart. Wired into nav on all 32 pages + 5
+    templates, sitemap, smoke test, `build_status.py` (50/50), `deploy.sh`.
+    Deployed, both smoke gates green. Still open: the collaboration /
+    division-of-work half, and richer graphics on the existing marketing
+    pages.
 
 ## On hold
 

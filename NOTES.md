@@ -7496,3 +7496,68 @@ Running log of what I did and learned across wakings. Newest entries on top.
 - Committing: `ASK.md` + `NOTES.md` only (zip + `LICENSE.txt` + `shared/`
   staging docs are outside this repo). Generated site files unchanged /
   gitignored.
+
+## 2026-08-30 (163rd waking, ~21:35 UTC)
+
+- `check_replies.sh`: no new Telegram (the `/commands` steer from w162 is
+  already in `ASK.md`). `peer/inbox/` empty (`processed/` 13). Agora not
+  re-swept (nothing pending).
+
+- **Focus for this waking:** josh's standing steer — *"ensuring the
+  website(s) are updated and modern, to include plenty of dashboards and
+  graphics showing what's going on"* (+ agent collaboration / division of
+  work, taken up next waking). Product #1 is handed off and waiting on josh;
+  product #2 held for his "pdf versions plural" reply — so this waking went
+  to the dashboards half.
+
+- **Done: new `/metrics.html` — a charts dashboard for what the fleet is
+  actually doing.** Everything measured at generation time, nothing
+  hand-drawn:
+  - **KPI row (6 tiles):** Beacon wakings so far, fleet wakings last 7d, git
+    commits lifetime, git commits last 7d, days running unattended, agents in
+    the fleet.
+  - **Charts (inline SVG, no JS, no external assets):** Beacon wakings/day
+    (14-day window, amber), git commits/day (teal), fleet wakings last 24h
+    (horizontal bars, 3 on-box agents), and per-sibling wakings/day
+    (Highbeam + Lantern, full-width, own y-scale). Each bar has a `<title>`
+    for a native hover tooltip; the tallest bar is directly labelled;
+    a `<details>` data table sits under each chart for the non-visual view.
+  - **`website/build_metrics.py`** renders it from `metrics.template.html`.
+    Data sources: `logs/*.log` (Beacon), `/home/agent/partner/logs/*.log`
+    (Highbeam), `/home/agent/gemini-agent/logs/*.log` (Lantern) — counting
+    only non-empty per-waking transcripts (0-byte = flock-blocked/no-op
+    start, not a waking) — and `git log --date=short`. Regenerated every
+    deploy (added to `deploy.sh` after `build_fleet_status.py`).
+  - **Palette check:** ran the dataviz skill's validator — amber+teal+slate
+    fails as a 3-category set (slate reads gray, teal↔slate ΔE too low), so
+    every chart is deliberately **single-series** (amber for wakings, teal
+    for commits), which sidesteps the categorical-CVD requirement entirely.
+  - **Numbers are honest, not the marketing figure:** Beacon shows ~20–36
+    wakings/day, well above the "12×/day" schedule, because
+    `telegram_commands.sh` fires an extra `wake.sh` every time josh sends a
+    command. The chart note says so.
+  - **Wiring:** nav link ("Metrics", after "Fleet") added to all 32 pages +
+    5 templates via a one-off script; `build_sitemap.py`, `smoke_test.py`,
+    `build_status.py` (now **50/50**), `.gitignore` (generated file, like
+    `status.html`). Deployed — `smoke_test.py` local + live both green,
+    `/metrics.html` 200, rendered + eyeballed in bundled headless Chrome
+    (KPI row, all five charts, tooltips, data tables all correct).
+
+- **Not done this waking:** the collaboration / division-of-work half of the
+  steer, and adding charts/graphics to the existing marketing pages
+  (index/soc/service-desk). Next waking.
+
+- **No `shared/` or product changes** — product #1 still waiting on josh for
+  the Gumroad listing URL; product #2 still held for his reply.
+
+- **Health sweep, all green:** nginx / beacon-api / beacon-peer / fail2ban /
+  cron / certbot.timer active; 0 failed units; no `/var/run/reboot-required`;
+  disk 10%; uptime ~5d 2h; load ~0.1.
+- **Fleet:** Beacon w163 (now); Highbeam last ~21:00Z, next ~23:00Z; Lantern
+  last ~20:30Z, next ~22:30Z; Tidal 2h cadence via `tidalwake.org`; River via
+  Tidal's manifest + Agora. `/metrics.html` per-sibling charts corroborate:
+  Highbeam ~11–12/day, Lantern ~7–12/day.
+- Committing: `ASK.md`, `NOTES.md`, `.gitignore`, `website/build_metrics.py`,
+  `website/metrics.template.html`, and the nav/wiring edits to 32 pages +
+  4 templates + `deploy.sh` / `build_sitemap.py` / `build_status.py` /
+  `smoke_test.py`. Generated `metrics.html` is gitignored.

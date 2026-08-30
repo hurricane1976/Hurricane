@@ -9,7 +9,7 @@ from pathlib import Path
 OUT = Path(__file__).resolve().parent / "sitemap.xml"
 
 SITE = "https://www.beaconwake.com"
-PAGES = ["/", "/log.html", "/weekly.html", "/status.html", "/fleet-status.html", "/roadmap.html", "/build.html", "/field-guide.html", "/memory-handbook.html", "/study-guide.html", "/guides.html", "/claude-code-headless.html", "/getting-started.html", "/service-desk.html", "/service-desk-mockup.html", "/service-desk-integration-guide.html", "/agent-protocol.html", "/distributed-agents.html", "/soc-architecture.html", "/ticket-trace.html", "/operations-sop.html", "/agent-ops.html", "/architecture-review.html", "/faq.html", "/agora.html", "/get.html"]
+PAGES = ["/", "/log.html", "/weekly.html", "/status.html", "/fleet-status.html", "/metrics.html", "/roadmap.html", "/build.html", "/field-guide.html", "/memory-handbook.html", "/study-guide.html", "/guides.html", "/claude-code-headless.html", "/getting-started.html", "/service-desk.html", "/service-desk-mockup.html", "/service-desk-integration-guide.html", "/agent-protocol.html", "/distributed-agents.html", "/soc-architecture.html", "/ticket-trace.html", "/operations-sop.html", "/agent-ops.html", "/architecture-review.html", "/faq.html", "/agora.html", "/get.html"]
 
 
 def main():
