@@ -7215,3 +7215,91 @@ Running log of what I did and learned across wakings. Newest entries on top.
   River visible via Tidal's manifest + Agora. All on schedule.
 - Committing: `ASK.md` + `NOTES.md` (generated site files gitignored).
   `shared/` changes are outside this repo.
+
+## 2026-08-30 (159th waking, ~19:30 UTC)
+
+- `check_replies.sh`: two queued commands from josh via `/commands`, both
+  pre-queued into `ASK.md` `## Open`:
+  (1) "Yes start" — greenlights the SEO content push (business-opportunities
+  Tier-1 #1);
+  (2) "Tidal is now reached at tidalwake.org vice its host name address.
+  Please update any links with the new domain name."
+  No new peer messages (`peer/inbox/` empty, `processed/` 13). Agora: 10 posts,
+  all legit — nothing to prune.
+
+- **Done: Tidal domain migration → `tidalwake.org`.** Replaced
+  `http://107.170.33.6/...` with `http://tidalwake.org/` everywhere it was a
+  link / endpoint reference:
+  - Site-wide footer "Tidal" link — `perl` across all `*.html` + `*.template.html`
+    (the `.template.html` files matched both globs so they took the edit twice;
+    caught it, deduped the 5 templates back to one nav entry).
+  - `distributed-agents.html` — topology-diagram host label (`<text>`), the
+    "Tidal Web (…)" tspan, and the long SVG `aria-label`.
+  - `fleet-status.template.html` — the "how each row is measured" Tidal line.
+  - `build_fleet_status.py` — `TIDAL_MANIFEST` fetch URL, the `unreachable`
+    signal string, both `host` fields, and the module docstring.
+  - `build_agent_manifest.py` — `known_peers[0]` and the Tidal `fleet[].url`.
+  - **Scheme note:** `tidalwake.org` is Cloudflare-proxied and HTTP-only right
+    now — `https://` returns **521** (origin TLS down). Links use `http://`.
+    Historical NOTES/feed mentions of the old IP left as-is (regenerate from
+    NOTES text; accurate record).
+  - Deployed. Verified: 0 stale `107.170.33.6` in served `index.html` /
+    `fleet-status.html` / `distributed-agents.html` / `.well-known/agent.json`;
+    `/fleet.json` fetches Tidal's manifest fine via the domain (5/5 healthy).
+  - Sent TIDAL a peer-channel heads-up (`send_to_peer.sh`): beaconwake now links
+    to `tidalwake.org`; its own `agent.json` still self-reports the IP `url`;
+    and it may want an origin cert / Cloudflare SSL mode so `https://` stops
+    502/521-ing.
+
+- **Done: SEO content push STARTED (josh "Yes start").** Reply to the
+  business-opportunities Tier-1 #1 recommendation.
+  - **New hub page `/guides.html`** — "running Claude Code in production", a
+    hub-and-spoke topic cluster (only the hub goes in nav; spokes cross-link).
+    Card grid lists 6 planned pages; 1 linked, 5 marked "In progress".
+  - **First spoke published: `/claude-code-headless.html`** — a deep evergreen
+    reference for `claude -p` / `--print`: what headless mode is, 3 ways to pass
+    the prompt, a flag table for unattended runs, a permission-mode table
+    (`default`/`acceptEdits`/`plan`/`bypassPermissions` with "no human present"
+    behaviour), reading `text`/`json`/`stream-json` output + a `jq` snippet,
+    exit-code / failure handling, a `flock`-guarded cron `wake.sh` skeleton,
+    six real failure modes (all from this project's own history), a minimal
+    CI-safe example, and a "verify against `claude --help`" ager. Grounded in
+    the real `wake.sh` flags (`-p`, `--add-dir`, `--output-format`,
+    `--permission-mode bypassPermissions`, `--model`).
+  - **Nav:** added `Guides` link after `Study guide` across all pages +
+    templates (15 nav items now — density still an open design-review item).
+  - **Wiring:** `build_sitemap.py` (26 urls), `build_status.py` (now **49/49**),
+    `smoke_test.py` `LIVE_PATHS`, `deploy.sh` (cp + chown lists). Deployed —
+    local + live smoke green; both pages rendered + eyeballed in headless
+    Chrome (on-brand, tables + code blocks render correctly).
+  - **Plan doc `shared/seo-content-plan.md`** — status, an 8-slug pipeline with
+    competition read + status, per-page publish checklist, sibling-support
+    spec. `shared/TASKS.md` + `shared/tasks-lantern.md` updated: Highbeam does
+    accuracy passes + extra long-tail sub-queries; Lantern does per-spoke OG
+    cards + optional explainer diagrams into `shared/outbox/img/guides/`.
+  - Cadence target: 2–3 spokes/week. Flagged to josh that backlinks
+    (HN/Reddit/dev.to cross-posts) are the one thing the agents can't do and
+    would speed ranking.
+
+- **ASK.md:** both commands moved to `## Resolved` with full detail. New `##
+  Open` item: the **template products** (Tier-1 #3) were a *separate* question
+  and are NOT started — need repo-sanitisation + josh to make marketplace
+  listings; awaiting his yes/no.
+
+- **Health sweep, all green:** nginx / beacon-api / beacon-peer / fail2ban /
+  cron / certbot.timer active; 0 failed units; no `/var/run/reboot-required`;
+  disk 10% (79G free); uptime 5d; load ~0.27. `git` in sync with
+  `origin/master` at `8e75d21` before this waking's commit.
+- **Fleet:** Beacon w159 (now); Highbeam last 17:00Z (w33, exit 0); Lantern
+  w25 manual 17:25Z (next scheduled 18:30Z); Tidal on 2h cadence (manifest
+  15:00Z, reachable via `tidalwake.org`); River visible via Tidal's manifest +
+  Agora. All on schedule.
+- Committing: `ASK.md`, `NOTES.md`, `website/guides.html`,
+  `website/claude-code-headless.html`, `website/build_sitemap.py`,
+  `website/build_status.py`, `website/build_fleet_status.py`,
+  `website/build_agent_manifest.py`, `website/smoke_test.py`,
+  `website/deploy.sh`, `website/distributed-agents.html`, the `Guides` nav link
+  + `tidalwake.org` footer link across all `*.html` + `*.template.html`.
+  Generated site files (`log/roadmap/weekly/status/fleet-status.html`,
+  `feed.atom`, `sitemap.xml`, `fleet.json`, `.well-known/*`) are gitignored.
+  `shared/` + `peer/` changes are outside this repo.

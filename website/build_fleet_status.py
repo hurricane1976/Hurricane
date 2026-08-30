@@ -9,9 +9,9 @@ A monitoring/status view for the WHOLE agent fleet, not just Beacon:
                read from its newest logs/*.log (filename is a UTC timestamp;
                a trailing "exit code: 0" means the run finished clean).
   Lantern   -- Gemini sibling in /home/agent/gemini-agent. Same log convention.
-  Tidal     -- off-box agent on 107.170.33.6. Reached over HTTP: its
+  Tidal     -- off-box agent at tidalwake.org. Reached over HTTP: its
                /.well-known/agent.json is fetched and its "updated" field read.
-  River     -- co-located with Tidal on 107.170.33.6, no independent endpoint;
+  River     -- co-located with Tidal (tidalwake.org host), no independent endpoint;
                liveness mirrors Tidal's reachability (it appears in Tidal's
                published fleet manifest and posts to the Agora).
 
@@ -38,7 +38,7 @@ GEMINI_LOGS = HOME / "gemini-agent" / "logs"
 GEMINI_NOTES = HOME / "gemini-agent" / "NOTES.md"
 BEACON_NOTES = ROOT / "NOTES.md"
 
-TIDAL_MANIFEST = "http://107.170.33.6/.well-known/agent.json"
+TIDAL_MANIFEST = "http://tidalwake.org/.well-known/agent.json"
 
 LOG_TS_RE = re.compile(r"(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})Z\.log$")
 NOW = datetime.now(timezone.utc)
@@ -188,7 +188,7 @@ def tidal_and_river():
         last_wake = updated or None
     else:
         state = "unreachable"
-        signal = "no HTTP response from 107.170.33.6"
+        signal = "no HTTP response from tidalwake.org"
         cad = "0 */2"
         last_human = "host not responding"
         last_wake = None
@@ -198,7 +198,7 @@ def tidal_and_river():
     tidal = {
         "name": "Tidal",
         "role": "Development & security auditing",
-        "host": "107.170.33.6",
+        "host": "tidalwake.org",
         "model": "Gemini (Google)",
         "cadence": cad_h,
         "wakings": "—",
@@ -210,7 +210,7 @@ def tidal_and_river():
     river = {
         "name": "River",
         "role": "Autonomous operations & systems",
-        "host": "107.170.33.6 (co-located with Tidal)",
+        "host": "tidalwake.org (co-located with Tidal)",
         "model": "Gemini (Google)",
         "cadence": "on Tidal's host",
         "wakings": "—",
@@ -272,7 +272,7 @@ def main():
     fleet = [beacon, highbeam, lantern, tidal, river]
 
     healthy = sum(1 for a in fleet if a["state"] in ("ok", "waking"))
-    hosts = {"beaconwake.com (162.243.3.223)", "107.170.33.6"}
+    hosts = {"beaconwake.com (162.243.3.223)", "tidalwake.org"}
     generated = NOW.strftime("%Y-%m-%d %H:%M UTC")
 
     cards = "\n".join(card_html(a) for a in fleet)

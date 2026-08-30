@@ -2,28 +2,15 @@
 
 ## Open
 
-- **Business opportunities for the agent team (Telegram, 2026-08-30, via
-  /commands) — analysis delivered w158, awaiting josh's steer.** josh:
-  "Explore potential business opportunities and research with assistance for
-  the agent team. Need legitimate opportunity that are actionable and
-  achievable by this agent team." Beacon wrote a ranked analysis in
-  `shared/business-opportunities.md` and queued Highbeam + Lantern to add
-  their sections. **Top of the stack:**
-  1. **josh's lever:** create the Buttondown account (still parked below) —
-     the newsletter is the audience engine the rest depends on.
-  2. **Team, actionable now, no dependency:** SEO content moat in the
-     "running Claude Code / autonomous agents in production" niche — 2–3 deep
-     evergreen pages/week on the existing site. 3–6 months to real organic
-     traffic.
-  3. **Team, low-risk:** self-serve digital templates (AGENT.md/CLAUDE.md
-     pack, "$6 VM agent" boilerplate, SOC doc templates) on Gumroad/
-     LemonSqueezy — marketplace discovery does some of the promotion.
-  4. **Held:** productized fixed-scope "generated report" services (Claude
-     Code project audit, agent deployment readiness review) — landing pages
-     ready, waiting on inbound from 2/1.
-  **Need from josh:** a yes/no on starting the SEO push (2) next waking, and
-  whether to spin up the template products (3). Full reasoning + a Tier-3
-  "not recommended, here's why" list in the shared doc.
+- **Template products (business-opportunities Tier-1 #3) — still need a
+  yes/no from josh.** josh's "Yes start" (2026-08-30) was read as greenlighting
+  the SEO push (Tier-1 #1 / ASK item "2"), which is now underway (see Resolved).
+  The self-serve digital templates (AGENT.md/CLAUDE.md pack, "$6 VM agent"
+  boilerplate, SOC doc templates on Gumroad/LemonSqueezy) were a *separate*
+  question and are **not** started — they need repo-sanitisation (scrub domain,
+  key paths, Telegram IDs, peer-token model, Tailscale/IP addresses) and josh
+  to create the marketplace listings. Say the word and Beacon stages the first
+  two packages in `shared/outbox/products/` for review.
 
 ## On hold
 
@@ -71,6 +58,43 @@
   back up if josh names a target business.
 
 ## Resolved
+
+- **"Yes start" — SEO content push GREENLIT (Telegram, 2026-08-30, via
+  /commands) — STARTED w159.** Reply to the business-opportunities Tier-1 #1
+  recommendation. Actioned this waking:
+  - New hub page **`/guides.html`** ("running Claude Code in production") — a
+    hub-and-spoke topic cluster; added to the top nav (one link) across all
+    ~34 pages + templates.
+  - First spoke published: **`/claude-code-headless.html`** — a deep evergreen
+    reference on `claude -p` / `--print` (flags for unattended runs,
+    permissions with no terminal, exit codes, JSON parsing, a cron wake loop,
+    failure modes). Grounded in what `wake.sh` actually runs; low-competition
+    long-tail per Highbeam's SERP scan.
+  - Wired into `build_sitemap.py`, `build_status.py` (now 49/49), `smoke_test.py`,
+    `deploy.sh`. Deployed, both smoke gates green, rendered + eyeballed in
+    headless Chrome.
+  - Plan + 8-slug pipeline + per-page checklist in
+    `shared/seo-content-plan.md`; Highbeam queued for accuracy passes + extra
+    long-tail sub-queries, Lantern for per-page OG cards + explainer diagrams.
+  - Cadence target 2–3 spokes/week. **From josh, when convenient:** the one
+    thing agents can't do is backlinks — an occasional HN / Reddit / dev.to
+    cross-post of a page josh thinks is good would materially speed ranking.
+
+- **"Tidal is now reached at tidalwake.org vice its host name address —
+  update any links" (Telegram, 2026-08-30, via /commands) — DONE w159.**
+  Replaced `http://107.170.33.6/...` with `http://tidalwake.org/` everywhere
+  it was a link/endpoint reference: the site-wide footer "Tidal" link (25
+  pages + 5 templates), the `distributed-agents.html` topology diagram labels
+  + aria-label, `fleet-status.template.html`, `build_fleet_status.py` (the
+  live manifest-fetch URL + host fields + docstring), and
+  `build_agent_manifest.py` (`known_peers` + the fleet `url`). Deployed;
+  verified 0 stale IPs in served pages, `/fleet.json` fetches Tidal's manifest
+  fine via the domain (5/5 healthy). Note: `tidalwake.org` is Cloudflare-proxied
+  and **HTTP only** right now — HTTPS returns 521 (origin TLS down), so links
+  use `http://`. Historical NOTES/feed mentions of the old IP left as-is (they
+  regenerate from the NOTES text and are an accurate record). Sent Tidal a
+  peer-channel heads-up: its own `agent.json` still self-reports the IP, and it
+  may want to fix origin HTTPS.
 
 - **"Wake lantern" (2026-08-30, via /commands) — DONE (w157).** josh asked
   for an off-schedule Lantern waking. Beacon ran

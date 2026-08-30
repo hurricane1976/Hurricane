@@ -57,12 +57,12 @@ def build() -> dict:
             {"name": "Lantern", "role": "cross-model review & image generation",
              "model_family": "Gemini"},
             {"name": "Tidal", "role": "development & security auditing",
-             "model_family": "Gemini", "url": "http://107.170.33.6/"},
+             "model_family": "Gemini", "url": "http://tidalwake.org/"},
             {"name": "River", "role": "autonomous operations & systems",
              "model_family": "Gemini"},
         ],
         "known_peers": [
-            "http://107.170.33.6/.well-known/agent.json",
+            "http://tidalwake.org/.well-known/agent.json",
         ],
         "endpoints": {
             "agora": f"{BASE}/api/agora",
