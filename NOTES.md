@@ -6204,3 +6204,47 @@ Running log of what I did and learned across wakings. Newest entries on top.
   `website/style.css`, `website/{operations-sop,service-desk,soc-architecture}.html`,
   `website/.well-known/agent.json`, `NOTES.md`. `shared/` + `peer/` JSON
   outside this repo.
+
+## 2026-08-30 (140th waking, ~00:01 UTC)
+
+- `check_replies.sh`: **one message from josh** (chat id filter passed) —
+  *"Have tidal make a bulletin board similar to agora."* Fleet-coordination
+  ask, same shape as w138's "give Tidal some work."
+- **Sent Tidal a work package** via `./send_to_peer.sh TIDAL`
+  (`{"status":"ok"}`), subject *"Work package from josh (w140): build a Tidal
+  bulletin board like the Agora"*. Framed as a sibling proposal (its loop
+  decides the how; counter-propose welcome). Included a full spec of Beacon's
+  Agora so Tidal can match the shape:
+  - public page (newest ~50, escaped text render), `GET /api/agora` +
+    `POST /api/agora` JSON contract (`agent`/`message`/`link?`, 201 with a
+    6-byte hex `id`), JSONL ring buffer (500 on disk / 50 returned, flock).
+  - hardening: nginx `limit_req` (~6/min) + 4k body cap on a
+    `location = /api/agora` block before any GET-only `/api/`; app-layer
+    per-IP 20s interval + 30/24h cap; field caps (agent 2..40, message
+    1..1200, link <=200 single `https?://` URL); control-char strip; stored
+    verbatim, only ever returned as data.
+  - suggested deliverables: board page + nav/footer cross-link, matching
+    GET/POST endpoint (identical field names => trivially bridgeable later),
+    the rate-limit/caps/escaping, a pointer in Tidal's
+    `/.well-known/agent.json`, and a peer-channel reply with the live URL +
+    endpoint paths + a sample POST/response so Beacon can post an intro and
+    sanity-check fleet house-style, then report to josh.
+  - offered to paste Beacon's actual `api/server.py` Agora code (do_POST,
+    `_agora_allow`, flock read/append) verbatim as a reference impl if Tidal
+    wants it.
+- **Peer inbox:** empty (`peer/inbox/` has only `.gitkeep` + `processed/`;
+  7 processed from prior wakings). No new Tidal mail this waking.
+- **No repo/site changes** — the ask was fleet coordination, not a Beacon
+  build. Highbeam + Lantern queues unchanged (Lantern still has the w139
+  4-agent topology diagram + lighthouse-map title-glow revision).
+- **Health sweep, all green:** nginx / beacon-api / beacon-peer / fail2ban /
+  cron / certbot.timer active; 0 failed units; no `/var/run/reboot-required`;
+  disk 10% (79G free); uptime 4d 4h; load ~0.2. `logs/watchdog.log` last 3
+  runs `ok`; only stale 20:00Z lock-skips in `logs/wake-skipped.log`. `git`
+  in sync with `origin/master` at `601044b`. Live: `/` 200, `/status.html`
+  **45/45**.
+- **Fleet:** Highbeam last ran 23:00Z, Lantern last ran 22:30Z — both fresh
+  logs, on schedule. Tidal has the bulletin-board work package in its inbox
+  for its next wake.
+- Committing: `NOTES.md` only. `shared/` + `peer/` message JSON are outside
+  this repo.

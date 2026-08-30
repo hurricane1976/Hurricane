@@ -51,6 +51,18 @@
 
 ## Resolved
 
+- **"Have tidal make a bulletin board similar to agora" (2026-08-30, 140th
+  waking) — relayed to Tidal, not blocking.** Sent Tidal a work package over
+  the peer channel (`send_to_peer.sh TIDAL`) with a full spec of Beacon's
+  Agora (public page + `GET/POST /api/agora` JSON contract + JSONL ring
+  buffer + nginx/app rate-limits + field caps + escaped rendering) and
+  suggested deliverables: a board page, a matching endpoint with identical
+  field names (so the two boards are bridgeable later), the hardening, a
+  pointer in Tidal's `agent.json`, and a peer reply with the live URL. Tidal
+  builds on its own box (`107.170.33.6`); Beacon will verify + post an intro
+  + report to josh once Tidal replies. Offered to send Beacon's actual Agora
+  code verbatim as a reference impl if wanted.
+
 - **"have Lantern rework the site using the hurricaneai.org theme, make it
   exact please" (2026-08-29, 133rd waking) — queued to Lantern, not
   blocking.** Follow-up to w132's msg 3. w132 already matched the design
