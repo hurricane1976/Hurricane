@@ -32,6 +32,7 @@ import urllib.request
 DIR = os.path.dirname(os.path.abspath(__file__))
 OFFSET_FILE = os.path.join(DIR, ".telegram_offset")
 INCOMING_FILE = os.path.join(DIR, ".telegram_incoming")
+ASK_FILE = os.path.join(DIR, "ASK.md")
 
 TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN", "")
 CHAT_ID = os.environ.get("TELEGRAM_CHAT_ID", "")
@@ -103,7 +104,8 @@ def cmd_help(_arg):
         "/digest   send the world-news + weather digest now\n"
         "/wake     trigger a wake.sh session now (no-ops if one is running)\n"
         "/help     this list\n"
-        "Anything that isn't a command is logged for the next waking."
+        "Anything that isn't a command is queued for the next waking and "
+        "added to ASK.md."
     )
 
 
@@ -221,6 +223,41 @@ def log_incoming(date_epoch, text):
         f.write(f"[{date_epoch}] {text}\n")
 
 
+def append_to_ask(text):
+    """Add a freeform Telegram message as a dated bullet under ASK.md '## Open'.
+
+    Durable counterpart to the .telegram_incoming queue (which check_replies.sh
+    prints once and clears): this keeps the instruction visible across wakings
+    until Beacon explicitly resolves it. Mirrors Tidal's behaviour. Best-effort
+    -- any failure is swallowed so the poller/ack path still runs.
+    """
+    try:
+        one_line = " ".join(text.split())
+        if len(one_line) > 500:
+            one_line = one_line[:500] + " …"
+        stamp = time.strftime("%Y-%m-%d", time.gmtime())
+        bullet = f"- **Telegram ({stamp}, via /commands):** {one_line}\n"
+
+        with open(ASK_FILE) as f:
+            doc = f.read()
+        marker = "\n## Open\n"
+        i = doc.find(marker)
+        if i == -1:
+            return
+        j = doc.find("\n## ", i + len(marker))
+        if j == -1:
+            j = len(doc)
+        head, section, tail = doc[:i + len(marker)], doc[i + len(marker):j], doc[j:]
+        if "_(nothing open)_" in section:
+            section = "\n" + bullet
+        else:
+            section = section.rstrip("\n") + "\n" + bullet
+        with open(ASK_FILE, "w") as f:
+            f.write(head + section + "\n" + tail.lstrip("\n"))
+    except Exception as e:  # noqa: BLE001 - never let this wedge message handling
+        print(f"append_to_ask failed: {e}")
+
+
 def handle_message(msg):
     frm = msg.get("from", {}) or {}
     if str(msg.get("chat", {}).get("id")) != str(CHAT_ID):
@@ -242,9 +279,11 @@ def handle_message(msg):
             send(f"unknown command '/{token}'.\n\n" + cmd_help(""))
         return
 
-    # not a command -> queue for the next waking
+    # not a command -> queue for the next waking + drop a durable ASK.md bullet
     log_incoming(msg.get("date", int(time.time())), text)
-    send("Logged for the next waking. Send /help for commands.")
+    append_to_ask(text)
+    send("Logged for the next waking (queued + added to ASK.md). "
+         "Send /help for commands.")
 
 
 def main():

@@ -44,7 +44,9 @@ then let it decide what to do between check-ins.
   exact-matches a fixed allowlist (`/status`, `/notes`, `/ask`, `/watchdog`,
   `/digest`, `/wake`, `/help`) runs the mapped action and replies; anything
   else is queued to `.telegram_incoming` for the next waking's
-  `check_replies.sh` to surface. Inbound text is never passed to a shell —
+  `check_replies.sh` to surface *and* appended as a dated bullet under
+  `ASK.md` → `## Open` so it stays visible until Beacon resolves it. Inbound
+  text is never passed to a shell —
   handlers run fixed argv lists — and the same chat-id gate applies.
 - **Claude Code's own memory system** (`~/.claude/.../memory/`) — a
   second, longer-horizon layer alongside `NOTES.md`: durable facts

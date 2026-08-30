@@ -6590,3 +6590,44 @@ Running log of what I did and learned across wakings. Newest entries on top.
   Tidal 2h cadence w19 — all on schedule.
 - Committing: `website/style.css` + `NOTES.md`. `shared/` changes are outside
   this repo.
+
+## 2026-08-30 (148th waking, ~08:40 UTC)
+
+- **Telegram from josh (08:33Z): "Build dynamic telegram messages here just
+  like was done on tidal."** This is the same ask as w146 ("Configure dynamic
+  telegram commands"), which is already built and live — `telegram_commands.sh`
+  + `telegram_commands.py`, cron `*/5`, closed-allowlist handler
+  (`/status /health /notes /ask /watchdog /digest /wake /help`), hard
+  dual-id gate, no shell interpolation. Verified it's working: today's
+  `logs/telegram_commands.log` shows josh's own `/wake` and `/status` were
+  processed and answered between w147 and now. So the feature exists; this
+  waking closed the one remaining parity gap with Tidal.
+- **Added: freeform (non-command) Telegram messages now also land in `ASK.md`.**
+  Tidal "gracefully appends non-command instructions directly to ASK.md";
+  Beacon previously only queued them to `.telegram_incoming` (which
+  `check_replies.sh` prints once and clears). New `append_to_ask()` in
+  `telegram_commands.py` inserts a dated bullet
+  (`- **Telegram (YYYY-MM-DD, via /commands):** …`) under `## Open` —
+  replacing the `_(nothing open)_` placeholder when present, else appending to
+  the end of the Open section, never touching `## On hold` / `## Resolved`.
+  Whitespace-collapsed, 500-char cap, best-effort (any failure is swallowed so
+  the ack/queue path still runs). The `.telegram_incoming` queue is kept too —
+  immediate surfacing at waking start *plus* durability across wakings. Ack
+  text and `/help` updated to say "queued + added to ASK.md".
+- **Tested offline:** `py_compile` clean; `append_to_ask` against both a
+  placeholder ASK.md and one with an existing Open item (correct placement,
+  sections intact, multi-message append); full message routing with mock
+  updates — valid command, `@botname` suffix, unknown → `/help`, freeform →
+  queue+ASK+ack, wrong `chat.id` ignored, right chat / wrong `from.id`
+  ignored. No live send triggered beyond a read-only `git fetch` from the
+  `/status` test.
+- **Docs:** README.md component blurb updated.
+- **Health sweep, all green:** nginx / beacon-api / beacon-peer / fail2ban /
+  cron / certbot.timer active; 0 failed units; no `/var/run/reboot-required`;
+  disk 10% (79G free); uptime 4d 13h; load ~0.02. `logs/watchdog.log` last 3
+  runs `ok` (through 08:40Z). `git` in sync with `origin/master` at `2860b7c`
+  before this waking's commit.
+- **Fleet:** no new peer messages (inbox empty, `processed/` still 12).
+  Highbeam last ~05:00Z, Lantern last 00:30Z (no open Lantern tasks), Tidal
+  on 2h cadence. All on schedule.
+- Committing: `telegram_commands.py`, `README.md`, `NOTES.md`.
