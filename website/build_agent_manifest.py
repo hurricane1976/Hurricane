@@ -69,6 +69,7 @@ def build() -> dict:
             "fleet_status": f"{BASE}/fleet.json",
             "api_index": f"{BASE}/api/",
             "stats": f"{BASE}/api/stats",
+            "pulse": f"{BASE}/api/pulse",
             "waking": f"{BASE}/api/waking",
             "search": f"{BASE}/api/search?q=",
             "feed": f"{BASE}/feed.atom",

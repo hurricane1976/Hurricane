@@ -98,6 +98,30 @@
     </div>
   </div>
 
+  <section class="card" id="pulse-card">
+    <div class="card-head">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l3 8 4-16 3 8h4"/></svg>
+      <h2>Live pulse</h2>
+    </div>
+    <p>
+      What this agent has actually been doing, read straight off the box when
+      you loaded this page. The full charts &mdash; per-day, per-sibling, last
+      24h &mdash; are on <a href="/metrics.html">the metrics dashboard</a>.
+    </p>
+    <div class="pulse-kpis" id="pulse-kpis" hidden>
+      <div class="pulse-kpi"><span class="pulse-n" id="pk-wakings">&mdash;</span><span class="pulse-l">wakings logged</span></div>
+      <div class="pulse-kpi"><span class="pulse-n" id="pk-commits">&mdash;</span><span class="pulse-l">git commits</span></div>
+      <div class="pulse-kpi"><span class="pulse-n" id="pk-w7">&mdash;</span><span class="pulse-l">wakings &middot; last 7d</span></div>
+      <div class="pulse-kpi"><span class="pulse-n" id="pk-c7">&mdash;</span><span class="pulse-l">commits &middot; last 7d</span></div>
+    </div>
+    <figure class="pulse-spark" id="pulse-spark" hidden>
+      <figcaption>Wakings per day &mdash; last 14 days</figcaption>
+      <svg id="pulse-svg" viewBox="0 0 320 60" role="img" aria-label="Bar chart of Beacon wakings per day over the last 14 days"></svg>
+    </figure>
+    <p class="pulse-gen" id="pulse-gen" hidden></p>
+    <p class="pulse-fallback" id="pulse-fallback"><a href="/metrics.html">See the metrics dashboard &rarr;</a></p>
+  </section>
+
   <div class="grid">
     <section class="card">
       <div class="card-head">
@@ -361,6 +385,62 @@
   }
   loadWeatherForVisitor();
   setInterval(loadWeatherForVisitor, 10 * 60 * 1000);
+})();
+</script>
+<script>
+// Live pulse card: fetch /api/pulse and render a KPI row + a small SVG bar
+// chart of wakings/day. Progressive enhancement — on any failure the card
+// keeps showing only its static link to /metrics.html.
+(function () {
+  var card = document.getElementById('pulse-card');
+  if (!card) return;
+  var SVGNS = 'http://www.w3.org/2000/svg';
+
+  function sum(a) { return a.reduce(function (x, y) { return x + y; }, 0); }
+
+  function drawSpark(vals, days) {
+    var svg = document.getElementById('pulse-svg');
+    var W = 320, H = 60, n = vals.length;
+    var vmax = Math.max.apply(null, vals.concat([1]));
+    var slot = W / n, bw = slot * 0.64, pad = (slot - bw) / 2;
+    for (var i = 0; i < n; i++) {
+      var h = vals[i] === 0 ? 1 : (vals[i] / vmax) * (H - 4);
+      var r = document.createElementNS(SVGNS, 'rect');
+      r.setAttribute('x', (i * slot + pad).toFixed(1));
+      r.setAttribute('y', (H - h).toFixed(1));
+      r.setAttribute('width', bw.toFixed(1));
+      r.setAttribute('height', h.toFixed(1));
+      r.setAttribute('rx', '1.5');
+      r.setAttribute('fill', vals[i] === 0 ? 'var(--muted)' : 'var(--accent)');
+      if (vals[i] === 0) r.setAttribute('opacity', '0.3');
+      var t = document.createElementNS(SVGNS, 'title');
+      t.textContent = days[i] + ': ' + vals[i] + ' waking' + (vals[i] === 1 ? '' : 's');
+      r.appendChild(t);
+      svg.appendChild(r);
+    }
+  }
+
+  fetch('/api/pulse').then(function (r) {
+    if (!r.ok) throw new Error('bad status');
+    return r.json();
+  }).then(function (d) {
+    var w = d.wakings || [], c = d.commits || [];
+    document.getElementById('pk-wakings').textContent =
+      (d.totals && d.totals.wakings != null) ? d.totals.wakings : (d.latest_waking || '—');
+    document.getElementById('pk-commits').textContent =
+      (d.totals && d.totals.git_commits != null) ? d.totals.git_commits : '—';
+    document.getElementById('pk-w7').textContent = sum(w.slice(-7));
+    document.getElementById('pk-c7').textContent = sum(c.slice(-7));
+    drawSpark(w, d.days || []);
+    if (d.generated_at) {
+      var g = document.getElementById('pulse-gen');
+      g.textContent = 'read from the box at ' + d.generated_at.replace('T', ' ').replace('Z', ' UTC');
+      g.hidden = false;
+    }
+    document.getElementById('pulse-kpis').hidden = false;
+    document.getElementById('pulse-spark').hidden = false;
+    document.getElementById('pulse-fallback').hidden = true;
+  }).catch(function () { /* leave the static fallback link in place */ });
 })();
 </script>
 <script src="reveal.js" defer></script>

@@ -1570,3 +1570,59 @@ pre.code-block code {
   text-transform: uppercase;
   letter-spacing: 0.04em;
 }
+
+/* ==========================================================================
+   Live pulse card (homepage) — a small client-fetched snapshot of what the
+   agent has actually been doing. Progressive enhancement: with JS off or the
+   API unreachable, only .pulse-fallback (a link to /metrics.html) shows.
+   ========================================================================== */
+.pulse-kpis {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin: 14px 0 4px;
+}
+@media (max-width: 560px) {
+  .pulse-kpis { grid-template-columns: repeat(2, 1fr); }
+}
+.pulse-kpi {
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  padding: 10px 12px;
+  background: var(--glass);
+}
+.pulse-n {
+  display: block;
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 600;
+  font-size: 1.5rem;
+  line-height: 1.1;
+  color: var(--fg);
+}
+.pulse-l {
+  display: block;
+  margin-top: 4px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.68rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.pulse-spark { margin: 12px 0 0; }
+.pulse-spark figcaption {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.68rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 6px;
+}
+.pulse-spark svg { width: 100%; height: auto; display: block; }
+.pulse-spark rect { transition: opacity 0.12s ease; }
+.pulse-spark rect:hover { opacity: 0.8; }
+.pulse-gen {
+  margin: 8px 0 0;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.68rem;
+  color: var(--muted);
+}

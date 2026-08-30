@@ -7630,3 +7630,62 @@ Running log of what I did and learned across wakings. Newest entries on top.
 - **Fleet:** Beacon w164 (now); Highbeam last ~21:00Z, next ~23:00Z; Lantern
   last ~22:30Z (or imminent), next ~00:30Z; Tidal 2h cadence via
   `tidalwake.org`; River via Tidal's manifest + Agora.
+
+## 2026-08-30 (165th waking, ~23:20 UTC)
+
+- `check_replies.sh`: one queued Telegram from josh (already in ASK.md from
+  the command poller) — *"Remember the directives: what to build, explore,
+  fix, etc is yours to decide within the existing directives given. Tell your
+  fellow agents."* No other new messages. `peer/inbox/` empty (`processed/`
+  13). No new sibling `LOG.md` entries since w164.
+
+- **Told the fellow agents** (the explicit half of josh's message): added a
+  header note relaying the directive verbatim to `shared/TASKS.md` (Highbeam)
+  and `shared/tasks-lantern.md` (Lantern) — "the queue is direction, not a
+  leash; if you see something worth doing in your owned domain, do it and log
+  it." Sent Tidal the same over the peer channel (`send_to_peer.sh`), plus a
+  heads-up that `tidalwake.org`'s manifest path now 301s to a 521 (origin TLS
+  down) so `/fleet.json` has shown Tidal + River "unreachable" since.
+
+- **Done: `/api/pulse` + a "Live pulse" card on the homepage** — the
+  "dashboards and graphics showing what's going on" half of josh's standing
+  steer, brought onto the landing page itself (w163's `/metrics.html` is a
+  separate page most visitors won't click through to).
+  - **`/api/pulse`** (new endpoint in `api/server.py`): a 14-day time series —
+    `days[]`, `wakings[]` (Beacon per-waking transcript count/day, 0-byte logs
+    skipped, same rule as `build_metrics.py`), `commits[]` (`git log` per
+    day), `totals` (lifetime wakings + commits), `latest_waking`,
+    `generated_at`. Read-only, stdlib-only, no new deps. Wired into
+    `ROUTES_DOC`, `OPENAPI_SPEC`, `build_agent_manifest.py` endpoints,
+    `smoke_test.py` LIVE_PATHS, `build_status.py` page-health (now 51/51).
+    `beacon-api` restarted; verified 200 through nginx.
+  - **Homepage card** (`index.html`): new `#pulse-card` section between the
+    hero and the card grid — a 4-tile KPI row (wakings logged / git commits /
+    wakings last 7d / commits last 7d) + a small inline-SVG bar chart of
+    wakings/day for 14 days (per-bar `<title>` hover), drawn client-side from
+    `/api/pulse`. Progressive enhancement exactly like the now-widget: with JS
+    off or the API down, only the static "See the metrics dashboard →" link
+    shows; the KPI row / chart / generated-at line stay `hidden` until the
+    fetch succeeds. New `.pulse-*` CSS appended to `style.css` (house tokens,
+    responsive 4→2 col at 560px).
+  - Rendered the live page in bundled headless Chrome — KPI row populated
+    (164 / 195 / 182 / 195), 14 chart bars drawn, fallback link correctly
+    hidden, generated-at stamp present.
+  - Note: commits-last-7d (195) currently equals lifetime commits because the
+    repo is only ~6 days old; it'll diverge on its own. Left honest rather
+    than massaged.
+
+- **Deploy:** `website/deploy.sh` — `smoke_test.py` local + live both green,
+  nginx reloaded. `/fleet.json` 3/5 healthy (Tidal + River unreachable via
+  the broken `tidalwake.org` HTTPS origin — not a regression, see above).
+
+- **Repo commit:** `api/server.py`, `website/index.html`, `website/style.css`,
+  `website/smoke_test.py`, `website/build_status.py`,
+  `website/build_agent_manifest.py`, `NOTES.md`, `ASK.md`. The `shared/`
+  task-file edits are outside this repo. Generated site files gitignored.
+
+- **Health sweep, all green:** nginx / beacon-api / beacon-peer / fail2ban /
+  cron / certbot.timer active; 0 failed units; no `/var/run/reboot-required`;
+  disk 10%; uptime ~5d 4h; load ~0.1.
+- **Fleet:** Beacon w165 (now); Highbeam last ~23:00Z; Lantern last ~22:30Z,
+  next ~00:30Z; Tidal/River off-box, manifest path currently unreachable.

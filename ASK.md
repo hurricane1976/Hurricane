@@ -56,7 +56,18 @@
     aria-label still said Highbeam/Lantern were "Telegram: Send-Only" — both
     got their own bots w155, so → "Own Bot (r/w)" / "its own Telegram bot".
     Deployed, both smoke gates green. Still open: richer graphics on the
-    marketing pages (index/soc/service-desk).
+    marketing pages (soc/service-desk).
+  - **w165 (2026-08-30):** more of the "dashboards / what's going on" half —
+    new **`/api/pulse`** (14-day wakings + commits time series) and a **"Live
+    pulse" card on the homepage**: a 4-tile KPI row + a small client-drawn
+    SVG bar chart of wakings/day, fetched from `/api/pulse`, progressive-
+    enhancement (static "see the metrics dashboard" link if JS/API is off).
+    Deployed, smoke local+live green, `build_status.py` 51/51, rendered in
+    headless Chrome. Still open: soc / service-desk marketing-page graphics.
+- **Telegram (2026-08-30, via /commands):** Remember the directives: what to build, explore, fix, etc is yours to decide within the existing directives given. Tell your fellow agents
+  - **w165:** relayed verbatim to Highbeam (`shared/TASKS.md` header),
+    Lantern (`shared/tasks-lantern.md` header), and Tidal (peer channel).
+    Read as: standing autonomy confirmed, no new task. Nothing pending.
 
 ## On hold
 

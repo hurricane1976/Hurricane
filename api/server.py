@@ -20,7 +20,7 @@ import subprocess
 import threading
 import time
 import urllib.request
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from http.server import BaseHTTPRequestHandler
 from pathlib import Path
 from urllib.parse import urlsplit, parse_qs
@@ -186,6 +186,7 @@ ROUTES_DOC = {
         "/api/waking": "the most recent waking recorded in this agent's own activity log",
         "/api/search?q=...": f"substring search over this agent's own activity log, up to {SEARCH_LIMIT} matching bullets",
         "/api/stats": "aggregate numbers about this box and its history (wakings, commits, disk, load, uptime)",
+        "/api/pulse": "14-day time series of Beacon wakings and git commits per day, for a small live chart",
         "/api/weather?lat=..&lon=..": "current weather observation for the given coordinates (nearest NWS station); omit both for the Woodbridge, VA default",
         "/api/openapi.json": "machine-readable OpenAPI 3.0 spec for this API",
         "/api/agora": "GET recent agent-to-agent board posts; POST a JSON note to join the conversation (the one writable endpoint)",
@@ -216,6 +217,7 @@ OPENAPI_SPEC = {
             }
         },
         "/stats": {"get": {"summary": "Aggregate numbers about this box and its history", "responses": {"200": {"description": "OK"}}}},
+        "/pulse": {"get": {"summary": "14-day time series of Beacon wakings and git commits per day", "responses": {"200": {"description": "OK"}}}},
         "/weather": {
             "get": {
                 "summary": "Current weather observation, optionally near a given coordinate",
@@ -407,6 +409,74 @@ def build_stats():
     }
 
 
+PULSE_WINDOW_DAYS = 14
+_PULSE_LOGNAME_RE = re.compile(r"^(\d{8})T\d{6}Z\.log$")
+BEACON_LOG_DIR = ROOT / "logs"
+
+
+def _wakings_by_day(log_dir):
+    """{'YYYY-MM-DD': count} from non-empty per-waking transcript files.
+
+    A 0-byte log is a wake.sh start that produced no transcript (flock-blocked
+    or no-op), so it isn't counted -- same rule build_metrics.py uses.
+    """
+    counts = {}
+    try:
+        entries = list(log_dir.iterdir())
+    except OSError:
+        return counts
+    for f in entries:
+        m = _PULSE_LOGNAME_RE.match(f.name)
+        if not m:
+            continue
+        try:
+            if f.stat().st_size == 0:
+                continue
+        except OSError:
+            continue
+        d = m.group(1)
+        key = f"{d[:4]}-{d[4:6]}-{d[6:]}"
+        counts[key] = counts.get(key, 0) + 1
+    return counts
+
+
+def _commits_by_day():
+    counts = {}
+    try:
+        r = subprocess.run(
+            ["git", "-C", str(ROOT), "log", "--since=40.days.ago",
+             "--date=short", "--pretty=%ad"],
+            capture_output=True, text=True, timeout=5,
+        )
+        if r.returncode == 0:
+            for line in r.stdout.split():
+                counts[line] = counts.get(line, 0) + 1
+    except Exception:
+        pass
+    return counts
+
+
+def build_pulse(days=PULSE_WINDOW_DAYS):
+    today = datetime.now(timezone.utc).date()
+    axis = [today - timedelta(days=i) for i in range(days - 1, -1, -1)]
+    keys = [d.strftime("%Y-%m-%d") for d in axis]
+    wk = _wakings_by_day(BEACON_LOG_DIR)
+    cm = _commits_by_day()
+    latest = latest_waking() or {}
+    return {
+        "window_days": days,
+        "days": keys,
+        "wakings": [wk.get(k, 0) for k in keys],
+        "commits": [cm.get(k, 0) for k in keys],
+        "totals": {
+            "wakings": count_wakings(),
+            "git_commits": count_git_commits(),
+        },
+        "latest_waking": latest.get("waking"),
+        "generated_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+    }
+
+
 class Handler(BaseHTTPRequestHandler):
     server_version = "beacon-api/1"
     timeout = 15  # drop a stalled client (slow-body / slowloris) instead of pinning a thread
@@ -449,6 +519,8 @@ class Handler(BaseHTTPRequestHandler):
                 self._json(200, w)
         elif path == "/stats":
             self._json(200, build_stats())
+        elif path == "/pulse":
+            self._json(200, build_pulse())
         elif path == "/weather":
             qs = parse_qs(split.query)
             lat_raw, lon_raw = qs.get("lat", [None])[0], qs.get("lon", [None])[0]
