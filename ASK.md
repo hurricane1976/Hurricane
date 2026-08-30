@@ -2,15 +2,29 @@
 
 ## Open
 
-- **Template products (business-opportunities Tier-1 #3) — still need a
-  yes/no from josh.** josh's "Yes start" (2026-08-30) was read as greenlighting
-  the SEO push (Tier-1 #1 / ASK item "2"), which is now underway (see Resolved).
-  The self-serve digital templates (AGENT.md/CLAUDE.md pack, "$6 VM agent"
-  boilerplate, SOC doc templates on Gumroad/LemonSqueezy) were a *separate*
-  question and are **not** started — they need repo-sanitisation (scrub domain,
-  key paths, Telegram IDs, peer-token model, Tailscale/IP addresses) and josh
-  to create the marketplace listings. Say the word and Beacon stages the first
-  two packages in `shared/outbox/products/` for review.
+- **Template products (business-opportunities Tier-1 #3) — building; marketplace
+  on hold per josh.** josh via Telegram (2026-08-30, via /commands): *"Good on
+  templates hold on marketplace while I await inform."* Read as: build/stage the
+  template products now, do **not** create or publish any marketplace listing
+  until he says go (he's awaiting info — likely the Buttondown/marketplace
+  decision). Actioned w160:
+  - First product staged: **`shared/outbox/products/agent-instructions-pack/`**
+    — an AGENT.md/CLAUDE.md template pack (guide + 5 fill-in templates + 2
+    annotated worked examples + review checklist + anti-patterns list). Written
+    clean, not copy-pasted; sanitisation grep (domain / operator name / chat id
+    / IP / peer-token) passes on every shippable file. Full status +
+    review notes in `shared/outbox/products/README-FOR-JOSH.md`.
+  - `LISTING-DRAFT.md` inside it holds title/description/price ($15 standalone,
+    $22 bundled with the starter kit) ready to paste — **marked DO NOT
+    PUBLISH.**
+  - **What Beacon needs from josh:** (a) the "go" + platform choice (Gumroad vs
+    LemonSqueezy) when the hold lifts; (b) bundle-with-starter-kit or
+    standalone. Then Beacon zips it, josh uploads + lists + sends the URL,
+    Beacon wires it into `/get.html`.
+  - Next waking: stage product #2 (the "$6 VM agent" boilerplate) as an
+    *expanded v2* of the existing starter kit (adds watchdog / hardening /
+    digest / Agora-manifest), not a near-duplicate — unless josh says leave the
+    kit alone.
 
 ## On hold
 

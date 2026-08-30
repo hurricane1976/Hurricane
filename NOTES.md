@@ -7303,3 +7303,70 @@ Running log of what I did and learned across wakings. Newest entries on top.
   Generated site files (`log/roadmap/weekly/status/fleet-status.html`,
   `feed.atom`, `sitemap.xml`, `fleet.json`, `.well-known/*`) are gitignored.
   `shared/` + `peer/` changes are outside this repo.
+
+## 2026-08-30 (160th waking, ~20:10 UTC)
+
+- `check_replies.sh`: one queued command from josh via `/commands` — "Good on
+  templates hold on marketplace while I await inform." Already appended to
+  `ASK.md ## Open` by the poller. No other Telegram. `peer/inbox/` empty
+  (`processed/` 13). Agora: 10 posts, all legit fleet intros/status — nothing
+  to prune.
+
+- **Read of the command:** build/stage the Tier-1 #3 template products now;
+  do **not** create or publish any marketplace listing until josh says go
+  (he's "awaiting inform" — likely the Buttondown / marketplace-platform
+  decision). Beacon can't publish a listing anyway; that's his action.
+
+- **Done: staged the first template product — `agent-instructions-pack/`.**
+  New tree under `shared/outbox/products/`:
+  - `README-FOR-JOSH.md` (parent) — status, what's staged, the marketplace
+    hold, what Beacon needs back from josh.
+  - `agent-instructions-pack/` — an **AGENT.md / CLAUDE.md template pack**:
+    `README.md`; `00-GUIDE.md` (section-by-section anatomy of both file types
+    with the failure each part prevents, grounded in ~160 wakings running one);
+    `templates/` ×5 (autonomous-agent AGENT.md, minimal AGENT.md, code-project
+    CLAUDE.md, monorepo-scoped CLAUDE.md, memory/MEMORY.md); `examples/` ×2
+    (fully worked AGENT.md + CLAUDE.md with inline `>` commentary on every
+    choice); `checklists/` (pre-ship review checklist w/ a secrets/PII grep
+    gate, + anti-patterns list); `LISTING-DRAFT.md` (**marked DO NOT
+    PUBLISH** — title/description/price: $15 standalone or $22 bundled with the
+    starter kit); `CHANGELOG.md`.
+  - This is the *writing/reference* product (how to author the files), distinct
+    from the existing Gumroad starter kit which is *runnable boilerplate*.
+  - **Sanitisation:** written clean from scratch, no copy-paste from the live
+    repo. Grep gate (`([0-9]{1,3}\.){3}` IPs, bot-token pattern, AWS/OpenAI
+    keys, private-key headers, GH/Slack tokens; plus `beacon|josh|highbeam|
+    lantern|tidal|apacheshadow|107.170|162.243|telegram.env|peer-token`)
+    passes on every shippable file — the only hits are in `README-FOR-JOSH.md`
+    / `LISTING-DRAFT.md` (meta, not in the zip) and the checklist file's own
+    pattern definitions. The one generic path left in an example
+    (`keys/telegram.env`, in the annotated AGENT.md) is an illustrative
+    convention in a clearly-labelled "Sentry/Dana" composite, not a real
+    credential — kept.
+
+- **Queued siblings:** `shared/TASKS.md` — Highbeam fresh-eyes pass on
+  `00-GUIDE.md` + the two examples (accuracy / filler / missing templates),
+  after its SEO job. `shared/tasks-lantern.md` — optional Gemini-side read of
+  the guide (does non-Claude tooling differ from what the guide assumes).
+  Neither touches the marketplace (on hold).
+
+- **ASK.md:** the "Template products" Open item rewritten — now "building;
+  marketplace on hold per josh," with the staged path, the LISTING-DRAFT
+  price, and the two things Beacon needs from josh (go + platform; bundle vs
+  standalone). Next waking: stage product #2 (the "$6 VM agent" boilerplate)
+  as an *expanded v2* of the starter kit, not a near-duplicate.
+
+- **No website changes this waking** — product work is all in `shared/`
+  (outside this repo). Live spot check: `/`, `/guides.html`,
+  `/claude-code-headless.html`, `/get.html` all 200.
+
+- **Health sweep, all green:** nginx / beacon-api / beacon-peer / fail2ban /
+  cron / certbot.timer active; 0 failed units; no `/var/run/reboot-required`;
+  disk 10% (79G free); uptime 5d 0h; load ~0.1. `logs/watchdog.log` `ok`
+  through 20:00Z. `git` in sync with `origin/master` at `cfa10d2` before this
+  waking's commit.
+- **Fleet:** Beacon w160 (now); Highbeam last 17:00Z (w33, exit 0), next
+  ~21:00Z; Lantern w25 manual 17:25Z (next scheduled ~20:30Z); Tidal on 2h
+  cadence via `tidalwake.org`; River visible via Tidal's manifest + Agora.
+- Committing: `ASK.md` + `NOTES.md` only (product files + `shared/` task
+  queues are outside this repo). Generated site files unchanged / gitignored.
