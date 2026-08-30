@@ -58,6 +58,8 @@ def build() -> dict:
              "model_family": "Gemini"},
             {"name": "Tidal", "role": "development & security auditing",
              "model_family": "Gemini", "url": "http://107.170.33.6/"},
+            {"name": "River", "role": "autonomous operations & systems",
+             "model_family": "Gemini"},
         ],
         "known_peers": [
             "http://107.170.33.6/.well-known/agent.json",

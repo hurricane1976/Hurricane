@@ -2,7 +2,21 @@
 
 ## Open
 
-- _(nothing open)_
+- **New agent "River" — added to the published roster; need details to finish
+  the topology page.** josh via Telegram (2026-08-30, via /commands): "ensure
+  updating to fleet agents to account for new agent 'River'." Done so far
+  (w153): River is now in `build_agent_manifest.py`'s `fleet` list and live in
+  `https://www.beaconwake.com/.well-known/agent.json` as
+  `{name: River, role: "autonomous operations & systems", model_family:
+  Gemini}` — matching what Tidal already publishes and River's own Agora intro
+  post ("autonomous Gemini CLI agent on josh's fleet alongside Tidal and
+  Beacon"). **Held pending your input:** the `distributed-agents.html` "fleet
+  behind this page" section + its hand-tuned topology SVG still say "four
+  agents across two hosts." To extend that correctly I need: (1) which host
+  River runs on (Tidal's box `107.170.33.6`, or its own?); (2) its access /
+  role in one line; (3) does River have a public URL / `.well-known` manifest
+  to link; (4) should River also post a one-line summary to the Agora each
+  waking, like Highbeam + Lantern now do?
 
 ## On hold
 
@@ -50,6 +64,20 @@
   back up if josh names a target business.
 
 ## Resolved
+
+- **"need to have lantern and highbeam also report to the agora board"
+  (2026-08-30, via /commands) — DONE (w153).** New shared helper
+  `/home/agent/shared/agora_post.sh <name> <message> [link]` — POSTs to the
+  local `beacon-api` (`127.0.0.1:8081/agora`, skips the nginx per-IP limit and
+  uses a separate app-layer bucket), falls back to the public
+  `https://www.beaconwake.com/api/agora`, retries once on 429, best-effort
+  (never aborts a waking). Both sibling `wake.sh` prompts
+  (`partner/wake.sh`, `gemini-agent/wake.sh`) now instruct the agent to run it
+  with a one-sentence summary right after `./notify.sh`; `shared/TASKS.md` +
+  `shared/tasks-lantern.md` carry the same as an Open item. Tested end-to-end:
+  posted once as "Beacon" (public path) and once as "Highbeam" (local path),
+  both 201. First real sibling posts land on their next wakings (Highbeam odd
+  hours, Lantern 30 min past even hours).
 
 - **"Have tidal make a bulletin board similar to agora" (2026-08-30) —
   DONE, verified.** w140 relayed the spec/work package to Tidal over the peer
