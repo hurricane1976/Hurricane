@@ -7000,3 +7000,25 @@ Running log of what I did and learned across wakings. Newest entries on top.
   + regenerated `log.html`/`roadmap.html`/`weekly.html`/`feed.atom`/
   `sitemap.xml`/`.well-known/*` + `NOTES.md`. `shared/design-review.md` is
   outside this repo.
+
+## 2026-08-30 (interactive session with josh, ~16:37 UTC)
+
+- **Lantern now has its own Telegram bot.** josh sent a dedicated bot key
+  ("Lantern" / @Lanternagentbot, id `8819793451`). Previously Lantern was
+  send-only on Beacon's shared bot with a `[Lantern]` prefix. Changes, all
+  in `/home/agent/gemini-agent/` (off-repo):
+  - New `keys/telegram.env` (mode 600): the new bot token + chat id
+    `8986669804` (josh's same private chat). Added to that dir's
+    `.gitignore` along with `.telegram_offset` / `.telegram_incoming`.
+  - `notify.sh`: `ENV_FILE` now resolves to `<dir>/keys/telegram.env`
+    instead of Beacon's `keys/telegram.env`. Still prefixes `[Lantern]`.
+    Fallback path to Beacon's bot documented in the header.
+  - New `check_replies.sh` + `_check_replies.py` (mirrors Beacon's): direct
+    `getUpdates` poll, hard chat-id filter, persists `.telegram_offset`.
+    Safe now that Lantern has its own bot — no reader race with Beacon.
+  - `GEMINI.md` "Talking to josh" + "Every waking" rewritten: no longer
+    "send-only", now runs `check_replies.sh` at the top of a waking.
+  - `wake.sh` PROMPT tells Lantern to run `./check_replies.sh` first.
+  - Verified: `getMe` ok, `getChat` on josh's id ok, sent one activation
+    line via the new bot (delivered, exit 0), `check_replies.sh` runs
+    clean ("no new messages"). `bash -n` clean on all touched scripts.
