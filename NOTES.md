@@ -8059,3 +8059,88 @@ Running log of what I did and learned across wakings. Newest entries on top.
 - **Fleet:** Beacon w169 (now); Highbeam last 03:00Z (w38, exit 0), next
   ~05:00Z; Lantern last 02:30Z (w31, exit 0), next ~04:30Z; Tidal + River
   off-box, manifest reachable over HTTPS.
+
+## 2026-08-31 (170th waking, ~06:00 UTC)
+
+- `check_replies.sh`: no new Telegram from josh. `peer/inbox/` empty. `ASK.md`
+  Open unchanged — template product #1 waiting on josh's Gumroad URL, #2 held
+  for his "pdf versions plural" reply. Standing steer: dashboards/graphics +
+  collaboration + the greenlit SEO push.
+
+- **Focus: SEO push — published spoke #4, `/claude-code-memory.html`.**
+  "Persistent memory between Claude Code sessions." Written off Highbeam's
+  w38/w39 prep (long-tail list + a verification addendum with exact
+  `claude --help` v2.1.251 quote text). Structure mirrors the permissions page.
+  Sections:
+  - **The one idea: only the disk survives** — a `-p` process exit discards the
+    context window; the only carryover is files, an opt-in stored transcript,
+    and `~/.claude` auto-memory.
+  - **Four layers, four jobs** (table): persistent working dir · append-only
+    `NOTES.md` · `ASK.md` human-queue · Claude Code auto-memory + `MEMORY.md`
+    index. "The log is what happened, the queue is what's blocked, auto-memory
+    is what's true."
+  - **Why a scheduled agent should not resume** — `--continue`/`--resume`
+    replay the whole transcript as input tokens (unbounded cost, context
+    creep, stale context, one poisoned run infecting the chain). Start cold,
+    re-read state files.
+  - `--continue` / `--resume` / `--fork-session` / `--no-session-persistence`
+    table — `--resume <id> --fork-session` as the safe middle ground.
+  - **The `CLAUDE.md` trap: discovery starts at `cwd`** — cron starts in
+    `$HOME`, so a wake script that doesn't `cd` into the repo loads no
+    `CLAUDE.md`. Fix: `cd` first or `--add-dir` (help text: "CLAUDE.md dirs").
+  - **What `--bare` and `--safe-mode` switch off** — quoted help text; `--bare`
+    kills auto-memory + `CLAUDE.md` discovery + non-API auth, `--safe-mode` is
+    the broader "customizations off" debug switch.
+  - **Auto-memory: per-user, outside the repo** — invisible to code review, not
+    in git, wipeable with `~/.claude`; keep the source of truth as an in-repo
+    `MEMORY.md`.
+  - **Keeping the context window from filling** — externalise state every run;
+    `--autocompact <auto|100k–1M>`; `--exclude-dynamic-system-prompt-sections`
+    (help text names "memory paths" as a volatile section — a prompt-cache
+    lever for a repeating wake).
+  - **Worked example** = this repo's actual memory layout + the per-wake order.
+  - Verify-against-your-version + Agora feedback line.
+  - All flag claims checked against `claude --help` v2.1.251 on the box before
+    publishing. 6+ internal links (headless, cron, permissions, memory-handbook,
+    agent-ops, guides hub).
+
+- **Wired in:** `guides.html` card → linked + "Published"; `build_sitemap.py`,
+  `build_status.py` (56→57), `smoke_test.py`, `deploy.sh` (cp + chown).
+  OG image left as generic `og-image.png` — queued Lantern for a dedicated
+  `og-claude-code-memory` card (`tasks-lantern.md`).
+
+- **Also: tighter internal linking across the cluster.** The headless + cron
+  pages had no "More in this series" footer block (only the permissions page
+  did) — added one to each, and added the memory link into the permissions
+  page's block. Every spoke now links to every sibling + the hub.
+
+- **Also: inlined Lantern's revised `permission-modes-tree` diagram** on
+  `/claude-code-permissions.html` (held at w169 because its auto/manual/dontAsk
+  cells still said "Inferred"). Lantern's w32 redelivery fixes them to the
+  tested v2.1.251 facts and they now match the page prose. Re-checked, inlined
+  as SVG (no `<style>`, presentation attrs only → CSP-safe) in a new "The modes
+  at a glance" card, credited to Lantern, full aria-label. Verified in headless
+  Chrome — renders on house style, wide-diagram scroll behaviour matches the
+  cron page's wake-loop diagram.
+
+- **Deploy:** `website/deploy.sh` ran twice (spoke wiring, then diagram),
+  `smoke_test.py` local + live green both times, `/status.html` 57/57,
+  `/fleet.json` 5/5 healthy. Commits **`0eb767f`** + **`882a398`**, pushed to
+  `origin/master`.
+
+- Shared-tree updates: `seo-content-plan.md` (pipeline row #4 → PUBLISHED + a
+  w170 integration section + Highbeam queued for the accuracy pass + next slug
+  #5 note), `tasks-lantern.md` (OG-card request + permission-modes-tree marked
+  live), `LOG.md`.
+
+- **For josh, when convenient:** `/claude-code-memory.html`,
+  `/claude-code-permissions.html` and `/claude-code-cron.html` are all good
+  HN / Reddit / dev.to cross-post candidates — backlinks are the one thing the
+  fleet can't do and would materially speed ranking.
+
+- **Health sweep, all green:** nginx / beacon-api / beacon-peer / fail2ban /
+  cron / certbot.timer active; 0 failed units; no `/var/run/reboot-required`;
+  disk 10%; uptime ~5d 10h.
+- **Fleet:** Beacon w170 (now); Highbeam last 05:00Z (w39, exit 0), next
+  ~07:00Z; Lantern last 04:30Z (w31, exit 0), next ~06:30Z; Tidal + River
+  off-box, manifest reachable over HTTPS. `/fleet.json` 5/5.
