@@ -7844,3 +7844,116 @@ Running log of what I did and learned across wakings. Newest entries on top.
   disk 10%; uptime ~5d 4h; load ~0.17.
 - **Fleet:** Beacon w167 (now); Highbeam last ~01:00Z; Lantern last ~00:30Z;
   Tidal + River off-box, manifest reachable over HTTPS.
+
+## 2026-08-31 (168th waking, ~02:00 UTC)
+
+- `check_replies.sh`: no new Telegram from josh. `peer/inbox/` had one message
+  from Tidal — a courtesy ack that our HTTPS-restore confirmation was received
+  and their systems are healthy (39 tests green, SOS/ARA 100/100). No action;
+  moved to `peer/inbox/processed/`. `ASK.md` Open unchanged (template product
+  #1 still waiting on josh's Gumroad listing URL; #2 held for his "pdf versions
+  plural" reply). Standing steer: dashboards/graphics + collaboration + the
+  greenlit SEO push.
+
+- **Focus: SEO content push.** Highbeam (partner w37) had delivered a full
+  accuracy pass on spoke #2 (`claude-code-cron.html`) plus a long-tail
+  sub-query cluster for spoke #3; Lantern (w30) had delivered
+  `og-claude-code-cron.png` + a `permission-modes-tree` diagram. Integrated the
+  ready pieces and shipped spoke #3.
+
+- **Done: spoke #3 `/claude-code-permissions.html` — PUBLISHED.** "Claude Code
+  permission scoping for production." Built on the spoke #1/#2 template, house
+  style, one `<h1>` on the primary cluster (`claude code --allowedTools` /
+  `claude code permission scoping production` / `bypassPermissions`). Sections:
+  - **"`CLAUDE.md` is advice, the flags are the fence"** — the prompt layer is a
+    request; the hard boundary is `--permission-mode` + tool flags + settings +
+    the OS.
+  - **Six-mode table** with per-mode *headless* behaviour: confident on
+    `default` / `acceptEdits` / `plan` / `bypassPermissions` (what the fleet has
+    actually run); `auto` / `manual` / `dontAsk` flagged as listed-in-`--help`
+    but undocumented — the page tells the reader to test each with a throwaway
+    `claude -p` and does **not** invent semantics from the names.
+  - The **`default`-mode silent-failure trap** headless (denied writes → exit 0,
+    nothing shipped), cross-linked to spoke #1.
+  - **`--allowedTools` / `--disallowedTools` / `--tools` grammar** — tool
+    specifiers (`Bash(git *)`), comma-or-space lists, `--disallowedTools`
+    overrides `--allowedTools`, `--tools ""` / `default` / list as the
+    "which tools exist at all" control, and a plain-language precedence rule.
+  - **Three things called "skip permissions"** table: `--permission-mode
+    bypassPermissions` (a mode) vs `--dangerously-skip-permissions` /
+    `--allow-dangerously-skip-permissions` (skip-checks flags) vs
+    `--restricted` (a lockdown that strips Bash/code-runners/WebFetch unless
+    `--tools` names them, ignores user/project settings, no-internet sandbox).
+  - **`settings.json` `permissions` allow/deny** + `--setting-sources` /
+    `--settings` for pinning the boundary on an unattended box the agent's user
+    can't edit.
+  - **Worked least-privilege allow-list** for a build-and-deploy agent
+    (`acceptEdits` + four `Bash(...)` patterns + `--disallowedTools
+    Bash(git push*) WebFetch` + one `--add-dir` + `--max-budget-usd`), with a
+    note that on a dedicated isolated box the fleet just runs
+    `bypassPermissions` and leans on the OS.
+  All mode/flag names taken from `claude --help` on this box (v2.1.251):
+  verified the 6 `--permission-mode` choices, `--tools` / `--allowedTools` /
+  `--disallowedTools` (+ `--allowed-tools` aliases), `--restricted` semantics,
+  `--dangerously-skip-permissions` / `--allow-dangerously-skip-permissions`,
+  `--setting-sources` (user/project/local), `--max-budget-usd` (`--print` only).
+  OG image is the generic `og-image.png` for now — asked Lantern for a
+  dedicated card. Did **not** embed Lantern's `permission-modes-tree.svg`: it
+  covers only 4 modes and its card text clips at the right edge — sent it back
+  for a 6-mode revision.
+
+- **Done: actioned Highbeam's w37 accuracy findings on `/claude-code-cron.html`:**
+  - #1 (med) — `--max-turns` is no longer listed in `claude --help` on
+    v2.1.251 (still accepted, but a reader who runs `--help` as the page tells
+    them to won't find it). Reworked every load-bearing spot to lead with the
+    **documented** `--max-budget-usd <amount>` (verified `--print`-only on the
+    box): the diagram flag row + the flow `aria-label`, the "What the schedule
+    costs" section (now four dials, `--max-turns` kept as an explicitly-labelled
+    secondary/undocumented guard), and the `wake.sh` wrapper (`--max-turns 120`
+    → `--max-budget-usd 5`).
+  - #2 (low) — systemd note reworded from "a hard kill regardless of what
+    `--max-turns` does" to "a hard wall-clock kill for a run that hangs …
+    version-independent".
+  - #3 (low) — "no daemon mode" softened to "no persistent daemon mode worth
+    building an autonomous agent around" (the CLI now has background
+    sessions).
+  - #4 (low) — added the `--output-format json` → `.total_cost_usd` capture
+    note (the shipped wrapper uses `text`, so it prints no cost line otherwise;
+    `json` needs no `--verbose`).
+  - Carried the same `--max-turns` → `--max-budget-usd` correction to
+    `/claude-code-headless.html` (flags table, wrapper, failure-modes list,
+    minimal CI example, meta-description keyword list).
+
+- **Wiring:** `claude-code-permissions.html` added to `guides.html` (card
+  "In progress" → link + "Published"), `build_sitemap.py`, `build_status.py`,
+  `smoke_test.py`, `deploy.sh` (cp + chown). `og-claude-code-cron.png` copied
+  into `website/` and wired through `deploy.sh` / `smoke_test.py` /
+  `build_status.py`; cron page `og:image` + `twitter:image` repointed to it.
+
+- **Deploy:** `website/deploy.sh` — `smoke_test.py` local + live both green,
+  nginx reloaded. `/status.html` **55/55** (53 → +1 cron OG card earlier in
+  the session → +1 permissions page). `/fleet.json` 5/5 healthy. Live checks:
+  permissions page 200 (title correct), cron page `og:image` now the dedicated
+  card (200), guides page links the new spoke.
+
+- **Repo commit `fdb7a25`, pushed to `origin/master`** (one commit this waking;
+  `d3285b8` was w167). Shared-tree updates (outside the repo):
+  `seo-content-plan.md` (#3 → PUBLISHED + a w168 integration section +
+  Highbeam/Lantern follow-up asks), `TASKS.md` (Highbeam: accuracy pass on the
+  permissions page, focus on the auto/manual/dontAsk framing + `--tools`
+  precedence + `--restricted`; next slug `claude-code-memory.html`),
+  `tasks-lantern.md` (cron OG card swapped in + live; `permission-modes-tree`
+  needs 4→6 mode revision + text-clip fix; new ask for
+  `og-claude-code-permissions`), `LOG.md`.
+
+- **For josh, when convenient:** `/claude-code-permissions.html` and
+  `/claude-code-cron.html` are both good candidates for an HN / Reddit /
+  dev.to cross-post — backlinks are the one thing the fleet can't do and would
+  materially speed ranking.
+
+- **Health sweep, all green:** nginx / beacon-api / beacon-peer / fail2ban /
+  cron / certbot.timer active; 0 failed units; no `/var/run/reboot-required`;
+  disk 10%; uptime ~5d 6h; load ~0.2.
+- **Fleet:** Beacon w168 (now); Highbeam last ~01:00Z, next ~03:00Z; Lantern
+  last ~00:30Z, next ~02:30Z; Tidal + River off-box, manifest reachable over
+  HTTPS.
