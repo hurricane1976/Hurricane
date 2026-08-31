@@ -7747,3 +7747,100 @@ Running log of what I did and learned across wakings. Newest entries on top.
 - **Fleet:** Beacon w166 (now); Highbeam last ~23:00Z, next ~01:00Z; Lantern
   last ~22:30Z, next ~00:30Z; Tidal + River off-box, manifest reachable
   again over HTTPS (updated 20:00Z).
+
+## 2026-08-31 (167th waking, ~00:00 UTC)
+
+- `check_replies.sh`: no new Telegram from josh. `peer/inbox/` empty
+  (`processed/` 13). `ASK.md` Open unchanged — template product #1 still
+  waiting on josh's Gumroad listing URL, #2 still held for his "pdf versions
+  plural" reply; standing steer is the dashboards/graphics + collaboration
+  work. No new sibling entries in `shared/LOG.md` since w164.
+
+- **Focus: the SEO content push (greenlit w159, cadence 2–3 spokes/week, last
+  spoke was w159).** Highbeam had already delivered a full sub-query research
+  package for spoke #2 + an accuracy pass on spoke #1 (in
+  `shared/seo-content-plan.md`), and Lantern had delivered two guide visual
+  assets — so this waking integrated all of it.
+
+- **Done: spoke #2 `/claude-code-cron.html` — PUBLISHED.** "Running Claude Code
+  on a schedule: a cron wake loop." Built on the spoke #1 template, house
+  style, one `<h1>` on the primary query (`run claude code as an autonomous
+  agent` / `claude code cron job` / `claude code 24/7`). Covers the full
+  Highbeam sub-query cluster:
+  - copy-paste crontab lines (hourly / 2h / 30m / business-hours / daily) +
+    field legend;
+  - **cron's bare environment** (the #1 blocker): no profile, minimal `PATH`,
+    `claude`/`node` not found, NVM path, relative-path breakage, an
+    `env -i …` repro one-liner, and a one-sentence Windows Task Scheduler
+    equivalent;
+  - **unattended auth**: `ANTHROPIC_API_KEY` in a sourced 600 file vs stored
+    creds under `~/.claude` and the "which user does the cron line run as"
+    trap;
+  - the **`flock -n 9`** single-instance guard (with the "why non-blocking"
+    rationale);
+  - **logging**: one timestamped file per run, `2>&1`, `ls -1t | tail -n +201
+    | xargs -r rm` rotation;
+  - **exit capture + out-of-band failure alert** (fires even when the agent
+    crashes before its own notify step);
+  - a full **`systemd` service + timer** alternative (`Type=oneshot`,
+    `EnvironmentFile`, `RuntimeMaxSec` hard kill, `Persistent=true`,
+    `journalctl`);
+  - **cost dials** (cadence × `--max-turns` × `--model`, measure via
+    `--output-format json`);
+  - the whole `wake.sh` wrapper in one block.
+  Embeds Lantern's **`wake-loop-flow.svg`** inline (as SVG per the site's
+  inline-diagram convention) in a "The wake loop, end to end" card — footnote
+  URL repointed from the headless page to this one, added a full descriptive
+  `aria-label`. 5+ internal links out (headless, guides, agent-ops,
+  field-guide, distributed-agents, agora). OG image is the generic
+  `og-image.png` for now — asked Lantern for a dedicated card.
+
+- **Done: actioned Highbeam's w35 accuracy findings on
+  `/claude-code-headless.html`:**
+  - #1 — `default`-mode row: "Plain reads and no-op commands still run" →
+    "Plain file reads (Read/Glob/Grep) still run; anything that writes a file
+    or runs a command is denied unless you allow-listed it." (fixed in both
+    the flags table and the permission-mode table)
+  - #2 — minimal example: reframed `--allowedTools ""` as belt-and-braces and
+    made explicit that `--permission-mode default` is what enforces the
+    boundary.
+  - #3 — added the `--output-format stream-json` + `-p` **requires
+    `--verbose`** caveat in two places (flags table + "Reading the output").
+  - #5 — softened the `--max-turns` exit-code wording ("historically exited 0;
+    newer versions may exit non-zero").
+  - #6 — `og:image` / `twitter:image` now point at Lantern's dedicated
+    `og-claude-code-headless.png` (copied into `website/`, wired through
+    deploy + smoke + status).
+  - #4 (`--permission-mode plan` headless "verify it does something useful"
+    note) — not done, minor; left for a later pass.
+
+- **Wiring:** `claude-code-cron.html` added to `guides.html` (card flipped
+  from "In progress" to a link + "Published"), `build_sitemap.py`,
+  `build_status.py`, `smoke_test.py`, `deploy.sh` (cp + chown).
+  `og-claude-code-headless.png` added to `build_status.py` / `smoke_test.py` /
+  `deploy.sh`. Rendered the new page in bundled headless Chrome at 1280w —
+  layout clean, diagram fits, code blocks fine.
+
+- **Deploy:** `website/deploy.sh` — `smoke_test.py` local + live both green,
+  nginx reloaded. `/status.html` **53/53** (was 51/51: +cron page,
+  +og card). `/fleet.json` 5/5 healthy. Live checks: cron page 200 (38.8 KB,
+  title + diagram + systemd section all present), OG card 200,
+  headless page `og:image` now the dedicated card.
+
+- **Repo commit `d3285b8`, pushed to `origin/master`.** Shared-tree updates
+  (outside the repo): `seo-content-plan.md` (spoke #2 → PUBLISHED + a w167
+  integration note + Highbeam accuracy-pass request for the new page),
+  `TASKS.md` (Highbeam: accuracy pass on cron page + long-tail for the
+  permissions page), `tasks-lantern.md` (both delivered assets now
+  embedded/live; new asks: dedicated cron OG card + a permission-mode
+  decision-tree diagram for spoke #3).
+
+- **For josh, when convenient:** `/claude-code-cron.html` is a good candidate
+  for an HN / Reddit / dev.to cross-post — backlinks are the one thing the
+  fleet can't do and they'd materially speed ranking.
+
+- **Health sweep, all green:** nginx / beacon-api / beacon-peer / fail2ban /
+  cron / certbot.timer active; 0 failed units; no `/var/run/reboot-required`;
+  disk 10%; uptime ~5d 4h; load ~0.17.
+- **Fleet:** Beacon w167 (now); Highbeam last ~01:00Z; Lantern last ~00:30Z;
+  Tidal + River off-box, manifest reachable over HTTPS.
