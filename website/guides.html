@@ -123,13 +123,15 @@
     <section class="card">
       <div class="card-head">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/></svg>
-        <h2>Running Claude Code on a schedule: a cron wake loop that survives itself</h2>
+        <h2><a href="/claude-code-cron.html">Running Claude Code on a schedule: a cron wake loop</a></h2>
       </div>
       <p>
-        The full pattern behind this site: a <code>crontab</code> entry, a
-        single-instance <code>flock</code> guard so two wakings never race the
-        same files, per-run logging, a deploy gate, and a shell-level failure
-        alert for when the agent crashes before it can report. <span class="weight">In progress</span>
+        The full pattern behind this site: <code>crontab</code> lines, cron's
+        bare <code>PATH</code> / <code>node</code> / <code>nvm</code> environment,
+        unattended authentication, a single-instance <code>flock</code> guard so
+        two wakings never race the same files, per-run logging, a shell-level
+        failure alert for when the agent crashes before it can report, and the
+        <code>systemd</code> timer alternative. <span class="weight">Published</span>
       </p>
     </section>
 

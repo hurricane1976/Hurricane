@@ -14,13 +14,13 @@
 <meta property="og:description" content="What claude -p does, the flags that matter for unattended runs, how permissions behave with no terminal, exit codes, parsing JSON output, and a minimal cron wake loop — from a live autonomous fleet.">
 <meta property="og:url" content="https://www.beaconwake.com/claude-code-headless.html">
 <link rel="canonical" href="https://www.beaconwake.com/claude-code-headless.html">
-<meta property="og:image" content="https://www.beaconwake.com/og-image.png">
+<meta property="og:image" content="https://www.beaconwake.com/og-claude-code-headless.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Claude Code headless mode: the -p / --print reference">
 <meta name="twitter:description" content="What claude -p does, the flags that matter for unattended runs, permissions with no terminal, exit codes, JSON output, and a minimal cron wake loop.">
-<meta name="twitter:image" content="https://www.beaconwake.com/og-image.png">
+<meta name="twitter:image" content="https://www.beaconwake.com/og-claude-code-headless.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -156,7 +156,7 @@
       <thead><tr><th>Flag</th><th>What it does / why it matters headless</th></tr></thead>
       <tbody>
         <tr><td><code>-p</code>, <code>--print</code></td><td>Run non-interactively and exit. The flag that makes everything else on this page relevant.</td></tr>
-        <tr><td><code>--output-format</code></td><td><code>text</code> (default) prints only the final message. <code>json</code> prints one structured object with the result plus metadata (session id, turn count, duration, cost, error flag). <code>stream-json</code> emits newline-delimited events as they happen &mdash; useful for live logging.</td></tr>
+        <tr><td><code>--output-format</code></td><td><code>text</code> (default) prints only the final message. <code>json</code> prints one structured object with the result plus metadata (session id, turn count, duration, cost, error flag). <code>stream-json</code> emits newline-delimited events as they happen &mdash; useful for live logging, but with <code>-p</code> it currently also requires <code>--verbose</code> or the run errors out.</td></tr>
         <tr><td><code>--permission-mode</code></td><td>How tool calls are gated when there is no one to approve them: <code>default</code>, <code>acceptEdits</code>, <code>plan</code>, or <code>bypassPermissions</code>. See the next section &mdash; this is the flag people get wrong.</td></tr>
         <tr><td><code>--allowedTools</code> / <code>--disallowedTools</code></td><td>An explicit allow/deny list of tools (optionally scoped, e.g. a specific <code>Bash</code> command pattern). This &mdash; not <code>CLAUDE.md</code> &mdash; is the hard boundary on what a headless run can do.</td></tr>
         <tr><td><code>--max-turns</code></td><td>Hard cap on agentic iterations. Your primary guard against a stuck loop quietly burning tokens for an hour.</td></tr>
@@ -191,7 +191,7 @@
     <table class="data-table">
       <thead><tr><th>Mode</th><th>Behaviour with no human present</th><th>Use when</th></tr></thead>
       <tbody>
-        <tr><td><code>default</code></td><td>Anything not already allow-listed is <strong>auto-denied</strong>. No hang &mdash; the model just sees the refusal and works around it. Plain reads and no-op commands still run.</td><td>Read-only analysis, review, summarisation. A run that only needs to look and report.</td></tr>
+        <tr><td><code>default</code></td><td>Anything not already allow-listed is <strong>auto-denied</strong>. No hang &mdash; the model just sees the refusal and works around it. Plain file reads (Read/Glob/Grep) still run; anything that writes a file or runs a command is denied unless you allow-listed it.</td><td>Read-only analysis, review, summarisation. A run that only needs to look and report.</td></tr>
         <tr><td><code>acceptEdits</code></td><td>In-scope file edits are auto-accepted; shell commands are still gated.</td><td>Codegen / refactor jobs where you want files written but not arbitrary commands run.</td></tr>
         <tr><td><code>plan</code></td><td>The model plans only and executes nothing.</td><td>Dry runs; generating a change plan for a human to approve.</td></tr>
         <tr><td><code>bypassPermissions</code><br>(<code>--dangerously-skip-permissions</code>)</td><td>Every tool call runs, no gate.</td><td>An isolated machine you own, where the blast radius is already bounded by OS permissions and the working directory. This is what a fully autonomous build-and-deploy agent uses.</td></tr>
@@ -227,7 +227,7 @@
 RESULT=$(printf '%s' "$OUT" | jq -r '.result')
 COST=$(printf '%s' "$OUT"   | jq -r '.total_cost_usd // "?"')
 ERR=$(printf '%s' "$OUT"    | jq -r '.is_error // false')</code></pre>
-      <p style="margin-bottom:0;"><strong><code>stream-json</code></strong> &mdash; newline-delimited events (assistant messages, tool calls, tool results) as they occur. Use it to tee live progress into a log or a status feed.</p>
+      <p style="margin-bottom:0;"><strong><code>stream-json</code></strong> &mdash; newline-delimited events (assistant messages, tool calls, tool results) as they occur. Use it to tee live progress into a log or a status feed. With <code>-p</code>, current Claude Code also wants <code>--verbose</code> alongside it &mdash; <code>--output-format stream-json</code> on its own errors out with a message telling you exactly that.</p>
     </section>
 
     <section class="card">
@@ -249,9 +249,10 @@ ERR=$(printf '%s' "$OUT"    | jq -r '.is_error // false')</code></pre>
         of the log attached.
       </p>
       <p style="margin-bottom:0;">
-        Hitting <code>--max-turns</code> may still exit <code>0</code> with a
-        truncated result &mdash; if that distinction matters to you, check the
-        <code>json</code> output's status/subtype field as well as the code.
+        Hitting <code>--max-turns</code> historically exited <code>0</code> with a
+        truncated result; newer Claude Code versions may exit non-zero. Either
+        way, if that distinction matters to you, check the <code>json</code>
+        output's status/subtype field as well as the code.
       </p>
     </section>
   </div>
@@ -359,10 +360,12 @@ REVIEW=$(git diff origin/main...HEAD | claude -p \
 echo "$REVIEW"
 printf '%s' "$REVIEW" | grep -q "NO BUGS FOUND" || exit 1</code></pre>
     <p style="margin-bottom:0;">
-      <code>--permission-mode default</code> with an empty
-      <code>--allowedTools</code> means this run can read and reason but cannot
-      edit files or run commands &mdash; appropriate for something triggered by
-      untrusted branch content.
+      <code>--permission-mode default</code> is what enforces the boundary here:
+      with nothing allow-listed, Edit / Write / Bash are all denied, so the run
+      can read and reason but cannot change anything &mdash; appropriate for
+      something triggered by untrusted branch content. The explicit
+      <code>--allowedTools ""</code> is just belt-and-suspenders; the mode does
+      the real work.
     </p>
   </section>
 
