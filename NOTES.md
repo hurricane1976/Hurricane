@@ -8849,3 +8849,49 @@ Running log of what I did and learned across wakings. Newest entries on top.
   ~21:00Z; Lantern last ~18:30Z (w38, exit 0), next ~20:30Z; Tidal + River
   off-box — replied on the token file, mirror is up on their side.
   `/fleet.json` 5/5.
+
+## 2026-08-31 (181st waking, ~21:35 UTC)
+- `check_replies.sh`: one new josh Telegram line (via /commands): **"on the
+  beaconwake.org main metrics page, can we get the metrics listed for Tidal
+  and River as well?"** Plus a `/wake` (this session). `peer/inbox/`: nothing
+  new (Tidal's token-file mirror reply already processed w180).
+- **Actioned it — `/metrics.html` now has an "Off-box fleet — tidalwake.org"
+  section.** Beacon keeps no wake logs for Tidal/River (separate box), so the
+  honest approach is to chart only what Beacon can actually observe:
+  - **`website/record_fleet_pulse.py`** (new) — fetches Tidal's
+    `/.well-known/agent.json` each deploy, appends the observed `updated`
+    timestamp + cadence to **`website/data/fleet-pulse.jsonl`** (committed, so
+    the series persists across wakings). Dedups: skips a write if nothing
+    changed and the last record is < 6h old. Wrapped `|| true` in `deploy.sh`
+    (before `build_metrics.py`) — a network failure never breaks a deploy;
+    it just records `tidal_reachable:false`.
+  - **`build_metrics.py`** — new `tidal_wakings()` derives distinct
+    "Tidal was awake" events from two measured sources: (a) distinct manifest
+    `updated` values in the pulse log, (b) peer messages received from Tidal
+    (subject/body-filtered to drop the w~137 setup/"Test" messages). Points
+    within 45 min collapse to one waking (Tidal cadence is `0 */4`). New
+    per-day bar chart + data table, a KPI tile ("Tidal wakings observed, last
+    7 days"), and a **Tidal row added to the last-24h fleet chart**.
+  - **River** genuinely has no independent endpoint (co-located with Tidal),
+    so it's an honest prose explainer under the chart — appears in Tidal's
+    manifest + Agora, liveness mirrors Tidal, pointer to `/fleet-status.html`
+    — **not** a fabricated chart.
+  - Backfill from existing `peer/inbox/processed/*-TIDAL-*.json` gives 9 real
+    events across Aug 29–31 (2 / 5 / 2 per day), so the chart isn't empty on
+    day one; it fills in going forward as `record_fleet_pulse.py` runs each
+    deploy.
+- Updated the fleet-24h chart note and the hero tagline to acknowledge the
+  off-box observed signal (no longer "on this box" only).
+- **Deploy:** `website/deploy.sh` once — `smoke_test.py` local + live green,
+  `/status.html` self-check pass, sitemap 35 urls, `/fleet.json` 5/5 healthy.
+  Live page verified: "Off-box fleet" section + Tidal chart + River explainer
+  all serving. Commit `2fcc661` pushed to `origin/master`.
+- SEO spoke #10 (`claude-code-agent-errors.html`) still staged, not started —
+  this waking was the metrics-page ask. Next waking.
+- **Health sweep, all green:** nginx / beacon-api / beacon-peer / fail2ban /
+  cron / certbot.timer active; 0 failed units; no `/var/run/reboot-required`;
+  disk 10% (79G free); uptime 6d; load 0.24; watchdog last 3 `ok` through
+  21:20Z.
+- **Fleet:** Beacon w181 (now); Highbeam last ~21:00Z (w48, exit 0), next
+  ~23:00Z; Lantern last ~20:30Z (w39), next ~22:30Z; Tidal + River off-box,
+  last observed 20:30Z manifest update. `/fleet.json` 5/5.

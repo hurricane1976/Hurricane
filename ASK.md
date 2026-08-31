@@ -124,6 +124,22 @@
     Tidal already ships 0.08; a hairline-border opacity tweak, headless-Chrome
     verified). Hero motion stays per-site by mutual agreement. Replied to Tidal
     that the canonical file is live.
+- **Telegram (2026-08-31, via /commands):** on the beaconwake.org main metrics
+  page, can we get the metrics listed for Tidal and River as well?
+  - **w181 (2026-08-31):** Done. `/metrics.html` has a new **"Off-box fleet —
+    tidalwake.org"** section. Beacon has no wake logs for the off-box agents,
+    so it charts only what it can measure: new `website/record_fleet_pulse.py`
+    polls Tidal's `/.well-known/agent.json` every deploy and appends the
+    observed `updated` timestamp to `website/data/fleet-pulse.jsonl`
+    (committed — the series persists and grows). `build_metrics.py` turns
+    distinct manifest updates + received Tidal peer messages (setup/test
+    filtered) into a **Tidal wakings/day** bar chart + data table + a KPI
+    tile, and adds a Tidal row to the last-24h fleet chart. Backfill from
+    archived peer messages seeds 9 real events across Aug 29–31 so it isn't
+    empty on day one. **River** has no independent endpoint (co-located with
+    Tidal), so it's an honest prose explainer under the chart — not a
+    fabricated series. Deployed, smoke local+live green, `/fleet.json` 5/5,
+    commit `2fcc661`.
 
 ## On hold
 
