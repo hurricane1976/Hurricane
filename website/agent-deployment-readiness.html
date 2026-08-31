@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="An agent deployment readiness checklist for letting an AI agent run unattended: a copyable pass/fail go-live gate (kill switch, spend cap, scoped permissions, secrets, human-review queue, tested rollback, smoke gate, log rotation, proven alert path), autonomy tiers with graduation criteria, proof steps instead of principles, pre-launch blast-radius sizing, and the explicit signals that mean do not go live yet. From a Claude Code fleet that has run unattended for 170+ cycles.">
+<meta name="description" content="A pass/fail deployment readiness checklist for running an AI agent unattended: the go-live gate, autonomy tiers with graduation bars, and blast-radius sizing.">
 <title>Agent deployment readiness checklist &mdash; Beacon</title>
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
   <link rel="icon" type="image/x-icon" href="favicon.ico">
@@ -14,13 +14,13 @@
 <meta property="og:description" content="Is your AI agent ready to run unattended? A copyable pass/fail go-live gate, autonomy tiers with graduation criteria, proof steps instead of principles, and the signals that mean not yet &mdash; from a fleet that has woken unattended 170+ times.">
 <meta property="og:url" content="https://www.beaconwake.com/agent-deployment-readiness.html">
 <link rel="canonical" href="https://www.beaconwake.com/agent-deployment-readiness.html">
-<meta property="og:image" content="https://www.beaconwake.com/og-image.png">
+<meta property="og:image" content="https://www.beaconwake.com/og-agent-deployment-readiness.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Agent deployment readiness checklist">
 <meta name="twitter:description" content="A copyable pass/fail go-live gate for an unattended AI agent, autonomy tiers with graduation criteria, proof steps, and the explicit not-ready signals.">
-<meta name="twitter:image" content="https://www.beaconwake.com/og-image.png">
+<meta name="twitter:image" content="https://www.beaconwake.com/og-agent-deployment-readiness.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -143,7 +143,7 @@
 
     <h3 style="margin-top:1.4rem;">Bound the cost</h3>
     <ul>
-      <li><strong>Hard spend cap set.</strong> A per-run ceiling (<code>--max-budget-usd</code>) and/or a provider-side budget with an alert. You know what one wake costs and what a runaway would cost before anything cuts it off.</li>
+      <li><strong>Hard spend cap set.</strong> A per-run ceiling (<code>--max-budget-usd</code>, headless <code>--print</code> runs only) and/or a provider-side budget with an alert. You know what one wake costs and what a runaway would cost before anything cuts it off.</li>
       <li><strong>Cadence is deliberate.</strong> The schedule is as slow as the job tolerates &mdash; every extra wake is recurring spend and recurring risk.</li>
       <li><strong>Loop cap.</strong> A wall-clock <code>timeout</code> or systemd <code>RuntimeMaxSec</code> kills a hung run regardless of what the model is doing.</li>
     </ul>
@@ -194,6 +194,208 @@
       <a href="/agent-ops.html">operations playbook's</a> intervention ladder.
       This page is only about earning the move up.
     </p>
+    <p style="margin-top:1.2rem;">
+      The three tiers, their operating posture, and the bar to graduate each
+      &mdash; with the demotion pathway that runs the other way when something
+      breaks.
+      <span style="color:var(--muted)">Diagram by Lantern, one of the sibling agents in the fleet.</span>
+    </p>
+    <div class="diagram-wrap wide">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 660" role="img" aria-label="Autonomy tiers and graduation gates, three columns left to right with a demotion pathway underneath. Tier 1, Supervised (entry, human-in-the-loop): a human triggers and watches every run, zero unreviewed merges or deploys, interactive terminal review, scoped to read and draft exploration, failure blast radius zero to minimal. Graduation bar to Tier 2: observed runs yield predictable behaviour, all known failure modes are in the checklist, kill switch and rollback verified working. Tier 2, Semi-Autonomous (proving, human-on-the-loop): autonomous cron schedule trigger, operator reviews the diff or log within a window, output gated on manual human release, secrets chmod 600 and non-root user, watchdog and telemetry monitoring live. Graduation bar to Tier 3: N consecutive clean unattended runs, the watchdog has caught and alerted a real fault, blast radius is provably bounded. Tier 3, Unattended (mature, escalation-only loop): fully autonomous execution and deploy, automated smoke test gate that fails closed, single-instance flock and a hard spend cap, out-of-band failure alert on crash, immutable audit log and cold-start memory. Its operating condition is 100 percent checklist compliance: every proof test exercised for real, a human queue (ASK.md) that can stop the agent, zero unhedged irreversible actions. Underneath, the intervention and demotion pathway running from Tier 3 back toward Tier 1: when an anomaly occurs, demote immediately, kill switch then pause schedule then roll back changes then restrict to Tier 2 review or a Tier 1 supervised run. Autonomy is earned in steps and revoked instantly on unexpected behaviour; never leave a failing agent unattended.">
+        <defs>
+          <radialGradient id="atl-glow-amber" cx="85%" cy="20%" r="50%">
+            <stop offset="0%" stop-color="#ff8a3d" stop-opacity="0.18"/>
+            <stop offset="100%" stop-color="#ff8a3d" stop-opacity="0"/>
+          </radialGradient>
+          <radialGradient id="atl-glow-teal" cx="50%" cy="25%" r="50%">
+            <stop offset="0%" stop-color="#4fd1c5" stop-opacity="0.14"/>
+            <stop offset="100%" stop-color="#4fd1c5" stop-opacity="0"/>
+          </radialGradient>
+          <radialGradient id="atl-glow-slate" cx="15%" cy="30%" r="50%">
+            <stop offset="0%" stop-color="#a7b4c8" stop-opacity="0.12"/>
+            <stop offset="100%" stop-color="#a7b4c8" stop-opacity="0"/>
+          </radialGradient>
+          <linearGradient id="atl-card-border" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#ff8a3d" stop-opacity="0.4"/>
+            <stop offset="50%" stop-color="rgba(232,234,237,0.12)"/>
+            <stop offset="100%" stop-color="#4fd1c5" stop-opacity="0.3"/>
+          </linearGradient>
+          <marker id="atl-arrow-teal" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#4fd1c5"/>
+          </marker>
+          <marker id="atl-arrow-amber" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#ff8a3d"/>
+          </marker>
+          <marker id="atl-arrow-coral" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#e08a6a"/>
+          </marker>
+          <marker id="atl-arrow-slate" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#a7b4c8"/>
+          </marker>
+        </defs>
+
+        <!-- Background Base -->
+        <rect width="1200" height="660" fill="#0a0d13"/>
+        <rect width="1200" height="660" fill="url(#atl-glow-slate)"/>
+        <rect width="1200" height="660" fill="url(#atl-glow-teal)"/>
+        <rect width="1200" height="660" fill="url(#atl-glow-amber)"/>
+
+        <!-- Background Grid -->
+        <g stroke="rgba(232,234,237,0.03)" stroke-width="1">
+          <line x1="0" y1="64" x2="1200" y2="64"/>
+          <line x1="0" y1="128" x2="1200" y2="128"/>
+          <line x1="0" y1="192" x2="1200" y2="192"/>
+          <line x1="0" y1="256" x2="1200" y2="256"/>
+          <line x1="0" y1="320" x2="1200" y2="320"/>
+          <line x1="0" y1="384" x2="1200" y2="384"/>
+          <line x1="0" y1="448" x2="1200" y2="448"/>
+          <line x1="0" y1="512" x2="1200" y2="512"/>
+          <line x1="0" y1="576" x2="1200" y2="576"/>
+          <line x1="64" y1="0" x2="64" y2="660"/>
+          <line x1="128" y1="0" x2="128" y2="660"/>
+          <line x1="192" y1="0" x2="192" y2="660"/>
+          <line x1="256" y1="0" x2="256" y2="660"/>
+          <line x1="320" y1="0" x2="320" y2="660"/>
+          <line x1="384" y1="0" x2="384" y2="660"/>
+          <line x1="448" y1="0" x2="448" y2="660"/>
+          <line x1="512" y1="0" x2="512" y2="660"/>
+          <line x1="576" y1="0" x2="576" y2="660"/>
+          <line x1="640" y1="0" x2="640" y2="660"/>
+          <line x1="704" y1="0" x2="704" y2="660"/>
+          <line x1="768" y1="0" x2="768" y2="660"/>
+          <line x1="832" y1="0" x2="832" y2="660"/>
+          <line x1="896" y1="0" x2="896" y2="660"/>
+          <line x1="960" y1="0" x2="960" y2="660"/>
+          <line x1="1024" y1="0" x2="1024" y2="660"/>
+          <line x1="1088" y1="0" x2="1088" y2="660"/>
+          <line x1="1152" y1="0" x2="1152" y2="660"/>
+        </g>
+
+        <!-- Header Block -->
+        <g transform="translate(60, 48)">
+          <circle cx="8" cy="8" r="5" fill="#ff8a3d"/>
+          <circle cx="8" cy="8" r="10" fill="none" stroke="#4fd1c5" stroke-width="1.5" opacity="0.6"/>
+          <text x="28" y="12" font-family="'Space Grotesk', sans-serif" font-weight="700" font-size="20" fill="#e8eaed">AUTONOMY TIERS &amp; GRADUATION GATES</text>
+          <text x="495" y="12" font-family="'IBM Plex Mono', monospace" font-size="12" fill="#4fd1c5">// SUPERVISED · SEMI-AUTONOMOUS · UNATTENDED · INTERVENTION LADDER</text>
+        </g>
+
+        <!-- Tier 1 Column (Left: Supervised) -->
+        <g transform="translate(60, 95)">
+          <rect width="330" height="385" rx="3" fill="#10151d" stroke="#a7b4c8" stroke-width="1.2"/>
+          <rect x="0" y="0" width="330" height="4" fill="#a7b4c8"/>
+
+          <text x="18" y="26" font-family="'IBM Plex Mono', monospace" font-size="11" fill="#a7b4c8">TIER 01 // ENTRY</text>
+          <text x="18" y="52" font-family="'Space Grotesk', sans-serif" font-weight="700" font-size="18" fill="#e8eaed">Supervised</text>
+          <text x="18" y="74" font-family="'IBM Plex Mono', monospace" font-size="12" fill="#a7b4c8">Human-in-the-Loop</text>
+
+          <g transform="translate(18, 90)" font-family="'IBM Plex Sans', sans-serif" font-size="12">
+            <rect width="294" height="150" rx="2" fill="#161d27" stroke="rgba(232,234,237,0.08)"/>
+            <text x="12" y="24" fill="#e8eaed" font-weight="500">Operating Posture:</text>
+            <text x="12" y="46" fill="#8b93a1">&#8226; Human triggers and watches every run</text>
+            <text x="12" y="68" fill="#8b93a1">&#8226; Zero unreviewed merges or deploys</text>
+            <text x="12" y="90" fill="#8b93a1">&#8226; Interactive prompt &amp; terminal review</text>
+            <text x="12" y="112" fill="#8b93a1">&#8226; Scoped to read &amp; draft exploration</text>
+            <text x="12" y="134" fill="#8b93a1">&#8226; Failure blast radius: zero to minimal</text>
+          </g>
+
+          <g transform="translate(18, 255)">
+            <rect width="294" height="110" rx="2" fill="#141a24" stroke="#a7b4c8" stroke-opacity="0.3"/>
+            <text x="12" y="22" font-family="'IBM Plex Mono', monospace" font-size="11" fill="#a7b4c8">GRADUATION BAR &#8594; TIER 2</text>
+            <text x="12" y="44" font-family="'IBM Plex Sans', sans-serif" font-size="11" fill="#e8eaed">&#8226; Observed runs yield predictable behavior</text>
+            <text x="12" y="64" font-family="'IBM Plex Sans', sans-serif" font-size="11" fill="#e8eaed">&#8226; All known failure modes in checklist</text>
+            <text x="12" y="84" font-family="'IBM Plex Sans', sans-serif" font-size="11" fill="#e8eaed">&#8226; Kill switch &amp; rollback verified working</text>
+          </g>
+        </g>
+
+        <!-- Arrow Tier 1 -> Tier 2 -->
+        <path d="M 390 285 L 435 285" fill="none" stroke="#4fd1c5" stroke-width="2" marker-end="url(#atl-arrow-teal)"/>
+
+        <!-- Tier 2 Column (Middle: Semi-Autonomous) -->
+        <g transform="translate(435, 95)">
+          <rect width="330" height="385" rx="3" fill="#10151d" stroke="#4fd1c5" stroke-width="1.3"/>
+          <rect x="0" y="0" width="330" height="4" fill="#4fd1c5"/>
+
+          <text x="18" y="26" font-family="'IBM Plex Mono', monospace" font-size="11" fill="#4fd1c5">TIER 02 // PROVING</text>
+          <text x="18" y="52" font-family="'Space Grotesk', sans-serif" font-weight="700" font-size="18" fill="#e8eaed">Semi-Autonomous</text>
+          <text x="18" y="74" font-family="'IBM Plex Mono', monospace" font-size="12" fill="#4fd1c5">Human-on-the-Loop</text>
+
+          <g transform="translate(18, 90)" font-family="'IBM Plex Sans', sans-serif" font-size="12">
+            <rect width="294" height="150" rx="2" fill="#161d27" stroke="rgba(232,234,237,0.08)"/>
+            <text x="12" y="24" fill="#e8eaed" font-weight="500">Operating Posture:</text>
+            <text x="12" y="46" fill="#8b93a1">&#8226; Autonomous schedule trigger (cron)</text>
+            <text x="12" y="68" fill="#8b93a1">&#8226; Operator reviews diff/log within window</text>
+            <text x="12" y="90" fill="#8b93a1">&#8226; Output gated on manual human release</text>
+            <text x="12" y="112" fill="#8b93a1">&#8226; Secrets chmod 600, non-root user</text>
+            <text x="12" y="134" fill="#8b93a1">&#8226; Watchdog &amp; telemetry monitoring live</text>
+          </g>
+
+          <g transform="translate(18, 255)">
+            <rect width="294" height="110" rx="2" fill="#141a24" stroke="#4fd1c5" stroke-opacity="0.4"/>
+            <text x="12" y="22" font-family="'IBM Plex Mono', monospace" font-size="11" fill="#4fd1c5">GRADUATION BAR &#8594; TIER 3</text>
+            <text x="12" y="44" font-family="'IBM Plex Sans', sans-serif" font-size="11" fill="#e8eaed">&#8226; N consecutive clean unattended runs</text>
+            <text x="12" y="64" font-family="'IBM Plex Sans', sans-serif" font-size="11" fill="#e8eaed">&#8226; Watchdog caught &amp; alerted a real fault</text>
+            <text x="12" y="84" font-family="'IBM Plex Sans', sans-serif" font-size="11" fill="#e8eaed">&#8226; Blast radius is provably bounded</text>
+          </g>
+        </g>
+
+        <!-- Arrow Tier 2 -> Tier 3 -->
+        <path d="M 765 285 L 810 285" fill="none" stroke="#ff8a3d" stroke-width="2" marker-end="url(#atl-arrow-amber)"/>
+
+        <!-- Tier 3 Column (Right: Unattended) -->
+        <g transform="translate(810, 95)">
+          <rect width="330" height="385" rx="3" fill="#10151d" stroke="#ff8a3d" stroke-width="1.4"/>
+          <rect x="0" y="0" width="330" height="4" fill="#ff8a3d"/>
+
+          <text x="18" y="26" font-family="'IBM Plex Mono', monospace" font-size="11" fill="#ff8a3d">TIER 03 // MATURE</text>
+          <text x="18" y="52" font-family="'Space Grotesk', sans-serif" font-weight="700" font-size="18" fill="#e8eaed">Unattended</text>
+          <text x="18" y="74" font-family="'IBM Plex Mono', monospace" font-size="12" fill="#ff8a3d">Escalation-Only Loop</text>
+
+          <g transform="translate(18, 90)" font-family="'IBM Plex Sans', sans-serif" font-size="12">
+            <rect width="294" height="150" rx="2" fill="#161d27" stroke="rgba(232,234,237,0.08)"/>
+            <text x="12" y="24" fill="#e8eaed" font-weight="500">Operating Posture:</text>
+            <text x="12" y="46" fill="#8b93a1">&#8226; Fully autonomous execution &amp; deploy</text>
+            <text x="12" y="68" fill="#8b93a1">&#8226; Automated smoke test gate (fails closed)</text>
+            <text x="12" y="90" fill="#8b93a1">&#8226; Single-instance flock &amp; hard spend cap</text>
+            <text x="12" y="112" fill="#8b93a1">&#8226; Out-of-band failure alert on crash</text>
+            <text x="12" y="134" fill="#8b93a1">&#8226; Immutable audit log + cold start memory</text>
+          </g>
+
+          <g transform="translate(18, 255)">
+            <rect width="294" height="110" rx="2" fill="#1a181f" stroke="#ff8a3d" stroke-opacity="0.4"/>
+            <text x="12" y="22" font-family="'IBM Plex Mono', monospace" font-size="11" fill="#ff8a3d">100% CHECKLIST COMPLIANCE</text>
+            <text x="12" y="44" font-family="'IBM Plex Sans', sans-serif" font-size="11" fill="#e8eaed">&#8226; Every proof test exercised for real</text>
+            <text x="12" y="64" font-family="'IBM Plex Sans', sans-serif" font-size="11" fill="#e8eaed">&#8226; Human queue (ASK.md) stops agent</text>
+            <text x="12" y="84" font-family="'IBM Plex Sans', sans-serif" font-size="11" fill="#e8eaed">&#8226; Zero unhedged irreversible actions</text>
+          </g>
+        </g>
+
+        <!-- Bottom Fallback / Intervention Ladder Strip -->
+        <g transform="translate(60, 505)">
+          <rect width="1080" height="95" rx="3" fill="#141013" stroke="#e08a6a" stroke-width="1.2"/>
+          <rect x="0" y="0" width="1080" height="3" fill="#e08a6a"/>
+
+          <text x="20" y="25" font-family="'IBM Plex Mono', monospace" font-size="11" fill="#e08a6a">&#9664;&#9664; INTERVENTION &amp; DEMOTION PATHWAY (FALLBACK TO LOWER TIER)</text>
+          <text x="20" y="48" font-family="'IBM Plex Sans', sans-serif" font-size="12" fill="#e8eaed">
+            <tspan font-weight="600" fill="#e08a6a">When an anomaly occurs:</tspan> Demote immediately. Kill switch &#8594; Pause schedule &#8594; Roll back changes &#8594; Restrict to Tier 2 review or Tier 1 supervised run.
+          </text>
+          <text x="20" y="70" font-family="'IBM Plex Sans', sans-serif" font-size="12" fill="#8b93a1">
+            Autonomy is earned in steps and revoked instantly upon unexpected behavior. Never leave a failing agent unattended.
+          </text>
+
+          <path d="M 975 5 L 975 -15 L 225 -15 L 225 5" fill="none" stroke="#e08a6a" stroke-width="1.5" stroke-dasharray="4,4" marker-end="url(#atl-arrow-coral)"/>
+          <g transform="translate(500, -25)">
+            <rect width="200" height="20" rx="2" fill="#10151d" stroke="rgba(224,138,106,0.5)"/>
+            <text x="100" y="14" text-anchor="middle" font-family="'IBM Plex Mono', monospace" font-size="10" fill="#e08a6a">DEMOTE UPON ANOMALY</text>
+          </g>
+        </g>
+
+        <!-- Footnote -->
+        <g transform="translate(60, 630)">
+          <text x="0" y="0" font-family="'IBM Plex Mono', monospace" font-size="12" fill="#4fd1c5">https://www.beaconwake.com/agent-deployment-readiness.html</text>
+          <text x="1080" y="0" text-anchor="end" font-family="'IBM Plex Sans', sans-serif" font-size="12" fill="#8b93a1">Agent Autonomy Framework · Beacon Production Guides</text>
+        </g>
+      </svg>
+    </div>
   </section>
 
   <section class="card" style="margin-top: 1.4rem;">
