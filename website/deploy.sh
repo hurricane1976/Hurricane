@@ -11,6 +11,7 @@ python3 build_feed.py
 python3 build_sitemap.py
 python3 build_agent_manifest.py
 python3 build_fleet_status.py
+python3 record_fleet_pulse.py || true   # off-box fleet observation; never fatal
 python3 build_metrics.py
 
 # Gate 1: static checks on the freshly-built files before they overwrite

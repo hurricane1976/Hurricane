@@ -10,6 +10,7 @@ Charts are inline SVG, one data series each, in the site's own palette
 assets; a <details> data table under each chart is the non-visual view and a
 per-bar <title> gives a native hover tooltip.
 """
+import json
 import re
 import subprocess
 from collections import Counter
@@ -21,6 +22,16 @@ HERE = Path(__file__).resolve().parent
 NOTES = ROOT / "NOTES.md"
 TEMPLATE = HERE / "metrics.template.html"
 OUT = HERE / "metrics.html"
+
+# Off-box fleet (Tidal / River on tidalwake.org): no wake logs on this box, so
+# their activity is charted from what Beacon can actually observe -- new
+# manifest `updated` timestamps (recorded by record_fleet_pulse.py) and peer
+# messages received from Tidal.
+PULSE = HERE / "data" / "fleet-pulse.jsonl"
+PEER_PROCESSED = ROOT / "peer" / "inbox" / "processed"
+TIDAL_DEFAULT_CADENCE = "0 */4 * * *"
+# Evidence points closer together than this belong to the same Tidal waking.
+WAKING_GAP_SEC = 45 * 60
 
 WAKING_RE = re.compile(r"##.*?\((\d+)(?:st|nd|rd|th) waking")
 LOGNAME_RE = re.compile(r"^(\d{8})T\d{6}Z\.log$")
@@ -81,6 +92,90 @@ def wakings_by_day(log_dir: Path) -> Counter:
 def commits_by_day() -> Counter:
     out = run(f"git -C {ROOT} log --date=short --pretty=%ad")
     return Counter(d.replace("-", "") for d in out.split())
+
+
+def _parse_iso(s: str):
+    for fmt in ("%Y-%m-%dT%H:%M:%SZ", "%Y-%m-%dT%H:%MZ"):
+        try:
+            return datetime.strptime(s, fmt).replace(tzinfo=timezone.utc)
+        except (ValueError, TypeError):
+            pass
+    return None
+
+
+def _collapse(dts, gap_sec: int = WAKING_GAP_SEC):
+    """Fold a sorted datetime list so points within gap_sec count once."""
+    out = []
+    for dt in sorted(dts):
+        if not out or (dt - out[-1]).total_seconds() > gap_sec:
+            out.append(dt)
+    return out
+
+
+def tidal_cadence() -> str:
+    """Tidal's wake cadence, from the newest pulse record we have."""
+    if PULSE.exists():
+        for line in reversed(PULSE.read_text().splitlines()):
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                rec = json.loads(line)
+            except ValueError:
+                continue
+            if rec.get("tidal_cadence"):
+                return rec["tidal_cadence"]
+    return TIDAL_DEFAULT_CADENCE
+
+
+def tidal_wakings():
+    """Collapsed datetimes of every confirmed 'Tidal was awake' observation.
+
+    Two independent sources, both measured on this box:
+      (a) distinct `updated` timestamps seen in Tidal's manifest (pulse log)
+      (b) peer messages received from Tidal -- it had to be awake to send them
+          (setup/test messages are excluded)
+    """
+    dts = set()
+
+    if PULSE.exists():
+        for line in PULSE.read_text().splitlines():
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                rec = json.loads(line)
+            except ValueError:
+                continue
+            d = _parse_iso(rec.get("tidal_updated"))
+            if d:
+                dts.add(d)
+
+    if PEER_PROCESSED.is_dir():
+        for p in sorted(PEER_PROCESSED.glob("*-TIDAL-*.json")):
+            try:
+                msg = json.loads(p.read_text())
+            except (ValueError, OSError):
+                msg = {}
+            subject = str(msg.get("subject", "")).strip().lower()
+            body = str(msg.get("body", "")).lower()
+            if subject in {"test", "re: test"} or "test message from box" in body:
+                continue
+            d = _parse_iso(msg.get("received_at", ""))
+            if d is None:
+                m = re.match(r"(\d{8})T(\d{6})Z-", p.name)
+                if m:
+                    d = datetime.strptime(
+                        m.group(1) + m.group(2), "%Y%m%d%H%M%S"
+                    ).replace(tzinfo=timezone.utc)
+            if d:
+                dts.add(d)
+
+    return _collapse(dts)
+
+
+def tidal_by_day(dts) -> Counter:
+    return Counter(d.strftime("%Y%m%d") for d in dts)
 
 
 def latest_waking() -> int:
@@ -239,6 +334,9 @@ def main():
     lantern = wakings_by_day(LOG_DIRS["Lantern"])
     commits = commits_by_day()
 
+    tidal_dts = tidal_wakings()
+    tidal = tidal_by_day(tidal_dts)
+
     def win_total(c: Counter) -> int:
         return sum(c.get(d.strftime("%Y%m%d"), 0) for d in days)
 
@@ -260,6 +358,13 @@ def main():
 
     fleet_7d = last_n(beacon, 7) + last_n(highbeam, 7) + last_n(lantern, 7)
 
+    tidal_24 = sum(1 for dt in tidal_dts if dt >= cutoff)
+    week_keys = {d.strftime("%Y%m%d") for d in days[-7:]}
+    tidal_7d = sum(v for k, v in tidal.items() if k in week_keys)
+    tidal_since = (
+        min(tidal_dts).strftime("%b %-d, %Y") if tidal_dts else "today"
+    )
+
     vals = {
         "{{KPI_WAKINGS}}": str(latest_waking()),
         "{{KPI_FLEET_7D}}": str(fleet_7d),
@@ -274,16 +379,23 @@ def main():
         "{{CHART_FLEET24}}": hbar_chart(
             [("Beacon", last24(LOG_DIRS["Beacon"])),
              ("Highbeam", last24(LOG_DIRS["Highbeam"])),
-             ("Lantern", last24(LOG_DIRS["Lantern"]))],
+             ("Lantern", last24(LOG_DIRS["Lantern"])),
+             ("Tidal", tidal_24)],
             AMBER, "wakings",
         ),
+        "{{CHART_TIDAL}}": bar_chart(tidal, days, AMBER, "wakings", height=150),
+        "{{KPI_TIDAL_7D}}": str(tidal_7d),
+        "{{TIDAL_SINCE}}": tidal_since,
+        "{{TIDAL_CADENCE}}": tidal_cadence(),
         "{{TOT_BEACON}}": str(win_total(beacon)),
         "{{TOT_HIGHBEAM}}": str(win_total(highbeam)),
         "{{TOT_LANTERN}}": str(win_total(lantern)),
+        "{{TOT_TIDAL}}": str(win_total(tidal)),
         "{{TOT_COMMITS}}": str(win_total(commits)),
         "{{TABLE_BEACON}}": data_table(beacon, days, "wakings"),
         "{{TABLE_HIGHBEAM}}": data_table(highbeam, days, "wakings"),
         "{{TABLE_LANTERN}}": data_table(lantern, days, "wakings"),
+        "{{TABLE_TIDAL}}": data_table(tidal, days, "wakings"),
         "{{TABLE_COMMITS}}": data_table(commits, days, "commits"),
         "{{WINDOW_DAYS}}": str(WINDOW_DAYS),
         "{{GENERATED_AT}}": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC"),
