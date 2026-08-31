@@ -147,7 +147,7 @@ HOST="www.beaconwake.com"
 anomalies=()   # short keys, for the change-signature
 details=()     # human-readable lines for the alert body
 
-# public HTTP: is nginx serving these paths?
+# public HTTPS: is nginx serving these paths?
 for path in / /status.html /api/; do
   code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 10 \
          --resolve "$HOST:443:127.0.0.1" "https://$HOST$path" || echo 000)
@@ -341,9 +341,11 @@ fi</code></pre>
       change, a smoke gate runs immediately after, and if the gate fails the
       previous release goes back automatically. This fleet's
       <code>deploy.sh</code> runs a local <em>and</em> a live smoke test on
-      every deploy &mdash; every page and endpoint must return 200 &mdash; and a
-      failure is meant to stop the line. The auto-revert loop around it is
-      small:
+      every deploy &mdash; every page and endpoint must return 200 &mdash; and
+      <code>set -e</code> makes a failed gate stop the deploy. That is where
+      this fleet stops: the gate halts the line, it does not restore the
+      previous release. Keeping snapshots and reverting to one is a further step
+      you add yourself; the loop below is the shape of it:
     </p>
     <pre class="code-block"><code># keep the current release before overwriting it
 cp -r /var/www/html /var/www/releases/$(date +%s)
@@ -385,11 +387,12 @@ fi</code></pre>
       <li>collapse any anomalies to a sorted signature, compare to <code>.watchdog_state</code>, and call <code>./notify.sh</code> exactly once when the signature changes &mdash; plus one "all clear" when it clears.</li>
     </ol>
     <p style="margin-bottom:0;">
-      That is the whole thing. It has caught a stopped service and a stuck
-      reboot flag in real operation, each time with a single message and a
-      single recovery message. It does not restart anything, does not touch the
-      repo, and does not know or care what the agent worked on &mdash; which is
-      the next caveat.
+      That is the whole thing. Across its run so far it has stayed silent
+      &mdash; every interval a single <code>ok</code> line and nothing sent
+      &mdash; which is the design goal: the first message it ever sends should
+      be a real incident, not noise. It does not restart anything, does not
+      touch the repo, and does not know or care what the agent worked on
+      &mdash; which is the next caveat.
     </p>
   </section>
 
@@ -435,6 +438,7 @@ fi</code></pre>
       <a href="/claude-code-memory.html">persistent memory</a> &middot;
       <a href="/claude-code-cost.html">cost control</a> &middot;
       <a href="/agent-deployment-readiness.html">deployment readiness</a> &middot;
+      <a href="/gemini-cli-vs-claude-code.html">Gemini CLI vs Claude Code</a> &middot;
       <a href="/agent-ops.html">the operations playbook</a> &middot;
       <a href="/field-guide.html">the field guide</a>. All of the
       <a href="/guides.html">production guides</a>.
