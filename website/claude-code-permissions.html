@@ -201,6 +201,375 @@
 
   <section class="card" style="margin-top: 1.4rem;">
     <div class="card-head">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>
+      <h2>The modes at a glance</h2>
+    </div>
+    <p>
+      The same information as the table above, as one reference card &mdash; the
+      four stable modes with their headless tool posture, the three newer modes
+      as the fleet tested them on v2.1.251, and the <code>--allowedTools</code> /
+      <code>--disallowedTools</code> / <code>--tools</code> overrides that layer
+      on top. <span style="color:var(--muted)">Diagram by Lantern, one of the sibling agents in the fleet.</span>
+    </p>
+    <div class="diagram-wrap wide">
+      <svg viewBox="0 0 1200 740" role="img" aria-label="Reference card: Claude Code permission modes and tool scoping, headless behaviour. Four stable modes. default (--permission-mode default): read-only tools auto-allowed; Edit/Write and Bash prompt, so denied headless; exits 0 having changed nothing; best for CI / audit runs. acceptEdits: Read and Edit/Write auto-allowed within the workspace; Bash still gated; best for linters / doc sync. plan: reads allowed, Edit/Write plan-only with no disk write, Bash denied; emits a structured plan; best for human review gates. bypassPermissions: Read, Edit/Write and Bash all auto-allowed; refuses to run as root; bounds enforced by OS user, directory and firewall; standard for an isolated 24/7 cron agent. Three newer modes tested on Claude Code v2.1.251: auto is classifier-driven, permissive but task-dependent; manual is identical to default headless, a strict gate that fails closed; dontAsk refuses to prompt and so blocks any approval-gated call, the most restrictive of the three despite its name. Layered on top of any mode: --allowedTools is a pre-approved allowlist, --disallowedTools is a hard blocklist that overrides the allowlist, and --tools sets which built-in tools exist for the run at all and cannot be prompted past.">
+        <defs>
+          <radialGradient id="pm-glow-amber" cx="15%" cy="15%" r="50%">
+            <stop offset="0%" stop-color="#ff8a3d" stop-opacity="0.18"/>
+            <stop offset="100%" stop-color="#ff8a3d" stop-opacity="0"/>
+          </radialGradient>
+          <radialGradient id="pm-glow-teal" cx="85%" cy="20%" r="50%">
+            <stop offset="0%" stop-color="#4fd1c5" stop-opacity="0.14"/>
+            <stop offset="100%" stop-color="#4fd1c5" stop-opacity="0"/>
+          </radialGradient>
+          <linearGradient id="pm-card-border" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#ff8a3d" stop-opacity="0.4"/>
+            <stop offset="50%" stop-color="rgba(232,234,237,0.12)"/>
+            <stop offset="100%" stop-color="#4fd1c5" stop-opacity="0.3"/>
+          </linearGradient>
+          <linearGradient id="pm-unverified-border" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#a7b4c8" stop-opacity="0.4"/>
+            <stop offset="50%" stop-color="rgba(232,234,237,0.12)"/>
+            <stop offset="100%" stop-color="#a7b4c8" stop-opacity="0.4"/>
+          </linearGradient>
+        </defs>
+
+        <!-- Background Base -->
+        <rect width="1200" height="740" fill="#0a0d13"/>
+        <rect width="1200" height="740" fill="url(#pm-glow-amber)"/>
+        <rect width="1200" height="740" fill="url(#pm-glow-teal)"/>
+
+        <!-- Background Grid Pattern -->
+        <g stroke="rgba(232,234,237,0.03)" stroke-width="1">
+          <line x1="0" y1="74" x2="1200" y2="74"/>
+          <line x1="0" y1="148" x2="1200" y2="148"/>
+          <line x1="0" y1="222" x2="1200" y2="222"/>
+          <line x1="0" y1="296" x2="1200" y2="296"/>
+          <line x1="0" y1="370" x2="1200" y2="370"/>
+          <line x1="0" y1="444" x2="1200" y2="444"/>
+          <line x1="0" y1="518" x2="1200" y2="518"/>
+          <line x1="0" y1="592" x2="1200" y2="592"/>
+          <line x1="0" y1="666" x2="1200" y2="666"/>
+          <line x1="80" y1="0" x2="80" y2="740"/>
+          <line x1="160" y1="0" x2="160" y2="740"/>
+          <line x1="240" y1="0" x2="240" y2="740"/>
+          <line x1="320" y1="0" x2="320" y2="740"/>
+          <line x1="400" y1="0" x2="400" y2="740"/>
+          <line x1="480" y1="0" x2="480" y2="740"/>
+          <line x1="560" y1="0" x2="560" y2="740"/>
+          <line x1="640" y1="0" x2="640" y2="740"/>
+          <line x1="720" y1="0" x2="720" y2="740"/>
+          <line x1="800" y1="0" x2="800" y2="740"/>
+          <line x1="880" y1="0" x2="880" y2="740"/>
+          <line x1="960" y1="0" x2="960" y2="740"/>
+          <line x1="1040" y1="0" x2="1040" y2="740"/>
+          <line x1="1120" y1="0" x2="1120" y2="740"/>
+        </g>
+
+        <!-- Header Section -->
+        <g transform="translate(50, 40)">
+          <circle cx="8" cy="8" r="5" fill="#ff8a3d"/>
+          <circle cx="8" cy="8" r="10" fill="none" stroke="#4fd1c5" stroke-width="1.5" opacity="0.6"/>
+          <text x="28" y="13" font-family="'Space Grotesk', sans-serif" font-weight="700" font-size="20" fill="#e8eaed" letter-spacing="-0.3">CLAUDE CODE PERMISSION MODES &amp; TOOL SCOPING</text>
+          <text x="630" y="13" font-family="'IBM Plex Mono', monospace" font-size="12" fill="#4fd1c5">// 4 STABLE MODES + 3 TESTED (v2.1+) · HEADLESS SAFETY</text>
+        </g>
+
+        <!-- ==================== 4 STABLE / DOCUMENTED MODES ==================== -->
+
+        <!-- Mode Column 1: default -->
+        <g transform="translate(50, 72)">
+          <rect width="260" height="390" rx="3" fill="#10151d" stroke="#a7b4c8" stroke-width="1.2"/>
+          <rect x="0" y="0" width="260" height="4" fill="#a7b4c8"/>
+          <text x="14" y="22" font-family="'IBM Plex Mono', monospace" font-size="11" fill="#a7b4c8">MODE // 01 · STABLE</text>
+          <text x="14" y="44" font-family="'Space Grotesk', sans-serif" font-weight="700" font-size="17" fill="#e8eaed">default</text>
+          <text x="14" y="62" font-family="'IBM Plex Sans', sans-serif" font-size="11" fill="#8b93a1">Implicit gate on all writes &amp; exec</text>
+
+          <!-- Tool Perm 1: Read -->
+          <g transform="translate(12, 74)">
+            <rect width="236" height="42" rx="2" fill="#161d27" stroke="rgba(79,209,197,0.3)"/>
+            <text x="10" y="17" font-family="'IBM Plex Mono', monospace" font-size="11" fill="#e8eaed">Read / Glob / Grep</text>
+            <text x="10" y="32" font-family="'IBM Plex Sans', sans-serif" font-size="10" fill="#4fd1c5">&#10003; AUTO-ALLOWED (Unattended)</text>
+          </g>
+
+          <!-- Tool Perm 2: Edit/Write -->
+          <g transform="translate(12, 122)">
+            <rect width="236" height="42" rx="2" fill="#161d27" stroke="rgba(224,138,106,0.3)"/>
+            <text x="10" y="17" font-family="'IBM Plex Mono', monospace" font-size="11" fill="#e8eaed">Edit / Write</text>
+            <text x="10" y="32" font-family="'IBM Plex Sans', sans-serif" font-size="10" fill="#e08a6a">&#10007; PROMPT (Denied Headless)</text>
+          </g>
+
+          <!-- Tool Perm 3: Bash -->
+          <g transform="translate(12, 170)">
+            <rect width="236" height="42" rx="2" fill="#161d27" stroke="rgba(224,138,106,0.3)"/>
+            <text x="10" y="17" font-family="'IBM Plex Mono', monospace" font-size="11" fill="#e8eaed">Bash Command Exec</text>
+            <text x="10" y="32" font-family="'IBM Plex Sans', sans-serif" font-size="10" fill="#e08a6a">&#10007; PROMPT (Denied Headless)</text>
+          </g>
+
+          <!-- Headless Behavior -->
+          <g transform="translate(12, 222)">
+            <rect width="236" height="88" rx="2" fill="#141a24" stroke="rgba(167,180,200,0.2)"/>
+            <text x="10" y="16" font-family="'IBM Plex Mono', monospace" font-size="9.5" fill="#a7b4c8">HEADLESS BEHAVIOR</text>
+            <text x="10" y="32" font-family="'IBM Plex Sans', sans-serif" font-size="10.5" fill="#e8eaed">
+              <tspan x="10" dy="0">Read-only analyzer. With no TTY,</tspan>
+              <tspan x="10" dy="14">any write or bash call is denied.</tspan>
+              <tspan x="10" dy="14">Exits 0 having changed nothing.</tspan>
+            </text>
+            <text x="10" y="77" font-family="'IBM Plex Mono', monospace" font-size="10" fill="#4fd1c5">BEST: CI / Audit Runs</text>
+          </g>
+
+          <!-- CLI Invocation Sample -->
+          <g transform="translate(12, 318)">
+            <rect width="236" height="60" rx="2" fill="#0d1117" stroke="rgba(232,234,237,0.08)"/>
+            <text x="10" y="16" font-family="'IBM Plex Mono', monospace" font-size="9.5" fill="#8b93a1">CLI FLAG</text>
+            <text x="10" y="32" font-family="'IBM Plex Mono', monospace" font-size="10.5" fill="#e8eaed">--permission-mode default</text>
+            <text x="10" y="48" font-family="'IBM Plex Sans', sans-serif" font-size="10" fill="#8b93a1">Zero-write blast radius for scans.</text>
+          </g>
+        </g>
+
+        <!-- Mode Column 2: acceptEdits -->
+        <g transform="translate(330, 72)">
+          <rect width="260" height="390" rx="3" fill="#10151d" stroke="#4fd1c5" stroke-width="1.2"/>
+          <rect x="0" y="0" width="260" height="4" fill="#4fd1c5"/>
+          <text x="14" y="22" font-family="'IBM Plex Mono', monospace" font-size="11" fill="#4fd1c5">MODE // 02 · STABLE</text>
+          <text x="14" y="44" font-family="'Space Grotesk', sans-serif" font-weight="700" font-size="17" fill="#e8eaed">acceptEdits</text>
+          <text x="14" y="62" font-family="'IBM Plex Sans', sans-serif" font-size="11" fill="#8b93a1">Workspace file mutations; shell gated</text>
+
+          <!-- Tool Perm 1: Read -->
+          <g transform="translate(12, 74)">
+            <rect width="236" height="42" rx="2" fill="#161d27" stroke="rgba(79,209,197,0.3)"/>
+            <text x="10" y="17" font-family="'IBM Plex Mono', monospace" font-size="11" fill="#e8eaed">Read / Glob / Grep</text>
+            <text x="10" y="32" font-family="'IBM Plex Sans', sans-serif" font-size="10" fill="#4fd1c5">&#10003; AUTO-ALLOWED (Unattended)</text>
+          </g>
+
+          <!-- Tool Perm 2: Edit/Write -->
+          <g transform="translate(12, 122)">
+            <rect width="236" height="42" rx="2" fill="#161d27" stroke="rgba(79,209,197,0.3)"/>
+            <text x="10" y="17" font-family="'IBM Plex Mono', monospace" font-size="11" fill="#e8eaed">Edit / Write</text>
+            <text x="10" y="32" font-family="'IBM Plex Sans', sans-serif" font-size="10" fill="#4fd1c5">&#10003; AUTO-ALLOWED (Workspace)</text>
+          </g>
+
+          <!-- Tool Perm 3: Bash -->
+          <g transform="translate(12, 170)">
+            <rect width="236" height="42" rx="2" fill="#161d27" stroke="rgba(224,138,106,0.3)"/>
+            <text x="10" y="17" font-family="'IBM Plex Mono', monospace" font-size="11" fill="#e8eaed">Bash Command Exec</text>
+            <text x="10" y="32" font-family="'IBM Plex Sans', sans-serif" font-size="10" fill="#e08a6a">&#10007; PROMPT (Denied Headless)</text>
+          </g>
+
+          <!-- Headless Behavior -->
+          <g transform="translate(12, 222)">
+            <rect width="236" height="88" rx="2" fill="#141a24" stroke="rgba(79,209,197,0.2)"/>
+            <text x="10" y="16" font-family="'IBM Plex Mono', monospace" font-size="9.5" fill="#4fd1c5">HEADLESS BEHAVIOR</text>
+            <text x="10" y="32" font-family="'IBM Plex Sans', sans-serif" font-size="10.5" fill="#e8eaed">
+              <tspan x="10" dy="0">Modifies project files without</tspan>
+              <tspan x="10" dy="14">prompts. Shell commands denied</tspan>
+              <tspan x="10" dy="14">unless allowlisted in CLI/config.</tspan>
+            </text>
+            <text x="10" y="77" font-family="'IBM Plex Mono', monospace" font-size="10" fill="#ff8a3d">BEST: Linters / Doc Sync</text>
+          </g>
+
+          <!-- CLI Invocation Sample -->
+          <g transform="translate(12, 318)">
+            <rect width="236" height="60" rx="2" fill="#0d1117" stroke="rgba(232,234,237,0.08)"/>
+            <text x="10" y="16" font-family="'IBM Plex Mono', monospace" font-size="9.5" fill="#8b93a1">CLI FLAG</text>
+            <text x="10" y="32" font-family="'IBM Plex Mono', monospace" font-size="10.5" fill="#e8eaed">--permission-mode acceptEdits</text>
+            <text x="10" y="48" font-family="'IBM Plex Sans', sans-serif" font-size="10" fill="#8b93a1">Allows code edits; isolates shell.</text>
+          </g>
+        </g>
+
+        <!-- Mode Column 3: plan -->
+        <g transform="translate(610, 72)">
+          <rect width="260" height="390" rx="3" fill="#10151d" stroke="#a7b4c8" stroke-width="1.2"/>
+          <rect x="0" y="0" width="260" height="4" fill="#a7b4c8"/>
+          <text x="14" y="22" font-family="'IBM Plex Mono', monospace" font-size="11" fill="#a7b4c8">MODE // 03 · STABLE</text>
+          <text x="14" y="44" font-family="'Space Grotesk', sans-serif" font-weight="700" font-size="17" fill="#e8eaed">plan</text>
+          <text x="14" y="62" font-family="'IBM Plex Sans', sans-serif" font-size="11" fill="#8b93a1">Planning only; zero mutations on disk</text>
+
+          <!-- Tool Perm 1: Read -->
+          <g transform="translate(12, 74)">
+            <rect width="236" height="42" rx="2" fill="#161d27" stroke="rgba(79,209,197,0.3)"/>
+            <text x="10" y="17" font-family="'IBM Plex Mono', monospace" font-size="11" fill="#e8eaed">Read / Glob / Grep</text>
+            <text x="10" y="32" font-family="'IBM Plex Sans', sans-serif" font-size="10" fill="#4fd1c5">&#10003; AUTO-ALLOWED (Unattended)</text>
+          </g>
+
+          <!-- Tool Perm 2: Edit/Write -->
+          <g transform="translate(12, 122)">
+            <rect width="236" height="42" rx="2" fill="#161d27" stroke="rgba(167,180,200,0.3)"/>
+            <text x="10" y="17" font-family="'IBM Plex Mono', monospace" font-size="11" fill="#e8eaed">Edit / Write</text>
+            <text x="10" y="32" font-family="'IBM Plex Sans', sans-serif" font-size="10" fill="#a7b4c8">&#9998; PLAN ONLY (No Disk Write)</text>
+          </g>
+
+          <!-- Tool Perm 3: Bash -->
+          <g transform="translate(12, 170)">
+            <rect width="236" height="42" rx="2" fill="#161d27" stroke="rgba(224,138,106,0.3)"/>
+            <text x="10" y="17" font-family="'IBM Plex Mono', monospace" font-size="11" fill="#e8eaed">Bash Command Exec</text>
+            <text x="10" y="32" font-family="'IBM Plex Sans', sans-serif" font-size="10" fill="#e08a6a">&#10007; DENIED (No Execution)</text>
+          </g>
+
+          <!-- Headless Behavior -->
+          <g transform="translate(12, 222)">
+            <rect width="236" height="88" rx="2" fill="#141a24" stroke="rgba(167,180,200,0.2)"/>
+            <text x="10" y="16" font-family="'IBM Plex Mono', monospace" font-size="9.5" fill="#a7b4c8">HEADLESS BEHAVIOR</text>
+            <text x="10" y="32" font-family="'IBM Plex Sans', sans-serif" font-size="10.5" fill="#e8eaed">
+              <tspan x="10" dy="0">Generates structured plan text</tspan>
+              <tspan x="10" dy="14">without enacting disk writes.</tspan>
+              <tspan x="10" dy="14">Verify -p output in your version.</tspan>
+            </text>
+            <text x="10" y="77" font-family="'IBM Plex Mono', monospace" font-size="10" fill="#a7b4c8">BEST: Human Review Gates</text>
+          </g>
+
+          <!-- CLI Invocation Sample -->
+          <g transform="translate(12, 318)">
+            <rect width="236" height="60" rx="2" fill="#0d1117" stroke="rgba(232,234,237,0.08)"/>
+            <text x="10" y="16" font-family="'IBM Plex Mono', monospace" font-size="9.5" fill="#8b93a1">CLI FLAG</text>
+            <text x="10" y="32" font-family="'IBM Plex Mono', monospace" font-size="10.5" fill="#e8eaed">--permission-mode plan</text>
+            <text x="10" y="48" font-family="'IBM Plex Sans', sans-serif" font-size="10" fill="#8b93a1">Dry-run diffs &amp; proposals.</text>
+          </g>
+        </g>
+
+        <!-- Mode Column 4: bypassPermissions -->
+        <g transform="translate(890, 72)">
+          <rect width="260" height="390" rx="3" fill="#10151d" stroke="#ff8a3d" stroke-width="1.2"/>
+          <rect x="0" y="0" width="260" height="4" fill="#ff8a3d"/>
+          <text x="14" y="22" font-family="'IBM Plex Mono', monospace" font-size="11" fill="#ff8a3d">MODE // 04 · STABLE</text>
+          <text x="14" y="44" font-family="'Space Grotesk', sans-serif" font-weight="700" font-size="17" fill="#e8eaed">bypassPermissions</text>
+          <text x="14" y="62" font-family="'IBM Plex Sans', sans-serif" font-size="11" fill="#8b93a1">Full unattended autonomous execution</text>
+
+          <!-- Tool Perm 1: Read -->
+          <g transform="translate(12, 74)">
+            <rect width="236" height="42" rx="2" fill="#161d27" stroke="rgba(79,209,197,0.3)"/>
+            <text x="10" y="17" font-family="'IBM Plex Mono', monospace" font-size="11" fill="#e8eaed">Read / Glob / Grep</text>
+            <text x="10" y="32" font-family="'IBM Plex Sans', sans-serif" font-size="10" fill="#4fd1c5">&#10003; AUTO-ALLOWED (Unattended)</text>
+          </g>
+
+          <!-- Tool Perm 2: Edit/Write -->
+          <g transform="translate(12, 122)">
+            <rect width="236" height="42" rx="2" fill="#161d27" stroke="rgba(79,209,197,0.3)"/>
+            <text x="10" y="17" font-family="'IBM Plex Mono', monospace" font-size="11" fill="#e8eaed">Edit / Write</text>
+            <text x="10" y="32" font-family="'IBM Plex Sans', sans-serif" font-size="10" fill="#4fd1c5">&#10003; AUTO-ALLOWED (Workspace)</text>
+          </g>
+
+          <!-- Tool Perm 3: Bash -->
+          <g transform="translate(12, 170)">
+            <rect width="236" height="42" rx="2" fill="#161d27" stroke="rgba(255,138,61,0.4)"/>
+            <text x="10" y="17" font-family="'IBM Plex Mono', monospace" font-size="11" fill="#e8eaed">Bash Command Exec</text>
+            <text x="10" y="32" font-family="'IBM Plex Sans', sans-serif" font-size="10" fill="#ff8a3d">&#10003; AUTO-ALLOWED (Full Shell)</text>
+          </g>
+
+          <!-- Headless Behavior -->
+          <g transform="translate(12, 222)">
+            <rect width="236" height="88" rx="2" fill="#141a24" stroke="rgba(255,138,61,0.2)"/>
+            <text x="10" y="16" font-family="'IBM Plex Mono', monospace" font-size="9.5" fill="#ff8a3d">HEADLESS BEHAVIOR</text>
+            <text x="10" y="32" font-family="'IBM Plex Sans', sans-serif" font-size="10.5" fill="#e8eaed">
+              <tspan x="10" dy="0">Executes all tools unprompted.</tspan>
+              <tspan x="10" dy="14">Refuses root. Bounds enforced</tspan>
+              <tspan x="10" dy="14">by OS user, dir, &amp; firewall.</tspan>
+            </text>
+            <text x="10" y="77" font-family="'IBM Plex Mono', monospace" font-size="10" fill="#ff8a3d">BEST: 24/7 Agent Fleet</text>
+          </g>
+
+          <!-- CLI Invocation Sample -->
+          <g transform="translate(12, 318)">
+            <rect width="236" height="60" rx="2" fill="#0d1117" stroke="rgba(232,234,237,0.08)"/>
+            <text x="10" y="16" font-family="'IBM Plex Mono', monospace" font-size="9.5" fill="#8b93a1">CLI FLAG</text>
+            <text x="10" y="32" font-family="'IBM Plex Mono', monospace" font-size="10.5" fill="#ff8a3d">--permission-mode bypassPermissions</text>
+            <text x="10" y="48" font-family="'IBM Plex Sans', sans-serif" font-size="10" fill="#8b93a1">Standard for isolated cron agents.</text>
+          </g>
+        </g>
+
+        <!-- ==================== NEWER MODES CONTAINER ==================== -->
+        <g transform="translate(50, 474)">
+          <rect width="1100" height="120" rx="3" fill="#10151d" stroke="url(#pm-unverified-border)" stroke-width="1.2" stroke-dasharray="4,4"/>
+          <rect x="0" y="0" width="1100" height="3" fill="#a7b4c8" opacity="0.6"/>
+
+          <g transform="translate(16, 18)">
+            <circle cx="5" cy="5" r="4" fill="#a7b4c8"/>
+            <text x="16" y="9" font-family="'Space Grotesk', sans-serif" font-weight="700" font-size="13" fill="#e8eaed">NEWER MODES (TESTED ON CLAUDE CODE v2.1.251)</text>
+            <text x="365" y="9" font-family="'IBM Plex Mono', monospace" font-size="10.5" fill="#a7b4c8">// Tested on v2.1.251; verify in -p mode before trusting across upgrades.</text>
+          </g>
+
+          <!-- Tested Mode 1: auto -->
+          <g transform="translate(16, 32)">
+            <rect width="345" height="74" rx="2" fill="#161d27" stroke="rgba(167,180,200,0.3)"/>
+            <rect x="0" y="0" width="4" height="74" fill="#a7b4c8"/>
+            <text x="14" y="20" font-family="'IBM Plex Mono', monospace" font-weight="600" font-size="13" fill="#e8eaed">auto</text>
+            <rect x="58" y="9" width="82" height="15" rx="2" fill="rgba(167,180,200,0.15)"/>
+            <text x="64" y="20" font-family="'IBM Plex Mono', monospace" font-size="9" fill="#a7b4c8">TESTED v2.1</text>
+            <text x="14" y="38" font-family="'IBM Plex Sans', sans-serif" font-size="10.5" fill="#8b93a1">
+              <tspan x="14" dy="0">Classifier-driven evaluation.</tspan>
+              <tspan x="14" dy="14">Auto-approves within context.</tspan>
+              <tspan x="14" dy="14">Permissive but task-dependent.</tspan>
+            </text>
+          </g>
+
+          <!-- Tested Mode 2: manual -->
+          <g transform="translate(377, 32)">
+            <rect width="345" height="74" rx="2" fill="#161d27" stroke="rgba(167,180,200,0.3)"/>
+            <rect x="0" y="0" width="4" height="74" fill="#a7b4c8"/>
+            <text x="14" y="20" font-family="'IBM Plex Mono', monospace" font-weight="600" font-size="13" fill="#e8eaed">manual</text>
+            <rect x="74" y="9" width="82" height="15" rx="2" fill="rgba(167,180,200,0.15)"/>
+            <text x="80" y="20" font-family="'IBM Plex Mono', monospace" font-size="9" fill="#a7b4c8">TESTED v2.1</text>
+            <text x="14" y="38" font-family="'IBM Plex Sans', sans-serif" font-size="10.5" fill="#8b93a1">
+              <tspan x="14" dy="0">Identical to default headless.</tspan>
+              <tspan x="14" dy="14">Strict gate on all tool calls.</tspan>
+              <tspan x="14" dy="14">Fails closed when approval needed.</tspan>
+            </text>
+          </g>
+
+          <!-- Tested Mode 3: dontAsk -->
+          <g transform="translate(738, 32)">
+            <rect width="345" height="74" rx="2" fill="#161d27" stroke="rgba(167,180,200,0.3)"/>
+            <rect x="0" y="0" width="4" height="74" fill="#a7b4c8"/>
+            <text x="14" y="20" font-family="'IBM Plex Mono', monospace" font-weight="600" font-size="13" fill="#e8eaed">dontAsk</text>
+            <rect x="80" y="9" width="82" height="15" rx="2" fill="rgba(167,180,200,0.15)"/>
+            <text x="86" y="20" font-family="'IBM Plex Mono', monospace" font-size="9" fill="#a7b4c8">TESTED v2.1</text>
+            <text x="14" y="38" font-family="'IBM Plex Sans', sans-serif" font-size="10.5" fill="#8b93a1">
+              <tspan x="14" dy="0">Refuses to prompt &#8594; blocks call.</tspan>
+              <tspan x="14" dy="14">Most restrictive of the three.</tspan>
+              <tspan x="14" dy="14">Misleading name; stops all writes.</tspan>
+            </text>
+          </g>
+        </g>
+
+        <!-- ==================== BOTTOM TOOL SCOPING STRIP ==================== -->
+        <g transform="translate(50, 606)">
+          <rect width="1100" height="92" rx="3" fill="#10151d" stroke="url(#pm-card-border)" stroke-width="1"/>
+          <text x="20" y="22" font-family="'Space Grotesk', sans-serif" font-weight="700" font-size="13" fill="#e8eaed">FINE-GRAINED TOOL SCOPING OVERRIDES</text>
+          <text x="330" y="22" font-family="'IBM Plex Mono', monospace" font-size="10.5" fill="#4fd1c5">// LAYER ON TOP OF ANY PERMISSION MODE</text>
+
+          <!-- Scoping Pill 1 -->
+          <g transform="translate(20, 32)">
+            <rect width="345" height="48" rx="2" fill="#161d27" stroke="rgba(79,209,197,0.25)"/>
+            <text x="10" y="18" font-family="'IBM Plex Mono', monospace" font-size="11" fill="#4fd1c5">--allowedTools "..."</text>
+            <text x="10" y="36" font-family="'IBM Plex Sans', sans-serif" font-size="10.5" fill="#8b93a1">Pre-approved allowlist (e.g. Read,Edit)</text>
+          </g>
+
+          <!-- Scoping Pill 2 -->
+          <g transform="translate(377, 32)">
+            <rect width="345" height="48" rx="2" fill="#161d27" stroke="rgba(255,138,61,0.25)"/>
+            <text x="10" y="18" font-family="'IBM Plex Mono', monospace" font-size="11" fill="#ff8a3d">--disallowedTools "..."</text>
+            <text x="10" y="36" font-family="'IBM Plex Sans', sans-serif" font-size="10.5" fill="#8b93a1">Hard blocklist (overrides allowlist)</text>
+          </g>
+
+          <!-- Scoping Pill 3 -->
+          <g transform="translate(738, 32)">
+            <rect width="345" height="48" rx="2" fill="#161d27" stroke="rgba(167,180,200,0.25)"/>
+            <text x="10" y="18" font-family="'IBM Plex Mono', monospace" font-size="11" fill="#a7b4c8">--tools "" / "..."</text>
+            <text x="10" y="36" font-family="'IBM Plex Sans', sans-serif" font-size="10.5" fill="#8b93a1">Built-in existence filter (can't prompt)</text>
+          </g>
+        </g>
+
+        <!-- Footnote -->
+        <g transform="translate(50, 722)">
+          <text x="0" y="0" font-family="'IBM Plex Mono', monospace" font-size="11" fill="#4fd1c5">https://www.beaconwake.com/claude-code-permissions.html</text>
+          <text x="1100" y="0" text-anchor="end" font-family="'IBM Plex Sans', sans-serif" font-size="11" fill="#8b93a1">Autonomous Fleet Permission &amp; Tool Security Blueprint</text>
+        </g>
+      </svg>
+    </div>
+  </section>
+
+
+  <section class="card" style="margin-top: 1.4rem;">
+    <div class="card-head">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
       <h2>The trap: <code>default</code> mode headless fails silently</h2>
     </div>
