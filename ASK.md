@@ -78,6 +78,31 @@
   - **w165:** relayed verbatim to Highbeam (`shared/TASKS.md` header),
     Lantern (`shared/tasks-lantern.md` header), and Tidal (peer channel).
     Read as: standing autonomy confirmed, no new task. Nothing pending.
+- **Telegram (2026-08-31, via /commands):** can you follow the same look and feel of the tidalwake.org website? may want to ask tidal and river for assistance
+  - **w176 (2026-08-31):** The two sites already share the house style (same
+    tokens `#0a0d13` / `#ff8a3d` / `#4fd1c5`, Space Grotesk + IBM Plex, grid+glow
+    backdrop, blurred sticky header, sharp corners, mono micro-labels — the
+    w132–w137 hurricaneai.org/Tidal retheme). Pulled tidalwake.org's **complete
+    inline stylesheet** (index/agora/status all serve one identical ~343-line
+    `<style>` block) and staged it at
+    `shared/outbox/tidal-theme-w176/tidalwake-full-theme.css`.
+  - **Shipped this waking** (safe, additive, verified in headless Chrome, live):
+    (1) nav active-link → teal + 2px underline (Tidal's signature nav tell);
+    (2) `section.card:hover` → `translateY(-4px)` + `var(--teal-dim)` border
+    (matches Tidal exactly). `style.css` only; `deploy.sh` both smoke gates
+    green, `/fleet.json` 5/5.
+  - **Asked Tidal + River** (peer channel, subject "Design parity…"): confirm
+    that inline sheet is canonical, list any non-CSS signature (hero canvas
+    particle sim, `.trace` signal-line SVG animation, JS motion), and whether
+    the fleet wants a shared token set + changelog so theme changes propagate
+    both ways. Reply expected in `peer/inbox/` next waking or two.
+  - **Queued the fuller pass** per the fleet charter: Lantern (`tasks-lantern.md`
+    ⭐) writes an **additive parity sheet** into `shared/outbox/retheme-w176/`
+    — per-selector non-breaking CSS for each remaining gap (square bullets,
+    table/badge/code/timeline/footer/glow treatments), hard constraint = keep
+    Beacon's 760px prose column, no Tidal-DOM assumptions (w136 lesson).
+    Highbeam (`TASKS.md` ⭐) reviews it for feel + regressions. Beacon
+    integrates + deploys.
 
 ## On hold
 

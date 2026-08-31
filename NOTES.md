@@ -8535,3 +8535,54 @@ Running log of what I did and learned across wakings. Newest entries on top.
 - **Fleet:** Beacon w175 (now); Highbeam last ~15:00Z (w44, exit 0), next
   ~17:00Z; Lantern last ~14:30Z (w36, exit 0), next ~16:30Z; Tidal + River
   off-box, manifest reachable over HTTPS. `/fleet.json` 5/5.
+
+## 2026-08-31 (176th waking, ~17:15 UTC)
+- `check_replies.sh`: no new messages (only the re-queued 2026-08-31
+  tidalwake.org steer, already in ASK.md). `peer/inbox/` empty (all processed).
+- **Actioned josh's tidalwake.org look-and-feel steer** (Telegram 2026-08-31:
+  "can you follow the same look and feel of the tidalwake.org website? may want
+  to ask tidal and river for assistance").
+  - The two sites already share the house style since the w132–w137
+    hurricaneai.org/Tidal retheme (tokens `#0a0d13` / `#ff8a3d` / `#4fd1c5`,
+    Space Grotesk + IBM Plex, grid+glow backdrop, blurred sticky header, sharp
+    corners, mono micro-labels).
+  - Pulled tidalwake.org's **complete inline stylesheet** — index, agora and
+    status all serve one identical ~343-line `<style>` block; no external CSS
+    file. Staged at `shared/outbox/tidal-theme-w176/tidalwake-full-theme.css`.
+  - **Shipped two safe, additive deltas** (verified in headless Chrome on
+    index / guides / claude-code-cost, live): (1) `nav.site-nav a.active`
+    → teal (`--accent-2`) + `border-bottom: 2px` + `font-weight: 500`
+    (Tidal's signature active-nav tell; neutralised the border on the mobile
+    horizontal-scroll nav strip so row height stays even); (2)
+    `section.card:hover` → `translateY(-4px)` + `var(--teal-dim)` border
+    (matches Tidal's card hover exactly, was `-2px` + accent-mix).
+  - Deliberately did **not** touch the content-column width (Beacon = 760px
+    prose column, Tidal = 1120px card-grid), bare `h2` (Beacon's is a
+    card-heading rule, Tidal's is a prose section-underline), or do any
+    wholesale sheet swap — the w136 revert is the standing lesson.
+  - **Messaged Tidal + River** over the peer channel (subject "Design parity:
+    josh asked Beacon to match tidalwake.org look and feel"): confirm the
+    inline sheet is canonical, list any non-CSS signature (hero canvas particle
+    sim, `.trace` signal-line SVG animation, JS motion), and whether the fleet
+    wants a shared token set + changelog so theme changes propagate both ways.
+  - **Queued the fuller pass** per `DIVISION-OF-WORK.md`: Lantern
+    (`tasks-lantern.md` ⭐ new top item) writes an additive per-selector parity
+    sheet into `shared/outbox/retheme-w176/` (square bullets, table / badge /
+    code / timeline / footer / glow treatments) with a hard constraint to keep
+    the 760px prose column and make no Tidal-DOM assumptions; Highbeam
+    (`TASKS.md` ⭐) reviews it for feel + regressions. Beacon integrates +
+    deploys once it lands.
+- **Deploy:** `website/deploy.sh` ran once, `smoke_test.py` local + live green,
+  `/status.html` 66/66, `/fleet.json` 5/5 healthy. `style.css` only.
+- **SEO push:** spoke #9 `/claude-code-agent-observability.html` not started
+  this waking (josh's steer took priority) — Highbeam w45 long-tail + outline
+  are in `seo-content-plan.md`, Lantern w37 staged the OG card +
+  `agent-observability-signals.svg`. Next waking. Also pending from w175:
+  inline the corrected `watchdog-control-loop.svg` (Lantern w37 fixed Panel 04)
+  on spoke #7.
+- **Health sweep, all green:** nginx / beacon-api / beacon-peer / fail2ban /
+  cron / certbot.timer active; 0 failed units; no `/var/run/reboot-required`;
+  disk 10%.
+- **Fleet:** Beacon w176 (now); Highbeam last ~17:00Z (w45, exit 0), next
+  ~19:00Z; Lantern last ~16:30Z (w37, exit 0), next ~18:30Z; Tidal + River
+  off-box, replied to peer design-parity message expected next waking.

@@ -287,8 +287,11 @@ nav.site-nav a:hover {
 }
 
 nav.site-nav a.active {
-  color: var(--fg);
+  color: var(--accent-2);
+  font-weight: 500;
   text-decoration: none;
+  border-bottom: 2px solid var(--accent-2);
+  padding-bottom: 3px;
 }
 
 /* ==========================================================================
@@ -496,9 +499,9 @@ section.card {
 }
 
 section.card:hover {
-  transform: translateY(-2px);
+  transform: translateY(-4px);
   background: var(--bg-elev);
-  border-color: color-mix(in srgb, var(--accent-2) 45%, var(--line));
+  border-color: var(--teal-dim);
 }
 
 .card-head {
@@ -779,6 +782,11 @@ footer a {
     scroll-snap-align: start;
     padding: 0.15rem 0;
     font-size: 0.9rem;
+  }
+  /* keep the horizontal scroll strip an even height — active gets colour only */
+  nav.site-nav a.active {
+    border-bottom: none;
+    padding-bottom: 0.15rem;
   }
 }
 
