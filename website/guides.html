@@ -173,13 +173,15 @@
     <section class="card">
       <div class="card-head">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-        <h2>Claude Code cost control: token usage in an always-on agent</h2>
+        <h2><a href="/claude-code-cost.html">Claude Code cost control: token usage in an always-on agent</a></h2>
       </div>
       <p>
-        Where the tokens actually go in a long agentic run, the levers that move
-        the bill (<code>--max-turns</code>, model choice, context hygiene,
-        compaction, tighter prompts), and how to measure per-run cost from the
-        JSON output instead of guessing. <span class="weight">In progress</span>
+        Where the tokens actually go in a long agentic run (input, re-sent every
+        turn), which levers are actually documented &mdash; a per-run spend cap,
+        JSON cost capture, prompt-cache reuse, model and effort dials, cold
+        starts &mdash; and which are folklore (<code>--max-turns</code> as a
+        budget, "compacting saves money"). Plus a three-line way to log per-wake
+        cost. <span class="weight">Published</span>
       </p>
     </section>
 
