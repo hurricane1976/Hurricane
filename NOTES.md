@@ -7957,3 +7957,105 @@ Running log of what I did and learned across wakings. Newest entries on top.
 - **Fleet:** Beacon w168 (now); Highbeam last ~01:00Z, next ~03:00Z; Lantern
   last ~00:30Z, next ~02:30Z; Tidal + River off-box, manifest reachable over
   HTTPS.
+
+## 2026-08-31 (169th waking, ~04:00 UTC)
+
+- `check_replies.sh`: no new Telegram from josh. `peer/inbox/` empty (last
+  Tidal ack processed w168). `ASK.md` Open unchanged — template product #1
+  still waiting on josh's Gumroad listing URL, #2 held for his "pdf versions
+  plural" reply. Standing steer: dashboards/graphics + collaboration + the
+  greenlit SEO push.
+
+- **Focus: SEO push — integrated Highbeam's w38 accuracy pass on spoke #3.**
+  Highbeam (partner w38) had read the live `/claude-code-permissions.html`,
+  checked every mode/flag against `claude --help` on the box (v2.1.251), and
+  **run throwaway `claude -p` tests** of the three newer modes +
+  `--disallowedTools` override + `--restricted`. Verdict: accurate and
+  well-hedged; 3 actionable findings.
+
+- **Done: actioned all 3.**
+  - **#1 (the best content add) — `auto` / `manual` / `dontAsk` name-guesses
+    replaced with tested facts.** The page previously said "the names suggest
+    approve-as-it-goes / always-prompt / proceed-without-prompting — go test
+    it". Highbeam tested it, so the page now states the v2.1.251 behaviour as
+    a 3-item list:
+    - `auto` → approved the workspace write with no prompt; there's a
+      `claude auto-mode` subcommand, so it appears to run a **classifier** to
+      decide what to approve — permissive but task-dependent, not a fixed
+      posture.
+    - `manual` → gated call "needs permission, which hasn't been granted",
+      run did nothing. Headless this is **identical to `default`** — same
+      silent no-op trap.
+    - `dontAsk` → the opposite of its name: it *refuses to prompt* and so
+      **blocks outright** any approval-gated call. Headless it is the **most
+      restrictive** of the three; a job set to `dontAsk` expecting autonomy
+      ships nothing.
+    Added a takeaway (none is a drop-in for `bypassPermissions`/`acceptEdits`;
+    `dontAsk`'s name is actively misleading) + kept the "re-test after
+    upgrades" line.
+  - **#2 (med) — `--restricted` row was wrong.** It said "ignores user/project
+    settings, and sandboxes with no internet access" — that last clause is
+    lifted from `--dangerously-skip-permissions` help text; `--restricted`
+    does no network sandboxing. Rewrote: tool-level cut of the
+    network-capable tools (WebFetch + Bash) *not* an OS sandbox; confines the
+    file tools to the working dirs; ignores user, project **and local**
+    settings (managed + `--settings` still apply); refuses `bypassPermissions`
+    outright. Added "pair it with a real firewall if the input is hostile".
+  - **#3 (low)** — folded "and local" into the settings-scope wording so it
+    matches the `--setting-sources user,project,local` mention just below.
+  - #4 was verified-correct, no change.
+
+- **Done: swapped in Lantern's dedicated `og-claude-code-permissions.png`**
+  (Lantern w31 delivery) — permissions page `og:image` / `twitter:image` now
+  the dedicated card (was generic `og-image.png`). Copied into `website/`,
+  wired through `deploy.sh` (cp + chown), `smoke_test.py`, `build_status.py`.
+  `/status.html` **55 → 56**.
+
+- **Held: Lantern's revised `permission-modes-tree.svg` — not inlined.** The
+  6-mode layout, text-wrap (no clipping) and house style are all good now.
+  But its "NEWER / UNVERIFIED MODES" block still shows *inferred* guesses, and
+  the `dontAsk` cell ("Bypass synonym candidate") is the exact error Highbeam
+  just corrected — inlining it would contradict the prose on the same page.
+  Sent Lantern one targeted revision request (`tasks-lantern.md`): fix the 3
+  cells to the tested facts, re-label the block, drop the "Inferred:"
+  prefixes. Inline it next waking once it matches.
+
+- **Off-repo bug found + fixed: site-wide web fonts were CSP-blocked.**
+  Rendering the page in headless Chrome surfaced a `style-src` CSP violation —
+  the `<link href="https://fonts.googleapis.com/css2?...">` present on **every
+  page** has been blocked since the fonts were introduced (~w132, the
+  hurricaneai.org retheme). The nginx CSP was added w35 (2026-08-25), before
+  the site used any web fonts, and `style-src`/`font-src` never got the Google
+  Fonts origins. Net effect: ~2 days of "match hurricaneai.org exactly" work
+  has been rendering with the CSS fallback stack, not Space Grotesk / IBM
+  Plex, for real visitors (headless smoke checks never flagged it because the
+  fallback still lays out fine).
+  - Fix: `/etc/nginx/sites-enabled/default` — `style-src` now allows
+    `https://fonts.googleapis.com`; added `font-src 'self'
+    https://fonts.gstatic.com`. Backup at
+    `/root/nginx-default.bak.20260831-w169` (not inside `sites-enabled/`, per
+    the 22nd-waking lesson). `nginx -t` clean, `systemctl reload nginx`,
+    re-rendered — headings now render in Space Grotesk, zero CSP console
+    violation, live smoke green. Nginx config is off-repo — nothing to commit,
+    tracked here.
+  - **Revert:** `sudo cp /root/nginx-default.bak.20260831-w169
+    /etc/nginx/sites-enabled/default && sudo systemctl reload nginx`.
+
+- **Deploy:** `website/deploy.sh` ran once (OG-card wiring), `smoke_test.py`
+  local + live both green, `/status.html` 56/56, `/fleet.json` 5/5 healthy.
+  Repo commit **`a863b64`**, pushed to `origin/master`.
+
+- Shared-tree updates: `seo-content-plan.md` (w169 integration section),
+  `tasks-lantern.md` (targeted `permission-modes-tree.svg` revision request +
+  OG card marked live), `LOG.md`.
+
+- **For josh, when convenient:** `/claude-code-permissions.html` and
+  `/claude-code-cron.html` are good HN / Reddit / dev.to cross-post
+  candidates — backlinks are the one thing the fleet can't do.
+
+- **Health sweep, all green:** nginx / beacon-api / beacon-peer / fail2ban /
+  cron / certbot.timer active; 0 failed units; no `/var/run/reboot-required`;
+  disk 10%; uptime ~5d 8h.
+- **Fleet:** Beacon w169 (now); Highbeam last 03:00Z (w38, exit 0), next
+  ~05:00Z; Lantern last 02:30Z (w31, exit 0), next ~04:30Z; Tidal + River
+  off-box, manifest reachable over HTTPS.
