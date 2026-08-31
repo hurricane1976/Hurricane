@@ -119,7 +119,7 @@
     <ul>
       <li><strong>Files the last run wrote</strong> &mdash; in the working directory, or anywhere on disk the OS user can reach.</li>
       <li><strong>A stored transcript</strong>, if you opt in with <code>--continue</code> / <code>--resume</code> (and it is replayed as tokens, not restored as state &mdash; see below).</li>
-      <li><strong>Claude Code's auto-memory</strong>, a per-user directory the CLI maintains under <code>~/.claude</code> and loads a summary of on start.</li>
+      <li><strong>Claude Code's auto-memory</strong>, a per-user directory the CLI maintains under <code>~/.claude</code> and loads a summary of into context at the start of each session.</li>
     </ul>
     <p style="margin-bottom:0;">
       So "memory" for a scheduled agent is a design problem, not a feature you
@@ -262,11 +262,13 @@
       auto-discovery walks <em>up from the current working directory</em>. Cron
       does not start in your repo &mdash; it starts in <code>$HOME</code>. A wake
       script that runs <code>claude -p</code> without <code>cd</code>-ing into the
-      project first loads no <code>CLAUDE.md</code> at all, and the agent runs
-      with none of its standing instructions.
+      project first loads none of the project's <code>CLAUDE.md</code> files, and
+      the agent runs with none of its standing instructions. (A user-scope
+      <code>~/.claude/CLAUDE.md</code>, if you keep one, still loads regardless of
+      <code>cwd</code> &mdash; but that is not where the house rules live.)
     </p>
     <ul>
-      <li><strong>Fix:</strong> <code>cd</code> into the repo in the wake script before calling <code>claude</code>, or pass <code>--add-dir /path/to/repo</code> (its help text notes these are "CLAUDE.md dirs" &mdash; added directories are searched for <code>CLAUDE.md</code> too).</li>
+      <li><strong>Fix:</strong> <code>cd</code> into the repo in the wake script before calling <code>claude</code>, or pass <code>--add-dir /path/to/repo</code> (the <code>--bare</code> help text calls these "CLAUDE.md dirs" &mdash; added directories are searched for <code>CLAUDE.md</code> too).</li>
       <li>In a monorepo, both the repo-root and the nearest package's <code>CLAUDE.md</code> load.</li>
       <li>Symptom searches that mean this: "claude code not reading CLAUDE.md", "CLAUDE.md not loading" &mdash; nine times in ten it is <code>cwd</code>, or one of the switches in the next section.</li>
     </ul>
@@ -404,6 +406,7 @@
       More in this series: <a href="/claude-code-headless.html">headless mode</a>
       &middot; <a href="/claude-code-cron.html">the cron wake loop</a> &middot;
       <a href="/claude-code-permissions.html">permission scoping</a> &middot;
+      <a href="/agent-deployment-readiness.html">deployment readiness</a> &middot;
       <a href="/memory-handbook.html">the memory handbook</a> &middot;
       <a href="/agent-ops.html">the operations playbook</a> &middot;
       <a href="/field-guide.html">the field guide</a>. All of the

@@ -30,7 +30,7 @@ LIVE_PATHS = [
     "/build.html", "/field-guide.html", "/memory-handbook.html",
     "/study-guide.html", "/guides.html", "/claude-code-headless.html",
     "/claude-code-cron.html", "/claude-code-permissions.html",
-    "/claude-code-memory.html",
+    "/claude-code-memory.html", "/agent-deployment-readiness.html",
     "/getting-started.html", "/service-desk.html",
     "/service-desk-mockup.html", "/service-desk-integration-guide.html",
     "/agent-protocol.html", "/distributed-agents.html", "/soc-architecture.html",
