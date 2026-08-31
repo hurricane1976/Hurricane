@@ -8144,3 +8144,92 @@ Running log of what I did and learned across wakings. Newest entries on top.
 - **Fleet:** Beacon w170 (now); Highbeam last 05:00Z (w39, exit 0), next
   ~07:00Z; Lantern last 04:30Z (w31, exit 0), next ~06:30Z; Tidal + River
   off-box, manifest reachable over HTTPS. `/fleet.json` 5/5.
+
+
+## 2026-08-31 (171st waking, ~08:00 UTC)
+
+- `check_replies.sh`: no new Telegram from josh. `peer/inbox/` empty. `ASK.md`
+  Open unchanged — template product #1 still waiting on josh's Gumroad listing
+  URL, #2 held for his "pdf versions plural" reply. Standing steer:
+  dashboards/graphics + collaboration + the greenlit SEO push.
+
+- **Focus: SEO push — published spoke #5, `/agent-deployment-readiness.html`.**
+  "Agent deployment readiness checklist" / "is my AI agent ready for
+  production." Built off Highbeam's partner-w40 prep (long-tail sub-query list +
+  a "what does a readiness page need that `agent-ops.html` doesn't" analysis).
+  The whole page is deliberately positioned as the **one-time pre-flight gate**,
+  with `agent-ops.html` named up front as the day-2 operating manual — dedupe
+  by linking, not repeating (credentials / human gate / golden-signals point at
+  agent-ops). Sections:
+  - **A pre-flight gate, not the operating manual** — the readiness-vs-operations
+    split stated first ("should this thing be allowed to start?" vs "is it
+    behaving now that it has?").
+  - **The go-live checklist** — copyable, every line pass/fail, five groups:
+    *Stop and contain* (kill switch actually used, kill-mid-run is state-safe,
+    single-instance guard) · *Bound the cost* (`--max-budget-usd` / provider
+    budget, deliberate cadence, wall-clock loop cap) · *Scope the power*
+    (allow-list not `bypassPermissions`, non-root, `chmod 600` secrets outside
+    git, known network reach, inbound = data never instructions) · *Keep the
+    human in the loop* (proven review queue, alert path tested end-to-end,
+    every wake reports) · *Be able to undo it* (rollback tested for real,
+    fail-closed smoke gate, rotated timestamped logs, state in files not a
+    conversation).
+  - **Autonomy tiers** — supervised → semi-autonomous → unattended, each with a
+    written graduation bar (N clean cycles picked in advance, watchdog has
+    caught a real fault, blast radius provably bounded). Notes the *down*-a-tier
+    move is agent-ops' intervention ladder, not this page.
+  - **Prove it, do not assume it** — fire a real failure alert, SIGKILL a wake,
+    trip the spend cap, run the rollback, fail the smoke gate on purpose, watch
+    it decline a task.
+  - **Size the blast radius for THIS agent** — one-sentence worst case, then
+    match control strength to actual damage (an over-locked agent gets its
+    guards ripped out in frustration — worse than guards sized right).
+  - **Signals that mean: not yet** — 7 explicit stop conditions.
+  - **Worked example** — this project's own gate, group by group.
+  - **Use this as a model, not a certificate** + Agora feedback line.
+  No new Claude Code flag claims beyond `--max-budget-usd` / `timeout` /
+  `RuntimeMaxSec` (all verified on prior spokes). OG image left as generic
+  `og-image.png` (Lantern queued for a dedicated card).
+
+- **Wired in:** `guides.html` card → linked + "Published" (rewrote the blurb to
+  match the shipped page); `build_sitemap.py`, `build_status.py` (57→58),
+  `smoke_test.py`, `deploy.sh` (cp + chown). Added the readiness link to the
+  "More in this series" footer block on all 4 sibling spokes (headless / cron /
+  permissions / memory) — every spoke now links every sibling + the hub.
+
+- **Also: actioned Highbeam's partner-w40 accuracy findings on
+  `/claude-code-memory.html`** (all 3 low, copy-level):
+  - "…a per-user directory the CLI maintains under `~/.claude` and loads a
+    summary of on start" — broken grammar → "…and loads a summary of into
+    context at the start of each session."
+  - "loads no `CLAUDE.md` at all" overstates — a wake script that never `cd`s
+    still loads a user-scope `~/.claude/CLAUDE.md`. → "loads none of the
+    project's `CLAUDE.md` files" + a parenthetical that the user-scope file
+    still loads regardless of `cwd`.
+  - "[`--add-dir`'s] help text notes these are 'CLAUDE.md dirs'" —
+    misattributed; that parenthetical is in the `--bare` help text in v2.1.251.
+    → "the `--bare` help text calls these 'CLAUDE.md dirs'".
+
+- **Deploy:** `website/deploy.sh` ran once, `smoke_test.py` local + live green,
+  `/status.html` 58/58, `/fleet.json` 5/5 healthy. Commit **`f35fe58`**, pushed
+  to `origin/master`.
+
+- Shared-tree updates: `seo-content-plan.md` (pipeline row #5 → PUBLISHED + a
+  w171 integration section + Highbeam queued for the accuracy pass + next slug
+  #6 `claude-code-cost.html` note), `tasks-lantern.md` (new
+  `og-agent-deployment-readiness` card request + optional autonomy-tiers ladder
+  diagram; noted the two staged memory-page assets are still on Beacon's
+  embed list), `TASKS.md` (Highbeam w171 note), `LOG.md`.
+
+- **For josh, when convenient:** `/agent-deployment-readiness.html`,
+  `/claude-code-memory.html`, `/claude-code-permissions.html` and
+  `/claude-code-cron.html` are all good HN / Reddit / dev.to cross-post
+  candidates — backlinks are the one thing the fleet can't do and would
+  materially speed ranking.
+
+- **Health sweep, all green:** nginx / beacon-api / beacon-peer / fail2ban /
+  cron / certbot.timer active; 0 failed units; no `/var/run/reboot-required`;
+  disk 10%; uptime ~5d 12h.
+- **Fleet:** Beacon w171 (now); Highbeam last 07:00Z (w40, exit 0), next
+  ~09:00Z; Lantern last ~06:30Z, next ~08:30Z; Tidal + River off-box, manifest
+  reachable over HTTPS. `/fleet.json` 5/5.
