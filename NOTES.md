@@ -8233,3 +8233,75 @@ Running log of what I did and learned across wakings. Newest entries on top.
 - **Fleet:** Beacon w171 (now); Highbeam last 07:00Z (w40, exit 0), next
   ~09:00Z; Lantern last ~06:30Z, next ~08:30Z; Tidal + River off-box, manifest
   reachable over HTTPS. `/fleet.json` 5/5.
+
+
+## 2026-08-31 (172nd waking, ~10:00 UTC)
+
+- `check_replies.sh`: no new Telegram from josh. `peer/inbox/` empty. `ASK.md`
+  Open unchanged — template product #1 still waiting on josh's Gumroad listing
+  URL, #2 held for his "pdf versions plural" reply. Standing steer:
+  dashboards/graphics + collaboration + the greenlit SEO push.
+
+- **Integration-only waking — consumed the siblings' backlog for spokes #4/#5.**
+  No new spoke authored (spoke #5 shipped this morning at w171; cadence is
+  2–3/week).
+
+- **Highbeam w41 accuracy findings on spoke #5 — all 3 actioned:**
+  1. `/claude-code-memory.html` auto-memory bullet had an orphaned "of"
+     ("loads a summary of into context" — my w171 fix of Highbeam w40 didn't
+     fully land) → "loads a summary of it into context at the start of each
+     session."
+  2. `/agent-deployment-readiness.html` "Bound the cost" checklist:
+     `--max-budget-usd` now carries the `--print`-only caveat ("headless
+     `--print` runs only"), consistent with the cron + headless spokes.
+  3. Meta-description length was ballooning (spoke #1–#5 were 232–573 chars;
+     Google renders ~155–160). Trimmed all five to ~155–165 (headless 155,
+     cron 162, permissions 164, memory 162, readiness 158) — front-loaded the
+     real pitch, dropped the trailing clause pile-up. Added a **"≤ ~155–160
+     chars"** line to `seo-content-plan.md`'s per-page checklist so #6–#10
+     stay tight from the start. `og:`/`twitter:` description tags left as-is
+     (those don't have the same truncation constraint).
+
+- **Lantern w33 visual assets — embedded + live:**
+  - `og-claude-code-memory.png` (1200×630) → `og:image` + `twitter:image` on
+    `/claude-code-memory.html` (was the generic `og-image.png`). Copied into
+    `website/`, added to `deploy.sh` cp + chown lists.
+  - `og-agent-deployment-readiness.png` → same treatment on
+    `/agent-deployment-readiness.html`.
+  - `memory-layers-architecture.svg` inlined as SVG in the memory page's
+    "Four layers, four jobs" card (after the layer table + rule-of-thumb).
+    Maps the ephemeral cold-start lifecycle (cron wake → `claude -p` →
+    bounded in-context run → process exit) against the 4 persistent disk
+    stores. CSP-safe: `<style>`-free, presentation attrs only, `ml-`-prefixed
+    gradient ids (no collision), root `role="img"` + full `aria-label` added
+    on inline, credited to Lantern in the intro line.
+  - `autonomy-tiers-ladder.svg` inlined the same way in the readiness page's
+    autonomy-tiers card. Content matches the prose exactly — Tier 1 supervised
+    → Tier 2 semi-autonomous → Tier 3 unattended, each with its graduation
+    bar, plus the demotion/intervention pathway running back down (which the
+    prose points at `agent-ops.html` for). `atl-`-prefixed ids.
+  - Both diagrams verified in `rsvg-convert` and headless Chrome — render on
+    house style, contained horizontal-scroll on narrow viewports (same
+    `.diagram-wrap.wide` behaviour as the cron wake-loop + permissions
+    modes-tree diagrams).
+
+- **Deploy:** `website/deploy.sh` ran twice (assets, then the meta-description
+  trim), `smoke_test.py` local + live green both times, `/status.html` 58/58,
+  `/fleet.json` 5/5 healthy. Commit **`4dd590f`**, pushed to `origin/master`.
+
+- Shared-tree updates: `seo-content-plan.md` (per-page checklist rule + a w172
+  integration section), `tasks-lantern.md` (4 asset items marked SWAPPED IN /
+  EMBEDDED + LIVE), `LOG.md`.
+
+- **For josh, when convenient:** `/agent-deployment-readiness.html`,
+  `/claude-code-memory.html`, `/claude-code-permissions.html` and
+  `/claude-code-cron.html` are all good HN / Reddit / dev.to cross-post
+  candidates — backlinks are the one thing the fleet can't do and would
+  materially speed ranking.
+
+- **Health sweep, all green:** nginx / beacon-api / beacon-peer / fail2ban /
+  cron / certbot.timer active; 0 failed units; no `/var/run/reboot-required`;
+  disk ~10%; uptime ~5d 14h.
+- **Fleet:** Beacon w172 (now); Highbeam last ~09:00Z (w41, exit 0), next
+  ~11:00Z; Lantern last ~08:30Z (w33, exit 0), next ~10:30Z; Tidal + River
+  off-box, manifest reachable over HTTPS. `/fleet.json` 5/5.
