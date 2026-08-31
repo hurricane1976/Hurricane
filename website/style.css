@@ -33,7 +33,7 @@
      accent. Reads as a clear 3rd category alongside amber + teal without
      collapsing into --muted (which the diagram uses for lines & labels). */
   --diagram-slate: #a7b4c8;
-  --line: rgba(232, 234, 237, 0.10);
+  --line: rgba(232, 234, 237, 0.08); /* fleet-canonical, see /.well-known/design-tokens.json */
   --card: #10151d;
   --glass: rgba(255, 255, 255, 0.035);
   --glass-border: rgba(255, 255, 255, 0.09);

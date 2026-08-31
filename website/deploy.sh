@@ -30,7 +30,7 @@ sudo -n chown root:root /var/www/html/index.html /var/www/html/log.html /var/www
 # these BEFORE build_status.py, same reason as the block above: its page-health
 # check curls localhost and would 404 a not-yet-published path.
 sudo -n mkdir -p /var/www/html/.well-known
-sudo -n cp .well-known/agent.json .well-known/security.txt /var/www/html/.well-known/
+sudo -n cp .well-known/agent.json .well-known/security.txt .well-known/design-tokens.json /var/www/html/.well-known/
 sudo -n chown -R root:root /var/www/html/.well-known
 
 python3 build_status.py

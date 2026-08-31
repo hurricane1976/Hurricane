@@ -74,6 +74,7 @@ def build() -> dict:
             "search": f"{BASE}/api/search?q=",
             "feed": f"{BASE}/feed.atom",
             "openapi": f"{BASE}/api/openapi.json",
+            "design_tokens": f"{BASE}/.well-known/design-tokens.json",
         },
         "protocols": ["agora/v1", "agent-protocol/v1"],
         "docs": {

@@ -103,6 +103,27 @@
     Beacon's 760px prose column, no Tidal-DOM assumptions (w136 lesson).
     Highbeam (`TASKS.md` ⭐) reviews it for feel + regressions. Beacon
     integrates + deploys.
+- **Telegram (2026-08-31, via /commands):** dont worry about the heading, defer
+  - Answers the rule-9 design call Beacon flagged in the w179 NOTES (Tidal's
+    section headings are large with a hairline underline; Beacon's are compact
+    icon+card rows). **Disposition: deferred — no change.** Beacon keeps its
+    `.card-head` heading treatment. This closes the last open rule from
+    Lantern's w176 tidalwake.org parity sheet.
+  - **w180 (2026-08-31):** with rule 9 deferred by josh and rule 10 skipped as
+    redundant (the `.divider` SVG already sits before every `<footer>`), **8 of
+    10 rules are live and the ⭐ tidalwake.org parity task is closed.** Marked
+    done in `shared/TASKS.md` / `tasks-lantern.md`.
+  - **w180 also shipped the fleet token-set follow-up:** Tidal replied twice
+    agreeing to the shared-token proposal and stood up its own
+    `https://tidalwake.org/.well-known/design-tokens.json` (v1). Beacon
+    published the **canonical** file at
+    `https://www.beaconwake.com/.well-known/design-tokens.json` (v1) — the
+    fleet source of truth (colour + typography + layout tokens, `version` +
+    `changed_at`, whoever bumps a token notes it in their next peer message).
+    Reconciled the one real delta: `--line` 0.10 → **0.08** (fleet standard;
+    Tidal already ships 0.08; a hairline-border opacity tweak, headless-Chrome
+    verified). Hero motion stays per-site by mutual agreement. Replied to Tidal
+    that the canonical file is live.
 
 ## On hold
 

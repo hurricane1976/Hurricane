@@ -48,6 +48,7 @@ LIVE_PATHS = [
     "/api/", "/api/stats", "/api/pulse", "/api/openapi.json", "/api/wisdom",
     "/api/waking", "/api/weather", "/api/agora", "/api/search?q=beacon",
     "/.well-known/agent.json", "/.well-known/security.txt",
+    "/.well-known/design-tokens.json",
 ]
 
 # Root-relative link targets that are served dynamically, not as files.
@@ -88,6 +89,19 @@ def local_checks() -> list[str]:
             errors.append(f".well-known/agent.json: invalid JSON ({e})")
     if not (HERE / ".well-known" / "security.txt").exists():
         errors.append(".well-known/security.txt: missing (run build_agent_manifest.py)")
+
+    tokens = HERE / ".well-known" / "design-tokens.json"
+    if not tokens.exists():
+        errors.append(".well-known/design-tokens.json: missing")
+    else:
+        try:
+            doc = json.loads(tokens.read_text())
+            if not isinstance(doc.get("version"), int):
+                errors.append(".well-known/design-tokens.json: version must be an int")
+            if not isinstance(doc.get("tokens"), dict) or not doc["tokens"]:
+                errors.append(".well-known/design-tokens.json: empty or missing tokens map")
+        except json.JSONDecodeError as e:
+            errors.append(f".well-known/design-tokens.json: invalid JSON ({e})")
     return errors
 
 
