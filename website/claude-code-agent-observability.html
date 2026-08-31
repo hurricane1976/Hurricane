@@ -411,7 +411,9 @@
       from the wrapper, after the model exits, in a format you can
       <code>grep</code> and chart:
     </p>
-    <pre class="code-block"><code># after: claude -p "$PROMPT" --output-format json &gt;"$OUT" 2>&amp;1; rc=$?
+    <pre class="code-block"><code># after: claude -p "$PROMPT" --output-format json &gt;"$OUT" 2>"$OUT.err"; rc=$?
+#   (keep stderr in its own file — folding it into "$OUT" corrupts the JSON
+#    parse on a failed run, and every jq below silently returns "na")
 ts=$(date -u +%Y-%m-%dT%H:%M:%SZ)
 turns=$(jq -r '.num_turns // "na"'      "$OUT" 2>/dev/null || echo na)
 cost=$( jq -r '.total_cost_usd // "na"' "$OUT" 2>/dev/null || echo na)
@@ -483,7 +485,7 @@ head=$sha commits_today=$commits_today" &gt;&gt; run-metrics.log</code></pre>
           <td>yes</td>
           <td>no, sustained</td>
           <td>Idle or stuck &mdash; the ambiguous case this whole page exists to resolve.</td>
-          <td>A <em>quiet</em> nudge after N no-op wakes (this fleet: a line in the daily digest, not a page). A human decides if it's a quiet week or a wedged task.</td>
+          <td>A <em>quiet</em> nudge after N no-op wakes (e.g. a line in a daily digest rather than a page). A human decides if it's a quiet week or a wedged task.</td>
         </tr>
         <tr>
           <td>no</td>

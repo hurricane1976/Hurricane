@@ -1634,3 +1634,126 @@ pre.code-block code {
   font-size: 0.68rem;
   color: var(--muted);
 }
+
+/* ==========================================================================
+   tidalwake.org look-and-feel parity — safe subset of Lantern's w176 sheet
+   (shared/outbox/retheme-w176/). Only the rules with no site-wide blast
+   radius ship here: brand-new component classes that are inert until markup
+   opts in (.status-table, .badge-*, .timeline-item, .work-live), one trivial
+   hover tint (.btn-ghost), one clean code-block restyle (no bare <pre>
+   anywhere on the site, so this only re-skins pre.code-block), and a
+   data-table row hover. Rules 1/3/9/10 (inline <code> teal+border, prose-list
+   square markers + dimmed li, h2 hairline underline, footer border-top) touch
+   ~34 live pages and are held for Highbeam's parity review first.
+   ========================================================================== */
+
+/* Tidal parity 2 — standalone code blocks on --surface-2 with 6px radius */
+pre, pre.code-block {
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 1.1rem 1.25rem;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  margin: 0 0 1.25rem;
+}
+
+/* Tidal parity 4 — status table (inert until used) + data-table row hover */
+.status-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0 1.5rem;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  overflow: hidden;
+}
+.status-table th, .status-table td {
+  padding: 12px 16px;
+  text-align: left;
+  border-bottom: 1px solid var(--line);
+}
+.status-table th {
+  background: var(--surface-2);
+  color: var(--fg);
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 0.82rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.status-table td {
+  color: var(--text-dim);
+  font-size: 0.9rem;
+}
+.status-table tr:last-child td { border-bottom: none; }
+.status-table tr:hover, table.data-table tbody tr:hover {
+  background: var(--surface-2);
+}
+
+/* Tidal parity 5 — semantic status badges (inert until used) */
+.badge-success {
+  background: transparent;
+  color: var(--teal);
+  border: 1px solid var(--teal-dim);
+}
+.badge-warning {
+  background: transparent;
+  color: var(--amber);
+  border: 1px solid var(--amber-dim);
+}
+.badge-info {
+  background: transparent;
+  color: var(--text-dim);
+  border: 1px solid var(--line);
+}
+
+/* Tidal parity 6 — vertical-stem timeline item (inert until used) */
+.timeline-item {
+  border-left: 1px solid var(--line);
+  padding-left: 24px;
+  position: relative;
+  margin-bottom: 2rem;
+}
+.timeline-item::before {
+  content: '';
+  position: absolute;
+  left: -5px;
+  top: 8px;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--amber);
+  box-shadow: 0 0 8px var(--amber-dim);
+}
+.timeline-date {
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--amber);
+  margin-bottom: 0.5rem;
+}
+
+/* Tidal parity 7 — ghost button hover gains a 5% teal wash */
+.btn-ghost:hover {
+  border-color: var(--accent-2);
+  color: var(--accent-2);
+  background: rgba(79, 209, 197, 0.05);
+  text-decoration: none;
+}
+
+/* Tidal parity 8 — live-experiment banner (inert until used) */
+.work-live {
+  margin: 2rem 0;
+  border: 1px solid var(--teal-dim);
+  border-radius: 6px;
+  background: linear-gradient(90deg, rgba(79, 209, 197, 0.06), transparent 60%);
+  padding: 1.75rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+.work-live-left h3 { margin: 0 0 0.5rem 0; color: var(--fg); }
+.work-live-left p { color: var(--text-dim); font-size: 0.92rem; margin: 0; }
