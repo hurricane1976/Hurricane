@@ -8305,3 +8305,110 @@ Running log of what I did and learned across wakings. Newest entries on top.
 - **Fleet:** Beacon w172 (now); Highbeam last ~09:00Z (w41, exit 0), next
   ~11:00Z; Lantern last ~08:30Z (w33, exit 0), next ~10:30Z; Tidal + River
   off-box, manifest reachable over HTTPS. `/fleet.json` 5/5.
+
+
+## 2026-08-31 (173rd waking, ~12:00 UTC)
+
+- `check_replies.sh`: no new Telegram from josh. `peer/inbox/` empty. `ASK.md`
+  Open unchanged — template product #1 still waiting on josh's Gumroad listing
+  URL, #2 held for his "pdf versions plural" reply. Standing steer:
+  dashboards/graphics + collaboration + the greenlit SEO push.
+
+- **Focus: SEO push — published spoke #6, `/claude-code-cost.html`.**
+  "Claude Code cost control: token usage in an always-on agent." Built from
+  Highbeam's partner-w41 long-tail list + the w42 verification addendum
+  (verbatim `claude --help` strings). Re-ran `claude --help` this waking to
+  reconfirm — still v2.1.251, every quoted flag checks out. Sections:
+  - **Measure first** — a headless run with `--output-format json` reports
+    `.total_cost_usd` (no `--verbose` needed, unlike `stream-json`); a 3-line
+    per-wake `cost.log` + a cheap over-threshold alert. "Optimising a cost you
+    never measured is how you spend a week shaving 5% off the wrong thing."
+  - **Where the money goes** — the bill is input tokens, re-sent every turn; a
+    40-turn run pays for its early context ~40×. The levers that actually move
+    it: how much context the run drags along, how many turns it takes, whether
+    the cacheable prefix stays byte-identical, whether you replay transcripts.
+    None need a flag.
+  - **Documented vs folklore table** — *documented:* `--max-budget-usd` (hard
+    cap, print-only), json `.total_cost_usd`,
+    `--exclude-dynamic-system-prompt-sections`, `--autocompact`,
+    `--model`/`--fallback-model`, `--effort` (exists, cost effect unquantified),
+    the cold-start pattern. *Folklore:* `--max-turns` as a budget (iteration
+    dial, gone from v2.1.251 `--help`), "caching just works" (prefix-fragile),
+    "compacting saves money" (compaction spends a summarisation call),
+    "stream-json is cheaper" (same tokens).
+  - **`--max-budget-usd`** — verbatim help text; headless-only; stops the run
+    when hit → treat as a circuit breaker set 3–5× the `cost.log` median, not a
+    target; per-run not per-day; verify trip semantics (exit code / partial
+    work) on your version.
+  - **The expensive mistake** — `--continue`/`--resume` prepend the whole prior
+    conversation as input tokens, compounding every wake. Start cold; put
+    continuity in files. Cross-links the memory page for the
+    `--resume <id> --fork-session` middle ground.
+  - **Prompt caching** — automatic but leading-bytes-fragile; cwd/env/git-status/
+    memory-paths near the front bust it. `--exclude-dynamic-system-prompt-sections`
+    verbatim; kept the help text's "cross-user" phrasing (per Highbeam w42);
+    ignored with `--system-prompt`.
+  - **`--autocompact`** — bounds a runaway window, is *not* a savings lever
+    (compaction itself costs a summarisation call). Real fix = externalise state.
+  - **Model & effort** — `--model` aliases (biggest single dial),
+    `--fallback-model` (comma list, re-tries primary each turn, print-only — not
+    a one-way downgrade), `--effort low…max` (measure it). Change one at a time.
+  - **Cadence is the once-set dial** — `wakes/day × cost/wake`; business-hours
+    crons; make a no-op wake cheap.
+  - **Worked example** — honest: the fleet's own `wake.sh` runs
+    `--output-format text` so there's no per-run cost line; shows the 3-line
+    change to `json` + `jq` and the readable-log-vs-json-blob tradeoff that
+    makes it a deliberate call rather than a pure win. (Did NOT change the real
+    wake.sh this waking — that's a production log-format change worth its own
+    decision; noted as a possible follow-up.)
+  - **Verify against your version** — cost is the most version-fragile surface;
+    flag names, output fields, effort levels, pricing all move and none is
+    pinned in `--help`.
+
+- **Lantern w34 assets embedded + live:**
+  - `og-claude-code-cost.png` (1200×630) → `og:image` + `twitter:image` on
+    `/claude-code-cost.html`. Copied into `website/`, added to `deploy.sh`
+    cp + chown.
+  - `cost-optimization-architecture.svg` inlined as SVG in a new "The whole
+    picture" card (4 panels: token-inflation trap, prompt-cache prefix
+    invariance, documented CLI controls, telemetry pipeline + a fact-check
+    banner). CSP-safe — `<style>`/`<script>`-free, presentation attrs only,
+    `coa-`-prefixed gradient ids, root `role="img"` + full `aria-label` added
+    on inline, credited to Lantern. **One accuracy edit:** the diagram's
+    `--effort` value list was missing `xhigh` → fixed to
+    `<low | medium | high | xhigh | max>` to match `claude --help`; asked
+    Lantern (tasks-lantern.md) to carry `xhigh` in future revisions.
+  - Verified in headless Chrome — renders on house style, contained
+    horizontal-scroll on narrow viewports (`.diagram-wrap.wide`, same as the
+    memory + permissions diagrams).
+
+- **Wired in:** `guides.html` card (`In progress` → linked + `Published`, blurb
+  rewritten to match the shipped page); `build_sitemap.py`, `build_status.py`
+  (58→59), `smoke_test.py`, `deploy.sh` (cp + chown). Added a `cost control`
+  link to the "More in this series" footer block on all 5 sibling spokes
+  (headless / cron / permissions / memory / readiness) and resolved the memory
+  page's body reference "the cost guide (in progress)" to a real link. Meta
+  description 151 chars (per the ≤155–160 rule from w172).
+
+- **Deploy:** `website/deploy.sh` ran once, `smoke_test.py` local + live green,
+  `/status.html` 59/59, `/fleet.json` 5/5 healthy. Commit **`e3898ae`**, pushed
+  to `origin/master`.
+
+- Shared-tree updates: `seo-content-plan.md` (pipeline row #6 → PUBLISHED + a
+  w173 integration section + Highbeam queued for the accuracy pass + next slug
+  #7 `claude-code-watchdog.html` note), `tasks-lantern.md` (cost assets marked
+  SWAPPED IN / EMBEDDED + LIVE, `xhigh` note, spoke #7 asset request),
+  `TASKS.md` (Highbeam w173 note), `LOG.md`.
+
+- **For josh, when convenient:** `/claude-code-cost.html`,
+  `/agent-deployment-readiness.html`, `/claude-code-memory.html`,
+  `/claude-code-permissions.html` and `/claude-code-cron.html` are all good
+  HN / Reddit / dev.to cross-post candidates — backlinks are the one thing the
+  fleet can't do and would materially speed ranking.
+
+- **Health sweep, all green:** nginx / beacon-api / beacon-peer / fail2ban /
+  cron / certbot.timer active; 0 failed units; no `/var/run/reboot-required`;
+  disk 10%; uptime ~5d 16h.
+- **Fleet:** Beacon w173 (now); Highbeam last ~11:00Z (w42, exit 0), next
+  ~13:00Z; Lantern last ~10:30Z (w34, exit 0), next ~12:30Z; Tidal + River
+  off-box, manifest reachable over HTTPS. `/fleet.json` 5/5.
