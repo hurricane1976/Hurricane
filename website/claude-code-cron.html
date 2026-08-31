@@ -14,13 +14,13 @@
 <meta property="og:description" content="Run Claude Code unattended as an autonomous agent: crontab lines, cron's bare environment, unattended auth, a flock guard, per-run logging, exit capture, and the systemd timer alternative — from a fleet that has done it for 160+ cycles.">
 <meta property="og:url" content="https://www.beaconwake.com/claude-code-cron.html">
 <link rel="canonical" href="https://www.beaconwake.com/claude-code-cron.html">
-<meta property="og:image" content="https://www.beaconwake.com/og-image.png">
+<meta property="og:image" content="https://www.beaconwake.com/og-claude-code-cron.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Running Claude Code on a schedule: a cron wake loop">
 <meta name="twitter:description" content="Run Claude Code unattended as an autonomous agent: crontab, cron's bare environment, unattended auth, a flock guard, logging, exit capture, and systemd timers.">
-<meta name="twitter:image" content="https://www.beaconwake.com/og-image.png">
+<meta name="twitter:image" content="https://www.beaconwake.com/og-claude-code-cron.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -112,9 +112,10 @@
         <h2>The idea: a wake loop</h2>
       </div>
       <p>
-        There is no "daemon mode" for Claude Code and you do not want one. An
-        always-on agent is just <a href="/claude-code-headless.html">a headless
-        run</a> (<code>claude -p</code>) fired on a timer: it wakes, reads its
+        There is no persistent "daemon mode" worth building an autonomous agent
+        around, and you do not want one. An always-on agent is just
+        <a href="/claude-code-headless.html">a headless run</a>
+        (<code>claude -p</code>) fired on a timer: it wakes, reads its
         notes, does one bounded piece of work, writes down what it did, and
         exits. The next run starts cold and picks up from the notes.
       </p>
@@ -163,7 +164,7 @@
       <h2>The wake loop, end to end</h2>
     </div>
     <div class="diagram-wrap wide">
-      <svg viewBox="0 0 1200 640" role="img" aria-label="Flow of an autonomous wake loop. A cron schedule (0 */2 * * *) invokes wake.sh. A flock -n 9 gate on logs/.wake.lock enforces a single active instance; if the lock is busy the run logs a skip and exits 0. Otherwise claude -p runs the headless agent with --permission-mode bypassPermissions, --output-format text or json, --max-turns 120 and a model choice, appending to a timestamped log. The wrapper captures EXIT=$?; on exit 0 it takes the clean-completion path (dated NOTES.md entry, notify.sh summary, deploy if staged), and on a non-zero exit it fires an out-of-band Telegram alert with the log tail attached so no crash is silent.">
+      <svg viewBox="0 0 1200 640" role="img" aria-label="Flow of an autonomous wake loop. A cron schedule (0 */2 * * *) invokes wake.sh. A flock -n 9 gate on logs/.wake.lock enforces a single active instance; if the lock is busy the run logs a skip and exits 0. Otherwise claude -p runs the headless agent with --permission-mode bypassPermissions, --output-format text or json, --max-budget-usd 5 as a hard spend cap and a model choice, appending to a timestamped log. The wrapper captures EXIT=$?; on exit 0 it takes the clean-completion path (dated NOTES.md entry, notify.sh summary, deploy if staged), and on a non-zero exit it fires an out-of-band Telegram alert with the log tail attached so no crash is silent.">
         <defs>
           <radialGradient id="wlf-glow-amber" cx="15%" cy="20%" r="50%">
             <stop offset="0%" stop-color="#ff8a3d" stop-opacity="0.18"/>
@@ -287,8 +288,8 @@
             <text x="155" y="49" fill="#e8eaed">text / json</text>
 
             <rect x="0" y="64" width="288" height="26" rx="2" fill="#161d27"/>
-            <text x="10" y="81" fill="#ff8a3d">--max-turns</text>
-            <text x="155" y="81" fill="#e8eaed">120 (Loop Cap)</text>
+            <text x="10" y="81" fill="#ff8a3d">--max-budget-usd</text>
+            <text x="175" y="81" fill="#e8eaed">5 (spend cap)</text>
 
             <rect x="0" y="96" width="288" height="26" rx="2" fill="#161d27"/>
             <text x="10" y="113" fill="#ff8a3d">--model</text>
@@ -539,10 +540,11 @@ WantedBy=timers.target</code></pre>
 systemctl list-timers wake.timer
 journalctl -u wake.service -n 100 --no-pager</code></pre>
     <p style="margin-bottom:0;">
-      <code>RuntimeMaxSec</code> is a hard kill regardless of what
-      <code>--max-turns</code> does &mdash; a backstop against a run that hangs
-      instead of looping. <code>Persistent=true</code> runs a missed timer once
-      after a reboot instead of skipping it.
+      <code>RuntimeMaxSec</code> is a hard wall-clock kill for a run that hangs
+      instead of exiting &mdash; version-independent, and the one guard that
+      still fires if a CLI flag you relied on gets renamed.
+      <code>Persistent=true</code> runs a missed timer once after a reboot
+      instead of skipping it.
     </p>
   </section>
 
@@ -552,18 +554,22 @@ journalctl -u wake.service -n 100 --no-pager</code></pre>
       <h2>What the schedule costs</h2>
     </div>
     <p>
-      A cron loop bills on every firing, awake or idle. Three dials set the
+      A cron loop bills on every firing, awake or idle. Four dials set the
       spend:
     </p>
     <ul>
       <li><strong>Cadence.</strong> Twelve wakings a day instead of two is 6&times; the runs. Start slow; raise it only when a run reliably has useful work to do.</li>
-      <li><strong><code>--max-turns</code>.</strong> The ceiling on a single run's agentic iterations, so a confused loop cannot burn tokens for an hour before anyone notices.</li>
+      <li><strong><code>--max-budget-usd &lt;amount&gt;</code>.</strong> A documented, <code>--print</code>-only hard cap on a single run's API spend &mdash; the run stops when it hits the number. This is the primary guard: it is a dollar figure, not a proxy for one.</li>
+      <li><strong><code>--max-turns &lt;n&gt;</code>.</strong> A ceiling on agentic iterations. Still accepted, but no longer shown in <code>claude --help</code> on current versions &mdash; treat it as a secondary guard that may be dropped without notice, not something to rely on alone.</li>
       <li><strong><code>--model</code>.</strong> A cheaper model for routine wakings, a stronger one for the occasional review pass &mdash; a one-line change in the wrapper.</li>
     </ul>
     <p style="margin-bottom:0;">
-      Measure rather than guess: <code>--output-format json</code> carries a
-      per-run cost figure you can log and sum. A dedicated cost-control guide is
-      queued on <a href="/guides.html">the guides index</a>.
+      Measure rather than guess: run the wrapper with <code>--output-format
+      json</code> (no <code>--verbose</code> needed for <code>json</code>) and
+      parse <code>.total_cost_usd</code> from each run to log and sum &mdash; the
+      <code>text</code> wrapper below prints no cost line, so switch it if you
+      want the figure. A dedicated cost-control guide is queued on
+      <a href="/guides.html">the guides index</a>.
     </p>
   </section>
 
@@ -601,12 +607,12 @@ PROMPT="You are waking on your schedule. Read AGENT.md, check NOTES.md for \
 context, do what is useful within the rules, append a dated NOTES.md entry, \
 and run ./notify.sh with a one-line summary before you finish."
 
-# 3. the run: bounded turns, explicit permission mode, both streams to the log.
+# 3. the run: hard spend cap, explicit permission mode, both streams to the log.
 claude -p "$PROMPT" \
     --output-format text \
     --permission-mode bypassPermissions \
     --model sonnet \
-    --max-turns 120 \
+    --max-budget-usd 5 \
     &gt;&gt; "$LOG" 2&gt;&amp;1
 EXIT=$?
 echo "exit code: $EXIT" &gt;&gt; "$LOG"

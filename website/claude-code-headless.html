@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="A working reference for Claude Code headless mode: what claude -p / --print does, the flags that matter for unattended runs (--output-format, --permission-mode, --allowedTools, --max-turns, --add-dir, --continue), how permissions behave with no terminal, exit codes, parsing JSON output, and a minimal cron wake loop.">
+<meta name="description" content="A working reference for Claude Code headless mode: what claude -p / --print does, the flags that matter for unattended runs (--output-format, --permission-mode, --allowedTools, --max-budget-usd, --add-dir, --continue), how permissions behave with no terminal, exit codes, parsing JSON output, and a minimal cron wake loop.">
 <title>Claude Code headless mode: the -p / --print reference &mdash; Beacon</title>
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
   <link rel="icon" type="image/x-icon" href="favicon.ico">
@@ -159,7 +159,8 @@
         <tr><td><code>--output-format</code></td><td><code>text</code> (default) prints only the final message. <code>json</code> prints one structured object with the result plus metadata (session id, turn count, duration, cost, error flag). <code>stream-json</code> emits newline-delimited events as they happen &mdash; useful for live logging, but with <code>-p</code> it currently also requires <code>--verbose</code> or the run errors out.</td></tr>
         <tr><td><code>--permission-mode</code></td><td>How tool calls are gated when there is no one to approve them: <code>default</code>, <code>acceptEdits</code>, <code>plan</code>, or <code>bypassPermissions</code>. See the next section &mdash; this is the flag people get wrong.</td></tr>
         <tr><td><code>--allowedTools</code> / <code>--disallowedTools</code></td><td>An explicit allow/deny list of tools (optionally scoped, e.g. a specific <code>Bash</code> command pattern). This &mdash; not <code>CLAUDE.md</code> &mdash; is the hard boundary on what a headless run can do.</td></tr>
-        <tr><td><code>--max-turns</code></td><td>Hard cap on agentic iterations. Your primary guard against a stuck loop quietly burning tokens for an hour.</td></tr>
+        <tr><td><code>--max-budget-usd</code></td><td>Hard dollar cap on a run's API spend (<code>--print</code> only). The run stops when it hits the amount &mdash; your primary guard against a stuck loop quietly burning tokens for an hour.</td></tr>
+        <tr><td><code>--max-turns</code></td><td>Cap on agentic iterations. Still accepted but no longer listed in <code>claude --help</code> on current versions &mdash; a secondary guard that may be dropped without notice; don't rely on it alone.</td></tr>
         <tr><td><code>--model</code></td><td>Pick the model per run (e.g. a cheaper model for routine wakings, a stronger one for review). One-line change in the wrapper.</td></tr>
         <tr><td><code>--add-dir</code></td><td>Additional directories the run may read and write outside the current working directory. Keep this list as small as the job needs.</td></tr>
         <tr><td><code>--append-system-prompt</code></td><td>Append standing instructions to the system prompt without putting them in the user prompt every time.</td></tr>
@@ -301,7 +302,7 @@ claude -p "$PROMPT" \
     --output-format text \
     --permission-mode bypassPermissions \
     --model sonnet \
-    --max-turns 120 \
+    --max-budget-usd 5 \
     &gt;&gt; "$LOG" 2&gt;&1
 EXIT=$?
 echo "exit code: $EXIT" &gt;&gt; "$LOG"
@@ -333,7 +334,7 @@ fi</code></pre>
       <li><strong>Two runs racing the same files.</strong> An overrunning session and the next scheduled one both editing notes, git, and state files corrupted all three. Fix: the <code>flock</code> single-instance guard above.</li>
       <li><strong>Silent no-op runs.</strong> A build agent left in <code>default</code> permission mode: every write denied, exit <code>0</code>, nothing shipped. Fix: <code>bypassPermissions</code> on the isolated box, or an explicit <code>--allowedTools</code> list.</li>
       <li><strong>Crash before self-report.</strong> The "message me when done" instruction lived in the prompt, so a mid-run crash went unnoticed. Fix: alert from the wrapper on non-zero exit.</li>
-      <li><strong>Unbounded loop.</strong> A confused agent iterating on the same failing step, burning tokens. Fix: <code>--max-turns</code>.</li>
+      <li><strong>Unbounded loop.</strong> A confused agent iterating on the same failing step, burning tokens. Fix: <code>--max-budget-usd</code> as a hard spend cap (and a wall-clock <code>timeout</code> around the whole run).</li>
       <li><strong>cron's bare environment.</strong> Worked in an interactive shell, failed under cron because <code>node</code> / the CLI was not on <code>PATH</code>. Fix: source your shell setup in the wrapper; absolute paths only.</li>
       <li><strong>Interleaved / lost output.</strong> Only <code>stdout</code> captured, so errors on <code>stderr</code> vanished. Fix: <code>&gt;&gt; "$LOG" 2&gt;&amp;1</code>.</li>
     </ul>
@@ -355,7 +356,7 @@ REVIEW=$(git diff origin/main...HEAD | claude -p \
      If there are none, reply exactly: NO BUGS FOUND." \
     --permission-mode default \
     --allowedTools "" \
-    --max-turns 8)
+    --max-budget-usd 1)
 
 echo "$REVIEW"
 printf '%s' "$REVIEW" | grep -q "NO BUGS FOUND" || exit 1</code></pre>

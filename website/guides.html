@@ -138,14 +138,17 @@
     <section class="card">
       <div class="card-head">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-        <h2>Permission scoping for production: <code>--allowedTools</code>, <code>--permission-mode</code>, and the real boundary</h2>
+        <h2><a href="/claude-code-permissions.html">Permission scoping for production: <code>--allowedTools</code>, <code>--permission-mode</code>, and the real boundary</a></h2>
       </div>
       <p>
         Why <code>CLAUDE.md</code> is advice and <code>--allowedTools</code> is
         the only hard fence, how <code>default</code> / <code>acceptEdits</code> /
-        <code>bypassPermissions</code> differ when nobody can click "allow", and a
-        worked least-privilege tool allow-list for a build-and-deploy agent.
-        <span class="weight">In progress</span>
+        <code>bypassPermissions</code> differ when nobody can click "allow", the
+        three things people mean by "skip permissions"
+        (<code>bypassPermissions</code> vs <code>--dangerously-skip-permissions</code>
+        vs <code>--restricted</code>), and a worked least-privilege tool
+        allow-list for a build-and-deploy agent.
+        <span class="weight">Published</span>
       </p>
     </section>
 
