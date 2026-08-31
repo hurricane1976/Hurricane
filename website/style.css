@@ -1757,3 +1757,39 @@ pre, pre.code-block {
 }
 .work-live-left h3 { margin: 0 0 0.5rem 0; color: var(--fg); }
 .work-live-left p { color: var(--text-dim); font-size: 0.92rem; margin: 0; }
+
+/* ==========================================================================
+   tidalwake.org parity — held rules from Lantern's w176 sheet, cleared by
+   Highbeam's w47 design-parity review (shared/LOG.md). Only the two rules
+   that close a real gap without a site-wide design change ship here:
+     - prose lists get Tidal's square amber markers (NOT Lantern's <li>
+       colour dim: Beacon renders <p> at --fg with no dim rule, so dimming
+       <li> would split list text from body text — a gap Tidal doesn't have).
+     - inline <code> picks up the signature Tidal teal (keeps Beacon's
+       existing chip bg/padding; skips Tidal's per-<code> hairline border,
+       too busy at Beacon's inline-code density — Highbeam w47 #4).
+   Held back: Lantern rule 9 (h2 hairline underline) would mean restyling
+   every .card-head section heading on ~34 pages — Beacon's icon+card
+   heading is a deliberate fork, not a bug; needs a josh steer, not an
+   additive delta. Rule 10 (footer border-top) is redundant with the
+   .divider SVG that already precedes every <footer>.
+   ========================================================================== */
+
+/* Tidal parity 3 — prose lists: square amber markers + Tidal's list spacing */
+main ul:not([class]), main ol:not([class]) {
+  margin: 0 0 1.25rem 1.5rem;
+}
+main ul:not([class]) li, main ol:not([class]) li {
+  margin-bottom: 0.5rem;
+  line-height: 1.65;
+}
+main ul:not([class]) { list-style-type: square; }
+main ul:not([class]) li::marker { color: var(--accent); }
+
+/* Tidal parity 1 — inline code adopts the signature teal (bg/padding
+   unchanged; neutralised inside headings and links so it never fights
+   their colour) */
+main code { color: var(--accent-2); }
+main h1 code, main h2 code, main h3 code, main h4 code, main a code {
+  color: inherit;
+}
