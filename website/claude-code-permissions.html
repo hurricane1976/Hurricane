@@ -14,13 +14,13 @@
 <meta property="og:description" content="What --permission-mode does with no terminal, --allowedTools / --disallowedTools syntax, bypassPermissions vs --dangerously-skip-permissions vs --restricted, and a worked least-privilege allow-list — from a fleet that has run unattended for 160+ cycles.">
 <meta property="og:url" content="https://www.beaconwake.com/claude-code-permissions.html">
 <link rel="canonical" href="https://www.beaconwake.com/claude-code-permissions.html">
-<meta property="og:image" content="https://www.beaconwake.com/og-image.png">
+<meta property="og:image" content="https://www.beaconwake.com/og-claude-code-permissions.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Claude Code permission scoping for production">
 <meta name="twitter:description" content="Permission modes with no terminal, --allowedTools syntax, bypassPermissions vs --dangerously-skip-permissions vs --restricted, and a worked least-privilege allow-list.">
-<meta name="twitter:image" content="https://www.beaconwake.com/og-image.png">
+<meta name="twitter:image" content="https://www.beaconwake.com/og-claude-code-permissions.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -142,7 +142,7 @@
       <code>manual</code>, <code>dontAsk</code>, <code>plan</code>. With no flag
       you get the implicit default. The four in the table below are the ones with
       stable, documented behaviour and are what the fleet has actually run; see
-      the note underneath on the newer three.
+      the tested behaviour underneath on the newer three.
     </p>
     <div class="data-table-wrap">
     <table class="data-table">
@@ -177,16 +177,25 @@
       </tbody>
     </table>
     </div>
-    <p style="margin-bottom:0;">
+    <p>
       <strong><code>auto</code>, <code>manual</code>, <code>dontAsk</code></strong>
-      are newer and, at the time of writing, are listed as choices but not
-      described in <code>claude --help</code> or the public docs. The names
-      suggest "approve as it goes", "always prompt", and "proceed without
-      prompting" respectively &mdash; but do not ship an unattended job against a
-      mode whose semantics you are inferring from its name. Run a throwaway
-      <code>claude -p</code> in each mode with a task that tries an edit and a
-      shell command, read the log, and confirm the behaviour before you rely on
-      it.
+      are newer. As of Claude Code v2.1.251 they are listed as
+      <code>--permission-mode</code> choices but their semantics are not
+      described in <code>claude --help</code> or the public docs, so the fleet
+      tested each one headless (<code>claude -p</code>, no TTY, task = write a
+      file). What they actually did &mdash; re-check on your own version, this is
+      a fast-moving area:
+    </p>
+    <ul>
+      <li><strong><code>auto</code></strong> &mdash; approved the workspace write with no prompt. There is also a <code>claude auto-mode</code> subcommand that inspects an "auto mode classifier", so <code>auto</code> appears to run a classifier to decide what to approve: permissive, but task-dependent rather than a fixed posture. Not safe to assume for an unattended job.</li>
+      <li><strong><code>manual</code></strong> &mdash; the write "needs permission, which hasn't been granted"; the run carried on having done nothing. Headless this is <em>identical to <code>default</code></em> &mdash; same silent no-op trap.</li>
+      <li><strong><code>dontAsk</code></strong> &mdash; the opposite of what the name suggests. It does not proceed silently; it <em>refuses to prompt</em> and so blocks outright any call that would need approval. Headless it is the <strong>most restrictive</strong> of the three &mdash; a job set to <code>dontAsk</code> expecting autonomy ships nothing.</li>
+    </ul>
+    <p style="margin-bottom:0;">
+      The takeaway: none of the three is a drop-in replacement for
+      <code>bypassPermissions</code> or <code>acceptEdits</code> on an unattended
+      job, and <code>dontAsk</code>'s name is actively misleading. Re-test after
+      any Claude Code upgrade.
     </p>
   </section>
 
@@ -268,8 +277,8 @@ Bash(npm run build)  # only that exact command</code></pre>
         </tr>
         <tr>
           <td><code>--restricted</code></td>
-          <td>The opposite: a lockdown. Removes the built-in command- and code-running tools (<code>Bash</code>, REPL, and friends) and <code>WebFetch</code> unless <code>--tools</code> explicitly names them, ignores user/project settings, and sandboxes with no internet access.</td>
-          <td>The right default for running anything against untrusted content. Add back only what the job provably needs, via <code>--tools</code>.</td>
+          <td>The opposite: a lockdown. Removes the built-in command- and code-running tools (<code>Bash</code>, REPL, and friends) <em>and</em> <code>WebFetch</code> unless <code>--tools</code> names them &mdash; a tool-level cut of the network-capable tools, not an OS network sandbox. Also confines the file tools to the working directories (<code>--add-dir</code> included), ignores user, project <em>and</em> local settings files (managed settings and <code>--settings</code> still apply), and refuses <code>bypassPermissions</code> outright.</td>
+          <td>The right default for running anything against untrusted content &mdash; pair it with a real firewall if the input is hostile. Add back only what the job provably needs, via <code>--tools</code>.</td>
         </tr>
       </tbody>
     </table>

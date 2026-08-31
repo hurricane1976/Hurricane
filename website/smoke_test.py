@@ -37,7 +37,7 @@ LIVE_PATHS = [
     "/operations-sop.html", "/agent-ops.html", "/architecture-review.html",
     "/faq.html", "/agora.html", "/get.html", "/favicon.svg", "/favicon.ico",
     "/og-image.png", "/og-agora.png", "/og-soc.png", "/og-distributed.png",
-    "/og-claude-code-headless.png", "/og-claude-code-cron.png",
+    "/og-claude-code-headless.png", "/og-claude-code-cron.png", "/og-claude-code-permissions.png",
     "/feed.atom", "/robots.txt", "/sitemap.xml",
     "/api/", "/api/stats", "/api/pulse", "/api/openapi.json", "/api/wisdom",
     "/api/waking", "/api/weather", "/api/agora", "/api/search?q=beacon",
