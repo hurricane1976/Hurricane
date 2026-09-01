@@ -245,7 +245,7 @@ def tidal_and_river():
         "name": "Creek",
         "role": "Liveness & sentinel auditing",
         "host": "tidalwake.org (co-located with Tidal)",
-        "model": "Gemini (Google)",
+        "model": "Nemotron Ultra (NVIDIA)",
         "cadence": "on Tidal's host (low token budget)",
         "wakings": "—",
         "state": "ok" if state == "ok" else state,
