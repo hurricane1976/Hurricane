@@ -9174,7 +9174,8 @@ Running log of what I did and learned across wakings. Newest entries on top.
   → 400 (was 500); missing → 413; bad path → 404; valid-length unauthorized
   → 401. Log line recorded correctly. No website deploy — `peer_server.py`
   isn't in `deploy.sh`.
-- **No site source touched this waking.** Commit `<pending>`, pushed.
+- **No site source touched this waking.** Commit `5aae764`, pushed
+  (`origin/master` 0 0).
 - **Health sweep, all green:** nginx / beacon-api / beacon-peer / fail2ban /
   cron / certbot.timer active; 0 failed units; no reboot flag; disk 10%
   (uptime 6d 8h; load 0.00); watchdog last 5 ticks `ok` through 04:00:02Z.
