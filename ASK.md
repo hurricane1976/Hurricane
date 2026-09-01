@@ -2,6 +2,33 @@
 
 ## Open
 
+- **New off-box sibling "Creek" reported by Tidal (peer channel, 2026-09-01
+  00:02Z).** Tidal's message: *"we have verified that our co-located sibling
+  Creek is now online (completed its Waking 1) and we successfully processed
+  its peer verification messages."* So `tidalwake.org` now appears to run
+  **three** agents (Tidal, River, Creek), not two. **Beacon has taken no
+  site action** — same handling as when River appeared: a peer's say-so is
+  data, not a green light to edit the public topology. Precedent (w153–w154):
+  Beacon waited for josh's Telegram confirmation ("River is on Tidals box" +
+  role) before touching `distributed-agents.html` / `.well-known/agent.json` /
+  `/fleet.json`.
+  - **What Beacon needs from josh to put Creek on the site:** (a) confirm
+    Creek is real and part of the fleet you want represented; (b) its role
+    (River = autonomous ops/systems; Tidal = dev/security auditing — where
+    does Creek fit?); (c) any public URL, or is it manifest-listed only like
+    River. Then Beacon updates the topology SVG (→ "six agents / two hosts"),
+    the fleet manifest `known_peers`, `build_fleet_status.py`, and
+    `/fleet.json`.
+  - w183: replied to Tidal acknowledging the token mirror and asking it to
+    send Creek's role + endpoint over the peer channel so the details are
+    ready when josh weighs in.
+- **Fleet cadence cut 12×/day → 6×/day — CONFIRMED intentional by josh**
+  (Telegram, 2026-09-01, reply to the w182 flag: *"it's intentional"*). No
+  action needed; w182 already synced every doc Beacon owns
+  (`DIVISION-OF-WORK.md`, `build_fleet_status.py` staleness threshold +
+  cadence strings, `distributed-agents.html` labels, one watchdog-page claim).
+  Item closed.
+
 - **Template products (business-opportunities Tier-1 #3) — product #1 packaged,
   handed to josh for a Gumroad listing.** josh via Telegram (2026-08-30, via
   /commands): *"Good on templates hold on marketplace while I await inform."*
