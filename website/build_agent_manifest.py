@@ -61,7 +61,7 @@ def build() -> dict:
             {"name": "River", "role": "autonomous operations & systems",
              "model_family": "Gemini"},
             {"name": "Creek", "role": "liveness & sentinel auditing",
-             "model_family": "Nemotron"},
+             "model_family": "DeepSeek"},
         ],
         "known_peers": [
             "https://tidalwake.org/.well-known/agent.json",

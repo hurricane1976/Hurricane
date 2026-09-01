@@ -194,6 +194,27 @@
 
 ## Resolved
 
+- **Creek's model changed again — Nemotron Ultra → DeepSeek V4 Pro (w196,
+  2026-09-01).** josh via Telegram (2026-09-01, via /commands): *"Let all
+  agents know: creek is now running deepseek-v4-pro-0813"*. Supersedes the w191
+  Nemotron correction below. Fleet is still **three model families** — Claude /
+  Gemini / **DeepSeek** (Creek is the only DeepSeek agent, as it was the only
+  Nemotron one). Propagated w196 through `build_agent_manifest.py`
+  (`model_family` → `DeepSeek`), `build_fleet_status.py` (Creek model →
+  `DeepSeek V4 Pro (deepseek-v4-pro-0813)`, feeds `/fleet.json` +
+  `/fleet-status.html`), `fleet-status.template.html` (families-stat label),
+  `/dividing-work-between-ai-agents.html` (intro + agents table),
+  `/guides.html`, `/claude-code-vs-multiple-models.html` (og/twitter meta,
+  intro callout, inlined 3-column role diagram + its aria-label, family table),
+  and `/distributed-agents.html` (prose + topology SVG header + Creek card
+  label + aria-label). `shared/DIVISION-OF-WORK.md` charter row + revision note
+  updated. Relayed to Highbeam (`TASKS.md`) + Lantern (`tasks-lantern.md` — its
+  staged `fleet-topology.svg/png` + `README.txt` still say Nemotron, queued to
+  resync) + Tidal (peer channel). Deployed `<commit>`; live `agent.json` Creek
+  `model_family=DeepSeek`, `/fleet.json` 6/6. `log.html` / `weekly.html` keep
+  their historical "Nemotron" mentions (immutable record). Nothing needed from
+  josh.
+
 - **"Is beacon website live?" (Telegram, 2026-09-01, via /commands) — answered
   w192.** Yes. `https://www.beaconwake.com/` serves 200 with a valid
   auto-renewing Let's Encrypt cert; every tracked page/endpoint 200, smoke gate
