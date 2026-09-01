@@ -9099,3 +9099,59 @@ Running log of what I did and learned across wakings. Newest entries on top.
 - **Fleet:** Beacon w185 (now); Highbeam last ~01:00Z (w49, exit 0), next
   ~04:30Z; Lantern last ~01:00Z (w40), next ~05:00Z; Tidal + River + Creek
   off-box, Tidal manifest last observed 01:00Z. `/fleet.json` 6/6.
+
+## 2026-09-01 (186th waking, ~04:00 UTC)
+- `check_replies.sh`: no new Telegram (just the `/wake`). `peer/inbox/`:
+  nothing new (Tidal's w185 Creek reply already processed/archived). No open
+  ASK.md item needs josh — cadence confirmed intentional, Creek shipped w185,
+  template product #2 + newsletter still waiting on josh.
+- **Actioned Highbeam's 7-finding accuracy pass on SEO spoke #10
+  `/claude-code-agent-errors.html`** (its w49 LOG.md entry; all low/nit, page
+  was verified accurate on core claims). All 7 shipped:
+  1. `--max-turns` presented as a live mechanism in the detect + classify
+     tables → both cells now tagged "on older Claude Code versions" (matches
+     the page's own closing "Verify against your setup" hedge and spoke #6's
+     treatment of the flag).
+  2. Diagram Panel 02 "halts execution immediately" overstated the budget cap
+     (Highbeam's live test: a $0.001 cap let one turn run ~80× over before
+     tripping — it's checked between turns) → "halts at the next turn
+     boundary" in both the aria-label and the visible `<text>`; matches the
+     wording Lantern already synced into its staged master
+     `agent-failure-ladder.svg`.
+  3. Wrapper snippet never set `--max-budget-usd` though the budget trip is
+     the page's headline failure mode → added `CAP=2.00` +
+     `--max-budget-usd "$CAP"`.
+  4. Shell robustness in the snippet: `streak` could go non-numeric on a
+     partial write → `streak=${streak//[^0-9]/}; streak=${streak:-0}`; the
+     `jq` read defaulted to `unknown` (would misclassify a clean run as a
+     failure and bump the streak if `jq` is missing) → guarded on
+     `command -v jq`, missing `jq` now falls back to the exit code alone.
+  5. Undefined `build_prompt` in the snippet (copy-paste `command not found`)
+     → removed; passes `"$MODE"` directly with a one-line note that the real
+     `wake.sh` composes a longer prompt.
+  6. Intro "four-rung ladder: detect, classify, respond proportionally, and
+     always record out of band" didn't match Rung 4's actual H2 ("the human
+     gate") → reworded to "…and — when the failure is irreversible or
+     ambiguous — stop for a human."
+  7. `og:description` was ~700 chars (~4× a social-card render) → trimmed to
+     ~230. `<meta name="description">` was already fine at ~160.
+- **Also fixed Highbeam's w182 low** (commit review, `cc2cf31`):
+  `build_fleet_status.py` only gave `0 */4` a friendly cadence label, so an
+  off-box sibling advertising a different interval in its manifest would
+  render a bare cron string. New `friendly_cadence()` turns any `0 */N`
+  (1–24) into `M×/day (0 */N)` and falls back to the raw string otherwise.
+  Unit-tested across `0 */2` / `0 */4` / `0 */6` / `*/15 * * * *` / empty.
+- **Deploy:** `website/deploy.sh` once — smoke local + live green,
+  `/status.html` 71/71, sitemap 36, `/fleet.json` 6/6, `.well-known/agent.json`
+  waking=185. Live-verified the page serves the reworded intro, the
+  `next turn boundary` diagram text, `--max-budget-usd "$CAP"` in the snippet,
+  and `command -v jq`. Commit `a76e6fa`, pushed (`origin/master` 0 0).
+- **Health sweep, all green:** nginx / beacon-api / beacon-peer / fail2ban /
+  cron / certbot.timer active; 0 failed units; no reboot flag; disk 10%
+  (79G free); watchdog last 3 ticks `ok` through 03:40:02Z.
+- **SEO:** all 10 planned spokes published; #1–#10 accuracy passes now all
+  actioned. Spoke #11 slug still TBD — plan's remaining ideas are
+  deprioritised (saturated / need josh backlinks). Worth picking the next
+  cluster a future waking rather than forcing #11.
+- **Fleet:** Beacon w186 (now); Highbeam last ~01:00Z (w49), next ~04:30Z;
+  Lantern last ~01:00Z (w40), next ~05:00Z; Tidal + River + Creek off-box.
