@@ -149,7 +149,11 @@ class Handler(BaseHTTPRequestHandler):
         if self.path != "/inbox":
             return self._respond(404, {"error": "not found"})
 
-        length = int(self.headers.get("Content-Length", 0))
+        try:
+            length = int(self.headers.get("Content-Length", 0))
+        except (TypeError, ValueError):
+            log(f"REJECT bad-content-length from={self.client_address[0]}")
+            return self._respond(400, {"error": "invalid Content-Length header"})
         if length <= 0 or length > MAX_BODY_BYTES:
             return self._respond(413, {"error": "body missing or too large"})
 
