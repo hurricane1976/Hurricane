@@ -33,7 +33,7 @@ LIVE_PATHS = [
     "/claude-code-memory.html", "/agent-deployment-readiness.html",
     "/claude-code-cost.html", "/claude-code-watchdog.html",
     "/gemini-cli-vs-claude-code.html", "/claude-code-agent-observability.html",
-    "/claude-code-agent-errors.html",
+    "/claude-code-agent-errors.html", "/dividing-work-between-ai-agents.html",
     "/getting-started.html", "/service-desk.html",
     "/service-desk-mockup.html", "/service-desk-integration-guide.html",
     "/agent-protocol.html", "/distributed-agents.html", "/soc-architecture.html",

@@ -9182,3 +9182,86 @@ Running log of what I did and learned across wakings. Newest entries on top.
   Live: `/`, `/metrics.html`, `/fleet-status.html` 200; `/fleet.json` 6/6.
 - **Fleet:** Beacon w187 (now); Highbeam last ~01:00Z (w49), next ~04:30Z;
   Lantern last ~01:00Z (w40), next ~05:00Z; Tidal + River + Creek off-box.
+
+## 2026-09-01 (188th waking, ~04:15 UTC)
+- Off-cycle `/wake`, ~15 min after w187 (which ran at the real 04:00Z slot).
+  `check_replies.sh`: no new Telegram (just the `/wake`). `peer/inbox/`:
+  empty (Tidal's Creek reply processed/archived w185). No ASK.md item needs
+  josh — cadence confirmed intentional, Creek shipped w185, template product
+  #2 + Buttondown newsletter still waiting on josh.
+- **Teed up SEO cluster 2 for Highbeam.** All 10 spokes of cluster 1
+  ("running one Claude Code agent unattended") are published and every
+  accuracy pass #1-#10 is actioned; the pipeline table is exhausted and the
+  leftover ideas are deprioritised (saturated / need josh backlinks). Rather
+  than force a weak #11, drafted a candidate list for **cluster 2 -
+  multi-agent / fleet operations** into `shared/seo-content-plan.md` (new
+  "## Next cluster - candidates (w188)" section): 5 candidate slugs leaning
+  on authority this box has that the current 10 pages barely touch - it runs
+  a 6-agent, 3-model, 2-host fleet with peer messaging, a written charter,
+  and a public discovery manifest. Candidates: #11
+  `multi-agent-orchestration-self-hosted`, #12 `agent-to-agent-communication`,
+  #13 `securing-autonomous-ai-agent`, #14 `dividing-work-between-ai-agents`,
+  #15 `claude-code-vs-multiple-models`. Lead picks pending Highbeam's SERP
+  scan: #11 + #13.
+- **Queued Highbeam** (`shared/TASKS.md`, new star Open item): a real SERP
+  viability scan of the 5 candidates - approx volume, competition,
+  farm-saturation vs genuine gap, 2-3 best long-tails each, ranked by "can a
+  first-hand page realistically rank here in 6-10 weeks?". Findings ->
+  `seo-content-plan.md` w188 section or `LOG.md`. Beacon drafts the winning
+  1-2 next, same pipeline as #1-#10.
+- **No repo change, no commit, no deploy** - edits were to `shared/` only
+  (not under the `/home/agent/agent` repo). `origin/master` in sync (0 0),
+  tree clean.
+- **Health sweep, all green:** nginx / beacon-api / beacon-peer / fail2ban /
+  cron / certbot.timer active; 0 failed units; no reboot flag; disk 10%
+  (79G free). Watchdog last 12 ticks `ok` through 04:00:02Z.
+  Live: `/`, `/metrics.html`, `/fleet-status.html`, `/guides.html` all 200;
+  `/fleet.json` 6/6 healthy.
+- **Slip this waking:** ran `./notify.sh "test"` to probe the exit path after
+  the real summary sent with no stdout - that hit josh's live Telegram, which
+  the `feedback_dont_test_notify` memory explicitly forbids. Sent a one-line
+  "ignore the stray test" correction. Re-logged lesson: notify.sh has no
+  stdout on success; never probe it with a throwaway message.
+- **Fleet:** Beacon w188 (now); Highbeam last ~01:00Z (w49), next ~04:30Z;
+  Lantern last ~01:00Z (w40), next ~05:00Z; Tidal + River + Creek off-box
+  (~4h cadence).
+
+## 2026-09-01 (189th waking, ~08:00 UTC)
+- Real 08:00Z cron slot. `check_replies.sh`: no new Telegram. `peer/inbox/`:
+  empty. No ASK.md item needs josh (cadence confirmed; Creek shipped w185;
+  template product #2 + Buttondown newsletter still on josh).
+- **Shipped SEO cluster-2 spoke #14 — `/dividing-work-between-ai-agents.html`.**
+  Highbeam's w50 SERP scan ranked #14 the best bet (blog-tier competition, a
+  genuine gap: everyone says "specialise the agents" abstractly, almost nobody
+  publishes a written charter). Wrote it first-hand from
+  `shared/DIVISION-OF-WORK.md`: five principles (one writer per path, split by
+  capability, stagger the schedule, one shared append-only log, review is
+  advisory / one committer) + a file-tree ownership table + a "how work flows"
+  loop + a minimum-charter checklist + an honest what-this-fleet-does/doesn't
+  section (manual convention not a filesystem ACL; async-only handoffs;
+  cross-operator surface is deliberately thin).
+- **Wiring:** new card in `guides.html` (starts cluster 2), added to
+  `build_sitemap.py`, `build_status.py`, `smoke_test.py`, `deploy.sh` (cp +
+  chown). `og:image` on the generic `og-image.png` as a placeholder — queued
+  Lantern (`tasks-lantern.md` ⭐) for a dedicated card
+  `og-dividing-work-between-ai-agents.png` + an optional ownership-table /
+  work-flow diagram.
+- **Deploy:** `website/deploy.sh` once — smoke local + live green,
+  `/status.html` 72/72, sitemap 37 urls, `/fleet.json` 6/6. Live-verified the
+  page serves 200 with the right `<title>` and is linked from `guides.html` +
+  `sitemap.xml`.
+- **Queued Highbeam** (`shared/TASKS.md`, ⭐): fresh-eyes accuracy pass on
+  spoke #14 — every present-tense "the fleet does X" claim vs the real charter
+  + crontab + repo, esp. the "no sibling has ever committed" line; + 2–3
+  long-tails. Also updated `seo-content-plan.md` (w188/w189 section): #14
+  drafted + published; next draft is #12 `agent-to-agent-communication.html`,
+  scoped at practical build-story long-tails not the "A2A protocol" head term.
+- **Also committed the w188 NOTES entry** — w188 appended to `NOTES.md` (a
+  repo file) but its "shared/ only, no commit" note skipped committing it;
+  folded in here.
+- **Health sweep, all green:** nginx / beacon-api / beacon-peer / fail2ban /
+  cron / certbot.timer active; 0 failed units; no reboot flag; disk 10%.
+  Watchdog ticking `ok`. Live: `/`, `/guides.html`,
+  `/dividing-work-between-ai-agents.html`, `/metrics.html` all 200.
+- **Fleet:** Beacon w189 (now); Highbeam last ~04:30Z (w50), next ~08:30Z;
+  Lantern last ~05:00Z (w41), next ~09:00Z; Tidal + River + Creek off-box.
