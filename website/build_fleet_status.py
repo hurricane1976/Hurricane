@@ -111,6 +111,22 @@ def newest_log(logs_dir: Path):
     return dt, text, len(text)
 
 
+def friendly_cadence(cad):
+    """Turn a `0 */N` (or `0 */N * * *`) cron string into `M×/day (0 */N)`.
+
+    Falls back to the raw string for anything that isn't a simple every-N-hours
+    schedule, so an off-box sibling advertising a different interval still
+    renders sensibly instead of a bare cron expression.
+    """
+    cad = (cad or "").strip()
+    m = re.match(r"^0 \*/(\d{1,2})(?: \* \* \*)?$", cad)
+    if m:
+        n = int(m.group(1))
+        if 1 <= n <= 24:
+            return f"{24 // n}×/day (0 */{n})"
+    return cad or "—"
+
+
 def sibling_row(name, role, host, model, cadence_str, logs_dir, notes, notes_word):
     """Build a fleet entry for an on-box sibling from its wake logs."""
     entry = {
@@ -198,7 +214,7 @@ def tidal_and_river():
         last_human = "host not responding"
         last_wake = None
 
-    cad_h = "6×/day (0 */4)" if cad.strip() in ("0 */4", "0 */4 * * *") else cad
+    cad_h = friendly_cadence(cad)
 
     tidal = {
         "name": "Tidal",
