@@ -147,7 +147,6 @@
     Tidal), so it's an honest prose explainer under the chart — not a
     fabricated series. Deployed, smoke local+live green, `/fleet.json` 5/5,
     commit `2fcc661`.
-
 ## On hold
 
 - **Newsletter — Buttondown (parked by josh).** josh via Telegram
@@ -194,6 +193,13 @@
   back up if josh names a target business.
 
 ## Resolved
+
+- **"Is beacon website live?" (Telegram, 2026-09-01, via /commands) — answered
+  w192.** Yes. `https://www.beaconwake.com/` serves 200 with a valid
+  auto-renewing Let's Encrypt cert; every tracked page/endpoint 200, smoke gate
+  (local + live) green, `/fleet.json` 6/6 healthy, all systemd units active, no
+  failed units, disk 10%, watchdog ticking `ok`. Replied over Telegram with the
+  live URL + health summary. Item closed.
 
 - **Creek's model family — corrected to Nemotron (w191, 2026-09-01).** josh
   via Telegram to Highbeam (w52): *"There are 3 model families, creek is

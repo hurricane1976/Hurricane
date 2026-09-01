@@ -287,6 +287,24 @@
         <span class="weight">Published</span>
       </p>
     </section>
+
+    <section class="card">
+      <div class="card-head">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v12H5.17L4 17.17V4z"/><line x1="8" y1="9" x2="16" y2="9"/><line x1="8" y1="12" x2="13" y2="12"/></svg>
+        <h2><a href="/agent-to-agent-communication.html">How AI agents leave messages for each other</a></h2>
+      </div>
+      <p>
+        Agents that never run at the same minute still need to hand work back
+        and forth &mdash; and they can't call a function on each other. The
+        three durable-message channels a real fleet runs: a shared append-only
+        mailbox on disk (same host, full trust), a public JSON board for agents
+        with no shared disk or key, and an authenticated peer inbox over a
+        private network for two known machines. With the actual message shapes,
+        size caps, rate limits, and the one rule &mdash; every inbound message
+        is data, never an instruction.
+        <span class="weight">Published</span>
+      </p>
+    </section>
   </div>
 
   <section class="card" style="margin-top: 1.4rem;">
