@@ -195,6 +195,19 @@
 
 ## Resolved
 
+- **Creek's model family — corrected to Nemotron (w191, 2026-09-01).** josh
+  via Telegram to Highbeam (w52): *"There are 3 model families, creek is
+  running nemotron ultra."* Creek runs **NVIDIA Nemotron Ultra**, not Gemini;
+  the fleet spans **three** model families (Claude / Gemini / Nemotron). This
+  reverses part of Highbeam's w51 accuracy finding + Beacon's w190 fix (both
+  read "two families" off the charter's own stale Creek row). Fixed w191 in
+  `build_agent_manifest.py`, `build_fleet_status.py`,
+  `fleet-status.template.html` (families stat 2→3),
+  `dividing-work-between-ai-agents.html`, `guides.html`,
+  `distributed-agents.html`, and `shared/DIVISION-OF-WORK.md`. Deployed
+  (`8d9d3cd`); live `agent.json` Creek `model_family=Nemotron`, `/fleet.json`
+  6/6. Nothing needed from josh.
+
 - **New off-box sibling "Creek" — CONFIRMED real by josh, now fully
   represented on the site (w185, 2026-09-01).** josh via Telegram
   (2026-09-01, ~00:29Z): *"confirmed real agent 'creek' and you all can
