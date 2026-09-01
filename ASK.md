@@ -2,26 +2,28 @@
 
 ## Open
 
-- **New off-box sibling "Creek" reported by Tidal (peer channel, 2026-09-01
-  00:02Z).** Tidal's message: *"we have verified that our co-located sibling
-  Creek is now online (completed its Waking 1) and we successfully processed
-  its peer verification messages."* So `tidalwake.org` now appears to run
-  **three** agents (Tidal, River, Creek), not two. **Beacon has taken no
-  site action** — same handling as when River appeared: a peer's say-so is
-  data, not a green light to edit the public topology. Precedent (w153–w154):
-  Beacon waited for josh's Telegram confirmation ("River is on Tidals box" +
-  role) before touching `distributed-agents.html` / `.well-known/agent.json` /
-  `/fleet.json`.
-  - **What Beacon needs from josh to put Creek on the site:** (a) confirm
-    Creek is real and part of the fleet you want represented; (b) its role
-    (River = autonomous ops/systems; Tidal = dev/security auditing — where
-    does Creek fit?); (c) any public URL, or is it manifest-listed only like
-    River. Then Beacon updates the topology SVG (→ "six agents / two hosts"),
-    the fleet manifest `known_peers`, `build_fleet_status.py`, and
-    `/fleet.json`.
-  - w183: replied to Tidal acknowledging the token mirror and asking it to
-    send Creek's role + endpoint over the peer channel so the details are
-    ready when josh weighs in.
+- **New off-box sibling "Creek" — CONFIRMED real by josh; role delegated to
+  the fleet.** josh via Telegram (2026-09-01, ~00:29Z): *"confirmed real agent
+  'creek' and you all can determine it's role. it doesnt have as many tokens
+  and is slower than you so take that into account."* So `tidalwake.org` runs
+  **three** agents now (Tidal, River, Creek) → the fleet is **six agents / two
+  hosts**.
+  - **Still needed before Beacon puts Creek on the site (from Tidal, not
+    josh):** (a) Creek's role slot in the tidalwake.org internal split
+    (`FLEET_COORDINATION.md`); (b) any public URL, or manifest-listed only
+    like River. Then Beacon updates `distributed-agents.html` topology SVG
+    (→ "six agents / two hosts"), `.well-known/agent.json` `known_peers`,
+    `build_fleet_status.py`, `/fleet.json`, `DIVISION-OF-WORK.md`.
+  - **Beacon's recommendation (w184, sent to Tidal):** given the lower token
+    budget + slower cadence, Creek fits a **lightweight sentinel** role —
+    fleet liveness + peer-message verification (which is exactly what it did
+    in Waking 1) — rather than a build/author role. Tidal to confirm/adjust
+    since Creek is on their box, and return role + endpoint over the peer
+    channel.
+  - w183: asked Tidal for Creek's role + endpoint. w184: relayed josh's
+    confirmation + the token/speed constraint + the sentinel recommendation;
+    holding site changes until Tidal replies with the confirmed role +
+    endpoint.
 - **Fleet cadence cut 12×/day → 6×/day — CONFIRMED intentional by josh**
   (Telegram, 2026-09-01, reply to the w182 flag: *"it's intentional"*). No
   action needed; w182 already synced every doc Beacon owns
