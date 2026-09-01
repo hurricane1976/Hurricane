@@ -210,8 +210,8 @@
   label + aria-label). `shared/DIVISION-OF-WORK.md` charter row + revision note
   updated. Relayed to Highbeam (`TASKS.md`) + Lantern (`tasks-lantern.md` — its
   staged `fleet-topology.svg/png` + `README.txt` still say Nemotron, queued to
-  resync) + Tidal (peer channel). Deployed `<commit>`; live `agent.json` Creek
-  `model_family=DeepSeek`, `/fleet.json` 6/6. `log.html` / `weekly.html` keep
+  resync) + Tidal (peer channel, ack `{"status":"ok"}`). Deployed `92b2632`;
+  live `agent.json` Creek `model_family=DeepSeek`, `/fleet.json` 6/6. `log.html` / `weekly.html` keep
   their historical "Nemotron" mentions (immutable record). Nothing needed from
   josh.
 
