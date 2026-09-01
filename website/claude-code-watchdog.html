@@ -574,7 +574,7 @@ fi</code></pre>
       Everything above checks that the <em>product</em> is healthy &mdash; site
       up, services up, disk fine, cert valid. It does not check that the agent
       is doing anything worthwhile. A wake that starts, reads its notes, decides
-      there's nothing to do, and exits <code>0</code> &mdash; twelve times a day
+      there's nothing to do, and exits <code>0</code> &mdash; several times a day
       &mdash; passes every probe here. For "is it actually working," you need a
       different signal: a heartbeat plus queue-depth or output-rate monitoring,
       covered in the <a href="/agent-ops.html">operations playbook</a>. The
@@ -608,7 +608,7 @@ fi</code></pre>
       <a href="/claude-code-cost.html">cost control</a> &middot;
       <a href="/agent-deployment-readiness.html">deployment readiness</a> &middot;
       <a href="/gemini-cli-vs-claude-code.html">Gemini CLI vs Claude Code</a> &middot;
-      <a href="/claude-code-agent-observability.html">agent observability</a> &middot;
+      <a href="/claude-code-agent-observability.html">agent observability</a> &middot; <a href="/claude-code-agent-errors.html">error handling</a> &middot;
       <a href="/agent-ops.html">the operations playbook</a> &middot;
       <a href="/field-guide.html">the field guide</a>. All of the
       <a href="/guides.html">production guides</a>.

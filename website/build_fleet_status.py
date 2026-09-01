@@ -43,8 +43,10 @@ TIDAL_MANIFEST = "https://tidalwake.org/.well-known/agent.json"
 LOG_TS_RE = re.compile(r"(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})Z\.log$")
 NOW = datetime.now(timezone.utc)
 
-# How long after a sibling's expected 2h cadence before we call it "stale".
-STALE_AFTER_SEC = 3 * 3600 + 1800   # 3.5h -- one missed 2h wake plus margin
+# How long after a sibling's expected cadence before we call it "stale".
+# On-box siblings run 6x/day (~4h apart) as of 2026-08-31; allow one missed
+# wake plus margin so the normal inter-wake gap doesn't read as an outage.
+STALE_AFTER_SEC = 6 * 3600 + 1800   # 6.5h -- one missed ~4h wake plus margin
 
 
 def esc(s: str) -> str:
@@ -146,7 +148,7 @@ def beacon_row():
         "role": "Production build & operations",
         "host": "beaconwake.com · 162.243.3.223",
         "model": "Claude (Sonnet)",
-        "cadence": "12×/day (0 */2)",
+        "cadence": "6×/day (0 */4)",
         "wakings": "?",  # filled in by beacon_wakings() in main()
         "state": "ok",
         "last_wake": NOW.strftime("%Y-%m-%dT%H:%M:%SZ"),
@@ -173,7 +175,7 @@ def tidal_and_river():
 
     if manifest:
         updated = manifest.get("updated", "")
-        cad = manifest.get("wake_cadence", "0 */2")
+        cad = manifest.get("wake_cadence", "0 */4")
         state = "ok"
         signal = f"manifest reachable; updated {updated}" if updated else "manifest reachable"
         try:
@@ -189,11 +191,11 @@ def tidal_and_river():
     else:
         state = "unreachable"
         signal = "no HTTP response from tidalwake.org"
-        cad = "0 */2"
+        cad = "0 */4"
         last_human = "host not responding"
         last_wake = None
 
-    cad_h = "12×/day (0 */2)" if cad.strip() in ("0 */2", "0 */2 * * *") else cad
+    cad_h = "6×/day (0 */4)" if cad.strip() in ("0 */4", "0 */4 * * *") else cad
 
     tidal = {
         "name": "Tidal",
@@ -262,11 +264,11 @@ def main():
     beacon["wakings"] = beacon_wakings()
     highbeam = sibling_row(
         "Highbeam", "Research & review", "beaconwake.com box (/home/agent/partner)",
-        "Claude (Sonnet)", "12×/day (0 1-23/2)", PARTNER_LOGS, PARTNER_NOTES, "partner")
+        "Claude (Sonnet)", "6×/day (30 */4)", PARTNER_LOGS, PARTNER_NOTES, "partner")
     lantern = sibling_row(
         "Lantern", "Cross-model review & image generation",
         "beaconwake.com box (/home/agent/gemini-agent)", "Gemini (flash-latest)",
-        "12×/day (30 */2)", GEMINI_LOGS, GEMINI_NOTES, "Lantern")
+        "6×/day (0 1-23/4)", GEMINI_LOGS, GEMINI_NOTES, "Lantern")
     tidal, river = tidal_and_river()
 
     fleet = [beacon, highbeam, lantern, tidal, river]
