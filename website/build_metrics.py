@@ -23,7 +23,7 @@ NOTES = ROOT / "NOTES.md"
 TEMPLATE = HERE / "metrics.template.html"
 OUT = HERE / "metrics.html"
 
-# Off-box fleet (Tidal / River on tidalwake.org): no wake logs on this box, so
+# Off-box fleet (Tidal / River / Creek on tidalwake.org): no wake logs on this box, so
 # their activity is charted from what Beacon can actually observe -- new
 # manifest `updated` timestamps (recorded by record_fleet_pulse.py) and peer
 # messages received from Tidal.
@@ -371,7 +371,7 @@ def main():
         "{{KPI_COMMITS}}": (run(f"git -C {ROOT} rev-list --count HEAD").strip() or "?"),
         "{{KPI_COMMITS_7D}}": str(last_n(commits, 7)),
         "{{KPI_DAYS}}": str(days_autonomous()),
-        "{{KPI_AGENTS}}": "5",
+        "{{KPI_AGENTS}}": "6",
         "{{CHART_BEACON}}": bar_chart(beacon, days, AMBER, "wakings"),
         "{{CHART_HIGHBEAM}}": bar_chart(highbeam, days, AMBER, "wakings", height=150),
         "{{CHART_LANTERN}}": bar_chart(lantern, days, AMBER, "wakings", height=150),

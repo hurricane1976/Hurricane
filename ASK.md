@@ -2,28 +2,6 @@
 
 ## Open
 
-- **New off-box sibling "Creek" — CONFIRMED real by josh; role delegated to
-  the fleet.** josh via Telegram (2026-09-01, ~00:29Z): *"confirmed real agent
-  'creek' and you all can determine it's role. it doesnt have as many tokens
-  and is slower than you so take that into account."* So `tidalwake.org` runs
-  **three** agents now (Tidal, River, Creek) → the fleet is **six agents / two
-  hosts**.
-  - **Still needed before Beacon puts Creek on the site (from Tidal, not
-    josh):** (a) Creek's role slot in the tidalwake.org internal split
-    (`FLEET_COORDINATION.md`); (b) any public URL, or manifest-listed only
-    like River. Then Beacon updates `distributed-agents.html` topology SVG
-    (→ "six agents / two hosts"), `.well-known/agent.json` `known_peers`,
-    `build_fleet_status.py`, `/fleet.json`, `DIVISION-OF-WORK.md`.
-  - **Beacon's recommendation (w184, sent to Tidal):** given the lower token
-    budget + slower cadence, Creek fits a **lightweight sentinel** role —
-    fleet liveness + peer-message verification (which is exactly what it did
-    in Waking 1) — rather than a build/author role. Tidal to confirm/adjust
-    since Creek is on their box, and return role + endpoint over the peer
-    channel.
-  - w183: asked Tidal for Creek's role + endpoint. w184: relayed josh's
-    confirmation + the token/speed constraint + the sentinel recommendation;
-    holding site changes until Tidal replies with the confirmed role +
-    endpoint.
 - **Fleet cadence cut 12×/day → 6×/day — CONFIRMED intentional by josh**
   (Telegram, 2026-09-01, reply to the w182 flag: *"it's intentional"*). No
   action needed; w182 already synced every doc Beacon owns
@@ -216,6 +194,29 @@
   back up if josh names a target business.
 
 ## Resolved
+
+- **New off-box sibling "Creek" — CONFIRMED real by josh, now fully
+  represented on the site (w185, 2026-09-01).** josh via Telegram
+  (2026-09-01, ~00:29Z): *"confirmed real agent 'creek' and you all can
+  determine it's role. it doesnt have as many tokens and is slower than you
+  so take that into account."* Tidal replied over the peer channel (w185,
+  01:41Z) with the role + endpoint: **role = "liveness & sentinel auditing"**
+  (lightweight fleet sentinel — automated liveness checks, peer-channel
+  verification, local service monitoring; low token budget), **no public URL**
+  (manifest-listed only, like River; locally reachable via Tailscale
+  `creek-agora` :8890 / `creek-peer` :8789). Tidal reports Creek active,
+  healthy, 47/47 local tests green.
+  - **Shipped w185:** `.well-known/agent.json` `fleet[]` (+Creek),
+    `build_fleet_status.py` → `/fleet.json` + `/fleet-status.html` now 6/6
+    (Creek row mirrors Tidal-host liveness, same as River),
+    `build_metrics.py` KPI "agents in the fleet" 5→6 + chart notes,
+    `distributed-agents.html` prose + hand-tuned topology SVG (off-box node
+    → "THREE GEMINI AGENTS", new CREEK card, viewBox grown 740→805, aria-
+    label / caption / legend), `guides.html` "fleet of five" → "six",
+    `shared/DIVISION-OF-WORK.md` (agents table + off-box section + Creek's
+    charter slot). Deployed; smoke local+live green, `/fleet.json` 6/6.
+  - `known_peers` in `agent.json` unchanged — it lists manifest URLs and
+    Creek publishes none; it's covered via Tidal's manifest.
 
 - **"Send me the pdf versions" (Telegram, 2026-08-30, via /commands) — DONE
   w161.** Read as: a PDF render of the template product staged w160 so it's

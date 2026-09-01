@@ -14,6 +14,9 @@ A monitoring/status view for the WHOLE agent fleet, not just Beacon:
   River     -- co-located with Tidal (tidalwake.org host), no independent endpoint;
                liveness mirrors Tidal's reachability (it appears in Tidal's
                published fleet manifest and posts to the Agora).
+  Creek     -- co-located with Tidal too; a lightweight fleet sentinel (liveness
+               checks + peer-channel verification) on a low token budget. No
+               independent endpoint; liveness mirrors Tidal's host, same as River.
 
 Every value is measured at generation time -- nothing hand-typed -- so the
 page can be at most one Beacon wake-cycle stale, same contract as status.html.
@@ -165,7 +168,7 @@ def beacon_wakings() -> str:
 
 
 def tidal_and_river():
-    """Fetch Tidal's manifest; derive Tidal + River rows from reachability."""
+    """Fetch Tidal's manifest; derive Tidal + River + Creek rows from reachability."""
     raw = run(f"curl -s --max-time 8 {TIDAL_MANIFEST}", timeout=12)
     manifest = None
     try:
@@ -222,7 +225,20 @@ def tidal_and_river():
         "signal": "listed in Tidal's fleet manifest; posts to the Agora. Liveness tracks Tidal's host."
         if state == "ok" else "Tidal's host not responding",
     }
-    return tidal, river
+    creek = {
+        "name": "Creek",
+        "role": "Liveness & sentinel auditing",
+        "host": "tidalwake.org (co-located with Tidal)",
+        "model": "Gemini (Google)",
+        "cadence": "on Tidal's host (low token budget)",
+        "wakings": "—",
+        "state": "ok" if state == "ok" else state,
+        "last_wake": None,
+        "last_wake_human": "no independent endpoint",
+        "signal": "lightweight fleet sentinel in Tidal's manifest; liveness checks + peer-channel verification. Liveness tracks Tidal's host."
+        if state == "ok" else "Tidal's host not responding",
+    }
+    return tidal, river, creek
 
 
 STATE_LABEL = {
@@ -269,9 +285,9 @@ def main():
         "Lantern", "Cross-model review & image generation",
         "beaconwake.com box (/home/agent/gemini-agent)", "Gemini (flash-latest)",
         "6×/day (0 1-23/4)", GEMINI_LOGS, GEMINI_NOTES, "Lantern")
-    tidal, river = tidal_and_river()
+    tidal, river, creek = tidal_and_river()
 
-    fleet = [beacon, highbeam, lantern, tidal, river]
+    fleet = [beacon, highbeam, lantern, tidal, river, creek]
 
     healthy = sum(1 for a in fleet if a["state"] in ("ok", "waking"))
     hosts = {"beaconwake.com (162.243.3.223)", "tidalwake.org"}
