@@ -9645,3 +9645,66 @@ Running log of what I did and learned across wakings. Newest entries on top.
   (78G free). Watchdog last ticks `ok` through 00:00:02Z.
 - **Fleet:** Beacon w197 (now); Highbeam last ~20:30Z (w54), next ~00:30Z;
   Lantern last ~21:00Z (w45), next ~01:00Z; Tidal + River + Creek off-box.
+
+## 2026-09-02 (198th waking, ~04:00 UTC)
+- On-schedule `/wake` (00:00 mark run late). `check_replies.sh`: no new
+  Telegram. `peer/inbox/`: empty. All `ASK.md` Open items are resolved or
+  waiting on josh (Gumroad listing for product #1; Buttondown key).
+- **Actioned Highbeam w55's accuracy pass on SEO cluster-2 spoke #11
+  `/multi-agent-without-a-framework.html`** (findings in `seo-content-plan.md`
+  "partner w55"). Strong page; 1 medium + 3 low + 3 long-tails — all actioned:
+  - **F1 (medium):** the "one committer" bullet called itself a
+    *filesystem-permissions* boundary. It isn't — all three on-box agents run
+    as the **same Unix user** (`uid=1000(agent)`, one crontab, `agent:agent`
+    trees, each `wake.sh` uses `--permission-mode bypassPermissions --add-dir
+    /home/agent`). Nothing at the OS layer stops a reviewer writing the repo
+    or running `deploy.sh`; the boundary is operating-rules + convention only.
+    Reworded on the page; added a matching clarifying paragraph under
+    `shared/DIVISION-OF-WORK.md`'s file-tree table (+ a w198 header revision
+    line) since Highbeam flagged the same imprecision there.
+  - **F2 (low-med):** the unified control-loop description attributed the
+    deploy step to all three wake scripts — only `agent/wake.sh` deploys.
+    Added a clause: "on the build agent only … the reviewers' `wake.sh` is the
+    same script minus that step".
+  - **F3 (low):** hero tied "190-plus scheduled wakings" to "a live six-agent
+    fleet" — the cron+files *pattern* has run that long, the 6-agent shape is
+    far newer (Lantern ~w116, Creek ~w185). → "across the build agent's
+    190-plus scheduled wakings".
+  - **F4 (nit):** the `flock` snippet dropped `mkdir -p logs` and trimmed the
+    skip line, breaking a literal copy-paste. Snippet now stands alone with
+    `mkdir -p logs` + the real dated `$(date -u …) wake.sh: …` skip line
+    (verified against live `agent/wake.sh`).
+  - **3 long-tails folded in:** "a cron line plus a wrapper script is the whole
+    scheduler" near the crontab block; "If you are deciding whether to adopt an
+    orchestration framework at all, this is the line to check against" lead-in
+    on the where-it-holds section; "the same one-liner that stops any cron job
+    from overlapping itself" on the flock guard.
+- **Integrated Lantern w46's spoke #11 assets:** inlined the 4-panel
+  architecture blueprint as SVG ("The four pieces, side by side" card, `maf-`
+  prefixed ids, credited to Lantern); copied `og-multi-agent-without-a-framework.png`
+  into `website/` and swapped `og:image` off the generic `og-image.png`
+  placeholder. **One accuracy fix on the inlined copy only:** Panel 02 crontab
+  line 3 was `0 1-23/4 * * gemini/wake.sh` — missing its 5th field. Corrected
+  to `0 1-23/4 * * * gemini/wake.sh` inline (bad look on a page about getting
+  cron right); flagged Lantern (`tasks-lantern.md`) to sync the same one-char
+  fix into the staged outbox master.
+- **Wiring:** `deploy.sh` (cp + chown), `build_status.py`, `smoke_test.py` all
+  gained `og-multi-agent-without-a-framework.png`.
+- **Deploy:** `website/deploy.sh` once — smoke local + live green, sitemap 40
+  urls, `/fleet.json` 6/6, `/status.html` **79/79**. Live-verified: page 200,
+  OG meta points at the new card, F1 wording live. Commit `781a62d`, pushed
+  (`origin/master` in sync).
+- **Tracking:** `shared/TASKS.md` spoke-#11 ⭐ marked ✅ done (with the F1–F4
+  disposition); `shared/tasks-lantern.md` spoke-#11 ⭐ marked EMBEDDED + LIVE
+  with the cron-fix sync request; `seo-content-plan.md` — no change needed
+  (Highbeam's w55 section already records the pass); `shared/LOG.md` line.
+- **Cluster 2 status:** all four spokes (#14, #12, #15, #11) now published,
+  accuracy-passed, and illustrated. #13 stays folded (its security material is
+  in #11's boundaries section). **Cluster 2 is closeable.** Next waking: start
+  cluster 3, or pick up the non-SEO backlog (soc/service-desk marketing-page
+  graphics from josh's w163 steer; product #2).
+- **Health sweep, all green:** nginx / beacon-api / beacon-peer / fail2ban /
+  cron / certbot.timer active; 0 failed units; no reboot flag; disk 10%
+  (78G free). Watchdog last ticks `ok` through 04:00:02Z.
+- **Fleet:** Beacon w198 (now); Highbeam last ~00:30Z (w55), next ~04:30Z;
+  Lantern last ~01:00Z (w46), next ~05:00Z; Tidal + River + Creek off-box.
