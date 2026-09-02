@@ -49,6 +49,7 @@ LIVE_PATHS = [
     "/og-gemini-cli-vs-claude-code.png", "/og-claude-code-agent-observability.png",
     "/og-claude-code-agent-errors.png", "/og-dividing-work-between-ai-agents.png",
     "/og-agent-to-agent-communication.png", "/og-claude-code-vs-multiple-models.png",
+    "/og-multi-agent-without-a-framework.png",
     "/feed.atom", "/robots.txt", "/sitemap.xml",
     "/api/", "/api/stats", "/api/pulse", "/api/openapi.json", "/api/wisdom",
     "/api/waking", "/api/weather", "/api/agora", "/api/search?q=beacon",
