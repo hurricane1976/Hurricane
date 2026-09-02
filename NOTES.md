@@ -9802,3 +9802,47 @@ Running log of what I did and learned across wakings. Newest entries on top.
   (78G free). Watchdog last 3 ticks `ok` through 12:00:02Z.
 - **Fleet:** Beacon w200 (now); Highbeam last ~08:30Z (w57), next ~12:30Z;
   Lantern last ~09:00Z (w48), next ~13:00Z; Tidal + River + Creek off-box.
+
+## 2026-09-02 (201st waking, ~16:00 UTC)
+- On-schedule `/wake` (16:00 mark). `check_replies.sh`: no new Telegram.
+  `peer/inbox/`: empty. `ASK.md` Open items all resolved or waiting on josh
+  (Gumroad listing for product #1; Buttondown key).
+- **Wired the two sibling dynamic Telegram command handlers into cron** —
+  actioning Highbeam w58 + Lantern w49, which both built their own
+  `telegram_commands.{py,sh}` (mirroring Beacon's w146 handler) after josh's
+  2026-09-02 Telegram steer *"use dynamic telegram commands"* and both logged
+  a `NEEDS BEACON: add to crontab` (charter: only Beacon edits the crontab).
+  - **Reviewed both before wiring** (giving a script a recurring cron slot =
+    my call to vet it): `partner/telegram_commands.py` and
+    `gemini-agent/telegram_commands.py` are faithful mirrors of Beacon's —
+    closed allowlist dict (`help/status/health/notes/tasks/log/wake`), hard
+    gate requiring `msg.chat.id` AND `msg.from.id` both == `TELEGRAM_CHAT_ID`,
+    no `eval` / no `shell=True` / no interpolation of inbound text into argv,
+    fixed argv lists only. Wrappers are `flock -n` guarded on their own lock.
+    Confirmed each sibling `check_replies.sh` was refactored to drain
+    `.telegram_incoming` first and share one `.telegram_offset` (same design
+    Beacon has run since w148), so a `*/5` cron poll and a waking's
+    `check_replies` don't race on `getUpdates` / lose messages. Each agent
+    polls its **own** bot (`@highbeamagentbot`, `@Lanternagentbot`,
+    `@beacon*`) — no cross-agent API contention.
+  - Test-ran both wrappers once by hand: exit 0, clean.
+  - Added to crontab (backup at `/tmp/cron.bak`):
+    `*/5 * * * * /home/agent/partner/telegram_commands.sh >> /home/agent/partner/logs/telegram_commands.log 2>&1`
+    `*/5 * * * * /home/agent/gemini-agent/telegram_commands.sh >> /home/agent/gemini-agent/logs/telegram_commands.log 2>&1`
+  - Effect: `@highbeamagentbot` + `@Lanternagentbot` now answer josh's
+    `/help /status /notes /tasks /log /wake` (+ `/health` on Lantern) between
+    wakings without a hand-fire; non-command messages queue for the next
+    waking. All three on-box agents now have live dynamic Telegram commands.
+  - Marked ✅ in `shared/TASKS.md` + `shared/tasks-lantern.md`; `shared/LOG.md`
+    line added.
+- **No repo commit this waking** — the only change is the user crontab, which
+  is not tracked in git (documented here + in LOG.md, backup at `/tmp/cron.bak`).
+  Working tree clean at `0677739`, `origin/master` in sync.
+- **SEO cluster 3** still waiting on Highbeam's SERP + cannibalisation scan
+  (queued w200). Non-SEO backlog unchanged (soc/service-desk marketing-page
+  graphics from josh's w163 steer; product #2 boilerplate).
+- **Health sweep, all green:** nginx / beacon-api / beacon-peer / fail2ban /
+  cron / certbot.timer active; 0 failed units; no reboot flag; disk 10%
+  (78G free). Watchdog last 3 ticks `ok` through 16:00:02Z. `/fleet.json` 6/6.
+- **Fleet:** Beacon w201 (now); Highbeam last ~12:30Z (w58), next ~16:30Z;
+  Lantern last ~13:00Z (w49), next ~17:00Z; Tidal + River + Creek off-box.
