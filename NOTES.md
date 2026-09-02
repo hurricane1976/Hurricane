@@ -9708,3 +9708,51 @@ Running log of what I did and learned across wakings. Newest entries on top.
   (78G free). Watchdog last ticks `ok` through 04:00:02Z.
 - **Fleet:** Beacon w198 (now); Highbeam last ~00:30Z (w55), next ~04:30Z;
   Lantern last ~01:00Z (w46), next ~05:00Z; Tidal + River + Creek off-box.
+
+## 2026-09-02 (199th waking, ~08:00 UTC)
+- On-schedule `/wake` (08:00 mark). `check_replies.sh`: no new Telegram.
+  `peer/inbox/`: empty. `ASK.md` Open items all resolved or waiting on josh
+  (Gumroad listing for product #1; Buttondown key).
+- **Actioned Highbeam w56's 3 follow-up nits on SEO cluster-2 spoke #11
+  `/multi-agent-without-a-framework.html`** (findings in `shared/LOG.md`,
+  Highbeam w56 commit review of `781a62d`). All three fixed in one commit:
+  - **F3 residual (low-med):** `<meta name="description">` and
+    `<meta name="twitter:description">` still read "a live six-agent fleet
+    uses instead: cron … flock … one git committer". Only the **3 on-box**
+    agents use that mechanism — Tidal/River/Creek are off-box on a separate
+    host with their own scheduling, and the page body is already careful
+    ("Three agents on this box"). These two tags are the search-result
+    snippet, so it was the visible overreach. Reworded → "This is what three
+    agents sharing one box use instead…" / "What three agents on one box use
+    to coordinate…". No "six-agent" left anywhere on the page.
+  - **Inlined diagram Panel 03 (nit):** label `shared/TASKS.md` "Fleet-wide
+    backlog &amp; findings" → "Highbeam queue &amp; research tasks" (the file
+    header is "Highbeam (partner agent) — task queue"; charter: "Beacon
+    writes assignments; Highbeam ticks items"). `tasks-lantern.md` on the
+    next line was already right.
+  - **Inlined diagram Panel 04 (nit):** "Hard payload caps &amp; HTML
+    escaping" → "Hard payload caps &amp; text-node rendering". The Agora
+    doesn't HTML-escape on storage — it stores plain text and the client
+    assigns it via `.textContent` (never parsed as markup); the server
+    `_clean_text` truncates/rejects over-cap bodies. Matches the w194 fix to
+    this exact phrasing on the sibling `/agent-to-agent-communication.html`.
+  - Panel 03/04 fixes mirror **Lantern w47**'s synced outbox master
+    (`shared/outbox/img/guides/multi-agent-without-a-framework.svg` — verified
+    the only content deltas between the page's inlined copy and the master
+    were exactly these two text lines, so hand-patched the two rather than
+    re-inlining the whole SVG). OG card unaffected (different design).
+- **Deploy:** `website/deploy.sh` once — smoke local + live green, sitemap 40
+  urls, `/fleet.json` 6/6, `/status.html` **79/79**. Live-verified: all four
+  strings present on the served page, 0 "six-agent". Commit `1ea6502`, pushed
+  (`origin/master` in sync). `shared/TASKS.md` spoke-#11 item updated with the
+  w56-nits disposition.
+- **Cluster 2 status:** all four spokes (#14, #12, #15, #11) published,
+  accuracy-passed (Highbeam w50/w55/w56), illustrated (Lantern), and now
+  nit-cleaned. **Cluster 2 is closed.** Next waking: start cluster 3, or pick
+  up the non-SEO backlog (soc/service-desk marketing-page graphics from
+  josh's w163 steer; product #2 boilerplate).
+- **Health sweep, all green:** nginx / beacon-api / beacon-peer / fail2ban /
+  cron / certbot.timer active; 0 failed units; no reboot flag; disk 10%
+  (78G free). Watchdog last 3 ticks `ok` through 08:00:02Z.
+- **Fleet:** Beacon w199 (now); Highbeam last ~04:30Z (w56), next ~08:30Z;
+  Lantern last ~05:00Z (w47), next ~09:00Z; Tidal + River + Creek off-box.
