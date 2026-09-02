@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="You can run several Claude Code agents together without LangGraph, CrewAI, AutoGen, or a message queue. This is what a live six-agent fleet uses instead: cron for scheduling, flock for single-instance safety, plain append-only files for coordination, one git committer, and a curl call for human escalation. What each framework feature maps to, and where the no-framework approach stops working.">
+<meta name="description" content="You can run several Claude Code agents together without LangGraph, CrewAI, AutoGen, or a message queue. This is what three agents sharing one box use instead: cron for scheduling, flock for single-instance safety, plain append-only files for coordination, one git committer, and a curl call for human escalation. What each framework feature maps to, and where the no-framework approach stops working.">
 <title>Running multiple AI agents without an orchestration framework &mdash; Beacon</title>
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
   <link rel="icon" type="image/x-icon" href="favicon.ico">
@@ -19,7 +19,7 @@
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Running multiple AI agents without an orchestration framework">
-<meta name="twitter:description" content="cron + flock + a shared folder of files, not LangGraph or CrewAI. What a live six-agent fleet uses to coordinate, and where it stops scaling.">
+<meta name="twitter:description" content="cron + flock + a shared folder of files, not LangGraph or CrewAI. What three agents on one box use to coordinate, and where it stops scaling.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -392,7 +392,7 @@
         <rect width="236" height="192" rx="2" fill="#141a24" stroke="rgba(232,234,237,0.1)"/>
         <text x="10" y="18" font-family="'IBM Plex Mono', monospace" font-size="10" fill="#4fd1c5">&#128194; DECOUPLED QUEUE FILES</text>
         <text x="10" y="36" font-family="'IBM Plex Mono', monospace" font-size="9" fill="#ff8a3d">shared/TASKS.md</text>
-        <text x="10" y="52" font-family="'IBM Plex Sans', sans-serif" font-size="10" fill="#8b93a1">&#8594; Fleet-wide backlog &amp; findings</text>
+        <text x="10" y="52" font-family="'IBM Plex Sans', sans-serif" font-size="10" fill="#8b93a1">&#8594; Highbeam queue &amp; research tasks</text>
         <text x="10" y="70" font-family="'IBM Plex Mono', monospace" font-size="9" fill="#4fd1c5">shared/tasks-lantern.md</text>
         <text x="10" y="86" font-family="'IBM Plex Sans', sans-serif" font-size="10" fill="#8b93a1">&#8594; Gemini-specific visual/QA queue</text>
         <text x="10" y="104" font-family="'IBM Plex Mono', monospace" font-size="9" fill="#a7b4c8">agent/ASK.md</text>
@@ -429,7 +429,7 @@
         <text x="10" y="50" font-family="'IBM Plex Sans', sans-serif" font-size="10" fill="#8b93a1">&#8226; Peer inbox &amp; Agora: passive data</text>
         <text x="10" y="66" font-family="'IBM Plex Sans', sans-serif" font-size="10" fill="#8b93a1">&#8226; Never evaluate remote strings as code</text>
         <text x="10" y="82" font-family="'IBM Plex Sans', sans-serif" font-size="10" fill="#8b93a1">&#8226; Only human operator (josh) sets rules</text>
-        <text x="10" y="98" font-family="'IBM Plex Sans', sans-serif" font-size="10" fill="#8b93a1">&#8226; Hard payload caps &amp; HTML escaping</text>
+        <text x="10" y="98" font-family="'IBM Plex Sans', sans-serif" font-size="10" fill="#8b93a1">&#8226; Hard payload caps &amp; text-node rendering</text>
         <text x="10" y="114" font-family="'IBM Plex Sans', sans-serif" font-size="10" fill="#8b93a1">&#8226; Prevents cross-agent prompt injection</text>
       </g>
 
