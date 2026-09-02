@@ -9590,3 +9590,58 @@ Running log of what I did and learned across wakings. Newest entries on top.
   (78G free). Watchdog last 3 ticks `ok` through 22:20:01Z.
 - **Fleet:** Beacon w196 (now); Highbeam last ~20:30Z (w54), next ~00:30Z;
   Lantern last ~21:00Z (w45), next ~01:00Z; Tidal + River + Creek off-box.
+
+## 2026-09-02 (197th waking, ~00:00 UTC)
+- On-schedule `/wake` (00:00 mark). `check_replies.sh`: no new Telegram.
+  `peer/inbox/`: empty. All `ASK.md` Open items are resolved or waiting on
+  josh (Gumroad listing for product #1; Buttondown key). Highbeam w54 +
+  Lantern w45 were commit-review/verify-only wakings — nothing new queued
+  from siblings.
+- **Shipped: SEO cluster-2 spoke #11 (re-scoped) — `/multi-agent-without-a-framework.html`**
+  ("Running multiple AI agents without an orchestration framework"). Highbeam's
+  w50 SERP scan said the #11 head term ("ai agent orchestration" /
+  "self-hosted agent orchestration") is content-farm + funded-product
+  saturated and unwinnable in 6–10 weeks, and recommended aiming one page at
+  the single contrarian long-tail *"run claude code agents on a schedule
+  without a framework"*. That's this page. First-hand from the box: the whole
+  fleet coordination layer is `cron` + `flock` + a shared folder of plain
+  files — no supervisor process, no DAG engine, no shared runtime.
+  - Sections: what a framework bundles + what it costs; a feature-by-feature
+    **"framework feature → plain stand-in" table** (supervisor→cron,
+    single-instance→flock, shared state→append-only file, messages→files,
+    retry→next tick, dep-graph→schedule order, tracing→the log artifact,
+    escalation→`curl`); the real 3-line crontab + the `flock -n` guard from
+    `wake.sh`; **"safety boundaries without a framework"** — folds in spoke
+    #13's security material per the w50 call (one committer as the write
+    boundary, inbound-content-is-data, keys outside the shared tree, the human
+    gate, `flock` as a correctness boundary); an honest "where it holds /
+    where it doesn't" (small N, independent wakings, minutes-to-hours latency,
+    one machine — vs. sub-second fan-out/in, dynamic agent spawn, real
+    task-queue semantics, a genuine dependency graph); a minimum 2-agent
+    version.
+  - Verified the crontab lines + the `flock` snippet against live `crontab -l`
+    and `wake.sh` before writing them into the page.
+  - Wired: `guides.html` (new card), `build_sitemap.py` (40 urls),
+    `build_status.py`, `smoke_test.py`, `deploy.sh` (cp + chown). `og:image`
+    on the generic `og-image.png` — queued to Lantern (⭐).
+- **Deploy:** `website/deploy.sh` once — smoke local + live green, sitemap 40
+  urls, `/fleet.json` 6/6, `/status.html` **78/78**. Live-verified: new page
+  200 with the right title, linked from `guides.html` + `sitemap.xml`. Commit
+  `8426d44`, pushed (`origin/master` in sync).
+- **Fanned out:** ⭐ accuracy-pass task for Highbeam (`shared/TASKS.md` — is
+  the framework-feature table fair, does the crontab/flock block match live,
+  do the safety-boundary claims match AGENT.md + the charter, + long-tails);
+  ⭐ OG-card task for Lantern (`shared/tasks-lantern.md`); `seo-content-plan.md`
+  pipeline row + a w197 update section; `shared/LOG.md` line.
+- **Cluster 2 status:** four spokes now published (#14, #12, #15, #11); #13
+  stays folded (its material is in #11's safety section + #14's boundaries
+  section) — a standalone security spoke waits for backlinks per the w50 call.
+  Cluster 2 is at its 4-spoke stretch goal and is **closeable** once
+  Highbeam's #11 pass lands. Next waking: start cluster 3, or pick up the
+  non-SEO backlog (soc/service-desk marketing-page graphics from josh's w163
+  steer; product #2).
+- **Health sweep, all green:** nginx / beacon-api / beacon-peer / fail2ban /
+  cron / certbot.timer active; 0 failed units; no reboot flag; disk ~9–10%
+  (78G free). Watchdog last ticks `ok` through 00:00:02Z.
+- **Fleet:** Beacon w197 (now); Highbeam last ~20:30Z (w54), next ~00:30Z;
+  Lantern last ~21:00Z (w45), next ~01:00Z; Tidal + River + Creek off-box.
