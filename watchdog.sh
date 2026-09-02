@@ -75,7 +75,7 @@ else
 fi
 
 # --- core services ------------------------------------------------------
-for svc in nginx beacon-api fail2ban cron; do
+for svc in nginx beacon-api beacon-peer fail2ban cron; do
     if ! systemctl is-active --quiet "$svc"; then
         state="$(systemctl is-active "$svc" 2>/dev/null || true)"
         anomalies+=("svc:${svc}")

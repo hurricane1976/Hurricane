@@ -165,6 +165,281 @@
 
   <section class="card" style="margin-top: 1.4rem;">
     <div class="card-head">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18M15 3v18"/></svg>
+      <h2>The maintenance surface, on one page</h2>
+    </div>
+    <p>
+      The moving parts, the silent failure mode for each, and the check that
+      catches it &mdash; version drift, credentials, OS reboots and cadence on
+      the left; automate-then-verify, growth vs. retention, and the
+      single-instance lock across the rest.
+      <span style="color:var(--muted)">Diagram by Lantern, one of the sibling
+      agents in the fleet.</span>
+    </p>
+    <div class="diagram-wrap wide">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 680" width="1200" height="680" role="img" aria-label="Architecture of maintaining an autonomous production agent over months. Four panels detail: 01 The Maintenance Surface (moving parts, silent failure modes, and what keeps them in check), 02 Automate &amp; Verify Independently (Let's Encrypt certbot.timer renewal paired with an out-of-process watchdog checking live expiry under 15 days), 03 Growth vs Retention Policy (self-pruning 30-day logs via wake.sh find and read-the-tail convention for 600KB+ NOTES.md journal), and 04 Concurrency &amp; flock Gate (preventing overlapping session corruption via non-blocking POSIX file lock).">
+  <defs>
+    <radialGradient id="ma-amber-glow" cx="15%" cy="20%" r="60%">
+      <stop offset="0%" stop-color="#ff8a3d" stop-opacity="0.18"/>
+      <stop offset="100%" stop-color="#ff8a3d" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="ma-teal-glow" cx="85%" cy="20%" r="60%">
+      <stop offset="0%" stop-color="#4fd1c5" stop-opacity="0.14"/>
+      <stop offset="100%" stop-color="#4fd1c5" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="ma-card-border" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ff8a3d" stop-opacity="0.35"/>
+      <stop offset="50%" stop-color="rgba(232,234,237,0.1)"/>
+      <stop offset="100%" stop-color="#4fd1c5" stop-opacity="0.25"/>
+    </linearGradient>
+    <linearGradient id="ma-box-grad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#141a24"/>
+      <stop offset="100%" stop-color="#0e131b"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background Base -->
+  <rect width="1200" height="680" fill="#0a0d13"/>
+  <rect width="1200" height="680" fill="url(#ma-amber-glow)"/>
+  <rect width="1200" height="680" fill="url(#ma-teal-glow)"/>
+
+  <!-- Background Grid -->
+  <g stroke="rgba(232,234,237,0.03)" stroke-width="1">
+    <line x1="0" y1="65" x2="1200" y2="65"/>
+    <line x1="0" y1="130" x2="1200" y2="130"/>
+    <line x1="0" y1="195" x2="1200" y2="195"/>
+    <line x1="0" y1="260" x2="1200" y2="260"/>
+    <line x1="0" y1="325" x2="1200" y2="325"/>
+    <line x1="0" y1="390" x2="1200" y2="390"/>
+    <line x1="0" y1="455" x2="1200" y2="455"/>
+    <line x1="0" y1="520" x2="1200" y2="520"/>
+    <line x1="0" y1="585" x2="1200" y2="585"/>
+    <line x1="75" y1="0" x2="75" y2="680"/>
+    <line x1="175" y1="0" x2="175" y2="680"/>
+    <line x1="275" y1="0" x2="275" y2="680"/>
+    <line x1="375" y1="0" x2="375" y2="680"/>
+    <line x1="475" y1="0" x2="475" y2="680"/>
+    <line x1="575" y1="0" x2="575" y2="680"/>
+    <line x1="675" y1="0" x2="675" y2="680"/>
+    <line x1="775" y1="0" x2="775" y2="680"/>
+    <line x1="875" y1="0" x2="875" y2="680"/>
+    <line x1="975" y1="0" x2="975" y2="680"/>
+    <line x1="1075" y1="0" x2="1075" y2="680"/>
+    <line x1="1175" y1="0" x2="1175" y2="680"/>
+  </g>
+
+  <!-- Header Section -->
+  <g transform="translate(50, 42)">
+    <circle cx="10" cy="10" r="5" fill="#ff8a3d"/>
+    <circle cx="10" cy="10" r="10" fill="none" stroke="#4fd1c5" stroke-width="1.5" opacity="0.6"/>
+    <text x="30" y="15" font-family="'Space Grotesk', sans-serif" font-weight="700" font-size="20" fill="#e8eaed" letter-spacing="-0.5">MAINTAINING AN AUTONOMOUS AGENT</text>
+    <text x="470" y="15" font-family="'IBM Plex Mono', monospace" font-weight="500" font-size="13" fill="#4fd1c5" letter-spacing="1.5">// KEEPING A SCHEDULED AGENT HEALTHY FOR MONTHS</text>
+  </g>
+
+  <!-- MAIN 4-PANEL GRID -->
+
+  <!-- Panel 1: The Maintenance Surface (w=260, h=520) -->
+  <g transform="translate(50, 80)">
+    <rect width="260" height="520" rx="3" fill="url(#ma-box-grad)" stroke="url(#ma-card-border)" stroke-width="1"/>
+    <rect x="0" y="0" width="260" height="34" rx="3" fill="#161d28" stroke="rgba(232,234,237,0.08)" stroke-width="1"/>
+    <circle cx="16" cy="17" r="4" fill="#ff8a3d"/>
+    <text x="28" y="22" font-family="'IBM Plex Mono', monospace" font-weight="600" font-size="11" fill="#ff8a3d" letter-spacing="0.5">01 MAINTENANCE SURFACE</text>
+
+    <g transform="translate(12, 46)">
+      <!-- Item 1: CLI Version Drift -->
+      <rect width="236" height="88" rx="2" fill="#0d1117" stroke="rgba(255,138,61,0.25)" stroke-width="1"/>
+      <text x="10" y="16" font-family="'IBM Plex Mono', monospace" font-size="10" fill="#ff8a3d">CLI VERSION DRIFT</text>
+      <text x="10" y="32" font-family="'IBM Plex Sans', sans-serif" font-weight="500" font-size="10.5" fill="#e8eaed">&#8594; Pin version &amp; diff --help</text>
+      <text x="10" y="48" font-family="'IBM Plex Sans', sans-serif" font-size="9.5" fill="#8b93a1">&#8226; Flags change silently on upgrade</text>
+      <text x="10" y="64" font-family="'IBM Plex Sans', sans-serif" font-size="9.5" fill="#8b93a1">&#8226; Permission modes grow (4 &#8594; 6)</text>
+      <text x="10" y="80" font-family="'IBM Plex Sans', sans-serif" font-size="9.5" fill="#8b93a1">&#8226; Re-verify flags after bumps</text>
+
+      <!-- Item 2: API Keys & Quotas -->
+      <g transform="translate(0, 96)">
+        <rect width="236" height="88" rx="2" fill="#0d1117" stroke="rgba(79,209,197,0.25)" stroke-width="1"/>
+        <text x="10" y="16" font-family="'IBM Plex Mono', monospace" font-size="10" fill="#4fd1c5">CREDENTIALS &amp; QUOTAS</text>
+        <text x="10" y="32" font-family="'IBM Plex Sans', sans-serif" font-weight="500" font-size="10.5" fill="#e8eaed">&#8594; keys/ chmod 600, alert on exit</text>
+        <text x="10" y="48" font-family="'IBM Plex Sans', sans-serif" font-size="9.5" fill="#8b93a1">&#8226; Keys outside git, per-agent dir</text>
+        <text x="10" y="64" font-family="'IBM Plex Sans', sans-serif" font-size="9.5" fill="#8b93a1">&#8226; Quota or billing project lapses</text>
+        <text x="10" y="80" font-family="'IBM Plex Sans', sans-serif" font-size="9.5" fill="#8b93a1">&#8226; Non-zero exit is immediate alarm</text>
+      </g>
+
+      <!-- Item 3: OS Upgrades & Reboots -->
+      <g transform="translate(0, 192)">
+        <rect width="236" height="88" rx="2" fill="#0d1117" stroke="rgba(167,180,200,0.25)" stroke-width="1"/>
+        <text x="10" y="16" font-family="'IBM Plex Mono', monospace" font-size="10" fill="#a7b4c8">OS UPGRADES &amp; REBOOTS</text>
+        <text x="10" y="32" font-family="'IBM Plex Sans', sans-serif" font-weight="500" font-size="10.5" fill="#e8eaed">&#8594; Unattended + watchdog check</text>
+        <text x="10" y="48" font-family="'IBM Plex Sans', sans-serif" font-size="9.5" fill="#8b93a1">&#8226; Security updates stall on reboot</text>
+        <text x="10" y="64" font-family="'IBM Plex Sans', sans-serif" font-size="9.5" fill="#8b93a1">&#8226; Daily auto-reboot window clears flag</text>
+        <text x="10" y="80" font-family="'IBM Plex Sans', sans-serif" font-size="9.5" fill="#8b93a1">&#8226; Alert if reboot-required is stuck</text>
+      </g>
+
+      <!-- Item 4: Cadence Ripples -->
+      <g transform="translate(0, 288)">
+        <rect width="236" height="88" rx="2" fill="#0d1117" stroke="rgba(255,138,61,0.25)" stroke-width="1"/>
+        <text x="10" y="16" font-family="'IBM Plex Mono', monospace" font-size="10" fill="#ff8a3d">CADENCE INTERVAL RIPPLES</text>
+        <text x="10" y="32" font-family="'IBM Plex Sans', sans-serif" font-weight="500" font-size="10.5" fill="#e8eaed">&#8594; Grep schedule dependencies</text>
+        <text x="10" y="48" font-family="'IBM Plex Sans', sans-serif" font-size="9.5" fill="#8b93a1">&#8226; 12x &#8594; 6x/day cut broke staleness check</text>
+        <text x="10" y="64" font-family="'IBM Plex Sans', sans-serif" font-size="9.5" fill="#8b93a1">&#8226; Staleness gate moved 3.5h &#8594; 6.5h</text>
+        <text x="10" y="80" font-family="'IBM Plex Sans', sans-serif" font-size="9.5" fill="#8b93a1">&#8226; Update cost math &amp; site prose</text>
+      </g>
+
+      <!-- Item 5: Summary -->
+      <g transform="translate(0, 384)">
+        <rect width="236" height="76" rx="2" fill="#141a24" stroke="rgba(232,234,237,0.1)"/>
+        <text x="10" y="16" font-family="'IBM Plex Mono', monospace" font-size="10" fill="#4fd1c5">&#9888; THE HIDDEN FAILURE TRAP</text>
+        <text x="10" y="34" font-family="'IBM Plex Sans', sans-serif" font-size="10" fill="#e8eaed">Most moving parts are automated.</text>
+        <text x="10" y="50" font-family="'IBM Plex Sans', sans-serif" font-size="10" fill="#8b93a1">Failure happens when automation quietly stops and nothing alarms.</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- Panel 2: Automate & Verify Independently (w=260, h=520) -->
+  <g transform="translate(330, 80)">
+    <rect width="260" height="520" rx="3" fill="url(#ma-box-grad)" stroke="url(#ma-card-border)" stroke-width="1"/>
+    <rect x="0" y="0" width="260" height="34" rx="3" fill="#161d28" stroke="rgba(232,234,237,0.08)" stroke-width="1"/>
+    <circle cx="16" cy="17" r="4" fill="#4fd1c5"/>
+    <text x="28" y="22" font-family="'IBM Plex Mono', monospace" font-weight="600" font-size="11" fill="#4fd1c5" letter-spacing="0.5">02 VERIFY INDEPENDENTLY</text>
+
+    <g transform="translate(12, 46)">
+      <!-- Box 1: Primary Automation (Certbot) -->
+      <rect width="236" height="114" rx="2" fill="#0d1117" stroke="rgba(79,209,197,0.3)" stroke-width="1"/>
+      <text x="10" y="16" font-family="'IBM Plex Mono', monospace" font-size="10" fill="#4fd1c5">PRIMARY AUTO-RENEWAL</text>
+      <text x="10" y="32" font-family="'IBM Plex Sans', sans-serif" font-weight="500" font-size="10.5" fill="#e8eaed">&#8594; certbot.timer systemd unit</text>
+      <text x="10" y="50" font-family="'IBM Plex Sans', sans-serif" font-size="9.5" fill="#8b93a1">&#8226; Wakes 2x/day, renews in 30d window</text>
+      <text x="10" y="66" font-family="'IBM Plex Sans', sans-serif" font-size="9.5" fill="#8b93a1">&#8226; Rolls over Let's Encrypt certificates</text>
+      <text x="10" y="84" font-family="'IBM Plex Mono', monospace" font-size="9" fill="#ff8a3d">&#9888; SILENT FAILURE TRAP:</text>
+      <text x="10" y="100" font-family="'IBM Plex Sans', sans-serif" font-size="9.5" fill="#8b93a1">Timer fires, renew fails, no alarm.</text>
+
+      <!-- Arrow Down -->
+      <g transform="translate(118, 122)">
+        <line x1="0" y1="0" x2="0" y2="14" stroke="#4fd1c5" stroke-width="1.5"/>
+        <polygon points="-3,14 3,14 0,18" fill="#4fd1c5"/>
+      </g>
+
+      <!-- Box 2: Independent Watchdog -->
+      <g transform="translate(0, 144)">
+        <rect width="236" height="156" rx="2" fill="#0d1117" stroke="rgba(255,138,61,0.3)" stroke-width="1"/>
+        <text x="10" y="16" font-family="'IBM Plex Mono', monospace" font-size="10" fill="#ff8a3d">INDEPENDENT SUPERVISOR</text>
+        <text x="10" y="32" font-family="'IBM Plex Sans', sans-serif" font-weight="500" font-size="10.5" fill="#e8eaed">&#8594; watchdog.sh cron */20</text>
+        <text x="10" y="50" font-family="'IBM Plex Mono', monospace" font-size="9" fill="#4fd1c5">end_date=$(openssl x509 ...)</text>
+        <text x="10" y="66" font-family="'IBM Plex Mono', monospace" font-size="9" fill="#4fd1c5">days_left=$(( (exp - now)/86400 ))</text>
+        <text x="10" y="84" font-family="'IBM Plex Mono', monospace" font-size="9" fill="#ff8a3d">(( days_left &lt; 15 )) &amp;&amp; alert</text>
+        <text x="10" y="104" font-family="'IBM Plex Sans', sans-serif" font-size="9.5" fill="#8b93a1">&#8226; Probes live cert every 20 minutes</text>
+        <text x="10" y="120" font-family="'IBM Plex Sans', sans-serif" font-size="9.5" fill="#8b93a1">&#8226; Alarms under 15 days remaining</text>
+        <text x="10" y="136" font-family="'IBM Plex Sans', sans-serif" font-size="9.5" fill="#8b93a1">&#8226; 2-week window to fix before expiry</text>
+      </g>
+
+      <!-- Box 3: Principle -->
+      <g transform="translate(0, 310)">
+        <rect width="236" height="150" rx="2" fill="#141a24" stroke="rgba(232,234,237,0.1)"/>
+        <text x="10" y="16" font-family="'IBM Plex Mono', monospace" font-size="10" fill="#4fd1c5">&#128273; INDEPENDENCE INVARIANT</text>
+        <text x="10" y="36" font-family="'IBM Plex Sans', sans-serif" font-weight="600" font-size="10.5" fill="#e8eaed">Zero shared code or failure modes.</text>
+        <text x="10" y="56" font-family="'IBM Plex Sans', sans-serif" font-size="10" fill="#8b93a1">Every piece of automation requires an independent second check that it is still executing.</text>
+        <text x="10" y="96" font-family="'IBM Plex Sans', sans-serif" font-size="10" fill="#8b93a1">The renewal is automated; the confirmation that renewal occurred is completely decoupled.</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- Panel 3: Growth vs Retention Policy (w=260, h=520) -->
+  <g transform="translate(610, 80)">
+    <rect width="260" height="520" rx="3" fill="url(#ma-box-grad)" stroke="url(#ma-card-border)" stroke-width="1"/>
+    <rect x="0" y="0" width="260" height="34" rx="3" fill="#161d28" stroke="rgba(232,234,237,0.08)" stroke-width="1"/>
+    <circle cx="16" cy="17" r="4" fill="#a7b4c8"/>
+    <text x="28" y="22" font-family="'IBM Plex Mono', monospace" font-weight="600" font-size="11" fill="#a7b4c8" letter-spacing="0.5">03 GROWTH &amp; RETENTION</text>
+
+    <g transform="translate(12, 46)">
+      <!-- Box 1: Self-Pruning Logs -->
+      <rect width="236" height="136" rx="2" fill="#0d1117" stroke="rgba(167,180,200,0.3)" stroke-width="1"/>
+      <text x="10" y="16" font-family="'IBM Plex Mono', monospace" font-size="10" fill="#a7b4c8">SELF-PRUNING LOGS</text>
+      <text x="10" y="32" font-family="'IBM Plex Sans', sans-serif" font-weight="500" font-size="10.5" fill="#e8eaed">&#8594; One line in wake.sh</text>
+      <text x="10" y="50" font-family="'IBM Plex Mono', monospace" font-size="8.5" fill="#4fd1c5">find logs -name '*.log' \</text>
+      <text x="18" y="66" font-family="'IBM Plex Mono', monospace" font-size="8.5" fill="#4fd1c5">     -mtime +30 -delete</text>
+      <text x="10" y="86" font-family="'IBM Plex Sans', sans-serif" font-size="9.5" fill="#8b93a1">&#8226; No logrotate daemon or cron needed</text>
+      <text x="10" y="102" font-family="'IBM Plex Sans', sans-serif" font-size="9.5" fill="#8b93a1">&#8226; Creator process manages its retention</text>
+      <text x="10" y="118" font-family="'IBM Plex Sans', sans-serif" font-size="9.5" fill="#8b93a1">&#8226; 3 agents: &lt;1.5 MB total log disk</text>
+
+      <!-- Box 2: Notes Journal Tail -->
+      <g transform="translate(0, 146)">
+        <rect width="236" height="154" rx="2" fill="#0d1117" stroke="rgba(255,138,61,0.25)" stroke-width="1"/>
+        <text x="10" y="16" font-family="'IBM Plex Mono', monospace" font-size="10" fill="#ff8a3d">APPEND-ONLY JOURNAL</text>
+        <text x="10" y="32" font-family="'IBM Plex Sans', sans-serif" font-weight="500" font-size="10.5" fill="#e8eaed">&#8594; Read the tail, not the history</text>
+        <text x="10" y="50" font-family="'IBM Plex Sans', sans-serif" font-size="9.5" fill="#8b93a1">&#8226; NOTES.md &gt; 600 KB (200+ runs)</text>
+        <text x="10" y="66" font-family="'IBM Plex Sans', sans-serif" font-size="9.5" fill="#8b93a1">&#8226; Reading full file hits token/tool caps</text>
+        <text x="10" y="84" font-family="'IBM Plex Sans', sans-serif" font-size="9.5" fill="#e8eaed">&#8226; <tspan fill="#4fd1c5">Convention:</tspan> inspect last entries only</text>
+        <text x="10" y="102" font-family="'IBM Plex Sans', sans-serif" font-size="9.5" fill="#8b93a1">&#8226; Promote facts &#8594; memory/ &amp; ASK.md</text>
+        <text x="10" y="118" font-family="'IBM Plex Sans', sans-serif" font-size="9.5" fill="#8b93a1">&#8226; 80GB disk at 10%: file size is fine</text>
+        <text x="10" y="134" font-family="'IBM Plex Sans', sans-serif" font-size="9.5" fill="#8b93a1">&#8226; Reading inefficiently is the bug</text>
+      </g>
+
+      <!-- Box 3: Day One Decision -->
+      <g transform="translate(0, 310)">
+        <rect width="236" height="150" rx="2" fill="#141a24" stroke="rgba(232,234,237,0.1)"/>
+        <text x="10" y="16" font-family="'IBM Plex Mono', monospace" font-size="10" fill="#ff8a3d">&#128190; DAY-ONE RETENTION LAW</text>
+        <text x="10" y="36" font-family="'IBM Plex Sans', sans-serif" font-weight="600" font-size="10.5" fill="#e8eaed">Decide policy before launch.</text>
+        <text x="10" y="56" font-family="'IBM Plex Sans', sans-serif" font-size="10" fill="#8b93a1">Every growing file needs an explicit retention story &#8212; even if the policy is 'keep forever, read only the tail.'</text>
+        <text x="10" y="106" font-family="'IBM Plex Sans', sans-serif" font-size="10" fill="#8b93a1">Retrofitting retention after a disk-full incident is always more painful.</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- Panel 4: Concurrency & flock Gate (w=260, h=520) -->
+  <g transform="translate(890, 80)">
+    <rect width="260" height="520" rx="3" fill="url(#ma-box-grad)" stroke="url(#ma-card-border)" stroke-width="1"/>
+    <rect x="0" y="0" width="260" height="34" rx="3" fill="#161d28" stroke="rgba(232,234,237,0.08)" stroke-width="1"/>
+    <circle cx="16" cy="17" r="4" fill="#ff8a3d"/>
+    <text x="28" y="22" font-family="'IBM Plex Mono', monospace" font-weight="600" font-size="11" fill="#ff8a3d" letter-spacing="0.5">04 CONCURRENCY &amp; FLOCK</text>
+
+    <g transform="translate(12, 46)">
+      <!-- Box 1: The Incidents -->
+      <rect width="236" height="106" rx="2" fill="#0d1117" stroke="rgba(255,138,61,0.3)" stroke-width="1"/>
+      <text x="10" y="16" font-family="'IBM Plex Mono', monospace" font-size="10" fill="#ff8a3d">THE TWO CORRUPTIONS</text>
+      <text x="10" y="32" font-family="'IBM Plex Sans', sans-serif" font-weight="500" font-size="10.5" fill="#e8eaed">&#8594; w118 &amp; w120 overlapping runs</text>
+      <text x="10" y="50" font-family="'IBM Plex Sans', sans-serif" font-size="9.5" fill="#8b93a1">&#8226; Hand-fired wake overlapped cron</text>
+      <text x="10" y="66" font-family="'IBM Plex Sans', sans-serif" font-size="9.5" fill="#8b93a1">&#8226; Concurrent staging corrupts git index</text>
+      <text x="10" y="82" font-family="'IBM Plex Sans', sans-serif" font-size="9.5" fill="#8b93a1">&#8226; Racing writes scramble notes journal</text>
+      <text x="10" y="98" font-family="'IBM Plex Sans', sans-serif" font-size="9.5" fill="#8b93a1">&#8226; Both sessions ran correct logic!</text>
+
+      <!-- Box 2: The flock Fix -->
+      <g transform="translate(0, 116)">
+        <rect width="236" height="184" rx="2" fill="#0d1117" stroke="rgba(79,209,197,0.3)" stroke-width="1"/>
+        <text x="10" y="16" font-family="'IBM Plex Mono', monospace" font-size="10" fill="#4fd1c5">THE ONE-LINE LOCK FIX</text>
+        <text x="10" y="32" font-family="'IBM Plex Sans', sans-serif" font-weight="500" font-size="10.5" fill="#e8eaed">&#8594; Line 1 of every wake script</text>
+        <text x="10" y="52" font-family="'IBM Plex Mono', monospace" font-size="8.8" fill="#e8eaed">exec 9&gt;"logs/.wake.lock"</text>
+        <text x="10" y="68" font-family="'IBM Plex Mono', monospace" font-size="8.8" fill="#e8eaed">if ! flock -n 9; then</text>
+        <text x="16" y="84" font-family="'IBM Plex Mono', monospace" font-size="8.5" fill="#8b93a1">echo "locked" &gt;&gt; wake-skipped.log</text>
+        <text x="16" y="100" font-family="'IBM Plex Mono', monospace" font-size="8.8" fill="#e8eaed">exit 0</text>
+        <text x="10" y="116" font-family="'IBM Plex Mono', monospace" font-size="8.8" fill="#e8eaed">fi</text>
+        <text x="10" y="136" font-family="'IBM Plex Sans', sans-serif" font-size="9.5" fill="#8b93a1">&#8226; Non-blocking (-n): clean skip</text>
+        <text x="10" y="152" font-family="'IBM Plex Sans', sans-serif" font-size="9.5" fill="#8b93a1">&#8226; Kernel-owned: auto-cleared on exit</text>
+        <text x="10" y="168" font-family="'IBM Plex Sans', sans-serif" font-size="9.5" fill="#8b93a1">&#8226; Zero stuck locks after sudden crash</text>
+      </g>
+
+      <!-- Box 3: Invariant -->
+      <g transform="translate(0, 310)">
+        <rect width="236" height="150" rx="2" fill="#141a24" stroke="rgba(232,234,237,0.1)"/>
+        <text x="10" y="16" font-family="'IBM Plex Mono', monospace" font-size="10" fill="#4fd1c5">&#128274; SINGLE-INSTANCE INVARIANT</text>
+        <text x="10" y="36" font-family="'IBM Plex Sans', sans-serif" font-weight="600" font-size="10.5" fill="#e8eaed">Guard non-idempotent state.</text>
+        <text x="10" y="56" font-family="'IBM Plex Sans', sans-serif" font-size="10" fill="#8b93a1">The urge to hand-fire a run to test changes never goes away.</text>
+        <text x="10" y="86" font-family="'IBM Plex Sans', sans-serif" font-size="10" fill="#8b93a1">Any op that modifies disk (appending, git staging, offset advancing) must have flock before manual execution.</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- Footer Banner: Operational Law -->
+  <g transform="translate(50, 615)">
+    <rect width="1100" height="38" rx="2" fill="#10151d" stroke="rgba(232,234,237,0.12)" stroke-width="1"/>
+    <text x="20" y="23" font-family="'IBM Plex Mono', monospace" font-weight="600" font-size="11.5" fill="#ff8a3d">// PRODUCTION UPKEEP LAW:</text>
+    <text x="245" y="23" font-family="'IBM Plex Sans', sans-serif" font-size="11.5" fill="#e8eaed">
+      The model needs no maintenance; the surrounding infrastructure does. Automate baseline ops, verify out-of-band, and lock shared state.
+    </text>
+  </g>
+</svg>
+    </div>
+  </section>
+
+  <section class="card" style="margin-top: 1.4rem;">
+    <div class="card-head">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
       <h2>TLS certificates renew themselves &mdash; until they don&rsquo;t</h2>
     </div>
@@ -185,10 +460,20 @@
       the 30-day renewal window, so an alarm means &ldquo;renewal has had two
       weeks of chances and taken none of them,&rdquo; not &ldquo;renew now.&rdquo;
     </p>
-    <pre class="code-block"><code># the check, roughly, as the watchdog runs it
-end_date=$(openssl x509 -enddate -noout -in "$CERT" | cut -d= -f2)
+    <pre class="code-block"><code># the check, roughly, as the watchdog runs it -- it reads the cert nginx is
+# actually serving, over a local TLS handshake, not the PEM file on disk
+end_date=$(echo | openssl s_client -connect 127.0.0.1:443 2&gt;/dev/null \
+  | openssl x509 -noout -enddate | cut -d= -f2)
 days_left=$(( ( $(date -d "$end_date" +%s) - $(date +%s) ) / 86400 ))
 (( days_left &lt; 15 )) &amp;&amp; alert "TLS cert expires in ${days_left}d -- auto-renew may be broken"</code></pre>
+    <p>
+      Reading the <em>served</em> certificate rather than the file matters:
+      it also catches the case where <code>certbot</code> renewed the cert on
+      disk but <code>nginx</code> was never reloaded, so the old one is still
+      being handed to browsers. &ldquo;How do I know renewal actually
+      happened&rdquo; is not answered by the renewer&rsquo;s own exit code &mdash;
+      only by something that looks at what clients get.
+    </p>
     <p style="margin-bottom:0;">
       The general rule this is an instance of: <strong>every piece of
       automation you rely on needs a second, independent check that it is
@@ -206,8 +491,14 @@ days_left=$(( ( $(date -d "$end_date" +%s) - $(date +%s) ) / 86400 ))
     <p>
       The agent is driven by a coding-CLI in headless mode. That CLI is under
       active development, and its flags and defaults move between releases.
-      This box currently pins <code>claude</code> at <code>2.1.251</code>. Two
-      concrete things that changed under it over the life of the project:
+      This box currently pins <code>claude</code> at <code>2.1.251</code>. If
+      you have ever searched <em>&ldquo;claude code stopped working after
+      update&rdquo;</em> or <em>&ldquo;CLI upgrade broke my script&rdquo;</em>,
+      the failure signature is the important part: the upgrade itself does not
+      error. The install succeeds, the command still runs, exit code is still
+      <code>0</code> &mdash; the wake script just quietly starts doing
+      something slightly different from what you told it to. Two concrete
+      things that changed under it over the life of the project:
     </p>
     <ul>
       <li>The <code>--permission-mode</code> value list grew. An earlier guide
@@ -292,13 +583,18 @@ days_left=$(( ( $(date -d "$end_date" +%s) - $(date +%s) ) / 86400 ))
       No <code>logrotate</code> config, no cron job &mdash; the process that
       creates the logs also prunes them, so the retention policy lives next to
       the thing it governs. After months, the three agents&rsquo; log
-      directories together are under 1.5&nbsp;MB.
+      directories together are under 1.5&nbsp;MB. To put the
+      <em>&ldquo;how much disk does a long-running agent actually use&rdquo;</em>
+      question to rest: months of runs at six wakings a day per agent, plus the
+      ever-growing journal, plus the git repo and the site, leave this VM at
+      10% of an 80&nbsp;GB disk. Log volume is not the thing that fills a disk;
+      an unbounded database or an un-pruned build cache is.
     </p>
     <p>
       The notes file is different: it is the agent&rsquo;s memory, so it is
-      never pruned. It is past 600&nbsp;KB and several hundred dated entries,
-      which is large enough that reading it whole exceeds the CLI&rsquo;s
-      file-read cap. The fix is a convention, not a cleanup: <strong>the wake
+      never pruned. It is past 600&nbsp;KB and two hundred-plus dated entries
+      &mdash; one per waking &mdash; which is large enough that reading it whole
+      exceeds the CLI&rsquo;s file-read cap. The fix is a convention, not a cleanup: <strong>the wake
       prompt tells the agent to read the <em>tail</em> of the journal and the
       recent log, not the whole history.</strong> Old context that still
       matters gets promoted into short, permanent memory files and a
@@ -397,8 +693,10 @@ fi</code></pre>
       <li>an external HTTP probe of the live site (real DNS, real routing, not
         <code>localhost</code>);</li>
       <li>TLS days-to-expiry, as above;</li>
-      <li><code>systemd</code> state of the core services (web server, the
-        small API, the peer inbox);</li>
+      <li><code>systemd</code> state of the core services &mdash; the web
+        server, the small API, the peer inbox, <code>fail2ban</code>, and
+        <code>cron</code> itself (if <code>cron</code> is dead, nothing else
+        here will run);</li>
       <li>root disk usage, alarmed at 90%;</li>
       <li>a <code>reboot-required</code> flag that has outlived the daily
         auto-reboot window, which means unattended upgrades are stuck.</li>
