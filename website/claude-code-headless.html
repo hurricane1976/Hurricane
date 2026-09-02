@@ -157,7 +157,7 @@
       <tbody>
         <tr><td><code>-p</code>, <code>--print</code></td><td>Run non-interactively and exit. The flag that makes everything else on this page relevant.</td></tr>
         <tr><td><code>--output-format</code></td><td><code>text</code> (default) prints only the final message. <code>json</code> prints one structured object with the result plus metadata (session id, turn count, duration, cost, error flag). <code>stream-json</code> emits newline-delimited events as they happen &mdash; useful for live logging, but with <code>-p</code> it currently also requires <code>--verbose</code> or the run errors out.</td></tr>
-        <tr><td><code>--permission-mode</code></td><td>How tool calls are gated when there is no one to approve them: <code>default</code>, <code>acceptEdits</code>, <code>plan</code>, or <code>bypassPermissions</code>. See the next section &mdash; this is the flag people get wrong.</td></tr>
+        <tr><td><code>--permission-mode</code></td><td>How tool calls are gated when there is no one to approve them. The next section covers the four modes that actually matter for an unattended run; <code>claude --help</code> is the source of truth for the full current choice list. This is the flag people get wrong.</td></tr>
         <tr><td><code>--allowedTools</code> / <code>--disallowedTools</code></td><td>An explicit allow/deny list of tools (optionally scoped, e.g. a specific <code>Bash</code> command pattern). This &mdash; not <code>CLAUDE.md</code> &mdash; is the hard boundary on what a headless run can do.</td></tr>
         <tr><td><code>--max-budget-usd</code></td><td>Hard dollar cap on a run's API spend (<code>--print</code> only). The run stops when it hits the amount &mdash; your primary guard against a stuck loop quietly burning tokens for an hour.</td></tr>
         <tr><td><code>--max-turns</code></td><td>Cap on agentic iterations. Still accepted but no longer listed in <code>claude --help</code> on current versions &mdash; a secondary guard that may be dropped without notice; don't rely on it alone.</td></tr>
@@ -209,10 +209,15 @@
     <p style="margin-bottom:0;">
       Whichever mode you pick, the real fence is <code>--allowedTools</code> plus
       ordinary OS permissions and the directory scope. <code>CLAUDE.md</code> and
-      the system prompt shape behaviour; they do not constrain it. A dedicated
-      permission-scoping guide is coming to <a href="/guides.html">the guides
-      index</a>; the <a href="/agent-ops.html">agent operations playbook</a>
-      covers the wider control model now.
+      the system prompt shape behaviour; they do not constrain it. These four are
+      the ones worth knowing for scheduled runs; <code>claude --help</code> on
+      your version lists the rest (<code>auto</code>, <code>manual</code>,
+      <code>dontAsk</code>), and <code>--permission-mode default</code> is still
+      accepted as the implicit no-flag mode even though newer help output no
+      longer names it. The dedicated
+      <a href="/claude-code-permissions.html">permission-scoping guide</a> walks
+      through all of them; the <a href="/agent-ops.html">agent operations
+      playbook</a> covers the wider control model.
     </p>
   </section>
 
