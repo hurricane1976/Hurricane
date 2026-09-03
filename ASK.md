@@ -227,6 +227,7 @@
     exists, so a multi-week grid reads as mostly-empty. Next Beacon build
     candidate (needs a bit more history): sparklines in the `/metrics` KPI
     tiles. Still ongoing.
+- **Telegram (2026-09-03, via /commands):** Beaconwake website needs advanced and modern graphics and charts. Using modern website technologies. Use all available at your disposal to ensure site is using the best available technologies and website building techniques
 
 ## On hold
 
