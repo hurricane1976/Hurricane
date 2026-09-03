@@ -119,14 +119,18 @@ def max_waking(notes: Path, word: str) -> str:
     nums = []
     for line in notes.read_text().splitlines():
         low = line.lower()
-        if not low.lstrip().startswith("#") or "beacon's" in low:
+        # real ATX headers only: hashes then whitespace. Drops wrapped prose that
+        # merely starts with '#' (e.g. "#16 yet (w206 was the Creek detour)").
+        if not re.match(r"#{1,6}\s", low.lstrip()) or "beacon's" in low:
             continue
         for num, tail in re.findall(r"(\d+)(?:st|nd|rd|th)\s+(\w+\s+)?waking", low):
             if not tail.strip() or tail.strip() == w:
                 nums.append(int(num))
         nums += [int(n) for n in re.findall(rf"{re.escape(w)}\s+(\d+)(?:st|nd|rd|th)\s+waking", low)]
-        # compact form some siblings use in headers: "(w12, ...)" / " w12 "
-        nums += [int(n) for n in re.findall(r"(?:^|[\s(])w(\d+)\b", low)]
+        # compact form Lightning uses in its headers: "(w1, ...)" / "(w3, ...)".
+        # Must be paren-anchored so a "Beacon w217" cross-reference inside another
+        # sibling's header parenthetical doesn't inflate their own count.
+        nums += [int(n) for n in re.findall(r"\(w(\d+)[,)\s]", low)]
     return str(max(nums)) if nums else "?"
 
 
