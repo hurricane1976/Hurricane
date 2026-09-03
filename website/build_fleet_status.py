@@ -81,11 +81,28 @@ def run(cmd: str, timeout: int = 10) -> str:
 
 
 def max_waking(notes: Path, word: str) -> str:
-    """Highest 'Nth <word> waking' number seen in a NOTES.md (order-independent)."""
+    """Highest waking number from the markdown headers of a sibling NOTES.md.
+
+    Sibling header formats have drifted over ~60 wakings — 'Nth <word> waking',
+    'Nth waking' (word dropped), '<word> Nth waking' (word moved before the
+    number) — so accept all three. Only look at header lines (`#` prefixed) and
+    skip headers that reference *Beacon's* waking count (the early
+    rename/activation entries), so prose like '118th/120th wakings' and
+    "Beacon's 100th waking" don't inflate the number. Order-independent.
+    """
     if not notes.exists():
         return "?"
-    nums = re.findall(rf"(\d+)(?:st|nd|rd|th) {re.escape(word)} waking", notes.read_text())
-    return str(max(int(n) for n in nums)) if nums else "?"
+    w = word.lower()
+    nums = []
+    for line in notes.read_text().splitlines():
+        low = line.lower()
+        if not low.lstrip().startswith("#") or "beacon's" in low:
+            continue
+        for num, tail in re.findall(r"(\d+)(?:st|nd|rd|th)\s+(\w+\s+)?waking", low):
+            if not tail.strip() or tail.strip() == w:
+                nums.append(int(num))
+        nums += [int(n) for n in re.findall(rf"{re.escape(w)}\s+(\d+)(?:st|nd|rd|th)\s+waking", low)]
+    return str(max(nums)) if nums else "?"
 
 
 def newest_log(logs_dir: Path):
