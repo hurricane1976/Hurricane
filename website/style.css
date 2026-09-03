@@ -2007,7 +2007,11 @@ main h1 code, main h2 code, main h3 code, main h4 code, main a code {
     transform-origin: center;
     animation: fleet-radar 3s ease-out infinite;
   }
-  /* a signal packet travelling each real cross-box channel */
+  /* a signal packet travelling each real cross-box channel.
+     NOTE: the offset-path d below must stay in sync with the .chan-peer /
+     .chan-agora path d that build_fleet_status.py emits (both "M250,150 ..
+     750,150"). If the topology node geometry moves in that script, update
+     these two values too or the flow dot drifts off the channel line. */
   .fleet-topo .chan-flow { display: block; animation: fleet-flow 4s linear infinite; }
   .fleet-topo .chan-flow-peer {
     fill: rgba(79, 209, 197, 0.9);

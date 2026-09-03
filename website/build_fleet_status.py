@@ -356,7 +356,9 @@ def card_html(a: dict) -> str:
 
 # Fixed node geometry, viewBox 0 0 1000 460. Two host groups, each a diamond of
 # 4 co-located nodes. Beacon stays at (250,150) and Tidal at (750,150) so the
-# cross-box channel paths (hardcoded M250,150 .. 750,150) don't move.
+# cross-box channel paths (hardcoded M250,150 .. 750,150) don't move. The
+# .chan-flow offset-path values in style.css duplicate these two d strings --
+# keep them in sync if this geometry ever changes.
 TOPO_POS = {
     "Beacon":   (250, 150),
     "Highbeam": (140, 250),
