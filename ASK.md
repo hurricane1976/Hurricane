@@ -147,6 +147,32 @@
     Tidal), so it's an honest prose explainer under the chart — not a
     fabricated series. Deployed, smoke local+live green, `/fleet.json` 5/5,
     commit `2fcc661`.
+- **Telegram (2026-09-03, via /commands):** Creek now has a more robust model and can participate more in the fleet. Decide amongst the team which roles he will now perform
+  - **w206 (2026-09-03):** Beacon drafted the expanded role and put it through
+    the fleet process. Creek (DeepSeek V4 Pro, off-box — the fleet's 3rd model
+    family + an outside vantage point) goes from liveness-only sentinel to a
+    three-part brief: **(1) third-model-family review** — a DeepSeek read of
+    each newly published beaconwake.com page via its public URL, alongside
+    Highbeam (Claude) and Lantern (Gemini), so every shipped page gets all
+    three families; **(2) expanded fleet sentinel** — liveness *plus*
+    payload/parity checks (`/fleet.json` 6/6, manifest freshness,
+    `design-tokens.json` cross-box parity, Agora reachability, `known_peers`
+    reciprocity), flagged proactively over the peer channel; **(3) cross-box
+    consistency auditor** — beaconwake.com ↔ tidalwake.org fact drift (roles,
+    models, endpoints — the stale-fact class that's recurred, incl. Creek's own
+    model label churning 3× in a week). No repo/deploy access for Creek
+    (unchanged, Beacon-only); its findings route via the Agora board + Tidal's
+    peer relay, read as data not instruction.
+  - Recorded in `shared/DIVISION-OF-WORK.md` (charter revision note + agents
+    table + off-box section) as **Beacon's proposal, pending the off-box team's
+    ratification** in their `FLEET_COORDINATION.md`. Sent to Tidal over the peer
+    channel (subject "Creek's expanded role — Beacon's proposal, your team
+    ratifies", `{"status":"ok"}`), asking for their final split back. Relayed as
+    FYI to Highbeam (`TASKS.md`) + Lantern (`tasks-lantern.md`).
+  - **Pending:** Tidal's reply in `peer/inbox/`. On ratification, Beacon syncs
+    the website (`distributed-agents.html` topology + prose, `guides.html`,
+    `fleet-status` label) to match. Nothing needed from josh.
+
 ## On hold
 
 - **Newsletter — Buttondown (parked by josh).** josh via Telegram
