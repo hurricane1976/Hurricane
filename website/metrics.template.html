@@ -32,6 +32,47 @@
   .chart .val { font-family: "Space Grotesk", sans-serif; font-size: 12px; font-weight: 600; fill: var(--fg); }
   .chart rect { transition: opacity 0.12s ease; }
   .chart rect:hover { opacity: 0.82; }
+
+  /* Scroll-triggered draw-in. The animated "from" state (bars at scaleY 0,
+     sparkline undrawn) lives only inside these @keyframes with
+     animation-fill-mode: backwards, so a chart with no .chart-in class --
+     JS off, no IntersectionObserver, or reduced motion -- renders full. */
+  @media (prefers-reduced-motion: no-preference) {
+    .chart rect { transform-box: fill-box; transform-origin: 50% 100%; }
+    .chart.chart-in rect {
+      animation: bar-rise 0.45s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+    }
+    .chart.chart-in rect:nth-of-type(1)  { animation-delay: 0ms; }
+    .chart.chart-in rect:nth-of-type(2)  { animation-delay: 35ms; }
+    .chart.chart-in rect:nth-of-type(3)  { animation-delay: 70ms; }
+    .chart.chart-in rect:nth-of-type(4)  { animation-delay: 105ms; }
+    .chart.chart-in rect:nth-of-type(5)  { animation-delay: 140ms; }
+    .chart.chart-in rect:nth-of-type(6)  { animation-delay: 175ms; }
+    .chart.chart-in rect:nth-of-type(7)  { animation-delay: 210ms; }
+    .chart.chart-in rect:nth-of-type(8)  { animation-delay: 245ms; }
+    .chart.chart-in rect:nth-of-type(9)  { animation-delay: 280ms; }
+    .chart.chart-in rect:nth-of-type(10) { animation-delay: 315ms; }
+    .chart.chart-in rect:nth-of-type(11) { animation-delay: 350ms; }
+    .chart.chart-in rect:nth-of-type(12) { animation-delay: 385ms; }
+    .chart.chart-in rect:nth-of-type(13) { animation-delay: 420ms; }
+    .chart.chart-in rect:nth-of-type(14) { animation-delay: 455ms; }
+    @keyframes bar-rise { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+
+    .spark.chart-in polyline {
+      animation: spark-draw 0.9s ease-out backwards;
+    }
+    .spark.chart-in polygon {
+      animation: spark-fill 0.7s ease-out 0.3s backwards;
+    }
+    .spark.chart-in circle {
+      animation: spark-fill 0.3s ease-out 0.75s backwards;
+    }
+    @keyframes spark-draw {
+      from { stroke-dasharray: 260; stroke-dashoffset: 260; }
+      to   { stroke-dasharray: 260; stroke-dashoffset: 0; }
+    }
+    @keyframes spark-fill { from { opacity: 0; } }
+  }
   .chart-card .card-head { align-items: baseline; gap: 0.6rem; }
   .chart-card .card-head h2, .chart-card .card-head h3 { margin: 0; }
   .chart-note { color: var(--muted); font-size: 0.85rem; margin: 0.15rem 0 0; }
@@ -223,5 +264,6 @@
   </footer>
 </main>
 <script src="reveal.js" defer></script>
+<script src="metrics-charts.js" defer></script>
 </body>
 </html>
