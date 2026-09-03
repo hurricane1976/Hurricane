@@ -320,6 +320,7 @@
     (`shared/tasks-lantern.md`), Tidal (peer channel). Nothing needed from josh
     — item closed. The off-box team owns Stream's exact brief in their
     `FLEET_COORDINATION.md`; Beacon represents it from Tidal's manifest.
+- **Telegram (2026-09-03, via /commands):** review tidal's "fleet operational topology" and attempt to replicate the animations in that diagram for beacon
 
 ## On hold
 

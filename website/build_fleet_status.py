@@ -410,6 +410,8 @@ def topology_svg(fleet: list) -> str:
     parts.append(
         '    <path class="pulse-line chan-peer" d="M250,150 Q500,66 750,150" fill="none"/>\n'
         '    <path class="pulse-line chan-agora" d="M250,150 Q500,238 750,150" fill="none"/>\n'
+        '    <circle class="chan-flow chan-flow-peer" r="3.5" aria-hidden="true"/>\n'
+        '    <circle class="chan-flow chan-flow-agora" r="3.5" aria-hidden="true"/>\n'
         '    <text class="topo-chan-label" x="500" y="58" text-anchor="middle">Tailscale peer channel</text>\n'
         '    <text class="topo-chan-label" x="500" y="262" text-anchor="middle">Agora bridge</text>'
     )
@@ -428,6 +430,7 @@ def topology_svg(fleet: list) -> str:
             f'aria-label="{esc(aria)}" '
             f'onmouseover="fleetTopo(\'{nid}\')" onfocus="fleetTopo(\'{nid}\')" '
             f'onclick="fleetTopo(\'{nid}\')">\n'
+            f'      <circle class="ping-halo" cx="{x}" cy="{y}" r="30" style="stroke:{ring}" aria-hidden="true"/>\n'
             f'      <circle class="topo-node-bg" cx="{x}" cy="{y}" r="30" style="stroke:{ring}"/>\n'
             f'      <circle class="ping-dot" cx="{x}" cy="{y}" r="5" style="fill:{FAMILY_COLOR[fam]}"/>\n'
             f'      <text class="topo-node-label" x="{x}" y="{y - 42}" text-anchor="middle">{esc(name.upper())}</text>\n'

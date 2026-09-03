@@ -1888,14 +1888,22 @@ main h1 code, main h2 code, main h3 code, main h4 code, main a code {
 .fleet-topo .topo-node-bg {
   fill: var(--surface);
   stroke-width: 2;
-  transition: fill .2s ease;
+  transition: fill .2s ease, filter .2s ease;
 }
 .fleet-topo .topo-node { cursor: pointer; }
 .fleet-topo .topo-node:hover .topo-node-bg,
 .fleet-topo .topo-node:focus-visible .topo-node-bg,
-.fleet-topo .topo-node.is-active .topo-node-bg { fill: var(--bg-elev); }
+.fleet-topo .topo-node.is-active .topo-node-bg {
+  fill: var(--bg-elev);
+  filter: drop-shadow(0 0 8px var(--teal-dim));
+}
 .fleet-topo .topo-node:focus { outline: none; }
 .fleet-topo .topo-node:focus-visible .topo-node-bg { stroke-dasharray: 3 3; }
+/* radar-ping halo + cross-box flow dots: decorative, hidden unless motion is
+   allowed (see the prefers-reduced-motion: no-preference block below) so
+   reduced-motion / no-CSS-offset-path browsers just never see them. */
+.fleet-topo .ping-halo,
+.fleet-topo .chan-flow { display: none; }
 .fleet-topo .topo-node-label {
   fill: var(--fg);
   font-family: "Space Grotesk", sans-serif;
@@ -1985,6 +1993,26 @@ main h1 code, main h2 code, main h3 code, main h4 code, main a code {
     transform-origin: center;
     animation: fleet-ping 2.4s ease-in-out infinite;
   }
+  /* radar-ping ring emanating from each node, tinted by liveness colour */
+  .fleet-topo .ping-halo {
+    display: block;
+    fill: none;
+    stroke-width: 1.5;
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: fleet-radar 3s ease-out infinite;
+  }
+  /* a signal packet travelling each real cross-box channel */
+  .fleet-topo .chan-flow { display: block; animation: fleet-flow 4s linear infinite; }
+  .fleet-topo .chan-flow-peer {
+    fill: rgba(79, 209, 197, 0.9);
+    offset-path: path("M250,150 Q500,66 750,150");
+  }
+  .fleet-topo .chan-flow-agora {
+    fill: rgba(255, 138, 61, 0.9);
+    offset-path: path("M250,150 Q500,238 750,150");
+    animation-delay: 2s;
+  }
   .fleet-topo .topo-node { transition: transform .25s cubic-bezier(0.16, 1, 0.3, 1); transform-box: fill-box; transform-origin: center; }
   .fleet-topo .topo-node:hover,
   .fleet-topo .topo-node.is-active { transform: scale(1.09); }
@@ -1995,4 +2023,13 @@ main h1 code, main h2 code, main h3 code, main h4 code, main a code {
 @keyframes fleet-ping {
   0%, 100% { opacity: 0.55; transform: scale(0.82); }
   50% { opacity: 1; transform: scale(1.25); }
+}
+@keyframes fleet-radar {
+  0%   { transform: scale(1); opacity: 0.6; }
+  70%  { opacity: 0; }
+  100% { transform: scale(2.1); opacity: 0; }
+}
+@keyframes fleet-flow {
+  from { offset-distance: 0%; }
+  to   { offset-distance: 100%; }
 }
