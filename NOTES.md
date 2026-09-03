@@ -10134,3 +10134,62 @@ Running log of what I did and learned across wakings. Newest entries on top.
   `/api/stats` 206w / 266c; homepage 200.
 - **Fleet:** Beacon w207 (now); Highbeam last ~00:30Z (w62), next ~04:30Z;
   Lantern last ~01:00Z (w53), next ~05:00Z; Tidal + River + Creek off-box.
+
+## 2026-09-03 (208th waking, ~04:05 UTC)
+- On-mark `/wake` (04:05Z). `check_replies.sh`: no new messages (only the
+  already-actioned w207 web-craft steer echoed from the queue). `peer/inbox/`
+  empty. Two commits this waking (`4470a97`, `c10cadc`), both deployed + pushed.
+- **Actioned Highbeam w64's stale-cadence finding (medium).** The w182 cadence
+  cut (12×/day→6×/day, `0 */2`→`0 */4`, josh-confirmed intentional) had never
+  propagated to several *published* pages — still present-tense wrong about
+  this fleet. Fixed across 4 files:
+  - **`claude-code-cost.html`** — "Worked example: what this fleet's wake loop
+    does" said the agent wakes on `0 */2 * * *` / "twelve times a day" →
+    `0 */4 * * *` / "six times a day" (this was also Highbeam w63's spoke-#6
+    credibility flag). Hero tagline "wakes on a schedule, twelve times a day,
+    forever" → "several times a day".
+  - **`gemini-cli-vs-claude-code.html`** — callout "runs Claude Code on a
+    two-hourly cron" → "four-hourly" (+ "on the same schedule" → "same
+    cadence"); `<h2>` "Free tier and what it costs to run 12×/day" → "6×/day";
+    tagline "what it costs to run twelve times a day" → "several times a day".
+  - **`claude-code-watchdog.html`** — "If wakes are every two hours, the
+    watchdog still notices…" → "If wakes are hours apart…"; "entirely separate
+    from the two-hourly wake loop" → "four-hourly wake loop".
+  - **`metrics.template.html`** (regenerated into `/metrics.html` on deploy) —
+    "Beacon wakes on a 2-hour schedule … daily counts run above the base 12" →
+    "4-hour schedule … base 6"; the sibling-charts note "Highbeam wakes on odd
+    hours; Lantern 30 minutes past even hours" was *doubly* wrong under the
+    live crontab (`30 */4` / `0 1-23/4`) → "Highbeam wakes 30 minutes after
+    Beacon on the same 4-hour marks; Lantern an hour after Beacon".
+  - **Left as-is:** `claude-code-headless.html` / `claude-code-cron.html`
+    `0 */2` examples (generic teaching, placeholder `/home/agent/project/`
+    paths — per Highbeam's note); `maintaining-an-autonomous-agent.html`'s
+    "cut from twelve wakings a day to six" (a correct historical description —
+    it's literally the lesson this fix illustrates); `claude-code-cost.html`
+    L592 `0 */2 * * *` (generic business-hours-cron math baseline, not a claim
+    about this fleet); `roadmap.html` (auto-generated historical record).
+  - Deployed twice (once per commit), `smoke_test.py` local+live green both
+    times, `/status.html` green, `/fleet.json` 6/6. Live strings verified.
+- **Relayed Highbeam w63's hosting-cost question for josh into `ASK.md`** as a
+  new Open item: real monthly cost + provider for this box (the content plan's
+  "~$6/mo DigitalOcean droplet" placeholder doesn't match the measured
+  2 vCPU / 2 GB / ~90 GB KVM specs), needed to ground SEO spoke #16
+  `autonomous-agent-cost-breakdown`. Not blocking — noted the page can ship
+  with hedged figures if josh would rather not share.
+- **josh w207 web-craft steer — ongoing.** Highbeam w65 landed a ranked
+  dataviz shortlist (real-time fleet dashboard > activity heatmap >
+  interactive /metrics controls > sparklines > 2nd stepper) + a 5-item
+  semi-autonomous business shortlist in `shared/ideas.md`; Lantern w55 added
+  chart/effect concepts to `shared/business-opportunities.md`. Beacon scoped a
+  GitHub-style calendar activity-heatmap for `/metrics.html` and **dropped
+  it** — the project has only ~11 days of git/wake history (started
+  2026-08-24), so a 12-week grid would render ~90% empty and read as thin.
+  Next Beacon build candidate once there's more history: sparklines in the
+  `/metrics` KPI tiles. w207's gradient-fill bars stay the last shipped
+  increment on this steer.
+- **Health sweep, all green:** nginx / beacon-api / beacon-peer / fail2ban /
+  cron / certbot.timer active; 0 failed units; no reboot flag; disk 10%
+  (~78G free). Watchdog `ok` through 04:00:02Z. `/fleet.json` 6/6 healthy;
+  `/api/stats` 207w / 268c; homepage 200.
+- **Fleet:** Beacon w208 (now); Highbeam last ~00:30Z (w64), next ~04:30Z;
+  Lantern last ~01:00Z (w55), next ~05:00Z; Tidal + River + Creek off-box.
