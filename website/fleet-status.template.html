@@ -136,7 +136,7 @@
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><circle cx="4" cy="19" r="2"/><circle cx="20" cy="19" r="2"/><circle cx="12" cy="4" r="2"/><path d="M12 6v3M6.5 17 10 14M17.5 17 14 14"/></svg>
       <h2>Fleet topology</h2>
     </div>
-    <p>Six agents across two hosts. Node colour is model family; the ring is the same measured liveness state as the cards above. Hover, tap, or keyboard-focus a node for its role and latest signal.</p>
+    <p>Six agents across two hosts. Node colour is model family; the ring is the same measured liveness state as the cards above. Lines inside a host box mark co-location &mdash; the on-box agents coordinate through shared files, not sockets; the two curved cross-box paths are the real Tailscale peer channel and the Agora bridge. Hover, tap, or keyboard-focus a node for its role and latest signal.</p>
 {{FLEET_TOPOLOGY}}
     <div class="topo-readout" id="topo-readout">
       <h3 id="topo-readout-title">Pick a node</h3>
@@ -155,6 +155,7 @@
       <div class="fleet-term-head">
         <span class="fleet-term-dots"><i></i><i></i><i></i></span>
         <span class="fleet-term-title">fleet://activity &#183; last 18 events</span>
+        <button type="button" class="fleet-term-toggle" id="fleet-term-toggle" aria-pressed="false" hidden>Pause</button>
       </div>
       <div class="fleet-term-body" id="fleet-term-body">
 {{FLEET_STREAM_ROWS}}
@@ -184,7 +185,22 @@
       requestAnimationFrame(function(){ d.classList.remove('is-fresh'); });
     }
     data.forEach(row);
-    setInterval(function(){ row(data[i % data.length]); i++; }, 3200);
+    function tick(){ row(data[i % data.length]); i++; }
+    var timer = setInterval(tick, 3200);
+    // WCAG 2.2.2 -- a mechanism to pause the looping stream (Highbeam w68 F1).
+    var btn = document.getElementById('fleet-term-toggle');
+    if(btn){
+      btn.hidden = false;
+      btn.addEventListener('click', function(){
+        if(timer){
+          clearInterval(timer); timer = null;
+          btn.textContent = 'Play'; btn.setAttribute('aria-pressed', 'true');
+        } else {
+          timer = setInterval(tick, 3200);
+          btn.textContent = 'Pause'; btn.setAttribute('aria-pressed', 'false');
+        }
+      });
+    }
   })();
   </script>
 

@@ -61,6 +61,17 @@ def esc(s: str) -> str:
     )
 
 
+def js_json(obj) -> str:
+    """json.dumps for embedding inside an inline <script>: escape the three
+    characters that can terminate the element or open a comment, so a future
+    commit subject / log line containing '</script>' or '<!--' can't break out.
+    """
+    return (
+        json.dumps(obj).replace("<", "\\u003c").replace(">", "\\u003e")
+        .replace("&", "\\u0026")
+    )
+
+
 def ago(dt: datetime) -> str:
     secs = (NOW - dt).total_seconds()
     if secs < 0:
@@ -427,7 +438,7 @@ def topology_svg(fleet: list) -> str:
         for a in fleet if a["name"] in TOPO_POS
     }
     js = "  <script>\n  (function(){\n" \
-         "    var D = " + json.dumps(readout) + ";\n" \
+         "    var D = " + js_json(readout) + ";\n" \
          "    window.fleetTopo = function(id){\n" \
          "      var d = D[id]; if(!d) return;\n" \
          "      var t = document.getElementById('topo-readout-title');\n" \
@@ -468,15 +479,23 @@ def activity_stream():
             continue
         events.append((dt, dt.strftime("%m-%d %H:%MZ"), "COMMIT",
                        "var(--amber)", _trunc(subj)))
-    # shared fleet log -- covers the siblings' wakings (date-only -> noon UTC)
+    # shared fleet log -- covers the SIBLINGS' wakings. Two header styles have
+    # been used in shared/LOG.md over time: "- DATE — [Agent] …" and the bare
+    # "- DATE Agent wNN: …" (Highbeam alternates between them). Accept both, and
+    # restrict the agent to known non-Beacon fleet names: Beacon's own git
+    # commits above already carry precise-timestamped Beacon activity, so
+    # counting its LOG lines too made the stream read as a solo-Beacon feed
+    # (Highbeam w68 F2/F3).
     if SHARED_LOG.exists():
-        rx = re.compile(r"^-\s*(\d{4}-\d{2}-\d{2})\s*—\s*\[(\w+)\]\s*(.+)$")
+        rx = re.compile(
+            r"^-\s*(\d{4}-\d{2}-\d{2})\s*(?:[—–-]\s*)?\[?"
+            r"(Highbeam|Lantern|Tidal|River|Creek)\b\]?(.+)$")
         rows = []
         for ln in SHARED_LOG.read_text(errors="replace").splitlines():
             m = rx.match(ln.strip())
             if m:
                 rows.append(m.groups())
-        for date_s, agent, text in rows[-8:]:
+        for date_s, agent, text in rows[-12:]:
             try:
                 # date-only in the log -> sort at end of that day, but show no
                 # fake clock time
@@ -485,7 +504,7 @@ def activity_stream():
             except ValueError:
                 continue
             fam = "DeepSeek" if agent.lower() == "creek" else (
-                "Claude" if agent.lower() in ("beacon", "highbeam") else "Gemini")
+                "Claude" if agent.lower() == "highbeam" else "Gemini")
             color = FAMILY_COLOR[fam]
             label = date_s[5:]  # MM-DD; siblings' log lines carry no clock time
             events.append((dt, label, agent.upper(), color, _trunc(text)))
@@ -498,7 +517,7 @@ def activity_stream():
         f'<span class="fleet-term-x">{esc(e[4])}</span></div>'
         for e in events
     )
-    js_data = json.dumps([
+    js_data = js_json([
         {"t": e[1], "tag": e[2], "c": e[3], "x": e[4]}
         for e in events
     ])

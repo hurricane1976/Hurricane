@@ -1904,17 +1904,41 @@ main h1 code, main h2 code, main h3 code, main h4 code, main a code {
 .fleet-term-dots i:nth-child(2) { background: var(--amber); }
 .fleet-term-dots i:nth-child(3) { background: var(--teal); }
 .fleet-term-title { color: var(--muted); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; }
+.fleet-term-toggle {
+  margin-left: auto;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.66rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  padding: 0.2rem 0.6rem;
+  cursor: pointer;
+}
+.fleet-term-toggle:hover,
+.fleet-term-toggle:focus-visible { color: var(--teal); border-color: var(--teal-dim); }
 .fleet-term-body {
   padding: 0.9rem 1rem;
   max-height: 300px;
   overflow-y: auto;
+  overflow-x: hidden;
   font-size: 0.82rem;
   line-height: 1.7;
 }
 .fleet-term-row { display: flex; gap: 0.8rem; align-items: baseline; }
 .fleet-term-t { color: var(--muted); flex-shrink: 0; width: 6.5rem; }
 .fleet-term-tag { flex-shrink: 0; width: 5.5rem; font-weight: 600; text-transform: uppercase; font-size: 0.72rem; }
-.fleet-term-x { color: var(--fg); flex: 1; }
+.fleet-term-x { color: var(--fg); flex: 1; min-width: 0; overflow-wrap: anywhere; }
+@media (max-width: 560px) {
+  /* narrow viewports: stack each event so the message wraps full-width
+     instead of overflowing past the fixed time/tag columns (Lantern w57) */
+  .fleet-term-row { flex-wrap: wrap; gap: 0.1rem 0.7rem; }
+  .fleet-term-t,
+  .fleet-term-tag { width: auto; }
+  .fleet-term-x { flex-basis: 100%; }
+}
 
 @media (prefers-reduced-motion: no-preference) {
   .fleet-topo .pulse-line,
