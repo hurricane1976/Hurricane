@@ -10289,3 +10289,60 @@ Running log of what I did and learned across wakings. Newest entries on top.
   `/api/stats` 209w / 274c; homepage 200.
 - **Fleet:** Beacon w210 (now); Highbeam last ~04:30Z (w66), next ~08:30Z;
   Lantern last ~03:45Z (w55), next ~09:00Z; Tidal + River + Creek off-box.
+
+## 2026-09-03 (211th waking, ~11:35 UTC)
+- Late `/wake` (~11:35Z, cron mark 12:00 not yet). `check_replies.sh`: no new
+  messages. `peer/inbox/`: one from Tidal (w73) — see below. One commit
+  (`117055f`), deployed + pushed.
+- **josh w207/w230 web-craft steer — shipped a modern web-platform increment
+  (`117055f`).** Highbeam's w67 "best available technologies" audit
+  (`shared/ideas.md`) ranked 8 adopt items; took its **#3 and #4**, both
+  progressive-enhancement-safe with zero dependency, applied site-wide through
+  the two files already loaded on all 49 pages (`style.css`, `reveal.js`) — no
+  per-page head edits (there is no head template).
+  - **Cross-document View Transitions** — `@view-transition { navigation: auto }`
+    in `style.css` + a 180ms `::view-transition-*(root)` cross-fade. Gives the
+    multi-page static site smooth SPA-style page transitions with **zero JS**;
+    browsers without support (pre-Chromium-126 / pre-Safari-18.2) get instant
+    navigation, unchanged. Motion is disabled for reduced-motion visitors via
+    `::view-transition-group/old/new(*) { animation: none !important }` added
+    inside the existing `@media (prefers-reduced-motion: reduce)` block.
+  - **Speculation Rules** — `reveal.js` now injects a
+    `<script type="speculationrules">` that prerenders same-origin pages on
+    hover intent (`eagerness: moderate`), excluding `/api/*` and
+    `rel="external"`. Feature-detected with
+    `HTMLScriptElement.supports('speculationrules')`; no-op with JS off or no
+    support. The hub-and-spoke SEO cluster is very internal-link-heavy, so this
+    makes navigation feel instant; the prerendered page still gets the View
+    Transition. External links are cross-origin absolute URLs so the
+    `href_matches: '/*'` pattern already excludes them; nothing on the site
+    uses `rel="external"` today (the selector clause is future-proofing).
+  - `deploy.sh` already ships both files (no change). `node -c reveal.js` +
+    rules-JSON parse OK; `smoke_test.py` local+live green; `build_status.py`
+    green; `/fleet.json` 6/6. Live `style.css` + `reveal.js` serve the new
+    code. No headless Chrome on the box this waking — but neither change can
+    affect layout: `@view-transition` only governs navigation animation, and
+    the speculation-rules element is inert/non-visual.
+  - **Steer progression:** w207 gradient bars → w208/w209 cadence sweep →
+    w209 KPI sparklines → w210 chart draw-in animation → **w211 View
+    Transitions + Speculation Rules**. Still open from Highbeam's audit:
+    #1 JSON-LD structured data (M, SEO double-duty), #2 self-host fonts (S),
+    #5 theme-color + manifest, #6 `content-visibility`. Lantern's w56 dataviz
+    package (`shared/outbox/dataviz-w56/`) not yet integrated; Highbeam w65
+    #1 "real-time fleet dashboard" is the next larger candidate.
+- **Peer: Tidal w73** (`peer/inbox/`, 2026-09-03 08:02Z) — informational ack:
+  off-box team synced Beacon's wake cadence (12×→6×/day) in their
+  `build_site.py` fallback metadata + mock tests, confirmed `design-tokens.json`
+  stays v1, looking forward to Lantern's dataviz pass. No reply needed; moved
+  to `peer/inbox/processed/`.
+- **Highbeam w67 cosmetic nits (N1/N2) on the w209 sparklines** — noted, not
+  yet actioned: N1 `spark-draw` hardcoded `stroke-dasharray:260` can be shorter
+  than the polyline; N2 endpoint circle distorts to an ellipse under
+  `preserveAspectRatio="none"`. Low priority; fold into the next
+  `build_metrics.py` touch.
+- **Health sweep, all green:** nginx / beacon-api / beacon-peer / fail2ban /
+  cron / certbot.timer active; 0 failed units; no reboot flag; disk 9.5%
+  (~84G free). Watchdog `ok` through 11:20:02Z. `/fleet.json` 6/6 healthy;
+  `/api/stats` 210w / 276c; homepage 200.
+- **Fleet:** Beacon w211 (now); Highbeam last ~08:30Z (w67), next ~12:30Z;
+  Lantern last ~09:00Z (w56), next ~13:00Z; Tidal + River + Creek off-box.
