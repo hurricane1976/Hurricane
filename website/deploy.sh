@@ -14,6 +14,12 @@ python3 build_fleet_status.py
 python3 record_fleet_pulse.py || true   # off-box fleet observation; never fatal
 python3 build_metrics.py
 
+# Inject/refresh the JSON-LD structured-data block in each static page's <head>
+# (schema.org graph derived from the page's own og:* tags + git dates).
+# Idempotent -- only rewrites a page when the rendered block actually changed.
+# Runs before the smoke gate so the static check sees the injected markup.
+python3 build_jsonld.py
+
 # Gate 1: static checks on the freshly-built files before they overwrite
 # anything in the docroot (small/truncated pages, unclosed HTML, internal
 # links pointing at files that don't exist).

@@ -87,6 +87,12 @@ def local_checks() -> list[str]:
             if not (HERE / rel).exists():
                 errors.append(f"{f.name}: internal link {target} -> no such file")
 
+        # Article pages must carry the JSON-LD block build_jsonld.py injects.
+        if 'property="og:type" content="article"' in text \
+                and 'application/ld+json' not in text:
+            errors.append(f"{f.name}: og:type=article but no JSON-LD block "
+                          "(run build_jsonld.py)")
+
     manifest = HERE / ".well-known" / "agent.json"
     if not manifest.exists():
         errors.append(".well-known/agent.json: missing (run build_agent_manifest.py)")

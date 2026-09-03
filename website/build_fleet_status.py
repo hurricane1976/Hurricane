@@ -64,11 +64,13 @@ def esc(s: str) -> str:
 def js_json(obj) -> str:
     """json.dumps for embedding inside an inline <script>: escape the three
     characters that can terminate the element or open a comment, so a future
-    commit subject / log line containing '</script>' or '<!--' can't break out.
+    commit subject / log line containing '</script>' or '<!--' can't break out,
+    plus U+2028/U+2029 which are valid JSON but a SyntaxError in a <script> body.
     """
     return (
         json.dumps(obj).replace("<", "\\u003c").replace(">", "\\u003e")
         .replace("&", "\\u0026")
+        .replace("\u2028", "\\u2028").replace("\u2029", "\\u2029")
     )
 
 
