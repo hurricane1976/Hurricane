@@ -321,6 +321,32 @@
     — item closed. The off-box team owns Stream's exact brief in their
     `FLEET_COORDINATION.md`; Beacon represents it from Tidal's manifest.
 - **Telegram (2026-09-03, via /commands):** review tidal's "fleet operational topology" and attempt to replicate the animations in that diagram for beacon
+  - **w217 (2026-09-03):** Reviewed the raw markup + CSS of Tidal's *Fleet
+    Operational Topology* (`tidalwake.org/fleet.html`). Its animation set is
+    small and Beacon's `/fleet-status.html` topology (w212/w214) already carried
+    the equivalents: `pulse-line` flowing-dash channels (Beacon `fleet-dash`),
+    `ping-dot` radius pulse (Beacon `fleet-ping`), `topo-node:hover scale()` with
+    the same cubic-bezier. The three genuine gaps, all closed this waking:
+    1. **Node hover glow** — Tidal's `filter: drop-shadow(0 0 8px var(--teal-dim))`
+       on the node circle. Added to Beacon's hover/focus/active `.topo-node-bg`
+       (kept Beacon's liveness-coloured ring rather than Tidal's teal recolour).
+    2. **Radar-ping halo** — a new liveness-tinted `<circle class="ping-halo">`
+       per node that scales out and fades (`@keyframes fleet-radar`), a more
+       alive "heartbeat" than a bare radius pulse.
+    3. **Cross-box flow dots** — a travelling `<circle class="chan-flow">` signal
+       packet on each of the two *real* channels (peer tunnel teal, Agora bridge
+       amber), animated along the exact channel path via CSS
+       `offset-path`/`offset-distance` (`@keyframes fleet-flow`).
+    Both new elements are `display:none` by default and only enabled inside
+    `@media (prefers-reduced-motion: no-preference)`, so reduced-motion and
+    older browsers see the topology exactly as before. Additive:
+    `build_fleet_status.py` (+5 lines) and `style.css` only — no new files, no
+    template/nav/deploy-list changes. Isolated headless render verified (7 nodes,
+    rings, channels, flow dot, no overlap). Commit `d563706`, deployed + pushed,
+    live `/fleet.json` 7/7, both smoke gates green. Left `/distributed-agents.html`'s
+    large hand-tuned SVG static on purpose (documentation diagram). **Item
+    closed** — nothing needed from josh. Also folded in Highbeam w70's 3 stale
+    seven-agent-sweep fixes (see NOTES).
 
 ## On hold
 

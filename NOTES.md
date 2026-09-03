@@ -10684,3 +10684,71 @@ Running log of what I did and learned across wakings. Newest entries on top.
   #5 theme-color + web-manifest, #6 `content-visibility`; Lantern w56 dataviz
   package (`shared/outbox/dataviz-w56/`) not yet integrated; Highbeam w65 #1
   "real-time fleet dashboard" still the larger next candidate.
+
+## 2026-09-03 (217th waking, ~17:15 UTC)
+- `/wake`. `check_replies.sh`: one queued `/commands` message — *"review tidal's
+  'fleet operational topology' and attempt to replicate the animations in that
+  diagram for beacon"* (already filed in `ASK.md` from the w216 batch; actioned
+  this waking). One feature commit (`d563706`), deployed + pushed. `peer/inbox/`
+  empty.
+- **Reviewed Tidal's *Fleet Operational Topology*** (raw markup + CSS pulled from
+  `https://tidalwake.org/fleet.html`). Its animation set is deliberately small:
+  `.pulse-line` flowing dashes on the channels (`dash-pulse 24s`), `.ping-dot`
+  radius pulse (`ping-pulse 2s`), `.topo-node:hover { transform: scale(1.08) }`
+  with a cubic-bezier ease, and `.topo-node:hover .topo-node-bg` →
+  `filter: drop-shadow(0 0 8px var(--teal-dim))` + teal stroke. Beacon's
+  `/fleet-status.html` topology (w212 build + w214 particle field) **already had
+  the first three** as `fleet-dash` / `fleet-ping` / the same hover-scale.
+- **Closed the three real gaps** (contained to `build_fleet_status.py` +5 lines
+  and `style.css`; no new files, no template/nav/deploy-list changes):
+  1. **Node hover glow** — added Tidal's exact
+     `filter: drop-shadow(0 0 8px var(--teal-dim))` to Beacon's
+     hover/focus/`.is-active` `.topo-node-bg` rule (+ a `filter` transition).
+     Kept Beacon's **liveness-coloured** ring rather than Tidal's teal recolour —
+     the ring is Beacon's status signal.
+  2. **Radar-ping halo** — a new `<circle class="ping-halo">` per node, stroked
+     in the node's liveness colour, that scales 1→2.1 and fades out on a 3s loop
+     (`@keyframes fleet-radar`). Reads as a live heartbeat emanating from each
+     node; more animated than the bare `ping-dot` radius pulse.
+  3. **Cross-box flow dots** — a travelling `<circle class="chan-flow">` signal
+     packet on each of the **two real channels** (peer tunnel = teal, Agora
+     bridge = amber), moved along the exact channel `path()` via CSS
+     `offset-path` + `offset-distance` 0→100% (`@keyframes fleet-flow`, Agora
+     staggered 2s). Nothing invented — the packets ride the same paths the
+     static channels already draw.
+- **Reduced-motion / fallback safety:** `.ping-halo` and `.chan-flow` are
+  `display:none` by default and only switched to `display:block` + animated
+  **inside** `@media (prefers-reduced-motion: no-preference)`. Motion-off,
+  JS-off, and browsers without CSS `offset-path` all get the topology exactly as
+  it was. The always-on additions (hover glow, `filter` transition) are instant,
+  not motion.
+- **Verified:** topology SVG XML-valid; 7 `ping-halo` + 2 `chan-flow` circles in
+  the generated page; `style.css` braces balanced; `smoke_test.py --local` +
+  `--live` green; **isolated headless render** (`chrome-headless-shell`) of the
+  extracted SVG + `style.css` — 7 nodes, liveness rings, both curved channels,
+  the amber Agora flow-dot mid-path, legend, no overlap, no layout break. (The
+  full `/fleet-status.html` page renders blank below the agent cards in *both*
+  local headless binaries — reproduced identically against pre-change `HEAD`, so
+  it's a known headless-shell paint quirk on that long page, not a regression;
+  the live site renders fine in a real browser.) Live spot-check: `style.css`
+  serves `fleet-radar` / `fleet-flow` / `offset-path`; `/fleet-status.html`
+  serves the halo + flow markup; `/fleet.json` 7/7.
+- **Left `/distributed-agents.html`'s big hand-tuned topology SVG static on
+  purpose** — it's a documentation diagram (viewBox 1200×920), not the live ops
+  view josh referenced ("the animated one").
+- **Also folded in Highbeam w70's 3 stale seven-agent-sweep facts** (all live,
+  all one-line): `dividing-work-between-ai-agents.html` inline SVG header
+  `// 6-AGENT` → `7-AGENT`; same SVG's trust-boundary box
+  `TIDAL / RIVER / CREEK` → `+ STREAM`; `guides.html` "five sibling agents" →
+  "six sibling agents" (was contradicting "seven agents" on the same page).
+- **Told the fleet:** Highbeam (`shared/TASKS.md`), Lantern
+  (`shared/tasks-lantern.md`), Tidal (peer channel).
+- **Health sweep, all green:** nginx / beacon-api / beacon-peer / fail2ban /
+  cron / certbot.timer active; 0 failed units; disk 10% (~78G free); watchdog
+  `ok` 17:20:02Z; `/fleet.json` 7/7; `/api/stats` 216w / 289c.
+- **Fleet:** Beacon w217 (now); Highbeam last ~16:30Z (w70/71); Lantern last
+  ~17:00Z (w59/60); Tidal + River + Creek + Stream off-box.
+- **Still open** from Highbeam w67's modern-web audit: #2 self-host fonts,
+  #5 theme-color + web-manifest, #6 `content-visibility`; Lantern w56 dataviz
+  package not yet integrated; Highbeam w65 #1 "real-time fleet dashboard" still
+  the larger next candidate.
