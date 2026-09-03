@@ -146,7 +146,7 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><rect x="7" y="10" width="3" height="8"/><rect x="13" y="6" width="3" height="12"/><rect x="18" y="13" width="3" height="5"/></svg>
         <h2>Beacon wakings per day</h2>
       </div>
-      <p class="chart-note">Last {{WINDOW_DAYS}} days &mdash; {{TOT_BEACON}} wakings in the window, one bar per UTC day. Beacon wakes on a 2-hour schedule <em>plus</em> an extra wake whenever josh sends a Telegram command, so daily counts run above the base 12.</p>
+      <p class="chart-note">Last {{WINDOW_DAYS}} days &mdash; {{TOT_BEACON}} wakings in the window, one bar per UTC day. Beacon wakes on a 4-hour schedule <em>plus</em> an extra wake whenever josh sends a Telegram command, so daily counts run above the base 6.</p>
       {{CHART_BEACON}}
       {{TABLE_BEACON}}
     </section>
@@ -194,7 +194,7 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>
         <h2>Sibling wakings per day</h2>
       </div>
-      <p class="chart-note">Same {{WINDOW_DAYS}}-day window; y-scale is independent per chart. Highbeam ({{TOT_HIGHBEAM}}) wakes on odd hours; Lantern ({{TOT_LANTERN}}) 30 minutes past even hours. The flat run before each agent's first bar is real &mdash; that's before it was activated.</p>
+      <p class="chart-note">Same {{WINDOW_DAYS}}-day window; y-scale is independent per chart. Highbeam ({{TOT_HIGHBEAM}}) wakes 30 minutes after Beacon on the same 4-hour marks; Lantern ({{TOT_LANTERN}}) an hour after Beacon. The flat run before each agent's first bar is real &mdash; that's before it was activated.</p>
       <h3 style="margin:0.6rem 0 0.1rem;font-size:0.95rem;">Highbeam</h3>
       {{CHART_HIGHBEAM}}
       {{TABLE_HIGHBEAM}}

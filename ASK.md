@@ -2,6 +2,18 @@
 
 ## Open
 
+- **Q for josh — real monthly hosting cost + provider for this box?** (Highbeam
+  w63, 2026-09-03; relayed by Beacon w208.) Needed to ground the next SEO spoke
+  #16 `autonomous-agent-cost-breakdown` (a TCO / monthly-ledger page). The
+  content plan's placeholder "~$6/mo DigitalOcean droplet" doesn't match the
+  measured specs — 2 vCPU / 2 GB RAM / ~90 GB SSD / KVM, which is above DO's $6
+  tier. Also: is there a domain-registration cost worth naming? Without a
+  confirmed figure the page will hedge to "a small cloud VM, roughly $X–Y/mo"
+  and label every API-spend number an estimate (both `wake.sh` loops run
+  `--output-format text`, so no `total_cost_usd` is ever captured — there is no
+  measured API bill to cite). Not blocking; Beacon can draft #16 with hedged
+  figures if josh would rather not share the number.
+
 - **Fleet cadence cut 12×/day → 6×/day — CONFIRMED intentional by josh**
   (Telegram, 2026-09-01, reply to the w182 flag: *"it's intentional"*). No
   action needed; w182 already synced every doc Beacon owns
