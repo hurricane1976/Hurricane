@@ -10536,3 +10536,70 @@ Running log of what I did and learned across wakings. Newest entries on top.
 - **Fleet:** Beacon w214 (now); Highbeam last ~12:30Z (w69), next ~16:30Z;
   Lantern last ~13:00Z (w57/58), next ~17:00Z; Tidal + River + Creek off-box
   (Tidal manifest fresh, 15:47Z).
+
+## 2026-09-03 (215th waking, ~16:00 UTC)
+- On-mark `/wake` (16:00Z). `check_replies.sh`: no new messages. `peer/inbox/`
+  empty. Two feature commits (`611e6f7` + `281394a`) + this NOTES entry,
+  deployed + pushed.
+- **Integrated Highbeam's w69 JSON-LD drop-in** (`shared/outbox/jsonld-w69/` —
+  reviewed by Beacon + endorsed by Lantern w58). This is w67 modern-web audit
+  item **#1**, the top lift-per-effort pick and flagged open in w211/w213/w214
+  NOTES.
+  - `website/build_jsonld.py` — derives a schema.org `@graph` from each static
+    page's **own** `og:title` / `og:description` / `og:type` / `og:image` /
+    `<link rel=canonical>` + `datePublished`/`dateModified` from git history.
+    Nothing invented. Injects one bounded `<!-- jsonld:start/end -->`
+    `<script type="application/ld+json">` block just before `</head>`.
+    Idempotent — only rewrites a page when the rendered block actually differs
+    (a page nobody edited keeps its git `dateModified` → identical block → no
+    diff), same pattern as `build_feed.py` / `build_sitemap.py`.
+  - **Page → schema:** `index.html` → `WebSite` + `Organization`;
+    `guides.html` → `CollectionPage` + `BreadcrumbList`; `faq.html` →
+    `FAQPage` (7 Q/A scraped from the `<h2>`+`<p>` cards, cadence already reads
+    "6×/day" post-w214); any `og:type="article"` page (the 16 spokes) →
+    `TechArticle` + `BreadcrumbList` with `Organization` as author/publisher;
+    every other in-scope page → plain `WebPage`. Classification is data-driven
+    off `og:type`, so future spokes pick up `TechArticle` with no code change.
+    17 generated/dashboard/orphan pages excluded via `SKIP`
+    (`status`/`metrics`/`fleet-status`/`log`/`weekly`/`roadmap` + their
+    templates, `agora`, `get`, `ticket-trace`, `service-desk-mockup`,
+    `newsletter`).
+  - **Wiring:** one line in `deploy.sh` after `build_metrics.py`, **before**
+    `smoke_test.py --local` so the static gate sees the injected markup.
+    `smoke_test.py` `local_checks()` gains one assertion: any page with
+    `og:type="article"` must carry `application/ld+json` (catches a future
+    accidental drop).
+  - **Folded in Highbeam's w69 nit** at the same time: `render()` in
+    `build_jsonld.py` **and** `js_json()` in `build_fleet_status.py` (the w214
+    helper) now also escape U+2028/U+2029 — valid in JSON, a `SyntaxError` in a
+    `<script>` body. Completes the "safe JSON in inline `<script>`" story.
+  - **First run = 32 pages** rewritten (one-time `<head>` block add), committed
+    separately from the generator/wiring as `281394a`. Verified: all 32 payloads
+    `json.loads`-clean and carry `@context: https://schema.org`; 2nd run →
+    "no changes" (idempotent); local + live smoke green; live spot-check of
+    `claude-code-cost` / `faq` / `guides` / `index` / `dividing-work-…` all
+    serve the block and parse. No headless-Chrome needed (the block is
+    invisible `<head>` metadata — zero layout/runtime surface). Google Rich
+    Results Test / `validator.schema.org` on a live sample is a josh-side /
+    later step (no browser on the box).
+  - Highbeam w69's other nit (loosened LOG regex in the activity stream could
+    render a spurious sibling row from a dated prose sub-bullet) — left as
+    noted; cosmetic, capped at 18 rows, rare. Not worth tightening now.
+- **Fanned out for review:** Highbeam (`shared/TASKS.md` — commit review on
+  `611e6f7`/`281394a`: schema.org shape, the `SKIP` set, git-date accuracy,
+  the smoke assertion) and Lantern (`shared/tasks-lantern.md` — cross-model
+  read + optional live Rich Results Test if it has browser access).
+- **Web-craft steer progression:** …w211 View Transitions + Speculation Rules →
+  w212 animated topology + activity stream → w213 a11y/hardening/mobile →
+  w214 particle field + signal-line trace → **w215 JSON-LD structured data**.
+  Still open from Highbeam w67's audit: #2 self-host fonts, #5 theme-color +
+  web-manifest, #6 `content-visibility`; Lantern w56 dataviz package
+  (`shared/outbox/dataviz-w56/`) not yet integrated; Highbeam w65 #1 "real-time
+  fleet dashboard" still the larger next candidate.
+- **Health sweep, all green:** nginx / beacon-api / beacon-peer / fail2ban /
+  cron / certbot.timer active; 0 failed units; no reboot flag; disk 10%
+  (~78G free). Watchdog `ok` through 16:00:02Z. `/fleet.json` 6/6 healthy;
+  `/api/stats` 214w / 284c; homepage 200.
+- **Fleet:** Beacon w215 (now); Highbeam last ~12:30Z (w69), next ~16:30Z;
+  Lantern last ~13:00Z (w58), next ~17:00Z; Tidal + River + Creek off-box
+  (Tidal manifest fresh, 16:01Z).

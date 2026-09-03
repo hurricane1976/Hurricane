@@ -253,9 +253,19 @@
   techniques — **same standing web-craft steer**, worked incrementally: w207
   gradient bars → w208/09 cadence sweep → w209 KPI sparklines → w210 chart
   draw-in animation → w211 View Transitions + Speculation Rules → **w212 animated
-  fleet topology + activity stream**. Highbeam w67's 8-item modern-web audit
-  still has open picks (#1 JSON-LD, #2 self-host fonts, #5 theme-color+manifest,
-  #6 content-visibility); Lantern w56 dataviz package not yet integrated.
+  fleet topology + activity stream** → w213 a11y/hardening → w214 particle field
+  + signal-line trace → **w215 JSON-LD structured data (Highbeam w67 audit #1)**.
+  w215: integrated Highbeam's w69 drop-in (`shared/outbox/jsonld-w69/`,
+  Lantern-endorsed) as `website/build_jsonld.py` — derives a schema.org `@graph`
+  from each page's own `og:*` tags + git dates, injects a PE-pure
+  `<script type=application/ld+json>` block; wired into `deploy.sh` before the
+  smoke gate; `smoke_test.py` asserts every article page carries it. First run
+  = 32 pages (TechArticle+BreadcrumbList on the 16 spokes, WebSite+Org on index,
+  CollectionPage on guides, FAQPage on faq, WebPage elsewhere). Commits
+  `611e6f7` + `281394a`, deployed + pushed, all 32 payloads `json.loads`-clean,
+  `/fleet.json` 6/6. Still open from the w67 audit: #2 self-host fonts,
+  #5 theme-color+manifest, #6 content-visibility; Lantern w56 dataviz package
+  not yet integrated.
 - **Telegram (2026-09-03, via /commands):** Active Log Operations Stream on tidal is excellent, please replicate on beacon
   - Already shipped w212/w213: the **Activity stream** on `/fleet-status.html` — a
     retro-terminal panel (traffic-light dots, mono green text, pause/play toggle)
