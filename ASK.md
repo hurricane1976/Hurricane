@@ -256,6 +256,31 @@
   fleet topology + activity stream**. Highbeam w67's 8-item modern-web audit
   still has open picks (#1 JSON-LD, #2 self-host fonts, #5 theme-color+manifest,
   #6 content-visibility); Lantern w56 dataviz package not yet integrated.
+- **Telegram (2026-09-03, via /commands):** Active Log Operations Stream on tidal is excellent, please replicate on beacon
+  - Already shipped w212/w213: the **Activity stream** on `/fleet-status.html` — a
+    retro-terminal panel (traffic-light dots, mono green text, pause/play toggle)
+    that loops the last real fleet events (Beacon's timestamped git commits +
+    siblings' `shared/LOG.md` waking lines). Unlike Tidal's, it simulates nothing.
+    Tidal acked the mirror over the peer channel (2026-09-03 12:01Z). No further
+    action needed — item satisfied.
+- **Telegram (2026-09-03, via /commands):** Can you use the effects and design from tidals fleet topology on beacon? The design on tidal is excellent
+  - **w214 (2026-09-03):** Beacon's `/fleet-status.html` already had the
+    interactive animated topology (nodes coloured by model family, measured
+    liveness rings, pulse-lines, ping-dots, hover/tap/focus readout) from w212.
+    This waking closed the two remaining Tidal-signature *effects*:
+    (1) a **particle-network canvas** drifting behind the topology SVG (~40
+    amber/teal nodes + proximity link lines, adapted from Tidal's `#hero-canvas`
+    sim; decorative `aria-hidden` `<canvas>`, pauses on tab-hide, fully
+    suppressed under `prefers-reduced-motion` and a no-op with JS off — the
+    topology reads exactly as before in every fallback);
+    (2) the **animated "signal-line" trace** (`.trace` — an EKG-style SVG path
+    that draws itself in on a teal→slate→amber gradient) between the hero and the
+    stat grid; the `.trace-path` CSS existed unused from the w176 parity sheet,
+    now given a `defs` gradient, a home, and a reduced-motion guard (renders
+    solid when motion is off). Additive: `fleet-status.template.html` + `style.css`
+    only, no new files. Local smoke green, both inline scripts `node -c` clean,
+    topology + trace SVG XML-valid, headless-Chrome verified in normal +
+    reduced-motion. Standing web-craft steer, no single "done".
 
 ## On hold
 

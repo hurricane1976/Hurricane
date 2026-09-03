@@ -108,6 +108,19 @@
     <p class="tagline">Every agent josh runs, in one view &mdash; an animated topology, a live activity stream, and per-agent liveness. Measured from real checks at the end of Beacon's waking: sibling wake logs on this box, a live HTTP fetch of the off-box host's manifest, git history, and the shared fleet log. Stale by at most one wake cycle. Machine-readable copy at <a href="/fleet.json">/fleet.json</a>.</p>
   </div>
 
+  <div class="trace" aria-hidden="true">
+    <svg viewBox="0 0 760 60" preserveAspectRatio="none">
+      <defs>
+        <linearGradient id="traceGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stop-color="var(--teal)"/>
+          <stop offset="50%" stop-color="var(--diagram-slate)"/>
+          <stop offset="100%" stop-color="var(--amber)"/>
+        </linearGradient>
+      </defs>
+      <path class="trace-path" d="M0,30 L120,30 L145,8 L170,52 L195,30 L320,30 L345,14 L370,46 L395,30 L520,30 L545,10 L570,50 L595,30 L760,30"/>
+    </svg>
+  </div>
+
   <div class="stat-grid">
     <div class="stat">
       <div class="stat-value">{{TOTAL_AGENTS}}</div>
@@ -137,7 +150,70 @@
       <h2>Fleet topology</h2>
     </div>
     <p>Six agents across two hosts. Node colour is model family; the ring is the same measured liveness state as the cards above. Lines inside a host box mark co-location &mdash; the on-box agents coordinate through shared files, not sockets; the two curved cross-box paths are the real Tailscale peer channel and the Agora bridge. Hover, tap, or keyboard-focus a node for its role and latest signal.</p>
+    <div class="fleet-topo-wrap">
+      <canvas class="fleet-particles" aria-hidden="true"></canvas>
 {{FLEET_TOPOLOGY}}
+    </div>
+    <script>
+    (function(){
+      var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if(reduce) return;
+      var c = document.querySelector('.fleet-particles');
+      if(!c || !c.getContext) return;
+      var ctx = c.getContext('2d');
+      if(!ctx) return;
+      var wrap = c.parentElement, w = 0, h = 0, dots = [], raf = 0;
+      var COUNT = 40, MAX = 120;
+      function size(){
+        w = c.width = wrap.clientWidth;
+        h = c.height = wrap.clientHeight;
+      }
+      function seed(){
+        dots = [];
+        for(var i = 0; i < COUNT; i++){
+          dots.push({
+            x: Math.random() * w, y: Math.random() * h,
+            vx: (Math.random() - 0.5) * 0.28, vy: (Math.random() - 0.5) * 0.28,
+            c: Math.random() > 0.5 ? '255,138,61' : '79,209,197'
+          });
+        }
+      }
+      function frame(){
+        ctx.clearRect(0, 0, w, h);
+        for(var i = 0; i < dots.length; i++){
+          var n = dots[i];
+          n.x += n.vx; n.y += n.vy;
+          if(n.x < 0 || n.x > w) n.vx *= -1;
+          if(n.y < 0 || n.y > h) n.vy *= -1;
+        }
+        for(var a = 0; a < dots.length; a++){
+          for(var b = a + 1; b < dots.length; b++){
+            var dx = dots[a].x - dots[b].x, dy = dots[a].y - dots[b].y;
+            var d = Math.sqrt(dx * dx + dy * dy);
+            if(d < MAX){
+              ctx.strokeStyle = 'rgba(150,170,185,' + (1 - d / MAX) * 0.14 + ')';
+              ctx.lineWidth = 1;
+              ctx.beginPath(); ctx.moveTo(dots[a].x, dots[a].y); ctx.lineTo(dots[b].x, dots[b].y); ctx.stroke();
+            }
+          }
+        }
+        for(var k = 0; k < dots.length; k++){
+          ctx.fillStyle = 'rgba(' + dots[k].c + ',0.5)';
+          ctx.beginPath(); ctx.arc(dots[k].x, dots[k].y, 1.6, 0, Math.PI * 2); ctx.fill();
+        }
+        raf = requestAnimationFrame(frame);
+      }
+      function start(){ if(!raf){ raf = requestAnimationFrame(frame); } }
+      function stop(){ cancelAnimationFrame(raf); raf = 0; }
+      function reinit(){ size(); seed(); if(w && h) start(); }
+      reinit();
+      window.addEventListener('load', reinit);
+      window.addEventListener('resize', reinit);
+      document.addEventListener('visibilitychange', function(){
+        if(document.hidden) stop(); else if(w && h) start();
+      });
+    })();
+    </script>
     <div class="topo-readout" id="topo-readout">
       <h3 id="topo-readout-title">Pick a node</h3>
       <p class="topo-readout-meta" id="topo-readout-meta">Model family &#183; host &#183; wake cadence</p>

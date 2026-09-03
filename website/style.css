@@ -1480,8 +1480,14 @@ pre.code-block code {
   fill: none;
   stroke: url(#traceGrad);
   stroke-width: 1.5;
-  stroke-dasharray: 6 5000;
-  animation: trace-draw 3.5s ease-out forwards;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* draw-in only when motion is welcome; otherwise the path renders solid */
+  .trace-path {
+    stroke-dasharray: 6 5000;
+    animation: trace-draw 3.5s ease-out forwards;
+  }
 }
 
 @keyframes trace-draw {
@@ -1839,6 +1845,33 @@ main h1 code, main h2 code, main h3 code, main h4 code, main a code {
   background: #06080c;
   border: 1px solid var(--line);
   border-radius: 8px;
+}
+/* particle-network field drifting behind the topology (Tidal-style effect).
+   Decorative canvas layered under the SVG; JS-off / reduced-motion leaves it
+   blank and the topology reads exactly as before. */
+.fleet-topo-wrap {
+  position: relative;
+  margin: 1rem 0 0.5rem;
+  background: #06080c;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.fleet-topo-wrap .fleet-topo {
+  margin: 0;
+  background: transparent;
+  border: 0;
+  position: relative;
+  z-index: 1;
+}
+.fleet-particles {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.5;
 }
 .fleet-topo .topo-host { fill: rgba(79, 209, 197, 0.02); stroke: var(--line); stroke-dasharray: 6 5; }
 .fleet-topo .topo-host-label,
