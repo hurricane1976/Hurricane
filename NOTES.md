@@ -10752,3 +10752,114 @@ Running log of what I did and learned across wakings. Newest entries on top.
   #5 theme-color + web-manifest, #6 `content-visibility`; Lantern w56 dataviz
   package not yet integrated; Highbeam w65 #1 "real-time fleet dashboard" still
   the larger next candidate.
+
+## 2026-09-03 (218th waking, ~21:25 UTC)
+
+**josh (Telegram, via /commands):** *"Note there is a new agent added to the
+fleet 'lightning' add him to the roles."* Also covers the earlier steer relayed
+to Lantern (*"ensure lightning uses dynamic telegram commands"*).
+
+**Context on arrival:** a previous Beacon waking had started the w218 integration
+and not finished — the working tree carried uncommitted edits to
+`build_agent_manifest.py` / `build_fleet_status.py` / `build_metrics.py` /
+`fleet-status.template.html` / `metrics.template.html` (Lightning added to
+`fleet[]`, sibling row, KPI, topology positions), plus the bare ASK.md line.
+Lantern w63 had already cross-reviewed the in-flight work and flagged three
+issues. `/home/agent/lightning/` itself (AGENT.md, wake.sh, notify.sh,
+check_replies.sh, telegram_commands.py/.sh, keys, `@lightningagentsbot`) was
+already scaffolded (josh + a prior waking) and had 3 hand-fired runs (w1–w3) —
+but **no crontab entry**, so it wasn't actually on schedule.
+
+**What I did this waking — finished + shipped the 8-agent integration:**
+
+- **Crontab (the real activation):** added
+  `15 */4 * * * /home/agent/lightning/wake.sh` (6×/day, staggered 15 min after
+  Beacon, before Highbeam's :30) and
+  `*/5 * * * * /home/agent/lightning/telegram_commands.sh >> …` — Lightning now
+  runs on schedule and reads its own bot's replies like the other three on-box
+  agents. Both scripts were already flock-guarded / single-instance safe and
+  self-document these exact lines. This also closes the "dynamic telegram
+  commands" steer (the scripts existed; only the Beacon-owned poller line was
+  missing).
+
+- **Fixed Lantern w63's findings:**
+  1. `build_fleet_status.py` `max_waking()` returned `?` for Lightning — its
+     NOTES headers use `(w1, …)` / `(w3, …)`, which none of the three existing
+     regexes match. Added a 4th pattern (`(?:^|[\s(])w(\d+)\b` on header lines).
+     Lightning now shows `#3` correctly.
+  2. On-box topology was three nodes on one horizontal line (Highbeam–Lantern
+     link passing through Lightning) with the Beacon–Lightning link bisecting
+     the LIGHTNING label. Re-laid the on-box group as a **4-node diamond**
+     (Beacon top, Highbeam left, Lantern right, Lightning bottom) mirroring the
+     w216 off-box diamond — the two diagonals cross at an empty centre.
+  3. Added a `paint-order: stroke` text halo to `.topo-node-label` in
+     `style.css` so any mesh link passing behind a label stays legible (also
+     helps the off-box River label).
+
+- **`build_fleet_status.py` / template:** Lightning sibling row (opencode +
+  DeepSeek V4 Pro, `/home/agent/lightning`, `15 */4`) → `/fleet.json` +
+  `/fleet-status.html` now **8 agents**; activity-stream regex + "how each row
+  is measured" copy; topology aria-label "three agents on this box" → "four".
+
+- **`build_metrics.py` / template:** KPI "agents in the fleet" 7→8; a Lightning
+  wakings-per-day chart + data table + `{{TOT_LIGHTNING}}`; Lightning folded
+  into the on-box `fleet_7d` / `fleet_day` / last-24h series; chart-note now
+  mentions the `15 */4` slot.
+
+- **`build_agent_manifest.py`:** `fleet[]` += Lightning ("data analysis, metrics
+  & monitoring", DeepSeek). Live `agent.json` fleet is now the full eight.
+
+- **`distributed-agents.html`:** prose ("Seven autonomous agents" → "Eight …",
+  new Lightning sentence, "three co-located" → "four"); the big hand-tuned
+  topology SVG grown from a 3-across on-box row to a **2×2 on-box grid**
+  (Beacon/Highbeam over Lantern/Lightning), primary container `275`→`495` tall,
+  shared-coordination layer + connectors + public-boundary band + footer all
+  shifted down, off-box column height matched, `viewBox` `920`→`960`; caption,
+  legend (new slate "Lightning — metrics & monitoring" entry), and the full
+  aria-label updated. Rendered with `rsvg-convert` (real brand fonts) — 2×2
+  grid + off-box column clean, no overlap.
+
+- **`dividing-work-between-ai-agents.html`:** agents-table gets a Lightning row;
+  panel-01 "Highbeam & Lantern" → "+ Lightning"; panel-02 SVG box gains a 4th
+  lane ("LIGHTNING (DEEPSEEK) → METRICS, ANALYTICS & MONITORING"); SVG header
+  `7-AGENT` → `8-AGENT`; pipeline prose gains a "T+15m Lightning" bullet; all
+  meta / og / twitter / JSON-LD "seven-agent" → "eight-agent"; caption "seven
+  agents" → "eight". (Left panel-03's 3-beat build→review→assets pipeline SVG
+  as-is on purpose — Lightning's metrics pass is parallel monitoring, not a
+  hand-off stage.)
+
+- **`claude-code-vs-multiple-models.html`:** callout ("six siblings" → "seven",
+  DeepSeek "(Creek, Stream)" → "(Lightning, Creek, Stream)"); column-03 SVG
+  agents pill + a Lightning posture line; family table DeepSeek row +
+  Agents/Job/Why cells; aria-label; "You don't need seven agents" → "eight".
+
+- **`agent-to-agent-communication.html` / `multi-agent-without-a-framework.html`
+  / `guides.html` / `agent-discovery-manifest.html`:** every "seven agents" /
+  "six siblings" / "the three on one host" count → eight / seven / four; sibling
+  link lists get Lightning; the annotated sample `fleet[]` gets a Lightning
+  entry. **Model-family count unchanged everywhere — still three** (Lightning is
+  DeepSeek, same family as Creek + Stream).
+
+- **Charter / task files:** `DIVISION-OF-WORK.md` w218 revision note (the
+  Lightning section + agents-table row + file-tree row were already there from
+  the prior partial waking); `shared/tasks-lightning.md` filled in with the
+  role/boundary brief; FYI relayed to Highbeam (`TASKS.md`), Lantern
+  (`tasks-lantern.md`, closing its "dynamic telegram commands" item), and Tidal
+  (peer channel, `{"status":"ok"}`).
+
+**Verified:** all inline SVGs XML-valid; `fleet-status.html` 3 inline scripts
+`node`-parse clean; `smoke_test.py --local` + `--live` green; `deploy.sh` clean
+(`build_jsonld` no-change); headless-Chrome render of `/fleet-status.html` shows
+the 8 agent cards + the on-box/off-box diamonds + Lightning rows in the activity
+stream; live `agent.json` fleet = 8, `/fleet.json` **7/8**. Commit `74db953`,
+pushed.
+
+**Note — the 7/8:** Highbeam's w71 run hit a Claude usage-limit reset and exited
+1, so `build_fleet_status.py` correctly reports it `error`. That's real and
+self-heals on Highbeam's next clean cycle — the page is designed to surface it,
+not hide it. Not caused by this waking.
+
+**Health:** 0 failed units; disk 11%; `nginx -t` clean; no reboot-required;
+watchdog `ok` through 21:20Z; nginx / beacon-api / beacon-peer / fail2ban / cron
+all active. No new Telegram beyond the Lightning steer. Peer inbox: 2 Tidal
+acks (Stream sync + w217 receipt), no action needed.
