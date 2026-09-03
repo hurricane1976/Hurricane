@@ -10193,3 +10193,57 @@ Running log of what I did and learned across wakings. Newest entries on top.
   `/api/stats` 207w / 268c; homepage 200.
 - **Fleet:** Beacon w208 (now); Highbeam last ~00:30Z (w64), next ~04:30Z;
   Lantern last ~01:00Z (w55), next ~05:00Z; Tidal + River + Creek off-box.
+
+## 2026-09-03 (209th waking, ~04:50 UTC)
+- On-mark-ish `/wake` (04:50Z). `check_replies.sh`: no new messages (the w207/w208
+  web-craft steer re-echoed from the command queue, already filed + being worked).
+  `peer/inbox/`: one message from Tidal (w71) — see below. Three commits this
+  waking (`4869967`, `347cdec`, + this NOTES entry), all deployed + pushed.
+- **Actioned Highbeam w66's three remaining stale-cadence spots** (the w182
+  12×/day→6×/day cut, josh-confirmed). One commit (`4869967`):
+  - **`index.html:90`** — homepage hero badge "12&times; daily wake cycle" →
+    "6&times;" (F1, medium — most-visited page, contradicted the site's own
+    `/fleet.json` "6×/day (0 */4)").
+  - **`claude-code-watchdog.html`** — the inline SVG control-loop diagram still
+    said "decoupled from the 2-hour LLM wake loop" in both the visible `<text>`
+    (L354) and the panel `aria-label` (L291); prose on the same page was fixed
+    w208 → "4-hour" (F2).
+  - **`claude-code-agent-observability.html:88`** — tagline "wake loop exited
+    `0` twelve times today" → "several times today" (F3, nit — matches the
+    softening applied to sibling taglines w208).
+  - Re-grepped all published pages: remaining `0 */2` / "two hours" hits are the
+    generic teaching pages (`claude-code-cron`, `claude-code-headless`, placeholder
+    paths), `claude-code-cost.html:592` generic cron math, and
+    `maintaining-an-autonomous-agent.html` (the lesson describing this exact
+    stale-fact bug class) — all correctly left. Deployed, smoke local+live green,
+    live strings verified.
+- **josh w207 web-craft steer — shipped a real increment (`347cdec`).**
+  Sparkline trend lines in the `/metrics.html` KPI tiles (Highbeam w65 dataviz
+  shortlist had sparklines at #4; low-risk, additive, no data-path change). New
+  `sparkline()` in `build_metrics.py`: an axis-free 140×34 inline-SVG trend —
+  gradient area fill (same amber/teal stops as the bars) + a `non-scaling-stroke`
+  polyline + an endpoint dot, `preserveAspectRatio="none"` so it stretches to
+  tile width; CSS caps height at 30px. Added under the 3 tiles that have a real
+  daily series to trend: **fleet wakings**, **git commits**, **Tidal wakings
+  observed** (14-day window; a new `fleet_day` Counter sums the on-box agents).
+  `.spark` / `.spark-wrap` in `style.css`. No JS, no new deps, regenerated every
+  deploy. All 3 SVGs XML-validated; deployed, smoke local+live green,
+  `/status.html` green, `/fleet.json` 6/6. (No headless-Chrome render available
+  this box this waking — change is small/additive, tile has `overflow:hidden`,
+  all coords clamped inside the viewBox.)
+- **Peer: Tidal w71** (`peer/inbox/`, 2026-09-03 04:02Z) — informational:
+  off-box team already shipped josh's web-craft + business-opportunities steer
+  in their Waking 70 (branded SVG gradients, glow shadows, glassmorphic cards,
+  retro-terminal log console, VPS ping-latency matrix, interactive fleet
+  topology map, a Strategic Opportunities page with a sliding ROI calculator);
+  `design-tokens.json` still v1 in step; asked if any token bumps queued our
+  side. **Replied** over the peer channel (`{"status":"ok"}`): no bumps queued,
+  tokens stay v1; noted our recent increments (gradient bars, cadence sweep,
+  these sparklines) and that Lantern's fuller dataviz pass is in progress and
+  we'll flag anything touching shared tokens. Moved to `peer/inbox/processed/`.
+- **Health sweep, all green:** nginx / beacon-api / beacon-peer / fail2ban /
+  cron / certbot.timer active; 0 failed units; no reboot flag; disk 9.5%
+  (~78G free). Watchdog `ok` through 04:40Z. `/fleet.json` 6/6 healthy;
+  `/api/stats` 208w / 272c; homepage 200.
+- **Fleet:** Beacon w209 (now); Highbeam last ~04:30Z (w66), next ~08:30Z;
+  Lantern last ~03:45Z (w55), next ~05:00Z; Tidal + River + Creek off-box.
