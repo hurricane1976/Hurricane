@@ -345,6 +345,39 @@ def hbar_chart(rows, color, unit):
     return "\n".join(out)
 
 
+def sparkline(counts: Counter, days, color, unit):
+    """Tiny axis-free trend line for a KPI tile. Fixed 140x34 viewBox, stretched
+    to tile width by CSS; stroke kept crisp with non-scaling-stroke."""
+    W, H, pad = 140, 34, 3
+    cid = _next_cid()
+    vals = [counts.get(d.strftime("%Y%m%d"), 0) for d in days]
+    n = len(vals)
+    if n < 2:
+        return ""
+    vmax = max(vals + [1])
+    step = (W - 2 * pad) / (n - 1)
+    pts = [
+        (pad + i * step, pad + (H - 2 * pad) * (1 - v / vmax))
+        for i, v in enumerate(vals)
+    ]
+    line = " ".join(f"{x:.1f},{y:.1f}" for x, y in pts)
+    area = f"{pad},{H - pad} " + line + f" {W - pad},{H - pad}"
+    ex, ey = pts[-1]
+    return (
+        f'<svg viewBox="0 0 {W} {H}" class="spark" role="img" '
+        f'preserveAspectRatio="none" '
+        f'aria-label="Trend of {unit} per day over the last {n} days">'
+        f'{_defs(cid, color)}'
+        f'<polygon points="{area}" fill="{_fill(cid, color)}" opacity="0.16"/>'
+        f'<polyline points="{line}" fill="none" stroke="{color}" '
+        f'stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round" '
+        f'vector-effect="non-scaling-stroke"/>'
+        f'<circle cx="{ex:.1f}" cy="{ey:.1f}" r="2.4" fill="{color}" '
+        f'vector-effect="non-scaling-stroke"/>'
+        f'<title>{unit} per day, last {n} days</title></svg>'
+    )
+
+
 def data_table(counts: Counter, days, unit):
     head = "".join(f"<th>{d.strftime('%b %-d')}</th>" for d in days)
     cells = "".join(
@@ -390,6 +423,11 @@ def main():
 
     fleet_7d = last_n(beacon, 7) + last_n(highbeam, 7) + last_n(lantern, 7)
 
+    # combined on-box fleet wakings per day, for the KPI-tile sparkline
+    fleet_day = Counter()
+    for c in (beacon, highbeam, lantern):
+        fleet_day.update(c)
+
     tidal_24 = sum(1 for dt in tidal_dts if dt >= cutoff)
     week_keys = {d.strftime("%Y%m%d") for d in days[-7:]}
     tidal_7d = sum(v for k, v in tidal.items() if k in week_keys)
@@ -404,6 +442,9 @@ def main():
         "{{KPI_COMMITS_7D}}": str(last_n(commits, 7)),
         "{{KPI_DAYS}}": str(days_autonomous()),
         "{{KPI_AGENTS}}": "6",
+        "{{SPARK_FLEET}}": sparkline(fleet_day, days, AMBER, "fleet wakings"),
+        "{{SPARK_COMMITS}}": sparkline(commits, days, TEAL, "commits"),
+        "{{SPARK_TIDAL}}": sparkline(tidal, days, AMBER, "Tidal wakings"),
         "{{CHART_BEACON}}": bar_chart(beacon, days, AMBER, "wakings"),
         "{{CHART_HIGHBEAM}}": bar_chart(highbeam, days, AMBER, "wakings", height=150),
         "{{CHART_LANTERN}}": bar_chart(lantern, days, AMBER, "wakings", height=150),
