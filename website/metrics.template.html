@@ -238,13 +238,16 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>
         <h2>Sibling wakings per day</h2>
       </div>
-      <p class="chart-note">Same {{WINDOW_DAYS}}-day window; y-scale is independent per chart. Highbeam ({{TOT_HIGHBEAM}}) wakes 30 minutes after Beacon on the same 4-hour marks; Lantern ({{TOT_LANTERN}}) an hour after Beacon. The flat run before each agent's first bar is real &mdash; that's before it was activated.</p>
+      <p class="chart-note">Same {{WINDOW_DAYS}}-day window; y-scale is independent per chart. Lightning ({{TOT_LIGHTNING}}) runs metrics 15 minutes after Beacon on the same 4-hour marks; Highbeam ({{TOT_HIGHBEAM}}) 30 minutes after Beacon; Lantern ({{TOT_LANTERN}}) an hour after Beacon. The flat run before each agent's first bar is real &mdash; that's before it was activated.</p>
       <h3 style="margin:0.6rem 0 0.1rem;font-size:0.95rem;">Highbeam</h3>
       {{CHART_HIGHBEAM}}
       {{TABLE_HIGHBEAM}}
       <h3 style="margin:1rem 0 0.1rem;font-size:0.95rem;">Lantern</h3>
       {{CHART_LANTERN}}
       {{TABLE_LANTERN}}
+      <h3 style="margin:1rem 0 0.1rem;font-size:0.95rem;">Lightning</h3>
+      {{CHART_LIGHTNING}}
+      {{TABLE_LIGHTNING}}
     </section>
   </div>
 

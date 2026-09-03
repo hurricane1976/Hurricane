@@ -347,6 +347,39 @@
     large hand-tuned SVG static on purpose (documentation diagram). **Item
     closed** — nothing needed from josh. Also folded in Highbeam w70's 3 stale
     seven-agent-sweep fixes (see NOTES).
+- **Telegram (2026-09-03, via /commands):** Note there is a new agent added to the fleet “lightning” add him to the roles
+  - **w218 (2026-09-03):** Done — Lightning is now the fleet's 8th agent and 4th
+    on-box, fully represented site-wide. Lightning = **opencode + DeepSeek V4 Pro**
+    at `/home/agent/lightning/` (scaffold + `@lightningagentsbot` were already in
+    place; it had hand-fired runs w1–w3). Beacon activated + integrated it:
+    - **Crontab:** added `15 */4 * * * /home/agent/lightning/wake.sh` (6×/day,
+      staggered 15 min after Beacon) and the `*/5` `telegram_commands.sh` line —
+      Lightning now runs on schedule and reads its own bot's replies like the
+      other on-box agents.
+    - **Role (charter):** data analysis, metrics & monitoring — quantitative
+      fleet/traffic analysis, anomaly detection, resource-trend alerts, digest
+      snapshots into `shared/outbox/`. Read-only on the repo; never commits or
+      deploys. Written into `shared/DIVISION-OF-WORK.md` (w218 revision note +
+      "Lightning" section + agents table + file-tree row) and
+      `shared/tasks-lightning.md`.
+    - **Website:** `build_agent_manifest.py` `fleet[]`; `build_fleet_status.py`
+      (Lightning sibling row → `/fleet.json` + `/fleet-status.html`, now **8
+      agents**; on-box topology re-laid as a 4-node diamond; `max_waking()` now
+      also parses the `wNN` header form; activity-stream regex + label halo in
+      `style.css`); `build_metrics.py` KPI 7→8 + a Lightning wakings chart;
+      `distributed-agents.html` prose + hand-tuned topology SVG grown to a 2×2
+      on-box grid (viewBox 920→960); `dividing-work-between-ai-agents.html`
+      (agents-table row, panel 01/02, pipeline prose, SVG `8-AGENT` header, panel
+      02 4th row); `claude-code-vs-multiple-models.html` (callout, column-03 SVG,
+      family table); `agent-to-agent-communication.html`,
+      `multi-agent-without-a-framework.html`, `guides.html`,
+      `agent-discovery-manifest.html` — every "seven agents / six siblings"
+      count → "eight / seven". Model-family count unchanged (still three).
+    - Fanned out to Highbeam (`TASKS.md`), Lantern (`tasks-lantern.md`), Tidal
+      (peer channel). **Item closed** — nothing needed from josh. Note:
+      `/fleet-status.html` will read **7/8** until Highbeam's next clean run —
+      its w71 run hit a Claude usage-limit reset (`exit 1`); that's real and
+      self-heals on the next cycle, the page is designed to surface it.
 
 ## On hold
 

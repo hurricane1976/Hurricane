@@ -41,6 +41,7 @@ LOG_DIRS = {
     "Beacon": ROOT / "logs",
     "Highbeam": Path("/home/agent/partner/logs"),
     "Lantern": Path("/home/agent/gemini-agent/logs"),
+    "Lightning": Path("/home/agent/lightning/logs"),
 }
 
 WINDOW_DAYS = 14
@@ -397,6 +398,7 @@ def main():
     beacon = wakings_by_day(LOG_DIRS["Beacon"])
     highbeam = wakings_by_day(LOG_DIRS["Highbeam"])
     lantern = wakings_by_day(LOG_DIRS["Lantern"])
+    lightning = wakings_by_day(LOG_DIRS["Lightning"])
     commits = commits_by_day()
 
     tidal_dts = tidal_wakings()
@@ -421,11 +423,12 @@ def main():
                 pass
         return n
 
-    fleet_7d = last_n(beacon, 7) + last_n(highbeam, 7) + last_n(lantern, 7)
+    fleet_7d = (last_n(beacon, 7) + last_n(highbeam, 7) + last_n(lantern, 7)
+                + last_n(lightning, 7))
 
     # combined on-box fleet wakings per day, for the KPI-tile sparkline
     fleet_day = Counter()
-    for c in (beacon, highbeam, lantern):
+    for c in (beacon, highbeam, lantern, lightning):
         fleet_day.update(c)
 
     tidal_24 = sum(1 for dt in tidal_dts if dt >= cutoff)
@@ -441,18 +444,20 @@ def main():
         "{{KPI_COMMITS}}": (run(f"git -C {ROOT} rev-list --count HEAD").strip() or "?"),
         "{{KPI_COMMITS_7D}}": str(last_n(commits, 7)),
         "{{KPI_DAYS}}": str(days_autonomous()),
-        "{{KPI_AGENTS}}": "7",
+        "{{KPI_AGENTS}}": "8",
         "{{SPARK_FLEET}}": sparkline(fleet_day, days, AMBER, "fleet wakings"),
         "{{SPARK_COMMITS}}": sparkline(commits, days, TEAL, "commits"),
         "{{SPARK_TIDAL}}": sparkline(tidal, days, AMBER, "Tidal wakings"),
         "{{CHART_BEACON}}": bar_chart(beacon, days, AMBER, "wakings"),
         "{{CHART_HIGHBEAM}}": bar_chart(highbeam, days, AMBER, "wakings", height=150),
         "{{CHART_LANTERN}}": bar_chart(lantern, days, AMBER, "wakings", height=150),
+        "{{CHART_LIGHTNING}}": bar_chart(lightning, days, AMBER, "wakings", height=150),
         "{{CHART_COMMITS}}": bar_chart(commits, days, TEAL, "commits"),
         "{{CHART_FLEET24}}": hbar_chart(
             [("Beacon", last24(LOG_DIRS["Beacon"])),
              ("Highbeam", last24(LOG_DIRS["Highbeam"])),
              ("Lantern", last24(LOG_DIRS["Lantern"])),
+             ("Lightning", last24(LOG_DIRS["Lightning"])),
              ("Tidal", tidal_24)],
             AMBER, "wakings",
         ),
@@ -463,11 +468,13 @@ def main():
         "{{TOT_BEACON}}": str(win_total(beacon)),
         "{{TOT_HIGHBEAM}}": str(win_total(highbeam)),
         "{{TOT_LANTERN}}": str(win_total(lantern)),
+        "{{TOT_LIGHTNING}}": str(win_total(lightning)),
         "{{TOT_TIDAL}}": str(win_total(tidal)),
         "{{TOT_COMMITS}}": str(win_total(commits)),
         "{{TABLE_BEACON}}": data_table(beacon, days, "wakings"),
         "{{TABLE_HIGHBEAM}}": data_table(highbeam, days, "wakings"),
         "{{TABLE_LANTERN}}": data_table(lantern, days, "wakings"),
+        "{{TABLE_LIGHTNING}}": data_table(lightning, days, "wakings"),
         "{{TABLE_TIDAL}}": data_table(tidal, days, "wakings"),
         "{{TABLE_COMMITS}}": data_table(commits, days, "commits"),
         "{{WINDOW_DAYS}}": str(WINDOW_DAYS),

@@ -56,6 +56,8 @@ def build() -> dict:
              "model_family": "Claude"},
             {"name": "Lantern", "role": "cross-model review & image generation",
              "model_family": "Gemini"},
+            {"name": "Lightning", "role": "data analysis, metrics & monitoring",
+             "model_family": "DeepSeek"},
             {"name": "Tidal", "role": "development & security auditing",
              "model_family": "Gemini", "url": "https://tidalwake.org/"},
             {"name": "River", "role": "autonomous operations & systems",

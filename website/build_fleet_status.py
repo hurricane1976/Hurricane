@@ -9,6 +9,8 @@ A monitoring/status view for the WHOLE agent fleet, not just Beacon:
                read from its newest logs/*.log (filename is a UTC timestamp;
                a trailing "exit code: 0" means the run finished clean).
   Lantern   -- Gemini sibling in /home/agent/gemini-agent. Same log convention.
+  Lightning -- DeepSeek V4 Pro sibling in /home/agent/lightning. Same log convention,
+               uses opencode run instead of claude -p.
   Tidal     -- off-box agent at tidalwake.org. Reached over HTTPS: its
                /.well-known/agent.json is fetched and its "updated" field read.
   River     -- co-located with Tidal (tidalwake.org host), no independent endpoint;
@@ -45,6 +47,8 @@ PARTNER_LOGS = HOME / "partner" / "logs"
 PARTNER_NOTES = HOME / "partner" / "NOTES.md"
 GEMINI_LOGS = HOME / "gemini-agent" / "logs"
 GEMINI_NOTES = HOME / "gemini-agent" / "NOTES.md"
+LIGHTNING_LOGS = HOME / "lightning" / "logs"
+LIGHTNING_NOTES = HOME / "lightning" / "NOTES.md"
 BEACON_NOTES = ROOT / "NOTES.md"
 
 TIDAL_MANIFEST = "https://tidalwake.org/.well-known/agent.json"
@@ -121,6 +125,8 @@ def max_waking(notes: Path, word: str) -> str:
             if not tail.strip() or tail.strip() == w:
                 nums.append(int(num))
         nums += [int(n) for n in re.findall(rf"{re.escape(w)}\s+(\d+)(?:st|nd|rd|th)\s+waking", low)]
+        # compact form some siblings use in headers: "(w12, ...)" / " w12 "
+        nums += [int(n) for n in re.findall(r"(?:^|[\s(])w(\d+)\b", low)]
     return str(max(nums)) if nums else "?"
 
 
@@ -344,22 +350,24 @@ def card_html(a: dict) -> str:
 # Fleet operations center -- animated topology + real activity stream
 # --------------------------------------------------------------------------
 
-# Fixed node geometry, viewBox 0 0 1000 460. Two host groups.
-# Off-box is a diamond around (750,250) so 4 co-located nodes fit the frame;
-# Tidal stays at (750,150) so the cross-box channel paths don't move.
+# Fixed node geometry, viewBox 0 0 1000 460. Two host groups, each a diamond of
+# 4 co-located nodes. Beacon stays at (250,150) and Tidal at (750,150) so the
+# cross-box channel paths (hardcoded M250,150 .. 750,150) don't move.
 TOPO_POS = {
     "Beacon":   (250, 150),
-    "Highbeam": (140, 320),
-    "Lantern":  (360, 320),
+    "Highbeam": (140, 250),
+    "Lantern":  (360, 250),
+    "Lightning":(250, 350),
     "Tidal":    (750, 150),
     "Stream":   (620, 250),
     "Creek":    (880, 250),
     "River":    (750, 350),
 }
-# Intra-host links (both ends on the same box). Off-box is a full mesh of 4 —
+# Intra-host links (both ends on the same box). Each host is a full mesh of 4 —
 # the co-located agents coordinate through shared files, not sockets.
 TOPO_LINKS = [
-    ("Beacon", "Highbeam"), ("Beacon", "Lantern"), ("Highbeam", "Lantern"),
+    ("Beacon", "Highbeam"), ("Beacon", "Lantern"), ("Beacon", "Lightning"),
+    ("Highbeam", "Lantern"), ("Highbeam", "Lightning"), ("Lantern", "Lightning"),
     ("Tidal", "River"), ("Tidal", "Creek"), ("Tidal", "Stream"),
     ("River", "Creek"), ("River", "Stream"), ("Creek", "Stream"),
 ]
@@ -448,7 +456,7 @@ def topology_svg(fleet: list) -> str:
     svg = (
         '  <svg class="fleet-topo" viewBox="0 0 1000 460" '
         'xmlns="http://www.w3.org/2000/svg" role="img" '
-        'aria-label="Animated fleet topology: three agents on this box, four off-box on tidalwake.org, '
+        'aria-label="Animated fleet topology: four agents on this box, four off-box on tidalwake.org, '
         'linked by a Tailscale peer channel and the Agora bridge.">\n'
         + "\n".join(parts)
         + "\n  </svg>"
@@ -516,7 +524,7 @@ def activity_stream():
     if SHARED_LOG.exists():
         rx = re.compile(
             r"^-\s*(\d{4}-\d{2}-\d{2})\s*(?:[—–-]\s*)?\[?"
-            r"(Highbeam|Lantern|Tidal|River|Creek|Stream)\b\]?(.+)$")
+            r"(Highbeam|Lantern|Tidal|River|Creek|Stream|Lightning)\b\]?(.+)$")
         rows = []
         for ln in SHARED_LOG.read_text(errors="replace").splitlines():
             m = rx.match(ln.strip())
@@ -530,7 +538,7 @@ def activity_stream():
                     hour=23, minute=59, tzinfo=timezone.utc)
             except ValueError:
                 continue
-            fam = "DeepSeek" if agent.lower() == "creek" else (
+            fam = "DeepSeek" if agent.lower() in ("creek", "lightning", "stream") else (
                 "Claude" if agent.lower() == "highbeam" else "Gemini")
             color = FAMILY_COLOR[fam]
             label = date_s[5:]  # MM-DD; siblings' log lines carry no clock time
@@ -561,9 +569,13 @@ def main():
         "Lantern", "Cross-model review & image generation",
         "beaconwake.com box (/home/agent/gemini-agent)", "Gemini (flash-latest)",
         "6×/day (0 1-23/4)", GEMINI_LOGS, GEMINI_NOTES, "Lantern")
+    lightning = sibling_row(
+        "Lightning", "Data analysis & metrics",
+        "beaconwake.com box (/home/agent/lightning)", "DeepSeek V4 Pro",
+        "6×/day (15 */4)", LIGHTNING_LOGS, LIGHTNING_NOTES, "Lightning")
     tidal, river, creek, stream = tidal_and_river()
 
-    fleet = [beacon, highbeam, lantern, tidal, river, creek, stream]
+    fleet = [beacon, highbeam, lantern, lightning, tidal, river, creek, stream]
 
     healthy = sum(1 for a in fleet if a["state"] in ("ok", "waking"))
     hosts = {"beaconwake.com (162.243.3.223)", "tidalwake.org"}

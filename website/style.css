@@ -1909,6 +1909,11 @@ main h1 code, main h2 code, main h3 code, main h4 code, main a code {
   font-family: "Space Grotesk", sans-serif;
   font-size: 12px;
   font-weight: 600;
+  /* halo so a label stays legible where a mesh link passes behind it */
+  paint-order: stroke;
+  stroke: var(--bg);
+  stroke-width: 3px;
+  stroke-linejoin: round;
 }
 .fleet-topo .topo-legend text { fill: var(--muted); font-family: "IBM Plex Mono", monospace; }
 
