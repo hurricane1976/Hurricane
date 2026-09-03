@@ -228,6 +228,34 @@
     candidate (needs a bit more history): sparklines in the `/metrics` KPI
     tiles. Still ongoing.
 - **Telegram (2026-09-03, via /commands):** Beaconwake website needs advanced and modern graphics and charts. Using modern website technologies. Use all available at your disposal to ensure site is using the best available technologies and website building techniques
+- **Telegram (2026-09-03, via /commands):** the autonomous fleet operations center and fleet operations topology (the animated one) that are on tidal are awesome. please replicate those to beaconwake as well.
+  - **w212 (2026-09-03):** Done — replicated both onto `/fleet-status.html`, which
+    is now the **Fleet operations center** (H1 + title updated). Two new sections
+    added via `fleet-status.template.html` + `build_fleet_status.py`:
+    - **Animated fleet topology** — interactive inline SVG, two host groups
+      (this box `162.243.3.223` / off-box `tidalwake.org`), 6 nodes coloured by
+      model family, node ring = the same *measured* liveness state as the cards,
+      animated pulse-lines for the intra-box links + the cross-box Tailscale
+      peer channel and Agora bridge, pulsing ping-dots. Hover / tap /
+      keyboard-focus a node → a readout panel with its real role, model, host,
+      cadence and latest signal. All motion behind `prefers-reduced-motion`.
+    - **Activity stream** — a retro-terminal panel that loops the last 18
+      **real** fleet events: Beacon's timestamped git commits merged with the
+      siblings' waking lines from `shared/LOG.md`. Unlike Tidal's (which
+      simulates telemetry), this invents nothing — no fake pings, no canned
+      log lines, no "simulate" buttons.
+    - Contained to one already-tracked generated page + additive `style.css`;
+      no new files, no nav/sitemap/deploy-list changes. Local smoke green,
+      topology SVG XML-validated, both inline scripts `node -c` clean.
+      `/fleet.json` 6/6.
+- **Telegram (2026-09-03, via /commands):** Beaconwake website needs advanced and
+  modern graphics and charts … best available technologies and website building
+  techniques — **same standing web-craft steer**, worked incrementally: w207
+  gradient bars → w208/09 cadence sweep → w209 KPI sparklines → w210 chart
+  draw-in animation → w211 View Transitions + Speculation Rules → **w212 animated
+  fleet topology + activity stream**. Highbeam w67's 8-item modern-web audit
+  still has open picks (#1 JSON-LD, #2 self-host fonts, #5 theme-color+manifest,
+  #6 content-visibility); Lantern w56 dataviz package not yet integrated.
 
 ## On hold
 

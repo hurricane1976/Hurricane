@@ -310,6 +310,201 @@ def card_html(a: dict) -> str:
     )
 
 
+# --------------------------------------------------------------------------
+# Fleet operations center -- animated topology + real activity stream
+# --------------------------------------------------------------------------
+
+# Fixed node geometry, viewBox 0 0 1000 460. Two host groups.
+TOPO_POS = {
+    "Beacon":   (250, 150),
+    "Highbeam": (140, 320),
+    "Lantern":  (360, 320),
+    "Tidal":    (750, 150),
+    "River":    (640, 320),
+    "Creek":    (860, 320),
+}
+# Intra-host links (both ends on the same box).
+TOPO_LINKS = [
+    ("Beacon", "Highbeam"), ("Beacon", "Lantern"), ("Highbeam", "Lantern"),
+    ("Tidal", "River"), ("Tidal", "Creek"), ("River", "Creek"),
+]
+FAMILY_COLOR = {
+    "Claude": "var(--amber)", "Gemini": "var(--teal)", "DeepSeek": "var(--diagram-slate)",
+}
+STATE_RING = {
+    "ok": "var(--teal)", "waking": "var(--amber)", "stale": "var(--amber)",
+    "error": "var(--amber)", "unreachable": "#e0533d", "unknown": "var(--muted)",
+}
+SHARED_LOG = HOME / "shared" / "LOG.md"
+
+
+def family_of(model: str) -> str:
+    m = (model or "").lower()
+    if "deepseek" in m:
+        return "DeepSeek"
+    if "gemini" in m:
+        return "Gemini"
+    return "Claude"
+
+
+def topology_svg(fleet: list) -> str:
+    """Interactive, animated fleet topology as inline SVG.
+
+    Node colour = model family; ring colour = measured liveness state (same
+    states as the cards above). Animation lives entirely in CSS behind a
+    prefers-reduced-motion guard.
+    """
+    by_name = {a["name"]: a for a in fleet}
+    parts = []
+    # host group frames
+    parts.append(
+        '    <rect class="topo-host" x="40" y="64" width="420" height="336" rx="12"/>\n'
+        '    <text class="topo-host-label" x="60" y="92">THIS BOX &#183; 162.243.3.223</text>\n'
+        '    <rect class="topo-host" x="540" y="64" width="420" height="336" rx="12"/>\n'
+        '    <text class="topo-host-label" x="560" y="92">OFF-BOX &#183; tidalwake.org</text>'
+    )
+    # intra-host links
+    for a, b in TOPO_LINKS:
+        if a not in TOPO_POS or b not in TOPO_POS:
+            continue
+        (x1, y1), (x2, y2) = TOPO_POS[a], TOPO_POS[b]
+        parts.append(
+            f'    <line class="pulse-line" x1="{x1}" y1="{y1}" x2="{x2}" y2="{y2}"/>'
+        )
+    # cross-box channels: peer tunnel + Agora bridge (Beacon <-> Tidal)
+    parts.append(
+        '    <path class="pulse-line chan-peer" d="M250,150 Q500,66 750,150" fill="none"/>\n'
+        '    <path class="pulse-line chan-agora" d="M250,150 Q500,238 750,150" fill="none"/>\n'
+        '    <text class="topo-chan-label" x="500" y="58" text-anchor="middle">Tailscale peer channel</text>\n'
+        '    <text class="topo-chan-label" x="500" y="262" text-anchor="middle">Agora bridge</text>'
+    )
+    # nodes
+    for a in fleet:
+        name = a["name"]
+        if name not in TOPO_POS:
+            continue
+        x, y = TOPO_POS[name]
+        fam = family_of(a["model"])
+        ring = STATE_RING.get(a["state"], "var(--muted)")
+        nid = name.lower()
+        aria = f'{name} — {a["role"]}; {STATE_LABEL.get(a["state"], a["state"])}'
+        parts.append(
+            f'    <g class="topo-node" tabindex="0" role="button" data-node="{nid}" '
+            f'aria-label="{esc(aria)}" '
+            f'onmouseover="fleetTopo(\'{nid}\')" onfocus="fleetTopo(\'{nid}\')" '
+            f'onclick="fleetTopo(\'{nid}\')">\n'
+            f'      <circle class="topo-node-bg" cx="{x}" cy="{y}" r="30" style="stroke:{ring}"/>\n'
+            f'      <circle class="ping-dot" cx="{x}" cy="{y}" r="5" style="fill:{FAMILY_COLOR[fam]}"/>\n'
+            f'      <text class="topo-node-label" x="{x}" y="{y - 42}" text-anchor="middle">{esc(name.upper())}</text>\n'
+            f'    </g>'
+        )
+    # legend
+    parts.append(
+        '    <g class="topo-legend" font-size="11">\n'
+        '      <circle cx="60" cy="430" r="5" fill="var(--amber)"/><text x="74" y="434">Claude</text>\n'
+        '      <circle cx="150" cy="430" r="5" fill="var(--teal)"/><text x="164" y="434">Gemini</text>\n'
+        '      <circle cx="244" cy="430" r="5" fill="var(--diagram-slate)"/><text x="258" y="434">DeepSeek</text>\n'
+        '      <text x="360" y="434" fill="var(--muted)">ring colour = live status &#183; hover or tap a node</text>\n'
+        '    </g>'
+    )
+    svg = (
+        '  <svg class="fleet-topo" viewBox="0 0 1000 460" '
+        'xmlns="http://www.w3.org/2000/svg" role="img" '
+        'aria-label="Animated fleet topology: three agents on this box, three off-box on tidalwake.org, '
+        'linked by a Tailscale peer channel and the Agora bridge.">\n'
+        + "\n".join(parts)
+        + "\n  </svg>"
+    )
+    # readout data (real: role/model/host/cadence/signal straight off the cards)
+    readout = {
+        a["name"].lower(): {
+            "title": f'{a["name"]} — {a["role"]}',
+            "family": family_of(a["model"]),
+            "meta": f'{a["model"]} · {a["host"]} · {a["cadence"]}',
+            "state": STATE_LABEL.get(a["state"], a["state"]),
+            "signal": a["signal"],
+        }
+        for a in fleet if a["name"] in TOPO_POS
+    }
+    js = "  <script>\n  (function(){\n" \
+         "    var D = " + json.dumps(readout) + ";\n" \
+         "    window.fleetTopo = function(id){\n" \
+         "      var d = D[id]; if(!d) return;\n" \
+         "      var t = document.getElementById('topo-readout-title');\n" \
+         "      var m = document.getElementById('topo-readout-meta');\n" \
+         "      var s = document.getElementById('topo-readout-signal');\n" \
+         "      if(!t) return;\n" \
+         "      t.textContent = d.title;\n" \
+         "      m.textContent = d.meta;\n" \
+         "      s.textContent = d.state + ' \\u2014 ' + d.signal;\n" \
+         "      document.querySelectorAll('.topo-node').forEach(function(n){\n" \
+         "        n.classList.toggle('is-active', n.getAttribute('data-node') === id);\n" \
+         "      });\n" \
+         "    };\n" \
+         "  })();\n  </script>"
+    return svg + "\n" + js
+
+
+def _trunc(s: str, n: int = 116) -> str:
+    s = " ".join(s.split())
+    return s if len(s) <= n else s[: n - 1].rstrip() + "…"
+
+
+def activity_stream():
+    """Real recent fleet activity: git commits (timestamped) merged with the
+    shared fleet log's per-agent waking lines. Nothing synthesised."""
+    events = []
+    # git commits -- precise timestamps, this is Beacon's production activity
+    raw = run(
+        "git -C %s log -n 12 --no-merges "
+        "--pretty=format:%%cI\x1f%%s --date=iso" % ROOT, timeout=10)
+    for line in raw.splitlines():
+        if "\x1f" not in line:
+            continue
+        iso, subj = line.split("\x1f", 1)
+        try:
+            dt = datetime.fromisoformat(iso).astimezone(timezone.utc)
+        except ValueError:
+            continue
+        events.append((dt, dt.strftime("%m-%d %H:%MZ"), "COMMIT",
+                       "var(--amber)", _trunc(subj)))
+    # shared fleet log -- covers the siblings' wakings (date-only -> noon UTC)
+    if SHARED_LOG.exists():
+        rx = re.compile(r"^-\s*(\d{4}-\d{2}-\d{2})\s*—\s*\[(\w+)\]\s*(.+)$")
+        rows = []
+        for ln in SHARED_LOG.read_text(errors="replace").splitlines():
+            m = rx.match(ln.strip())
+            if m:
+                rows.append(m.groups())
+        for date_s, agent, text in rows[-8:]:
+            try:
+                # date-only in the log -> sort at end of that day, but show no
+                # fake clock time
+                dt = datetime.strptime(date_s, "%Y-%m-%d").replace(
+                    hour=23, minute=59, tzinfo=timezone.utc)
+            except ValueError:
+                continue
+            fam = "DeepSeek" if agent.lower() == "creek" else (
+                "Claude" if agent.lower() in ("beacon", "highbeam") else "Gemini")
+            color = FAMILY_COLOR[fam]
+            label = date_s[5:]  # MM-DD; siblings' log lines carry no clock time
+            events.append((dt, label, agent.upper(), color, _trunc(text)))
+    events.sort(key=lambda e: e[0])
+    events = events[-18:]
+    rows_html = "\n".join(
+        f'      <div class="fleet-term-row">'
+        f'<span class="fleet-term-t">{esc(e[1])}</span>'
+        f'<span class="fleet-term-tag" style="color:{e[3]}">{esc(e[2])}</span>'
+        f'<span class="fleet-term-x">{esc(e[4])}</span></div>'
+        for e in events
+    )
+    js_data = json.dumps([
+        {"t": e[1], "tag": e[2], "c": e[3], "x": e[4]}
+        for e in events
+    ])
+    return rows_html, js_data
+
+
 def main():
     beacon = beacon_row()
     beacon["wakings"] = beacon_wakings()
@@ -329,9 +524,14 @@ def main():
     generated = NOW.strftime("%Y-%m-%d %H:%M UTC")
 
     cards = "\n".join(card_html(a) for a in fleet)
+    topo = topology_svg(fleet)
+    stream_rows, stream_js = activity_stream()
 
     values = {
         "{{AGENT_CARDS}}": cards,
+        "{{FLEET_TOPOLOGY}}": topo,
+        "{{FLEET_STREAM_ROWS}}": stream_rows,
+        "{{FLEET_STREAM_JS}}": stream_js,
         "{{TOTAL_AGENTS}}": str(len(fleet)),
         "{{HEALTHY}}": str(healthy),
         "{{HEALTHY_CLASS}}": "good" if healthy == len(fleet) else "warn",
