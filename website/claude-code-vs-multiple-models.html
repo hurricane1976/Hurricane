@@ -172,7 +172,7 @@
       for redundancy; each family does something the others don't:
     </p>
     <div class="diagram-wrap wide">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 520" width="1200" height="520" role="img" aria-label="Tri-model fleet role distribution in three columns. Column 01, Claude (Anthropic): Beacon and Highbeam. Owns primary software development, git commits, deploy pipelines, and same-model factual QA. Column 02, Gemini (Google): Lantern, Tidal, and River. Owns cross-model code review to catch single-family blind spots, SVG and PNG visual asset authoring, and off-box peer operations. Column 03, DeepSeek (deepseek-v4-pro-0813): Creek. Acts as a lightweight, low-token continuous sentinel auditing fleet liveness and peer protocols. Fleet multi-model law: Use the same model family for same-domain continuity, different model families for cross-review to eliminate shared blind spots, and exploit provider strengths without vendor lock-in.">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 520" width="1200" height="520" role="img" aria-label="Tri-model fleet role distribution in three columns. Column 01, Claude (Anthropic): Beacon and Highbeam. Owns primary software development, git commits, deploy pipelines, and same-model factual QA. Column 02, Gemini (Google): Lantern, Tidal, and River. Owns cross-model code review to catch single-family blind spots, SVG and PNG visual asset authoring, and off-box peer operations. Column 03, DeepSeek (deepseek-v4-pro-0813): Creek. Acts as the fleet's security and consistency sentinel: a third-model-family review of each published page, cross-box parity and stale-fact audits between the two sites, and local port and vulnerability checks. Fleet multi-model law: Use the same model family for same-domain continuity, different model families for cross-review to eliminate shared blind spots, and exploit provider strengths without vendor lock-in.">
   <defs>
     <radialGradient id="mmr-amber-glow" cx="15%" cy="20%" r="60%">
       <stop offset="0%" stop-color="#ff8a3d" stop-opacity="0.18"/>
@@ -316,15 +316,15 @@
     <g transform="translate(14, 46)">
       <!-- Agents Pill -->
       <rect width="317" height="32" rx="2" fill="#0d1117" stroke="rgba(167,180,200,0.3)" stroke-width="1"/>
-      <text x="12" y="20" font-family="'IBM Plex Mono', monospace" font-size="11" fill="#e8eaed" font-weight="600">AGENTS: Creek (Off-Box Sentinel)</text>
+      <text x="12" y="20" font-family="'IBM Plex Mono', monospace" font-size="11" fill="#e8eaed" font-weight="600">AGENTS: Creek (Security &amp; Consistency Sentinel)</text>
 
       <!-- Primary Role -->
       <g transform="translate(0, 40)">
         <rect width="317" height="88" rx="2" fill="#0d1117" stroke="rgba(232,234,237,0.08)"/>
-        <text x="12" y="18" font-family="'IBM Plex Mono', monospace" font-size="11" fill="#a7b4c8">PRIMARY ROLE: LIVENESS &amp; SENTINEL</text>
-        <text x="12" y="34" font-family="'IBM Plex Sans', sans-serif" font-size="10.5" fill="#e8eaed">&#8226; Low-budget sentinel health sweeps</text>
-        <text x="12" y="50" font-family="'IBM Plex Sans', sans-serif" font-size="10.5" fill="#e8eaed">&#8226; Manifest &amp; peer protocol auditing</text>
-        <text x="12" y="66" font-family="'IBM Plex Sans', sans-serif" font-size="10.5" fill="#e8eaed">&#8226; Lightweight periodic telemetry pings</text>
+        <text x="12" y="18" font-family="'IBM Plex Mono', monospace" font-size="11" fill="#a7b4c8">PRIMARY ROLE: SECURITY &amp; CONSISTENCY SENTINEL</text>
+        <text x="12" y="34" font-family="'IBM Plex Sans', sans-serif" font-size="10.5" fill="#e8eaed">&#8226; Third-model-family review of published pages</text>
+        <text x="12" y="50" font-family="'IBM Plex Sans', sans-serif" font-size="10.5" fill="#e8eaed">&#8226; Cross-box parity &amp; stale-fact audits</text>
+        <text x="12" y="66" font-family="'IBM Plex Sans', sans-serif" font-size="10.5" fill="#e8eaed">&#8226; Local port &amp; vulnerability checks</text>
       </g>
 
       <!-- Key Strengths -->
@@ -377,10 +377,11 @@
         <tr>
           <td>DeepSeek V4 Pro</td>
           <td>Creek</td>
-          <td>Low-budget sentinel auditing</td>
-          <td>Runs on a small token budget for infrequent liveness checks
-            &mdash; another lineage's independent read on whether both hosts,
-            and the agents on them, are actually up.</td>
+          <td>Security &amp; fleet-consistency sentinel</td>
+          <td>A third lineage's read on each published page, cross-box parity
+            and stale-fact audits between the two sites, and local port and
+            vulnerability checks &mdash; the independent set of eyes that
+            catches what a shared model family would miss.</td>
         </tr>
       </tbody>
     </table>

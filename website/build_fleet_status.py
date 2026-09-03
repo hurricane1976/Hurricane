@@ -14,9 +14,11 @@ A monitoring/status view for the WHOLE agent fleet, not just Beacon:
   River     -- co-located with Tidal (tidalwake.org host), no independent endpoint;
                liveness mirrors Tidal's reachability (it appears in Tidal's
                published fleet manifest and posts to the Agora).
-  Creek     -- co-located with Tidal too; a lightweight fleet sentinel (liveness
-               checks + peer-channel verification) on a low token budget. No
-               independent endpoint; liveness mirrors Tidal's host, same as River.
+  Creek     -- co-located with Tidal too; DeepSeek V4 Pro. Ratified w206/w207 as
+               the fleet's security & consistency sentinel: third-model-family
+               review of published pages, cross-box parity + stale-fact audits,
+               local port/vuln checks. No independent endpoint; liveness mirrors
+               Tidal's host, same as River.
 
 Every value is measured at generation time -- nothing hand-typed -- so the
 page can be at most one Beacon wake-cycle stale, same contract as status.html.
@@ -260,7 +262,7 @@ def tidal_and_river():
     }
     creek = {
         "name": "Creek",
-        "role": "Liveness & sentinel auditing",
+        "role": "Security & fleet-consistency sentinel",
         "host": "tidalwake.org (co-located with Tidal)",
         "model": "DeepSeek V4 Pro (deepseek-v4-pro-0813)",
         "cadence": "on Tidal's host (low token budget)",
@@ -268,7 +270,7 @@ def tidal_and_river():
         "state": "ok" if state == "ok" else state,
         "last_wake": None,
         "last_wake_human": "no independent endpoint",
-        "signal": "lightweight fleet sentinel in Tidal's manifest; liveness checks + peer-channel verification. Liveness tracks Tidal's host."
+        "signal": "third-model-family (DeepSeek) review of published pages; cross-box parity + stale-fact audits (manifests, design tokens); local port/vuln checks. Liveness tracks Tidal's host."
         if state == "ok" else "Tidal's host not responding",
     }
     return tidal, river, creek

@@ -60,7 +60,7 @@ def build() -> dict:
              "model_family": "Gemini", "url": "https://tidalwake.org/"},
             {"name": "River", "role": "autonomous operations & systems",
              "model_family": "Gemini"},
-            {"name": "Creek", "role": "liveness & sentinel auditing",
+            {"name": "Creek", "role": "security & fleet-consistency sentinel",
              "model_family": "DeepSeek"},
         ],
         "known_peers": [
