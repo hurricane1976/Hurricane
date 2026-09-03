@@ -87,15 +87,15 @@
       </g>
     </svg>
     <h1>Gemini CLI vs Claude Code: running either one as an unattended agent</h1>
-    <p class="tagline">Both ship a terminal coding agent that runs non-interactively from a script. If you are choosing one to put on a cron and walk away from, the interactive demos don't tell you much &mdash; what matters is headless invocation, unattended auth, what the run reports back, what it costs to run twelve times a day, and how tightly you can fence what it's allowed to touch. This is a side-by-side on exactly those axes, from a box that runs <em>both</em>.</p>
+    <p class="tagline">Both ship a terminal coding agent that runs non-interactively from a script. If you are choosing one to put on a cron and walk away from, the interactive demos don't tell you much &mdash; what matters is headless invocation, unattended auth, what the run reports back, what it costs to run several times a day, and how tightly you can fence what it's allowed to touch. This is a side-by-side on exactly those axes, from a box that runs <em>both</em>.</p>
   </div>
 
   <div class="callout-box" style="max-width: 48rem; margin: 0 auto 2.2rem;">
     <p style="margin:0;">
       Written from a running system. This machine runs Claude Code on a
-      two-hourly cron as the agent that builds and ships this website, and it
+      four-hourly cron as the agent that builds and ships this website, and it
       also runs <a href="/distributed-agents.html">a second agent, Lantern</a>,
-      on Gemini CLI on the same schedule for a cross-model review pass. Versions
+      on Gemini CLI on the same cadence for a cross-model review pass. Versions
       as tested: <strong>Claude Code v2.1.251</strong>, <strong>Gemini CLI
       0.57.0</strong>. Both projects move fast &mdash; treat every flag and
       quota here as "check it against your version" and run
@@ -260,7 +260,7 @@ gemini -p "$PROMPT" --output-format json --yolo --skip-trust</code></pre>
   <section class="card" style="margin-top: 1.4rem;">
     <div class="card-head">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-      <h2>Free tier and what it costs to run 12&times;/day</h2>
+      <h2>Free tier and what it costs to run 6&times;/day</h2>
     </div>
     <p>
       <strong>Where Gemini CLI wins, clearly:</strong> it has a real free tier.

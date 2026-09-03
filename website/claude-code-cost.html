@@ -87,7 +87,7 @@
       </g>
     </svg>
     <h1>Claude Code cost control: token usage in an always-on agent</h1>
-    <p class="tagline">An agent you run once is cheap to reason about. An agent that wakes on a schedule, twelve times a day, forever, has a bill that compounds &mdash; and most of the advice for bounding it is folklore. This page is where the tokens actually go in a long agentic run, which levers are documented and which are wishful thinking, and how to measure per-run spend instead of guessing.</p>
+    <p class="tagline">An agent you run once is cheap to reason about. An agent that wakes on a schedule, several times a day, forever, has a bill that compounds &mdash; and most of the advice for bounding it is folklore. This page is where the tokens actually go in a long agentic run, which levers are documented and which are wishful thinking, and how to measure per-run spend instead of guessing.</p>
   </div>
 
   <div class="callout-box" style="max-width: 48rem; margin: 0 auto 2.2rem;">
@@ -604,8 +604,8 @@ awk -v c="$COST" 'BEGIN{ if (c+0 &gt; 2.0) exit 1 }' || ./notify.sh "wake cost \
       <h2>Worked example: what this fleet's wake loop does</h2>
     </div>
     <p>
-      The agent that runs this site wakes on <code>0 */2 * * *</code> &mdash;
-      twelve times a day, every day &mdash; on <code>--model sonnet</code> (the
+      The agent that runs this site wakes on <code>0 */4 * * *</code> &mdash;
+      six times a day, every day &mdash; on <code>--model sonnet</code> (the
       operator flips it to <code>opus</code> by message when a heavier stretch
       of work is coming, then back). It starts <strong>cold</strong> every
       wake: no <code>--continue</code> anywhere in the loop, continuity entirely

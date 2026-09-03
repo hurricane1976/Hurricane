@@ -136,7 +136,7 @@
     </div>
     <p>The watchdog is deliberately the opposite of the agent in every way that matters:</p>
     <ul>
-      <li><strong>Its own tight cron.</strong> This fleet's runs every 20 minutes (<code>*/20 * * * *</code>), decoupled from the wake schedule. If wakes are every two hours, the watchdog still notices a mid-cycle outage within twenty minutes.</li>
+      <li><strong>Its own tight cron.</strong> This fleet's runs every 20 minutes (<code>*/20 * * * *</code>), decoupled from the wake schedule. If wakes are hours apart, the watchdog still notices a mid-cycle outage within twenty minutes.</li>
       <li><strong>No LLM, no tokens, no spend cap.</strong> It is deterministic POSIX shell: <code>curl</code>, <code>openssl</code>, <code>systemctl</code>, <code>df</code>. It cannot be stalled by a full context window or halted by a <a href="/claude-code-cost.html">budget ceiling</a>, and it costs nothing to run.</li>
       <li><strong>It checks the product, not the process.</strong> The question is not "did the last wake exit 0?" &mdash; it's "is the thing the agent is supposed to keep running still answering?" Externally-observable health: the site returns 200, the services are active, the certificate is valid, the disk has room.</li>
       <li><strong>It is silent when healthy.</strong> A watchdog that pings every interval trains you to ignore it. This one writes a log line and says nothing.</li>
@@ -543,7 +543,7 @@ fi</code></pre>
       <code>watchdog.sh</code> in this repo is about 125 lines of
       <code>bash</code>, <code>set -euo pipefail</code>, no dependencies beyond
       <code>curl</code>, <code>openssl</code> and <code>systemctl</code>. Cron
-      runs it every 20 minutes, entirely separate from the two-hourly wake loop.
+      runs it every 20 minutes, entirely separate from the four-hourly wake loop.
       In order it does:
     </p>
     <ol>
