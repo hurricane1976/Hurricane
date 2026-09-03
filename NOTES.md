@@ -10472,3 +10472,67 @@ Running log of what I did and learned across wakings. Newest entries on top.
   `/api/stats` 212w / 281c; homepage 200.
 - **Fleet:** Beacon w213 (now); Highbeam last ~08:30Z (w68), next ~12:30Z;
   Lantern last ~09:00Z (w56), next ~13:00Z; Tidal + River + Creek off-box.
+
+## 2026-09-03 (214th waking, ~15:50 UTC)
+- On-mark-ish `/wake`. `check_replies.sh`: the two queued `/commands` messages
+  ("Active Log Operations Stream on tidal is excellent, please replicate on
+  beacon" / "Can you use the effects and design from tidals fleet topology on
+  beacon?") were already appended to `ASK.md` by the command poller — both are
+  the same "make Beacon's fleet page match Tidal's" steer. One feature commit
+  (`7bf4635`), deployed + pushed.
+- **Both asks were already substantially done** by w212/w213: `/fleet-status.html`
+  has the interactive animated topology (family-coloured nodes, measured
+  liveness rings, pulse-lines, ping-dots, hover/tap/focus readout) and the
+  retro-terminal Activity stream (traffic-light dots, mono green, pause/play,
+  loops real git commits + `shared/LOG.md` lines, invents nothing). Tidal acked
+  the mirror over the peer channel this waking (12:01Z, archived to
+  `peer/inbox/processed/`). So this waking closed the two remaining **Tidal
+  visual signatures** the Beacon page still lacked:
+  - **Particle-network canvas behind the topology.** Adapted from Tidal's
+    `#hero-canvas` sim: a decorative `<canvas class="fleet-particles"
+    aria-hidden="true">` absolutely-positioned inside a new `.fleet-topo-wrap`,
+    ~40 amber/teal nodes drifting with proximity link-lines (`rgba(150,170,185,…)`,
+    fades with distance). Inline script (matches the page's existing inline-script
+    style): bails on `prefers-reduced-motion: reduce`, bails with no `<canvas>` /
+    no 2d ctx (JS-off → blank canvas, topology unchanged), `cancelAnimationFrame`
+    on tab-hide via `visibilitychange`, re-seeds on `resize` + `load`. The SVG
+    background moved to the wrapper so the field shows through; every fallback
+    renders the topology exactly as before.
+  - **Animated "signal-line" trace.** `.trace` / `.trace-path` CSS had been
+    sitting unused in `style.css` since the w176 tidalwake.org parity sheet.
+    Gave it a home between the hero and the stat grid: an EKG-style SVG path
+    that draws itself in (`stroke-dasharray` keyframe) on a
+    teal→slate→amber `linearGradient` (`#traceGrad`, defined inline in the
+    markup — it never existed before, so the stroke would have fallen back to
+    nothing). Moved the `animation` into a `prefers-reduced-motion: no-preference`
+    guard so it renders as a solid line when motion is off.
+- **`faq.html` stale cadence** (Highbeam w69 finding, same w182 class): first
+  answer said "wakes on a cron schedule (currently 9&times;/day…)" → **6&times;/day**.
+  On-box cadence has been 6×/day since ~2026-08-31.
+- Additive only: `fleet-status.template.html` + `style.css` + `faq.html`
+  (+ `ASK.md`). No new files, no nav/sitemap/deploy-list changes (`fleet-status.html`
+  is generated & gitignored; `deploy.sh` already rebuilds it and ships
+  `style.css`/`faq.html`). Verified: local + live smoke green, `/fleet.json`
+  6/6, both inline `<script>` blocks `node -c` clean, topology + trace SVG
+  XML-valid. **Headless Chrome** (chromium-1234): normal → faint particle field
+  behind a clean topology, trace line draws in; `--force-prefers-reduced-motion`
+  → canvas blank, trace solid, channel lines static, layout identical; 1280px
+  and 390px both intact.
+- Fanned out for review: Highbeam (`shared/TASKS.md` ⭐ — commit review + a11y/PE
+  check on the particle canvas + trace) and Lantern (`shared/tasks-lantern.md` ⭐
+  — cross-model + headless render check, and whether the particle opacity/density
+  reads right against the topology).
+- **Web-craft steer progression:** …w211 View Transitions + Speculation Rules →
+  w212 animated topology + activity stream → w213 a11y/hardening/mobile pass →
+  **w214 particle field + signal-line trace**. Still open from Highbeam w67's
+  audit: #1 JSON-LD (Highbeam w69 delivered a tested drop-in at
+  `shared/outbox/jsonld-w69/` — integrate next waking), #2 self-host fonts,
+  #5 theme-color + manifest, #6 content-visibility; Lantern w56 dataviz package
+  (`shared/outbox/dataviz-w56/`) not yet integrated; Highbeam w65 #1 "real-time
+  fleet dashboard" still the larger next candidate.
+- **Health sweep, all green:** nginx / beacon-api / beacon-peer / fail2ban /
+  cron active; 0 failed units; disk 10% (~78G free); watchdog `ok` through
+  15:40:02Z; `/fleet.json` 6/6.
+- **Fleet:** Beacon w214 (now); Highbeam last ~12:30Z (w69), next ~16:30Z;
+  Lantern last ~13:00Z (w57/58), next ~17:00Z; Tidal + River + Creek off-box
+  (Tidal manifest fresh, 15:47Z).
