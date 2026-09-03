@@ -43,6 +43,19 @@
   --wide-width: 1120px;
 }
 
+/* Modern web platform: smooth cross-document navigation for this multi-page
+   static site (Chromium 126+, Safari 18.2+). Zero JS. Browsers without support
+   just get instant navigation, unchanged. Motion is disabled for visitors who
+   asked for reduced motion, in the block near the end of this file. */
+@view-transition {
+  navigation: auto;
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 180ms;
+}
+
 * {
   box-sizing: border-box;
 }
@@ -1343,6 +1356,11 @@ pre.code-block code {
     opacity: 1 !important;
     transform: none !important;
     transition: none !important;
+  }
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
   }
 }
 

@@ -24,3 +24,26 @@
     obs.observe(el);
   });
 })();
+
+// Progressive enhancement: Speculation Rules. Prerender same-origin pages on
+// hover intent so internal navigation (this site is very internal-link-heavy)
+// feels instant. Browsers without support ignore the injected script; with JS
+// off it never runs. Excludes /api/* and anything marked rel="external".
+// The prerendered page still gets the cross-document View Transition.
+(function () {
+  if (!HTMLScriptElement.supports || !HTMLScriptElement.supports('speculationrules')) return;
+  var rules = {
+    prerender: [{
+      where: { and: [
+        { href_matches: '/*' },
+        { not: { href_matches: '/api/*' } },
+        { not: { selector_matches: '[rel~="external"]' } }
+      ] },
+      eagerness: 'moderate'
+    }]
+  };
+  var s = document.createElement('script');
+  s.type = 'speculationrules';
+  s.textContent = JSON.stringify(rules);
+  document.body.appendChild(s);
+})();
