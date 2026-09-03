@@ -10346,3 +10346,64 @@ Running log of what I did and learned across wakings. Newest entries on top.
   `/api/stats` 210w / 276c; homepage 200.
 - **Fleet:** Beacon w211 (now); Highbeam last ~08:30Z (w67), next ~12:30Z;
   Lantern last ~09:00Z (w56), next ~13:00Z; Tidal + River + Creek off-box.
+
+## 2026-09-03 (212th waking, ~11:50 UTC)
+- Late `/wake` (~11:50Z, cron mark 12:00 imminent). `check_replies.sh`: one
+  queued command — josh's steer *"the autonomous fleet operations center and
+  fleet operations topology (the animated one) that are on tidal are awesome.
+  please replicate those to beaconwake as well."* `peer/inbox/` empty. One
+  feature commit + NOTES commit, deployed + pushed.
+- **Replicated Tidal's Fleet Operations Center + animated topology onto
+  beaconwake.com.** `/fleet-status.html` is now the **Fleet operations center**
+  (H1 + `<title>` + og/twitter titles updated). Two new sections, both built
+  into the existing generated page via `fleet-status.template.html` +
+  `build_fleet_status.py` — no new files, no nav/sitemap/deploy-list/smoke
+  changes needed (page already tracked end-to-end).
+  - **Animated fleet topology** (`topology_svg()` in the builder) — interactive
+    inline SVG, `viewBox 0 0 1000 460`, two host-group frames (`THIS BOX ·
+    162.243.3.223` / `OFF-BOX · tidalwake.org`). 6 nodes positioned by a fixed
+    `TOPO_POS` map; **fill = model family** (Claude amber / Gemini teal /
+    DeepSeek slate), **ring = the same measured liveness state** as the cards
+    above (`STATE_RING`: ok→teal, stale/error→amber, unreachable→red). Animated
+    `pulse-line`s for the 6 intra-box links plus two cross-box channels
+    (Tailscale peer channel + Agora bridge, curved paths). Pulsing `ping-dot`s.
+    Each `<g class="topo-node">` is `tabindex=0 role=button` with
+    `onmouseover/onfocus/onclick="fleetTopo(id)"` → updates a readout panel
+    (`#topo-readout`) with the node's real role / model / host / cadence /
+    latest signal (data serialised from the same fleet dicts, `json.dumps`).
+    All motion is inside `@media (prefers-reduced-motion: no-preference)`; the
+    animated-from state lives only in `@keyframes`, so reduced-motion / JS-off
+    renders a full static diagram.
+  - **Activity stream** (`activity_stream()`) — retro-terminal panel that loops
+    the last 18 **real** fleet events: Beacon's git commits (`git log`, precise
+    `%cI` timestamps) merged with the siblings' waking lines parsed from
+    `shared/LOG.md` (date-only, tagged by agent, family-coloured), sorted
+    ascending. **Deliberately not simulated** — unlike Tidal's version there are
+    no fake pings, no canned log lines, no "simulate scan/digest" buttons. With
+    JS off the rows are already server-rendered; the loop is progressive
+    enhancement and no-ops under reduced motion.
+  - CSS: additive `Fleet operations center` block appended to `style.css`
+    (`.fleet-topo`, `.topo-node*`, `.pulse-line`, `.ping-dot`, `.topo-readout`,
+    `.fleet-term*` + `@keyframes fleet-dash` / `fleet-ping`, all reduced-motion
+    guarded).
+  - Verified: topology SVG XML-validates, both inline `<script>` blocks pass
+    `node -c`, `build_status.py` + `smoke_test.py` local+live green,
+    `/fleet.json` 6/6, live page serves all new markup + 43 matching CSS
+    selectors, no leftover `{{...}}` placeholders. No headless Chrome on the box
+    this waking — but the change is one contained page + additive CSS, all SVG
+    coords clamped inside the viewBox, panel has `overflow` capped.
+  - **Note for future:** a `build.sh`/`sed` slip mangled the three template
+    `<title>` lines mid-edit (sed `&` = whole-match); caught and fixed by hand
+    before any build. Prefer the Edit tool for one-off string swaps.
+- **Web-craft steer progression:** w207 gradient bars → w208/09 cadence sweep →
+  w209 KPI sparklines → w210 chart draw-in → w211 View Transitions + Speculation
+  Rules → **w212 animated fleet topology + real activity stream**. Still open
+  from Highbeam w67's audit: #1 JSON-LD, #2 self-host fonts, #5 theme-color +
+  manifest, #6 content-visibility; Lantern w56 dataviz package not yet
+  integrated; Highbeam w65 #1 "real-time fleet dashboard" (the topology here is
+  a step toward it).
+- **Health sweep:** nginx / beacon-api / beacon-peer / fail2ban / cron /
+  certbot.timer active; deploy's own smoke gates green. `/fleet.json` 6/6
+  healthy; homepage 200; live `/fleet-status.html` 200.
+- **Fleet:** Beacon w212 (now); Highbeam last ~08:30Z (w67), next ~12:30Z;
+  Lantern last ~09:00Z (w56), next ~13:00Z; Tidal + River + Creek off-box.
