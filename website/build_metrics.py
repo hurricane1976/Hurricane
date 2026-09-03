@@ -198,7 +198,35 @@ def days_autonomous() -> int:
 
 # --- SVG -------------------------------------------------------------------
 
-def _bars(counts: Counter, days, x0, plot_w, y0, plot_h, vmax, color, unit):
+# Vertical gradient tints per series colour: (top, bottom). Bars fill with the
+# gradient so they read with depth instead of a flat block; the raw colour is
+# still used for the zero-day sliver and any axis marks.
+_GRAD_STOPS = {
+    AMBER: ("#ffc39c", "#f4761f"),
+    TEAL:  ("#8fe8e0", "#33bdb0"),
+}
+_CHART_SEQ = [0]
+
+
+def _next_cid():
+    _CHART_SEQ[0] += 1
+    return f"mc{_CHART_SEQ[0]}"
+
+
+def _defs(cid, color):
+    top, bot = _GRAD_STOPS.get(color, (color, color))
+    return (
+        f'<defs><linearGradient id="{cid}-g" x1="0" y1="0" x2="0" y2="1">'
+        f'<stop offset="0" stop-color="{top}"/>'
+        f'<stop offset="1" stop-color="{bot}"/></linearGradient></defs>'
+    )
+
+
+def _fill(cid, color):
+    return f'url(#{cid}-g)' if color in _GRAD_STOPS else color
+
+
+def _bars(counts: Counter, days, x0, plot_w, y0, plot_h, vmax, color, unit, cid):
     n = len(days)
     slot = plot_w / n
     bw = slot * 0.62
@@ -220,7 +248,7 @@ def _bars(counts: Counter, days, x0, plot_w, y0, plot_h, vmax, color, unit):
         else:
             out.append(
                 f'<rect x="{x:.1f}" y="{y:.1f}" width="{bw:.1f}" height="{h:.1f}" rx="3" '
-                f'fill="{color}"><title>{label}: {v} {unit}</title></rect>'
+                f'fill="{_fill(cid, color)}"><title>{label}: {v} {unit}</title></rect>'
             )
     return "\n".join(out)
 
@@ -228,6 +256,7 @@ def _bars(counts: Counter, days, x0, plot_w, y0, plot_h, vmax, color, unit):
 def bar_chart(counts: Counter, days, color, unit, height=190):
     """One single-series bar chart. viewBox width fixed at 720."""
     W, H = 720, height
+    cid = _next_cid()
     ml, mr, mt, mb = 34, 10, 12, 24
     plot_w = W - ml - mr
     plot_h = H - mt - mb
@@ -261,7 +290,7 @@ def bar_chart(counts: Counter, days, color, unit, height=190):
             f'{days[i].strftime("%b %-d")}</text>'
         )
 
-    bars = _bars(counts, days, ml, plot_w, mt, plot_h, axis_top, color, unit)
+    bars = _bars(counts, days, ml, plot_w, mt, plot_h, axis_top, color, unit, cid)
 
     # direct-label only the tallest bar (selective labelling, not one per bar)
     peak = ""
@@ -278,6 +307,7 @@ def bar_chart(counts: Counter, days, color, unit, height=190):
     return (
         f'<svg viewBox="0 0 {W} {H}" class="chart" role="img" '
         f'aria-label="Bar chart, {unit} per day over the last {len(days)} days">'
+        f'{_defs(cid, color)}'
         f'\n{"".join(grid)}\n{"".join(ylabels)}\n{bars}\n{peak}\n{"".join(xlabels)}\n</svg>'
     )
 
@@ -285,6 +315,7 @@ def bar_chart(counts: Counter, days, color, unit, height=190):
 def hbar_chart(rows, color, unit):
     """Horizontal single-series bars with direct value labels. rows: [(label, v)]."""
     W = 720
+    cid = _next_cid()
     rowh, gap, mt = 34, 10, 8
     ml = 90
     H = mt * 2 + len(rows) * rowh + (len(rows) - 1) * gap
@@ -293,6 +324,7 @@ def hbar_chart(rows, color, unit):
     out = [
         f'<svg viewBox="0 0 {W} {H}" class="chart" role="img" '
         f'aria-label="Horizontal bar chart, {unit} in the last 24 hours by agent">'
+        f'{_defs(cid, color)}'
     ]
     for i, (label, v) in enumerate(rows):
         y = mt + i * (rowh + gap)
@@ -303,7 +335,7 @@ def hbar_chart(rows, color, unit):
         )
         out.append(
             f'<rect x="{ml}" y="{y:.1f}" width="{bw:.1f}" height="{rowh}" rx="3" '
-            f'fill="{color}"><title>{label}: {v} {unit} in the last 24h</title></rect>'
+            f'fill="{_fill(cid, color)}"><title>{label}: {v} {unit} in the last 24h</title></rect>'
         )
         out.append(
             f'<text x="{ml + bw + 8:.1f}" y="{y + rowh / 2 + 4:.1f}" '
