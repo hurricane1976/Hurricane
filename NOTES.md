@@ -10247,3 +10247,45 @@ Running log of what I did and learned across wakings. Newest entries on top.
   `/api/stats` 208w / 272c; homepage 200.
 - **Fleet:** Beacon w209 (now); Highbeam last ~04:30Z (w66), next ~08:30Z;
   Lantern last ~03:45Z (w55), next ~05:00Z; Tidal + River + Creek off-box.
+
+## 2026-09-03 (210th waking, ~08:05 UTC)
+- On-mark `/wake` (08:00Z). `check_replies.sh`: no new messages. `peer/inbox/`
+  empty. One commit this waking (`662474b`), deployed + pushed. Health sweep
+  all green.
+- **josh w207 web-craft steer — shipped another increment (`662474b`).**
+  Scroll-triggered **draw-in animation** for the `/metrics.html` charts: bars
+  grow from the baseline (staggered per bar) and the KPI-tile sparklines draw
+  themselves in when a chart scrolls into view.
+  - New **`website/metrics-charts.js`** (page-scoped, ~25 lines): an
+    `IntersectionObserver` adds a `.chart-in` class to each `.chart` / `.spark`
+    as it enters the viewport, then unobserves. Bails on no-IO or
+    `prefers-reduced-motion: reduce`, same progressive-enhancement contract as
+    `reveal.js`.
+  - CSS lives in `metrics.template.html`'s page `<style>` block, entirely
+    inside `@media (prefers-reduced-motion: no-preference)`. The animated
+    *from* state (bars at `scaleY(0)` via `transform-box: fill-box` +
+    `transform-origin: 50% 100%`; sparkline `stroke-dashoffset`) exists **only**
+    in `@keyframes` with `animation-fill-mode: backwards` — never as a plain
+    rule — so a chart with no `.chart-in` class (JS off, no `IntersectionObserver`,
+    or reduced motion) renders **full and static**. Verified in headless Chrome
+    both with JS on (bars/sparklines animate then settle correctly) and with
+    `--disable-javascript` (everything full and static, dots + area fills
+    present).
+  - Bar stagger via `rect:nth-of-type(1..14)` `animation-delay` (0→455ms,
+    35ms steps); `.chart rect` `:nth-of-type` only matches bars (axes are
+    `<line>`/`<text>`). No JS on the render path, no new deps; `metrics.html`
+    stays git-ignored (built on deploy).
+  - `deploy.sh` publishes `metrics-charts.js` (added to both the `cp` and
+    `chown` file lists next to `reveal.js`). `smoke_test.py` local+live green,
+    `build_status.py` green, `/fleet.json` 6/6. Live: `/metrics-charts.js` 200,
+    `chart-in` + `bar-rise` present in served HTML.
+- **Progression on this steer so far:** w207 gradient-fill bars → w208/w209
+  stale-cadence sweep → w209 KPI sparklines → w210 chart draw-in animation.
+  Lantern's fuller dataviz concept pass (`shared/outbox/`) still queued;
+  Highbeam w65's #1 ("real-time fleet dashboard") is the next larger candidate.
+- **Health sweep, all green:** nginx / beacon-api / beacon-peer / fail2ban /
+  cron / certbot.timer active; 0 failed units; no reboot flag; disk 10%
+  (~78G free). Watchdog `ok` through 08:00:02Z. `/fleet.json` 6/6 healthy;
+  `/api/stats` 209w / 274c; homepage 200.
+- **Fleet:** Beacon w210 (now); Highbeam last ~04:30Z (w66), next ~08:30Z;
+  Lantern last ~03:45Z (w55), next ~09:00Z; Tidal + River + Creek off-box.
