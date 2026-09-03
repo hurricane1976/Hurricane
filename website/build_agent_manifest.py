@@ -62,6 +62,8 @@ def build() -> dict:
              "model_family": "Gemini"},
             {"name": "Creek", "role": "security & fleet-consistency sentinel",
              "model_family": "DeepSeek"},
+            {"name": "Stream", "role": "research & context gathering",
+             "model_family": "DeepSeek"},
         ],
         "known_peers": [
             "https://tidalwake.org/.well-known/agent.json",

@@ -19,6 +19,10 @@ A monitoring/status view for the WHOLE agent fleet, not just Beacon:
                review of published pages, cross-box parity + stale-fact audits,
                local port/vuln checks. No independent endpoint; liveness mirrors
                Tidal's host, same as River.
+  Stream    -- co-located with Tidal too; DeepSeek. Research & context gathering
+               for the off-box team. Announced by josh w216, listed in Tidal's
+               fleet manifest. No independent endpoint; liveness mirrors Tidal's
+               host, same as River and Creek.
 
 Every value is measured at generation time -- nothing hand-typed -- so the
 page can be at most one Beacon wake-cycle stale, same contract as status.html.
@@ -216,7 +220,7 @@ def beacon_wakings() -> str:
 
 
 def tidal_and_river():
-    """Fetch Tidal's manifest; derive Tidal + River + Creek rows from reachability."""
+    """Fetch Tidal's manifest; derive Tidal + River + Creek + Stream rows from reachability."""
     raw = run(f"curl -s --max-time 8 {TIDAL_MANIFEST}", timeout=12)
     manifest = None
     try:
@@ -286,7 +290,20 @@ def tidal_and_river():
         "signal": "third-model-family (DeepSeek) review of published pages; cross-box parity + stale-fact audits (manifests, design tokens); local port/vuln checks. Liveness tracks Tidal's host."
         if state == "ok" else "Tidal's host not responding",
     }
-    return tidal, river, creek
+    stream = {
+        "name": "Stream",
+        "role": "Research & context gathering",
+        "host": "tidalwake.org (co-located with Tidal)",
+        "model": "DeepSeek",
+        "cadence": "on Tidal's host",
+        "wakings": "—",
+        "state": "ok" if state == "ok" else state,
+        "last_wake": None,
+        "last_wake_human": "no independent endpoint",
+        "signal": "research & context gathering for the off-box team; listed in Tidal's fleet manifest. Liveness tracks Tidal's host."
+        if state == "ok" else "Tidal's host not responding",
+    }
+    return tidal, river, creek, stream
 
 
 STATE_LABEL = {
@@ -328,18 +345,23 @@ def card_html(a: dict) -> str:
 # --------------------------------------------------------------------------
 
 # Fixed node geometry, viewBox 0 0 1000 460. Two host groups.
+# Off-box is a diamond around (750,250) so 4 co-located nodes fit the frame;
+# Tidal stays at (750,150) so the cross-box channel paths don't move.
 TOPO_POS = {
     "Beacon":   (250, 150),
     "Highbeam": (140, 320),
     "Lantern":  (360, 320),
     "Tidal":    (750, 150),
-    "River":    (640, 320),
-    "Creek":    (860, 320),
+    "Stream":   (620, 250),
+    "Creek":    (880, 250),
+    "River":    (750, 350),
 }
-# Intra-host links (both ends on the same box).
+# Intra-host links (both ends on the same box). Off-box is a full mesh of 4 —
+# the co-located agents coordinate through shared files, not sockets.
 TOPO_LINKS = [
     ("Beacon", "Highbeam"), ("Beacon", "Lantern"), ("Highbeam", "Lantern"),
-    ("Tidal", "River"), ("Tidal", "Creek"), ("River", "Creek"),
+    ("Tidal", "River"), ("Tidal", "Creek"), ("Tidal", "Stream"),
+    ("River", "Creek"), ("River", "Stream"), ("Creek", "Stream"),
 ]
 FAMILY_COLOR = {
     "Claude": "var(--amber)", "Gemini": "var(--teal)", "DeepSeek": "var(--diagram-slate)",
@@ -423,7 +445,7 @@ def topology_svg(fleet: list) -> str:
     svg = (
         '  <svg class="fleet-topo" viewBox="0 0 1000 460" '
         'xmlns="http://www.w3.org/2000/svg" role="img" '
-        'aria-label="Animated fleet topology: three agents on this box, three off-box on tidalwake.org, '
+        'aria-label="Animated fleet topology: three agents on this box, four off-box on tidalwake.org, '
         'linked by a Tailscale peer channel and the Agora bridge.">\n'
         + "\n".join(parts)
         + "\n  </svg>"
@@ -491,7 +513,7 @@ def activity_stream():
     if SHARED_LOG.exists():
         rx = re.compile(
             r"^-\s*(\d{4}-\d{2}-\d{2})\s*(?:[—–-]\s*)?\[?"
-            r"(Highbeam|Lantern|Tidal|River|Creek)\b\]?(.+)$")
+            r"(Highbeam|Lantern|Tidal|River|Creek|Stream)\b\]?(.+)$")
         rows = []
         for ln in SHARED_LOG.read_text(errors="replace").splitlines():
             m = rx.match(ln.strip())
@@ -536,9 +558,9 @@ def main():
         "Lantern", "Cross-model review & image generation",
         "beaconwake.com box (/home/agent/gemini-agent)", "Gemini (flash-latest)",
         "6×/day (0 1-23/4)", GEMINI_LOGS, GEMINI_NOTES, "Lantern")
-    tidal, river, creek = tidal_and_river()
+    tidal, river, creek, stream = tidal_and_river()
 
-    fleet = [beacon, highbeam, lantern, tidal, river, creek]
+    fleet = [beacon, highbeam, lantern, tidal, river, creek, stream]
 
     healthy = sum(1 for a in fleet if a["state"] in ("ok", "waking"))
     hosts = {"beaconwake.com (162.243.3.223)", "tidalwake.org"}

@@ -221,6 +221,11 @@ def graph_for(fname: str, text: str) -> list | None:
              "description": desc, "inLanguage": "en"}]
 
 
+def _sans_datemod(s: str) -> str:
+    """The block with its dateModified value blanked, for churn-free compares."""
+    return re.sub(r'"dateModified":"[^"]*"', '"dateModified":""', s)
+
+
 def render(nodes: list) -> str:
     graph = {"@context": "https://schema.org", "@graph": nodes}
     j = json.dumps(graph, ensure_ascii=False, separators=(",", ":"))
@@ -249,6 +254,15 @@ def main() -> None:
             continue
         block = render(nodes)
         if START in text:
+            # Don't rewrite when the ONLY delta is dateModified. `git_dates`
+            # reads `git log -1 -- <file>`, which a JSON-LD-only re-commit
+            # updates -- so without this guard every mass commit re-dirties
+            # every unedited article page in an endless churn loop (Highbeam
+            # w69). A real content edit changes og:* / title / body too, so it
+            # still triggers a rewrite (and picks up the fresh date with it).
+            m = BLOCK_RX.search(text)
+            if m and _sans_datemod(m.group(0)) == _sans_datemod(block):
+                continue
             updated = BLOCK_RX.sub(lambda _m: block, text, count=1)
         else:
             updated = text.replace("</head>", block + "\n</head>", 1)

@@ -291,6 +291,35 @@
     only, no new files. Local smoke green, both inline scripts `node -c` clean,
     topology + trace SVG XML-valid, headless-Chrome verified in normal +
     reduced-motion. Standing web-craft steer, no single "done".
+- **Telegram (2026-09-03, via /commands):** New agent in the fleet “stream” co-located with tidal. Tell the fleet
+  - **w216 (2026-09-03):** Done. Tidal's public manifest already carried Stream
+    with a role + family, so no wait on Tidal this time: **Stream — "research &
+    context gathering", DeepSeek**, co-located with Tidal/River/Creek on
+    `tidalwake.org`, manifest-listed only (no public URL, like River and Creek).
+    Fleet is now **7 agents, 2 hosts, still 3 model families** (Claude ×2,
+    Gemini ×3, DeepSeek ×2 — Creek + Stream).
+  - **Shipped this waking** — full site sync (same playbook as Creek w185/w207):
+    `build_agent_manifest.py` `fleet[]`; `build_fleet_status.py` →
+    `/fleet.json` + `/fleet-status.html` now **7/7 healthy**, topology SVG gets
+    a 4th off-box node (off-box group re-laid as a diamond), activity-stream
+    regex + docstring; `fleet-status.template.html` (meta + "how each row is
+    measured" + "Seven agents" topology copy); `build_metrics.py` KPI 6→7 +
+    `metrics.template.html` 3 chart notes; `distributed-agents.html` prose +
+    hand-tuned topology SVG (4th card, grown container 365→480, viewBox
+    805→920, bottom band/caption/legend/aria-label shifted + updated) — both
+    SVGs `rsvg-convert`-rendered and eyeballed, no overlaps;
+    `dividing-work-between-ai-agents.html` (table row + panel-02 aria-label +
+    "seven-agent"), `claude-code-vs-multiple-models.html` (callout prose +
+    DeepSeek role-diagram column + table row + aria-label + "seven agents"),
+    `agent-to-agent-communication.html` + `multi-agent-without-a-framework.html`
+    ("six siblings" + link list), `guides.html` ("seven-agent" ×2),
+    `agent-discovery-manifest.html` (sample `fleet[]` + "seven agents").
+    `shared/DIVISION-OF-WORK.md`: agents table + off-box section + w216
+    revision note.
+  - **Told the fleet:** Highbeam (`shared/TASKS.md`), Lantern
+    (`shared/tasks-lantern.md`), Tidal (peer channel). Nothing needed from josh
+    — item closed. The off-box team owns Stream's exact brief in their
+    `FLEET_COORDINATION.md`; Beacon represents it from Tidal's manifest.
 
 ## On hold
 

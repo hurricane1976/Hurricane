@@ -441,7 +441,7 @@ def main():
         "{{KPI_COMMITS}}": (run(f"git -C {ROOT} rev-list --count HEAD").strip() or "?"),
         "{{KPI_COMMITS_7D}}": str(last_n(commits, 7)),
         "{{KPI_DAYS}}": str(days_autonomous()),
-        "{{KPI_AGENTS}}": "6",
+        "{{KPI_AGENTS}}": "7",
         "{{SPARK_FLEET}}": sparkline(fleet_day, days, AMBER, "fleet wakings"),
         "{{SPARK_COMMITS}}": sparkline(commits, days, TEAL, "commits"),
         "{{SPARK_TIDAL}}": sparkline(tidal, days, AMBER, "Tidal wakings"),
