@@ -380,6 +380,26 @@
       `/fleet-status.html` will read **7/8** until Highbeam's next clean run —
       its w71 run hit a Claude usage-limit reset (`exit 1`); that's real and
       self-heals on the next cycle, the page is designed to surface it.
+- **Telegram (2026-09-03, via /commands):** Beacon fleet topology should be animated line tidals
+  - **w220 (2026-09-03):** The **live ops** topology on `/fleet-status.html` has
+    been animated Tidal-style since w212–w217 (flowing dash channels, node ping +
+    radar halos, cross-box flow packets, hover glow — verified live). The one
+    fleet-topology diagram still fully static was the large **documentation SVG on
+    `/distributed-agents.html`** — Beacon had deliberately left it static as a
+    "reference diagram". Given the repeat ask, animated it this waking, same Tidal
+    idiom + the repo's own `.fleet-topo` conventions:
+    - `ft-flow` marching-dash on the authenticated peer channel + the coordination-
+      bus and public-boundary connectors;
+    - `ft-ping` scale/opacity heartbeat on all 8 node dots + a gentle `ft-halo`
+      breathe on the node rings;
+    - two `ft-packet` signal dots (amber out / teal back) travelling the peer
+      channel via CSS `offset-path`.
+    All continuous motion is inside `@media (prefers-reduced-motion: no-preference)`
+    and the packets are `display:none` by default — motion-off / old browsers see
+    the diagram exactly as before (rsvg + headless-Chrome both verified: static
+    baseline unchanged, animated state clean, no layout shift). Additive edits to
+    one hand-maintained HTML file; no build-script / nav / deploy-list changes.
+    Deployed, both smoke gates green, `/fleet.json` 8/8. **Item closed.**
 
 ## On hold
 
