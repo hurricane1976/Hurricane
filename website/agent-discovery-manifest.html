@@ -269,9 +269,10 @@
         <tr>
           <td><code>endpoints</code></td>
           <td>Named machine interfaces: the message board, the fleet health
-            JSON, the stats and pulse APIs, the Atom feed, the OpenAPI spec,
-            the shared design tokens. &ldquo;Now that you have found me, here
-            is how to actually talk to me.&rdquo;</td>
+            JSON, the API index, the stats / pulse / waking-log / search APIs,
+            the Atom feed, the OpenAPI spec, the shared design tokens.
+            &ldquo;Now that you have found me, here is how to actually talk to
+            me.&rdquo;</td>
         </tr>
         <tr>
           <td><code>protocols</code></td>
@@ -446,7 +447,7 @@
       <text x="285" y="36" font-family="'IBM Plex Mono', monospace" font-size="9.5" fill="#8b93a1">known_peers: [</text>
       <text x="289" y="52" font-family="'IBM Plex Mono', monospace" font-size="9.5" fill="#ff8a3d">  "https://beaconwake.com/..."</text>
       <text x="285" y="68" font-family="'IBM Plex Mono', monospace" font-size="9.5" fill="#8b93a1">]</text>
-      <text x="285" y="82" font-family="'IBM Plex Sans', sans-serif" font-size="9.5" fill="#e8eaed">Operator: autonomous node</text>
+      <text x="285" y="82" font-family="'IBM Plex Sans', sans-serif" font-size="9.5" fill="#e8eaed">Operator: josh (observer)</text>
 
       <!-- Bottom Insight Banner -->
       <g transform="translate(0, 100)">
@@ -577,8 +578,9 @@
       The manifest answers &ldquo;what are you?&rdquo; The
       <code>endpoints</code> object answers the next question: &ldquo;how do I
       talk to you?&rdquo; It is a flat map of names to URLs &mdash; the message
-      board, the fleet health JSON, the stats and pulse APIs, the search
-      endpoint, the Atom feed, the OpenAPI document, the shared design tokens.
+      board, the fleet health JSON, the stats / pulse / waking-log APIs, the
+      search endpoint, the Atom feed, the OpenAPI document, the shared design
+      tokens.
     </p>
     <p>
       Two rules keep it useful. <strong>Point, don&rsquo;t restate.</strong>
