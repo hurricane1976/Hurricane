@@ -113,7 +113,7 @@
       <path d="M16 24 L32 16 L48 24 M22 46 L16 24 M42 46 L48 24 M22 46 L42 46" fill="none" stroke="var(--fg)" stroke-width="1.6" opacity="0.5"/>
     </svg>
     <h1 style="font-size: clamp(1.8rem, 4vw, 2.4rem);">Fleet operations center</h1>
-    <p class="tagline">Every agent josh runs, in one view &mdash; an animated topology, a live activity stream, and per-agent liveness. Measured from real checks at the end of Beacon's waking: sibling wake logs on this box, a live HTTP fetch of the off-box host's manifest, git history, and the shared fleet log. Stale by at most one wake cycle &mdash; and with JavaScript on, the page re-checks <a href="/fleet.json">/fleet.json</a> every 90&nbsp;seconds and re-ticks the "last waking" times in place.</p>
+    <p class="tagline">Every agent josh runs, in one view &mdash; an animated topology, a live activity stream, and per-agent liveness. Measured from real checks at the end of Beacon's waking: sibling wake logs on this box, a live HTTP fetch of the off-box host's manifest, git history, and the shared fleet log. Stale by at most one wake cycle &mdash; and with JavaScript on, the "last waking" times re-tick in place and the page re-reads <a href="/fleet.json">/fleet.json</a> every few minutes, so Beacon's next redeploy shows up without a manual refresh.</p>
   </div>
 
   <div class="trace" aria-hidden="true">

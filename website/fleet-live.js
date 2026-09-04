@@ -4,11 +4,15 @@
  * already correct at deploy time. This script only keeps it fresh between
  * deploys:
  *   1. re-ticks the relative "last waking" times ("1.8 h ago") from the ISO
- *      timestamps the server left in data-ts attributes, every 30 s;
- *   2. re-fetches /fleet.json every 90 s and reconciles each agent card's
+ *      timestamps the server left in data-ts attributes, every 30 s — this is
+ *      the genuinely live part and needs no network;
+ *   2. re-reads /fleet.json every few minutes and reconciles each agent card's
  *      state dot / badge / signal / timestamp plus the "reporting healthy"
- *      stat, so a sibling that woke since the last deploy shows up live;
- *   3. shows a small "re-checked N ago" line under the stat grid.
+ *      stat. /fleet.json is a static file that build_fleet_status.py regenerates
+ *      once per Beacon deploy (~6x/day), so this only changes anything when a
+ *      visitor's tab is open across a redeploy — it picks that up without a
+ *      manual refresh, it is not sub-deploy external monitoring;
+ *   3. shows a small "re-read /fleet.json N ago" line under the stat grid.
  *
  * No dependencies, no build step. With JS off, none of this runs and the
  * static page stands on its own. Motion (the pulsing dot) is CSS-gated behind
@@ -18,8 +22,8 @@
   'use strict';
 
   var JSON_URL = '/fleet.json';
-  var TICK_MS = 30000;   // recompute relative times
-  var POLL_MS = 90000;   // re-fetch fleet.json
+  var TICK_MS = 30000;    // recompute relative times
+  var POLL_MS = 300000;   // re-read fleet.json (static, regenerated ~6x/day)
 
   var synced = document.getElementById('fleet-synced');
   var syncedText = document.getElementById('fleet-synced-text');
@@ -34,6 +38,8 @@
 
   var lastSync = Date.now();   // page was just served; refined on first poll
   var lastOk = true;
+  var polled = false;          // no /fleet.json read has completed yet
+  var syncedShown = '';        // last string written to the synced line
 
   var STATE_LABEL = {
     ok: 'healthy', waking: 'waking now', stale: 'stale',
@@ -50,12 +56,6 @@
     return Math.floor(s / 86400) + ' d ago';
   }
 
-  function coarse(ageMs) {
-    if (ageMs < 60000) return 'just now';
-    if (ageMs < 3600000) return Math.floor(ageMs / 60000) + ' min ago';
-    return (ageMs / 3600000).toFixed(1) + ' h ago';
-  }
-
   function tickTimes() {
     var spans = document.querySelectorAll('.agent-ago[data-ts]');
     for (var j = 0; j < spans.length; j++) {
@@ -69,16 +69,27 @@
 
   function updateSynced() {
     if (!synced || !syncedText) return;
-    synced.hidden = false;
-    synced.classList.remove('is-stale', 'is-error');
+    // Stay hidden until a real read has happened (or failed) — the static page
+    // was only served, not re-read, at load.
+    if (!polled && lastOk) return;
+
+    var txt, stale = false, error = false;
     if (!lastOk) {
-      syncedText.textContent = 'live re-check failed — showing last known state';
-      synced.classList.add('is-error');
-      return;
+      txt = '/fleet.json re-check failed — showing last known state';
+      error = true;
+    } else {
+      var age = Date.now() - lastSync;
+      txt = 're-read /fleet.json ' + rel(lastSync);
+      stale = age > POLL_MS * 3;
     }
-    var age = Date.now() - lastSync;
-    syncedText.textContent = 'live — re-checked from /fleet.json ' + coarse(age);
-    if (age > POLL_MS * 3) synced.classList.add('is-stale');
+
+    synced.hidden = false;
+    synced.classList.toggle('is-stale', stale);
+    synced.classList.toggle('is-error', error);
+    if (txt !== syncedShown) {
+      syncedText.textContent = txt;
+      syncedShown = txt;
+    }
   }
 
   function applyState(el, state) {
@@ -127,6 +138,7 @@
         }
         lastSync = Date.now();
         lastOk = true;
+        polled = true;
         tickTimes();
       })
       .catch(function () {

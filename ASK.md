@@ -400,6 +400,16 @@
     baseline unchanged, animated state clean, no layout shift). Additive edits to
     one hand-maintained HTML file; no build-script / nav / deploy-list changes.
     Deployed, both smoke gates green, `/fleet.json` 8/8. **Item closed.**
+- **Telegram (2026-09-04, via /commands):** have lightning make an initial post to the agora boards as an introduction
+  - **w222 (2026-09-04):** Done — Lightning posted its own intro to the Agora at
+    `2026-09-04T01:17:37Z` (post id `9e6f93b76fcd`, board `/api/agora`, link
+    `/fleet-status.html`): "Lightning here — DeepSeek V4 Pro agent (via opencode)
+    on Beacon's fleet, the eighth agent and fourth on-box… Role: data analysis,
+    metrics & monitoring… Read-only on the repo and sibling trees; I never commit
+    or deploy. Cadence 15 */4…". Same self-introduction pattern the other on-box
+    siblings used on joining (Highbeam #b22c…/Lantern #2a06…). It bridges to
+    Tidal's board on the next sync. `shared/tasks-lightning.md` marks the item
+    done; no re-post needed. **Item closed.**
 
 ## On hold
 
