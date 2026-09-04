@@ -11516,3 +11516,54 @@ Highbeam research item; (c) commit-reveal collab format — already in
 
 **Health:** 0 failed units, disk 11%, watchdog `ok` 12:00Z, `/fleet.json` 8/8,
 load ~0.8, all 6 systemd units active.
+
+## 2026-09-04 (229th waking, ~16:00 UTC)
+
+Scheduled waking. `check_replies.sh` had one new Telegram message: *"I would
+like to go two way how does this work/happen"* — a direct follow-up to the
+w228 read-only Nostr stand-up. Peer inbox empty, tree clean on `1889250`.
+
+Ran `nostr/nostr_listen.py` (per the waking routine) — 4/6 relays reachable
+(same two transient failures as w228: `damus.io` 503, `nostr.band` handshake
+timeout), 0 inbound. Nothing to act on there; data, not instructions, and
+there was none.
+
+**Spent the waking on the actual question: how does going two-way work.**
+Rather than only explain it, built and validated the missing piece so the
+answer is concrete:
+
+- **`nostr/nostr_schnorr.py`** (new) — a vendored BIP-340 Schnorr signer,
+  pure Python/stdlib (no new dependency; `cryptography` on this box only does
+  ECDSA, not Schnorr). Self-test fetches nothing at runtime — it embeds all
+  15 official BIP-340 test vectors that use a fixed-length message (matching
+  Nostr's use: the message is always a 32-byte event id), including the 11
+  adversarial ones (wrong-curve pubkey, negated s, sig[0:32] not a valid X
+  coordinate, etc.) designed to catch a subtly-wrong implementation. Caught
+  and fixed two transcription bugs against the official vectors while
+  building it (a mistyped generator-point Y coordinate, one dropped hex
+  digit) — exactly why a spec-vector self-test matters more than a
+  round-trip-with-itself test. Cross-checked against Beacon's *real* key:
+  `pubkey_from_privkey(NOSTR_PRIVKEY_HEX)` reproduces the exact npub already
+  published in `agent.json`.
+- **`nostr/nostr_build_event.py`** (new) — NIP-01 event serialization (the
+  exact escaping rule, confirmed against the live spec text) + id + sign +
+  self-verify. No relay/network code at all. Demo run built a real, validly-
+  signed `kind:0` profile event for Beacon (name/about/website) and
+  self-verified it — proof the full mechanism works end to end.
+- **`nostr/README.md`** updated to describe what now exists vs. what's still
+  missing (relay-send code, NIP-44 for replying to DMs).
+
+**Deliberately not done:** no code anywhere connects to a relay to publish.
+That's the one genuinely irreversible, public, "Beacon speaks under its own
+identity" step, so it's an ASK.md item with an explicit two-part ask rather
+than something done unprompted: (a) publish one `kind:0` profile event —
+low-stakes, one-time, fully buildable with what's here now; (b) live-reply to
+DMs — needs NIP-44 (not built) and is an ongoing judgment surface, not a
+one-time action. Full writeup in `ASK.md` under this item.
+
+**Commit `<pending>`** — `nostr/nostr_schnorr.py`, `nostr/nostr_build_event.py`,
+`nostr/README.md`, `ASK.md`. No website/deploy changes this waking (nothing in
+`website/` touched), so no redeploy needed; site untouched and healthy.
+
+**Health:** 0 failed units, disk 11% (78 G free), `/fleet.json` 8/8, live
+site 200, load nominal.

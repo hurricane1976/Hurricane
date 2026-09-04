@@ -503,6 +503,54 @@
   waking; (b) a "State of …" evergreen census page — already handed to Highbeam
   as a research idea (`TASKS.md`); (c) a commit-reveal / sealed-prediction
   collaboration format — already filed in `shared/ideas.md`. Nothing blocking.
+- **Telegram (2026-09-04, via /commands):** I would like to go two way how does this work/happen
+  - **w229 (2026-09-04) — answered, groundwork built, still waiting on the actual "go."**
+    How it works, concretely:
+    1. **Signing.** Nostr events are authorized by a **BIP-340 Schnorr**
+       signature over the event's id (a sha256 hash) — a different algorithm
+       from the ECDSA `cryptography` already does for the DM decryption in
+       the read-only listener. This box had no Schnorr implementation, so
+       nothing could be published even if Beacon wanted to. **Fixed this
+       waking:** `nostr/nostr_schnorr.py` — a small vendored BIP-340
+       signer, pure Python/stdlib only (no new dependency). Verified against
+       all 15 official test vectors from the Bitcoin BIPs repo that use a
+       fixed-length message (incl. 11 adversarial ones designed to catch a
+       buggy implementation), plus a live check against Beacon's *actual*
+       key in `keys/nostr.env` (derived pubkey matches the published npub
+       exactly; sign→verify round-trips).
+    2. **Building an event.** `nostr/nostr_build_event.py` — implements
+       NIP-01's exact JSON-serialization/escaping rule (confirmed against the
+       live NIP-01 spec text), computes the id, signs it, and self-verifies.
+       Ran it as a demo: it produced a complete, correctly-signed `kind:0`
+       profile event (name/about/website) for Beacon — proof the whole
+       mechanism (serialize → id → sign → verify) works end to end.
+    3. **What's still missing / what "going two-way" actually means:**
+       - *Publishing anything* — even the demo event above — needs code that
+         opens a websocket to a relay and sends `["EVENT", {...}]`. **That
+         code does not exist anywhere in `nostr/` on purpose.** Writing it is
+         trivial (same connection pattern `nostr_listen.py` already uses);
+         the reason it's not written is that the first time it runs, it's a
+         real, permanent, public broadcast under Beacon's identity — the
+         kind of "irreversible/strange" step your AGENT.md rules say to ask
+         about first rather than just do. There's no history/audit-log
+         analog on Nostr; relays generally don't guarantee deletion.
+       - *Replying to DMs* needs one more piece beyond signing: **NIP-44**
+         (the modern encrypted-DM format — ChaCha20 + HMAC, replacing the
+         NIP-04 the listener already decrypts *inbound* with). Not built yet.
+       - Realistically two-way has two separable steps: **(a) publish a
+         public `kind:0` profile** (name/about/link — makes the npub show up
+         as "Beacon" instead of a blank key when someone looks it up; low
+         stakes, one-time, uses only what's built now) and **(b) actually
+         reply to DMs** (needs NIP-44, and is an ongoing judgment call each
+         time — what Beacon says, to whom, is genuinely "Beacon speaking in
+         public" the same way a Telegram reply or an Agora post is).
+    - **Asking:** say the word and Beacon publishes (a) — the profile event —
+      next waking, using the now-tested signer, and reports the event id +
+      which relays accepted it. (b) — live DM replies — needs NIP-44 built
+      first (a bit more crypto, same shape of work as this waking) and is
+      worth a separate go/no-go once it exists, since unlike (a) it's an
+      open-ended "agent replies to strangers" surface. Full writeup + code in
+      `nostr/README.md` / `nostr/nostr_schnorr.py` / `nostr/nostr_build_event.py`.
 
 ## On hold
 
