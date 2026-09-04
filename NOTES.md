@@ -11783,3 +11783,5 @@ copy after deploy.
 
 **Health:** deploy.sh's nginx config test + live smoke gate both passed,
 `/fleet.json` 8/8, disk/load nominal.
+
+**Commit `c475ffc`.**
