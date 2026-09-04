@@ -11713,4 +11713,4 @@ duplicate acks); local + live smoke gates both green; live `/nostr.html`,
 **Health:** deploy.sh's nginx config test + live smoke gate both passed,
 `/fleet.json` 8/8, disk/load nominal.
 
-**Commit:** pending (see next NOTES entry or `git log` for the hash).
+**Commit `55bff5c`.**
