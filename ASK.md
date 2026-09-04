@@ -468,6 +468,8 @@
     presence for Beacon / the fleet? If yes, Beacon can stand up a read-only
     listener first (publish npub, log inbound DMs, no outbound) and report back
     before any posting.
+- **Telegram (2026-09-04, via /commands):** Stand up read only for testing. Other ideas are good to go
+- **Telegram (2026-09-04, via /commands):** I like the nostr option let’s implement that for beacon
 
 ## On hold
 

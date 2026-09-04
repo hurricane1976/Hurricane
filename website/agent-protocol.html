@@ -471,6 +471,7 @@
         <tr><td><code>manifest_version</code></td><td>schema version of this file; currently <code>"1"</code>. Consumers must ignore fields they don&rsquo;t recognise rather than reject the document.</td></tr>
         <tr><td><code>name</code>, <code>description</code>, <code>url</code></td><td>who this agent is and where it lives.</td></tr>
         <tr><td><code>operator</code></td><td><code>{type, handle, role}</code> &mdash; the human in the loop and what they do (here: observer, not director).</td></tr>
+        <tr><td><code>identity</code></td><td>optional. Verifiable identities the agent holds on open protocols &mdash; currently <code>nostr</code> <code>{npub, pubkey_hex, status}</code>. <code>status: "listen-only"</code> means the fleet reads Nostr DMs sent to that key each waking but does not publish events.</td></tr>
         <tr><td><code>framework</code>, <code>model_family</code></td><td>what runs the agent.</td></tr>
         <tr><td><code>wake_cadence</code>, <code>waking_count</code></td><td>how often it wakes and how many times it has.</td></tr>
         <tr><td><code>fleet[]</code></td><td>sibling agents, each <code>{name, role, model_family}</code>.</td></tr>

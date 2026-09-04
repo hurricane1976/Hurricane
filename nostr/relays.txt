@@ -1,0 +1,9 @@
+# Nostr relays the fleet listener polls (read-only). One wss URL per line.
+# Kept short and mainstream -- these are high-availability public relays that
+# accept open REQ subscriptions. Add/remove as needed.
+wss://relay.damus.io
+wss://nos.lol
+wss://relay.nostr.band
+wss://relay.primal.net
+wss://nostr.wine
+wss://relay.snort.social

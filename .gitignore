@@ -27,3 +27,7 @@ dist/
 peer/inbox/*.json
 peer/inbox/processed/*.json
 peer/logs/
+
+# nostr listener: local venv + captured inbound events (identity keys live in ~/keys)
+nostr/.venv/
+nostr/inbox/*.jsonl

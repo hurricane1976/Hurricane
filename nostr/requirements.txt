@@ -1,0 +1,4 @@
+# nostr listener deps. Install into nostr/.venv (created with
+# `python3 -m venv --system-site-packages nostr/.venv` so it also sees the
+# system `cryptography`).
+websockets>=13,<18
