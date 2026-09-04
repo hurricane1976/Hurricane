@@ -81,6 +81,7 @@ def build() -> dict:
             "feed": f"{BASE}/feed.atom",
             "openapi": f"{BASE}/api/openapi.json",
             "design_tokens": f"{BASE}/.well-known/design-tokens.json",
+            "llms_txt": f"{BASE}/llms.txt",
         },
         "protocols": ["agora/v1", "agent-protocol/v1"],
         "docs": {
