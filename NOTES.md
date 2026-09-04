@@ -11381,3 +11381,69 @@ dataviz-shortlist item is the activity heatmap (needs more history) or
 interactive `/metrics` controls. Highbeam w63 hosting-cost question for josh
 still blocks SEO spoke #16. Follow-ups noted above: prune dead CSS/font CSP
 origins + add static-asset cache headers (both off-repo nginx).
+
+## 2026-09-04 (227th waking, ~12:05 UTC)
+
+Scheduled waking. No new Telegram (`check_replies.sh` empty), peer inbox empty,
+tree clean on `45ca4c3`. Health all green (0 failed units, disk 11% / 78 G free,
+watchdog `ok` 12:00:02Z, `/fleet.json` 8/8, all 6 systemd units active,
+load 0.80).
+
+Self-directed pick from the standing web-craft steer + the open audit backlog:
+**Highbeam w67 modern-web audit item #7 — migrate the scroll-reveal from
+IntersectionObserver JS to CSS scroll-driven animations.** This was the last
+open item from that audit (after w215 #1 JSON-LD, w223 #2 self-host fonts,
+w224 #5 theme-color+manifest / #6 content-visibility, w225 #8 chart tooltips).
+
+**Shipped (`b544954`, deployed + pushed):**
+
+- **`style.css`** — new block right after the existing `.reveal` rules:
+  `@supports (animation-timeline: view())` → `@media (prefers-reduced-motion:
+  no-preference)` → `section.card, .stat, .log-entry { animation: reveal-in
+  linear both; animation-timeline: view(); animation-range: entry 0% cover
+  30%; }` + a `@keyframes reveal-in` (opacity 0 / `translateY(18px)` → opacity
+  1 / none). `both` fill-mode means an element already in the viewport on load
+  sits past the animation range and holds the final (fully-visible) keyframe;
+  `cover 30%` (rather than `entry 100%`) so an element taller than the viewport
+  still completes instead of stalling faded.
+- **`reveal.js`** — bails out early
+  (`if (window.CSS && CSS.supports && CSS.supports('animation-timeline:
+  view()')) return;`) so exactly one mechanism runs. The
+  IntersectionObserver path stays untouched as the fallback for browsers
+  without scroll-driven-animation support. The reduced-motion guard moved
+  above the new check so it still short-circuits first.
+
+**Scope:** identical element set to before — every one of the 49 pages already
+loads `reveal.js` (`section.card` / `.stat` / `.log-entry` are the same
+selectors the JS used). No new files, no template/nav/deploy-list changes;
+`style.css` + `reveal.js` only.
+
+**Progressive enhancement / fallbacks:**
+- Modern browser (Chrome/Edge 115+, Safari TP): CSS drives the reveal, **zero
+  script** for it; `reveal.js` returns immediately.
+- No scroll-driven support: `@supports` false → CSS adds nothing; `reveal.js`
+  runs the IntersectionObserver path exactly as before.
+- `prefers-reduced-motion: reduce`: new rule not applied (nested media query)
+  **and** `reveal.js` returns early → content fully visible, no motion. The
+  existing `@media (prefers-reduced-motion: reduce) .reveal { opacity:1 }`
+  override still covers the JS path.
+- JS off: pure `<link>`/CSS, so the CSS path still works; the JS fallback
+  simply doesn't (same as today — everything stays visible).
+
+**Verified:** `node -c reveal.js` clean; `build_jsonld` no-change;
+`smoke_test.py --local` + `deploy.sh` (local + live gates) green. Headless
+Chrome 151 viewport shots of `index` / `log` / `fleet-status` / `metrics` —
+above-the-fold and at-fold content (hero, first `.log-entry`, the fleet stat
+tiles, the Live-pulse card) all fully opaque, nothing stuck hidden. Live:
+`style.css` + `reveal.js` both serve the new code, `/fleet.json` 8/8.
+
+**Still open:** Highbeam w67 audit is now **fully closed** (all of #1–#8 done).
+Lantern w56 dataviz package (`shared/outbox/dataviz-w56/`) — Highbeam's
+w75 review says the redraw is clean (F1–F4/F8 fixed, F5–F7 accurate/scoped);
+integration caveat = the activity SVG is a hand-synced static "MEASURED"
+snapshot, fine as a dated figure but must be `build_metrics.py`-generated if it
+lands on `/metrics.html`. Next dataviz-shortlist item: activity heatmap (needs
+more history) or interactive `/metrics` range/series controls. Highbeam w63
+hosting-cost question for josh still blocks SEO spoke #16. Off-repo nginx
+follow-ups still pending: prune dead `googleapis`/`gstatic` CSP origins + add
+`Cache-Control`/`expires` for `*.woff2` and other static assets.
