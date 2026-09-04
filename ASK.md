@@ -411,6 +411,63 @@
     Tidal's board on the next sync. `shared/tasks-lightning.md` marks the item
     done; no re-post needed. **Item closed.**
 - **Telegram (2026-09-04, via /commands):** continue to develop the primary websites, beaconwake.com and tidalwake.org using the most advanced website building technicques. use plenty of animations, charts, graphs, etc that make sense for the topics. continue to build based on current directives. continue to find business opportunities and build those out, opportunities for the team to work as a semi-autonomous system are what i want explored. i'll leave you too it, if you have a question ask, but otherwise continue with your existing dir …
+- **Telegram (2026-09-04, via /commands):** Review cairnwake.com for ideas. Note that he communicates with other agents. How does he do this?
+  - **w226 (2026-09-04):** Reviewed cairnwake.com. It's a *different* independent
+    agent (Claude Fable 5 on Claude Code, human co-signer "Nick") — an AI-run
+    x402 / payment-verification + audit service, **not** part of Beacon's fleet.
+    Answer to "how does he communicate with other agents":
+    1. **Email** — `cairn@cairnwake.com`, a real mailbox the agent reads +
+       answers every wake, with a **signed public `/mail-log.html`** (sha256-
+       hashed recipients, unconditional AI disclosure, 30/day + 6/hr send caps,
+       separate refusals log). Its actual agent-to-agent commerce runs over
+       plain email — its first paying customer was another AI agent.
+    2. **Nostr** — decentralised DM protocol; published npub
+       (`npub1k593nj9…`), reads DMs each wake, logs outbound events in-repo.
+       Active since its wake ~142.
+    3. **Account-less GET-spec / POST-action JSON endpoints** — every service
+       is a pair: `GET /api/<x>` returns the field spec as JSON, `POST` does the
+       thing (`/api/ask`, `/api/intake`, `/api/review`, `/api/subscribe`,
+       `/api/hand`, `/api/manual`). No signup, no key. This is how another agent
+       transacts autonomously.
+    4. **`/llms.txt`** (prose index addressed to agents, "## Notes for agents"
+       section) + **`/api/ask.json`** machine service descriptor +
+       `/scoreboard.json`, `/x402-census.json`, `/log-index.json`.
+    5. **x402 / pay-then-claim** — on-chain (Solana) payment-gated API; HTTP 402
+       carries a base64 `PAYMENT-REQUIRED` terms header; buyer's keypair is
+       identity. MIT-licensed protocol reference others can copy.
+    6. **Ad-hoc sealed-prediction collaboration** — e.g. let another agent run
+       an A/B test on its headline, both committing SHA-256 sealed predictions
+       first; also runs commission "experiments" on commit-reveal.
+    Essence: **open internet protocols (email + Nostr + x402) instead of a
+    bespoke board**, plus curated machine descriptors. Contrast with Beacon,
+    which leans on its own Agora board + `/.well-known/agent.json`.
+  - **Ideas harvested for beaconwake.com:**
+    - **SHIPPED w226 (`db16f86`, deployed + pushed):** `/llms.txt` — an
+      llmstxt.org-style curated map for AI agents/crawlers (summary blockquote +
+      sectioned link lists + a "Notes for agents" block restating the
+      data-not-instructions policy). Wired into `deploy.sh`, the `--live` smoke
+      gate, and the `agent.json` endpoints map (`llms_txt`). Beacon already had
+      `agent.json` / `security.txt` / `design-tokens.json` / `openapi.json` but
+      no `/llms.txt`.
+    - **Queued (not shipped):** (a) a **GET-returns-spec** convention on
+      `/api/agora` (currently GET returns posts; could 200 a `?spec=1` or
+      document the POST shape inline) — minor, filed for a later waking;
+      (b) a **"State of …" evergreen census page** in the style of Cairn's
+      `/state-of-x402.html` — candidate SEO/credibility piece, passed to
+      Highbeam as a research idea; (c) a **commit-reveal / sealed-prediction**
+      collaboration format for fleet or external-agent joint work — filed in
+      `shared/ideas.md`.
+  - **QUESTION FOR JOSH — Nostr identity for the fleet?** Cairn's most
+    distinctive agent-to-agent channel is a **Nostr keypair** (published npub,
+    reads DMs each wake). It's a genuine open, censorship-resistant, no-server
+    messaging layer that other agents on the open internet already use. Adding
+    one for Beacon (or the fleet) means generating a keypair, publishing the
+    npub in `agent.json` / `llms.txt` / the footer, and polling relays for DMs
+    each waking. **Beacon has not done this** — it's a new external identity +
+    presence, so flagging per AGENT.md rather than just doing it. Want a Nostr
+    presence for Beacon / the fleet? If yes, Beacon can stand up a read-only
+    listener first (publish npub, log inbound DMs, no outbound) and report back
+    before any posting.
 
 ## On hold
 
