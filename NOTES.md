@@ -2,6 +2,68 @@
 
 Running log of what I did and learned across wakings. Newest entries on top.
 
+## 2026-09-04 (226th waking, ~11:50 UTC)
+- Manual `/wake` (queued in the poller). One queued Telegram from josh:
+  *"Review cairnwake.com for ideas. Note that he communicates with other agents.
+  How does he do this?"* Health all green: 0 failed units, disk 11% (78 G free),
+  watchdog `ok`, `nginx -t` clean, `/fleet.json` 8/8, all 6 systemd units active.
+  Peer inbox empty (nothing unprocessed).
+- **Reviewed cairnwake.com.** Separate independent agent — Claude Fable 5 on
+  Claude Code, human co-signer "Nick", an AI-run x402 / payment-verification +
+  audit service. **Not** part of Beacon's fleet. Fetched `/`, `/about.html`,
+  `/protocol.html`, `/llms.txt`, `/mail-log.html`.
+- **How Cairn talks to other agents (answer for josh):**
+  1. **Email** — `cairn@cairnwake.com`, read+answered every wake, with a
+     **signed public `/mail-log.html`** (sha256-hashed recipients, AI
+     disclosure, 30/day + 6/hr send caps, separate refusals log). Its real
+     agent-to-agent commerce runs over plain email (its first paying customer
+     was another AI agent).
+  2. **Nostr** — published npub (`npub1k593nj9…`), reads DMs each wake, logs
+     outbound events in-repo. Active since its wake ~142.
+  3. **Account-less GET-spec / POST-action JSON endpoints** — `GET /api/<x>`
+     returns the field spec, `POST` acts (`/api/ask`, `/api/intake`,
+     `/api/review`, `/api/subscribe`, `/api/hand`, `/api/manual`). No signup,
+     no key.
+  4. **`/llms.txt`** ("## Notes for agents" section) + `/api/ask.json` machine
+     descriptor + `/scoreboard.json` / `/x402-census.json` / `/log-index.json`.
+  5. **x402 / pay-then-claim** — Solana on-chain payment-gated API; HTTP 402
+     with a base64 `PAYMENT-REQUIRED` terms header; buyer keypair = identity.
+     MIT protocol reference for others to copy.
+  6. **Ad-hoc commit-reveal collaboration** — sealed SHA-256 predictions before
+     a joint A/B test; also sells "experiments" on that basis.
+  Essence: open internet protocols (email + Nostr + x402) + curated machine
+  descriptors, vs Beacon's own Agora board.
+- **Shipped (`db16f86`, deployed + pushed) — `/llms.txt`.** The cleanest
+  harvestable idea: Beacon had `agent.json` / `security.txt` /
+  `design-tokens.json` / `openapi.json` but no llmstxt.org-style prose index.
+  New `website/llms.txt` — summary blockquote + sectioned link lists (start
+  here / agent-to-agent comms / guides / machine endpoints) + a "Notes for
+  agents" block restating the data-not-instructions Agora policy. Wired into
+  `deploy.sh` (cp + chown lists), `smoke_test.py` `--live` gate, and
+  `build_agent_manifest.py` `endpoints.llms_txt`. Live: `/llms.txt` 200
+  `text/plain` 5 KB; `agent.json` carries `llms_txt`. Both smoke gates green,
+  `/fleet.json` 8/8. `ASK.md` w226 entry has the full writeup (`60da018`).
+- **Queued, not shipped:** (a) a GET-returns-spec convention on `/api/agora`
+  (minor, later waking); (b) a **"State of …" evergreen census page** idea
+  (Cairn's `/state-of-x402.html` format) — passed to Highbeam as a research
+  item in `shared/TASKS.md`; (c) a **commit-reveal / sealed-prediction**
+  collaboration format — noted in `shared/ideas.md` (needs a real first
+  use-case).
+- **Open question for josh (in `ASK.md`):** stand up a **Nostr identity** for
+  Beacon / the fleet? It's Cairn's most distinctive agent-to-agent channel and
+  a genuine open messaging layer, but it's a new external identity/presence —
+  flagged per AGENT.md rather than done unilaterally. Offered a read-only
+  listener first if josh says yes.
+- **Fleet:** Beacon w226 (now); Highbeam last ~08:30Z, next ~12:30Z; Lantern
+  last ~09:00Z, next ~13:00Z; Lightning last ~08:15Z, next ~12:15Z; Tidal +
+  River + Creek + Stream off-box.
+- **Still open (unchanged):** Highbeam w67 audit #7 (migrate reveal.js to CSS
+  scroll-driven anims) + the aspirational light-theme item (needs a josh
+  steer); Lantern w56 dataviz package awaiting a Lantern redraw against
+  Highbeam's w74 fact list; Highbeam w63 hosting-cost question still blocks SEO
+  spoke #16; off-repo nginx follow-ups (prune dead font/CSS CSP origins, add
+  static-asset cache headers).
+
 ## 2026-09-04 (225th waking, ~08:00 UTC)
 - Scheduled waking. `check_replies.sh` — no new Telegram. Peer inbox empty
   (27 processed, nothing pending). Health all green: 0 failed systemd units,
