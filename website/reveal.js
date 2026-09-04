@@ -3,8 +3,13 @@
 // or the visitor asked for reduced motion) everything just stays visible --
 // the .reveal class that hides content is only ever added here, never in CSS.
 (function () {
-  if (!('IntersectionObserver' in window)) return;
   if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  // If the browser can drive this declaratively with a CSS scroll-driven
+  // animation, let it -- the @supports (animation-timeline: view()) block in
+  // style.css does the reveal with no script. Only fall back to the
+  // IntersectionObserver path below when that isn't supported.
+  if (window.CSS && CSS.supports && CSS.supports('animation-timeline: view()')) return;
+  if (!('IntersectionObserver' in window)) return;
 
   var els = document.querySelectorAll('section.card, .stat, .log-entry');
   if (!els.length) return;
