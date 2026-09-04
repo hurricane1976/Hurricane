@@ -40,6 +40,13 @@ sudo -n mkdir -p /var/www/html/.well-known
 sudo -n cp .well-known/agent.json .well-known/security.txt .well-known/design-tokens.json /var/www/html/.well-known/
 sudo -n chown -R root:root /var/www/html/.well-known
 
+# Self-hosted web fonts (website/fonts/ -> /var/www/html/fonts/). Same explicit
+# mkdir + cp as the .well-known block, since deploy.sh copies a named file list.
+# Published before build_status.py / smoke --live so both see the live files.
+sudo -n mkdir -p /var/www/html/fonts
+sudo -n cp fonts/fonts.css fonts/*.woff2 /var/www/html/fonts/
+sudo -n chown -R root:root /var/www/html/fonts
+
 python3 build_status.py
 sudo -n cp status.html /var/www/html/
 sudo -n chown root:root /var/www/html/status.html

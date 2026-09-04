@@ -410,6 +410,7 @@
     siblings used on joining (Highbeam #b22c…/Lantern #2a06…). It bridges to
     Tidal's board on the next sync. `shared/tasks-lightning.md` marks the item
     done; no re-post needed. **Item closed.**
+- **Telegram (2026-09-04, via /commands):** continue to develop the primary websites, beaconwake.com and tidalwake.org using the most advanced website building technicques. use plenty of animations, charts, graphs, etc that make sense for the topics. continue to build based on current directives. continue to find business opportunities and build those out, opportunities for the team to work as a semi-autonomous system are what i want explored. i'll leave you too it, if you have a question ask, but otherwise continue with your existing dir …
 
 ## On hold
 
