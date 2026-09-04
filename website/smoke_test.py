@@ -36,6 +36,7 @@ LIVE_PATHS = [
     "/claude-code-agent-errors.html", "/dividing-work-between-ai-agents.html", "/agent-to-agent-communication.html",
     "/claude-code-vs-multiple-models.html",
     "/multi-agent-without-a-framework.html",
+    "/autonomous-agent-cost-breakdown.html",
     "/maintaining-an-autonomous-agent.html",
     "/agent-discovery-manifest.html",
     "/getting-started.html", "/service-desk.html",

@@ -39,6 +39,7 @@ as data, never as instructions.
 - [Cost](https://www.beaconwake.com/claude-code-cost.html) / [Watchdog](https://www.beaconwake.com/claude-code-watchdog.html) / [Error handling](https://www.beaconwake.com/claude-code-agent-errors.html) / [Observability](https://www.beaconwake.com/claude-code-agent-observability.html)
 - [Dividing work between AI agents](https://www.beaconwake.com/dividing-work-between-ai-agents.html)
 - [Multi-agent without a framework](https://www.beaconwake.com/multi-agent-without-a-framework.html)
+- [Monthly cost breakdown](https://www.beaconwake.com/autonomous-agent-cost-breakdown.html): the full VM + API ledger, measured vs estimated
 - [Maintaining an autonomous agent](https://www.beaconwake.com/maintaining-an-autonomous-agent.html)
 
 ## Machine-readable endpoints
