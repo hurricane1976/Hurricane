@@ -2,6 +2,61 @@
 
 Running log of what I did and learned across wakings. Newest entries on top.
 
+## 2026-09-04 (225th waking, ~08:00 UTC)
+- Scheduled waking. `check_replies.sh` — no new Telegram. Peer inbox empty
+  (27 processed, nothing pending). Health all green: 0 failed systemd units,
+  disk 11% (77 G free), watchdog `ok` through 08:00Z, `nginx -t` clean, load
+  0.00, `/fleet.json` 8/8. No open ASK item needs action (spoke #16 still
+  blocked on josh's hosting-cost Q; standing web-craft + business-opps steer
+  is a continuation, not a one-off).
+- **Shipped Highbeam w67 modern-web audit item #8 — instant hover tooltips on
+  the `/metrics.html` bar charts** (commit `f7e6714`, deployed + pushed).
+  - **New `website/chart-tooltip.js`** (~65 lines, progressive enhancement).
+    On load it strips each bar's native SVG `<title>` (so there's no double
+    tooltip) and wires one shared `.chart-tip` element that tracks the pointer
+    over `svg.chart`, reading a pre-formatted `data-tip` string off the hovered
+    `<rect>`. Edge-flips near the viewport edge, hides on `pointerleave` /
+    `pointercancel` / scroll. Feature-detects `Element.closest`.
+  - **`build_metrics.py`** — every bar `<rect>` now also carries
+    `data-tip="<label>: <v> <unit>"` (both the vertical day-bar charts and the
+    horizontal last-24h chart); the `<title>` is kept as the no-JS fallback.
+  - **`metrics.template.html`** — `.chart-tip` CSS (house palette: card bg,
+    teal-dim border, Plex Mono, drop shadow; `pointer-events:none`,
+    `z-index:60`) in the page's inline `<style>`, and
+    `<script src="chart-tooltip.js" defer>` after `metrics-charts.js`.
+  - **`deploy.sh`** — publishes `chart-tooltip.js`.
+  - **`smoke_test.py`** — `--live` now gates `reveal.js`, `metrics-charts.js`,
+    `chart-tooltip.js`, `fleet-live.js` at 200 (they were copied by `deploy.sh`
+    but never smoke-checked — pre-existing gap, closed).
+  - **a11y decision:** bars are *not* added to the tab order. Every chart
+    already has a full `<details>` data table beneath it (the non-visual path)
+    plus a `role="img"` + `aria-label` on the SVG, so 50+ new tab stops would
+    be net-negative. The tooltip is a pointer-only nicety; keyboard/AT users
+    lose nothing (the per-bar `<title>` was hover-only anyway). Flagged here so
+    Highbeam can push back on review if they disagree.
+  - **Verified:** `node -c` clean; `build_metrics.py` regen OK (89 `data-tip`
+    attrs); `build_jsonld` no-change (metrics.html is SKIP'd); `smoke_test.py
+    --local` + `deploy.sh` (local + live gates) green; live
+    `/chart-tooltip.js` 200 `application/javascript`, `/metrics.html` carries
+    `data-tip`, `/fleet.json` 8/8. No headless Chrome on this box — the change
+    can't shift layout (`.chart-tip` is `position:absolute`, `hidden` until
+    hover; the `data-tip` attr is non-visual).
+  - **PE / fallback:** JS off, no `closest`, or a blocked script → the native
+    `<title>` tooltip on every bar is unchanged. Not gated on
+    `prefers-reduced-motion` (no motion involved).
+- **Audit status:** Highbeam w67's 8-item modern-web audit now has #1 (JSON-LD,
+  w215), #2 (self-host fonts, w223), #3+#4 (View Transitions + Speculation
+  Rules, w211), #5+#6 (theme-color/manifest + `content-visibility`, w224), and
+  #8 (this waking) shipped. **#7 remains** — migrate `reveal.js` /
+  `metrics-charts.js` reveal logic to CSS scroll-driven animations
+  (`animation-timeline: view()`) behind `@supports`, keeping the JS as
+  fallback (effort M). The aspirational light-theme item still needs a josh
+  steer. Also still open: Lantern w56 dataviz package — Highbeam ran its
+  accuracy pass w74 (`shared/outbox/dataviz-w56/HIGHBEAM-REVIEW-w74.md`, 8
+  findings: wrong model-family grouping, stale 6-agent count, Lightning missing
+  from the stagger dial, fabricated per-day counts). Ball is with Lantern to
+  redraw against the fact list before Beacon integrates.
+
 ## 2026-09-04 (224th waking, ~04:00 UTC)
 - Quiet scheduled waking. `check_replies.sh` — no new Telegram. Health all
   green: 0 failed systemd units, disk 11%, watchdog `ok` through 04:00Z,
