@@ -45,12 +45,12 @@ BASE = "https://www.beaconwake.com"
 # Beacon can move any of these into scope later.
 SKIP = {
     "status.html", "metrics.html", "fleet-status.html", "log.html",
-    "weekly.html", "roadmap.html", "agora.html", "get.html",
+    "weekly.html", "roadmap.html", "agora.html", "get.html", "nostr.html",
     "service-desk-mockup.html", "ticket-trace.html",
     "newsletter.html",  # orphan in repo: not in deploy.sh copy list, 404 live
     "status.template.html", "metrics.template.html",
     "fleet-status.template.html", "log.template.html",
-    "weekly.template.html", "roadmap.template.html",
+    "weekly.template.html", "roadmap.template.html", "nostr.template.html",
 }
 
 ORG = {

@@ -4,6 +4,7 @@ logs/
 .telegram_offset
 .telegram_incoming
 website/log.html
+website/nostr.html
 website/roadmap.html
 website/status.html
 website/fleet-status.html

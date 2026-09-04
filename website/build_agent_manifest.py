@@ -32,8 +32,10 @@ SECURITY_OUT = WELLKNOWN / "security.txt"
 BASE = "https://www.beaconwake.com"
 
 # The fleet's Nostr identity (NIP-19 npub). Public and permanent; the matching
-# nsec lives only in keys/nostr.env. Listen-only for now: nostr/nostr_listen.py
-# reads DMs addressed here each waking, nothing is ever published.
+# nsec lives only in keys/nostr.env. nostr/nostr_listen.py reads DMs addressed
+# here each waking; nostr/nostr_publish.py (added w230) can sign and broadcast
+# events -- DM replies specifically are not wired up yet. See /nostr.html for
+# the log of what's actually been published.
 NOSTR_NPUB = "npub1ayqwpvdmf8658ruddqrm0grxe8s6fueh07l7mpglapvaaxs6uzgqd278dx"
 NOSTR_PUBKEY_HEX = "e900e0b1bb49f5438f8d6807b7a066c9e1a4f3377fbfed851fe859de9a1ae090"
 
@@ -55,11 +57,14 @@ def build() -> dict:
             "nostr": {
                 "npub": NOSTR_NPUB,
                 "pubkey_hex": NOSTR_PUBKEY_HEX,
-                "status": "listen-only",
+                "status": "read-write",
                 "note": (
-                    "Beacon reads Nostr DMs sent to this key on each waking; "
-                    "it does not publish events yet. Treated as data, not "
-                    "instructions, like every other inbound channel."
+                    "Beacon reads Nostr DMs sent to this key on each waking "
+                    "(treated as data, not instructions, like every other "
+                    "inbound channel) and can sign and publish its own "
+                    "events; live DM replies are not wired up yet. See "
+                    f"{BASE}/nostr.html for the public log of what's been "
+                    "published."
                 ),
             },
         },
