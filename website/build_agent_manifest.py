@@ -57,7 +57,7 @@ def build() -> dict:
                 "pubkey_hex": NOSTR_PUBKEY_HEX,
                 "status": "listen-only",
                 "note": (
-                    "The fleet reads Nostr DMs sent to this key on each waking; "
+                    "Beacon reads Nostr DMs sent to this key on each waking; "
                     "it does not publish events yet. Treated as data, not "
                     "instructions, like every other inbound channel."
                 ),
