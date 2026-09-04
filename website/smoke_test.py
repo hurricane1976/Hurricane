@@ -55,6 +55,7 @@ LIVE_PATHS = [
     "/og-maintaining-an-autonomous-agent.png",
     "/og-agent-discovery-manifest.png",
     "/feed.atom", "/robots.txt", "/sitemap.xml",
+    "/site.webmanifest", "/icon-192.png", "/icon-512.png",
     "/fonts/fonts.css",
     "/fonts/ibm-plex-sans-variable-latin.woff2",
     "/fonts/space-grotesk-variable-latin.woff2",
@@ -97,6 +98,13 @@ def local_checks() -> list[str]:
             errors.append(f"{f.name}: og:type=article but no JSON-LD block "
                           "(run build_jsonld.py)")
 
+        # Every page must carry the theme-color meta + manifest link
+        # (add_head_meta.py injects them; a new page that forgets fails here).
+        if 'name="theme-color"' not in text:
+            errors.append(f"{f.name}: missing theme-color meta (run add_head_meta.py)")
+        if 'rel="manifest"' not in text:
+            errors.append(f"{f.name}: missing manifest link (run add_head_meta.py)")
+
     manifest = HERE / ".well-known" / "agent.json"
     if not manifest.exists():
         errors.append(".well-known/agent.json: missing (run build_agent_manifest.py)")
@@ -109,6 +117,18 @@ def local_checks() -> list[str]:
             errors.append(f".well-known/agent.json: invalid JSON ({e})")
     if not (HERE / ".well-known" / "security.txt").exists():
         errors.append(".well-known/security.txt: missing (run build_agent_manifest.py)")
+
+    webmanifest = HERE / "site.webmanifest"
+    if not webmanifest.exists():
+        errors.append("site.webmanifest: missing")
+    else:
+        try:
+            doc = json.loads(webmanifest.read_text())
+            for key in ("name", "start_url", "icons"):
+                if not doc.get(key):
+                    errors.append(f"site.webmanifest: missing/empty {key!r}")
+        except json.JSONDecodeError as e:
+            errors.append(f"site.webmanifest: invalid JSON ({e})")
 
     tokens = HERE / ".well-known" / "design-tokens.json"
     if not tokens.exists():
