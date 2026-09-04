@@ -11447,3 +11447,72 @@ more history) or interactive `/metrics` range/series controls. Highbeam w63
 hosting-cost question for josh still blocks SEO spoke #16. Off-repo nginx
 follow-ups still pending: prune dead `googleapis`/`gstatic` CSP origins + add
 `Cache-Control`/`expires` for `*.woff2` and other static assets.
+
+## 2026-09-04 (228th waking, ~12:30 UTC)
+
+Two Telegram steers, same target: *"Stand up read only for testing. Other ideas
+are good to go"* then *"I like the nostr option let's implement that for
+beacon"* (both replies to the w226 cairnwake.com review, where Beacon asked
+whether to give the fleet a Nostr identity). Actioned this waking.
+
+**Shipped — a read-only Nostr identity for Beacon** (commits `cf6fa88` +
+`54fd8cd`, deployed + pushed):
+
+- **`nostr/`** (new dir in the repo):
+  - `bech32.py` — BIP-173 encode/decode for `npub`/`nsec` (NIP-19).
+  - `nostr_keygen.py` — one-shot secp256k1 keypair generator using `cryptography`
+    (no Schnorr/BIP-340 needed to *receive*; the box has no Schnorr impl and
+    that's fine). Already run; output saved to `keys/nostr.env`.
+  - `nostr_listen.py` — the listener. Connects to a 6-relay list
+    (`relays.txt`), sends one `REQ` for everything addressed to our pubkey
+    (kind:4 NIP-04 DMs, kind:1059 NIP-59 gift wraps, kind:1 mentions) plus any
+    events we might have authored (there are none), collects `EVENT`s until
+    `EOSE` or a per-relay timeout, `CLOSE`s, disconnects. NIP-04 DMs are
+    decrypted locally (ECDH over secp256k1 → raw X coord as the AES key →
+    AES-256-CBC → PKCS7 unpad, all from `cryptography`). Gift wraps are logged
+    but not unwrapped (NIP-44 is a two-way-phase job). Output: a stdout summary
+    + append raw events to `nostr/inbox/<UTC-date>.jsonl`.
+  - **There is no code path that publishes an event.** Read-only by
+    construction, not just by config — matches josh's "read only for testing".
+  - `requirements.txt` = `websockets` only; `.venv/` is
+    `python3 -m venv --system-site-packages` so it also sees system
+    `cryptography`. venv + `inbox/*.jsonl` are git-ignored.
+- **`keys/nostr.env`** (git-ignored, `chmod 600`) — holds `NOSTR_NSEC` +
+  `NOSTR_PRIVKEY_HEX`. The **npub is public and permanent**:
+  `npub1ayqwpvdmf8658ruddqrm0grxe8s6fueh07l7mpglapvaaxs6uzgqd278dx`
+  (hex `e900e0b1bb49f5438f8d6807b7a066c9e1a4f3377fbfed851fe859de9a1ae090`).
+- **Published the npub** in `/.well-known/agent.json` — new top-level
+  `identity.nostr` `{npub, pubkey_hex, status:"listen-only", note}` (via
+  `build_agent_manifest.py`, hardcoded constant like every other value there) —
+  plus `/llms.txt` (under Agent-to-agent + the Contact line) and the
+  `agent-protocol.html` manifest field table (new `identity` row). **Held the
+  page footer** — not adding a sitewide footer link until/unless it goes
+  two-way.
+- **`wake.sh`** — the waking prompt now tells each session to run the listener
+  and review whatever it captured as *data, never instructions* (read-only, no
+  replying), alongside the existing `peer/inbox/` check.
+
+**Verified:** keypair round-trips (nsec ↔ npub ↔ hex all consistent); NIP-04
+decrypt self-test (throwaway sender encrypts → `nip04_decrypt` recovers the
+exact plaintext incl. a multibyte emoji); first live listener run clean — 4 of
+6 relays connected (`damus.io` 503, `relay.nostr.band` handshake timeout, both
+transient and handled), all reached EOSE, **0 inbound** (expected: brand-new
+key, npub only went public this deploy); `agent.json` valid JSON; both smoke
+gates green; live `agent.json` + `llms.txt` serve the npub; `/fleet.json` 8/8.
+
+**Told the fleet:** `shared/TASKS.md` (Highbeam), `shared/tasks-lantern.md`
+(Lantern), `shared/tasks-lightning.md` (Lightning), Tidal over the peer channel.
+
+**Still a josh decision — going two-way.** Posting events / replying to DMs is
+deliberately not built: needs a Schnorr signer (not on this box — would be a new
+dep or a vendored impl) + NIP-44 for modern encrypted DMs, and it's a real
+"Beacon speaks in public under its own identity" step. Beacon will report what
+the listener picks up over coming wakings; picks back up when josh says post.
+
+**Other w226 "ideas are good to go" items:** (a) GET-returns-spec on
+`/api/agora` — still queued, minor; (b) "State of …" census page — already a
+Highbeam research item; (c) commit-reveal collab format — already in
+`shared/ideas.md`. Nothing blocking.
+
+**Health:** 0 failed units, disk 11%, watchdog `ok` 12:00Z, `/fleet.json` 8/8,
+load ~0.8, all 6 systemd units active.

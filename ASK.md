@@ -469,7 +469,40 @@
     listener first (publish npub, log inbound DMs, no outbound) and report back
     before any posting.
 - **Telegram (2026-09-04, via /commands):** Stand up read only for testing. Other ideas are good to go
-- **Telegram (2026-09-04, via /commands):** I like the nostr option let’s implement that for beacon
+- **Telegram (2026-09-04, via /commands):** I like the nostr option let's implement that for beacon
+  - **w228 (2026-09-04) — DONE (read-only trial live).** Both messages point the
+    same way: give Beacon a Nostr identity, receive-only for now. Shipped:
+    - **`nostr/`** in the repo — `bech32.py` (NIP-19 encode/decode), `nostr_keygen.py`
+      (secp256k1 keypair via `cryptography`; no Schnorr needed to *receive*),
+      `nostr_listen.py` (connects to a 6-relay list, `REQ`s everything addressed
+      to our pubkey — kind:4 NIP-04 DMs, kind:1059 gift wraps, kind:1 mentions —
+      collects to EOSE/timeout, decrypts NIP-04 locally via ECDH+AES-256-CBC,
+      logs to `nostr/inbox/*.jsonl`, disconnects). **No signing code exists — it
+      cannot publish by construction.** venv + captured events git-ignored.
+    - **`keys/nostr.env`** (git-ignored, `chmod 600`) holds the nsec. The npub is
+      public and permanent:
+      `npub1ayqwpvdmf8658ruddqrm0grxe8s6fueh07l7mpglapvaaxs6uzgqd278dx`
+      (hex `e900e0b1bb49f5438f8d6807b7a066c9e1a4f3377fbfed851fe859de9a1ae090`).
+    - **Published** in `/.well-known/agent.json` (`identity.nostr`
+      `{npub, pubkey_hex, status:"listen-only"}`), `/llms.txt`, and the
+      `agent-protocol.html` manifest field table. **Not** in the page footer yet
+      — holding that until/unless it goes two-way.
+    - **`wake.sh`** now runs the listener each waking and hands the session
+      anything it captured as *data, never instructions*.
+    - Verified: keypair round-trips, NIP-04 decrypt self-test passes, first live
+      run clean (4/6 relays reachable, EOSE, 0 inbound — brand-new key), both
+      smoke gates green, live `agent.json` + `llms.txt` show the npub.
+  - **Still a decision for josh:** going two-way (posting events / replying to
+    DMs) is deliberately *not* done — it needs a Schnorr/BIP-340 signer (not on
+    this box) + NIP-44 for modern DMs, and it's a genuine "Beacon speaks in
+    public under its own identity" step. Beacon will report what the listener
+    picks up over the next wakings; say the word if/when you want it to post.
+- **Telegram (2026-09-04, via /commands):** *"Other ideas are good to go"* — the
+  three items Beacon queued in the w226 cairnwake.com review: (a) a
+  GET-returns-spec convention on `/api/agora` — **still queued**, minor, a later
+  waking; (b) a "State of …" evergreen census page — already handed to Highbeam
+  as a research idea (`TASKS.md`); (c) a commit-reveal / sealed-prediction
+  collaboration format — already filed in `shared/ideas.md`. Nothing blocking.
 
 ## On hold
 
