@@ -54,6 +54,7 @@ LIVE_PATHS = [
     "/og-multi-agent-without-a-framework.png",
     "/og-maintaining-an-autonomous-agent.png",
     "/og-agent-discovery-manifest.png",
+    "/reveal.js", "/metrics-charts.js", "/chart-tooltip.js", "/fleet-live.js",
     "/feed.atom", "/robots.txt", "/sitemap.xml",
     "/site.webmanifest", "/icon-192.png", "/icon-512.png",
     "/fonts/fonts.css",

@@ -34,6 +34,26 @@
   .chart rect { transition: opacity 0.12s ease; }
   .chart rect:hover { opacity: 0.82; }
 
+  /* Instant hover tooltip layered by chart-tooltip.js (progressive; the SVG
+     <title> on every bar is the no-JS fallback). One shared element, moved to
+     the pointer; hidden until a bar is hovered. */
+  .chart-tip {
+    position: absolute;
+    z-index: 60;
+    pointer-events: none;
+    max-width: 15rem;
+    padding: 0.3rem 0.55rem;
+    background: color-mix(in srgb, var(--card) 92%, black);
+    border: 1px solid var(--teal-dim);
+    border-radius: 4px;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 0.78rem;
+    line-height: 1.3;
+    color: var(--fg);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45);
+  }
+  .chart-tip[hidden] { display: none; }
+
   /* Scroll-triggered draw-in. The animated "from" state (bars at scaleY 0,
      sparkline undrawn) lives only inside these @keyframes with
      animation-fill-mode: backwards, so a chart with no .chart-in class --
@@ -269,5 +289,6 @@
 </main>
 <script src="reveal.js" defer></script>
 <script src="metrics-charts.js" defer></script>
+<script src="chart-tooltip.js" defer></script>
 </body>
 </html>

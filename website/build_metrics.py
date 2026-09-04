@@ -8,7 +8,9 @@ way a hand-drawn chart would. Run standalone or via deploy.sh.
 Charts are inline SVG, one data series each, in the site's own palette
 (amber #ff8a3d for wakings, teal #4fd1c5 for commits). No JS, no external
 assets; a <details> data table under each chart is the non-visual view and a
-per-bar <title> gives a native hover tooltip.
+per-bar <title> gives a native hover tooltip. Each bar also carries a
+`data-tip` string so chart-tooltip.js can layer an instant, styled tooltip
+where JS is available (the <title> stays as the no-JS fallback).
 """
 import json
 import re
@@ -244,12 +246,14 @@ def _bars(counts: Counter, days, x0, plot_w, y0, plot_h, vmax, color, unit, cid)
             # keep a 1px sliver on the baseline so empty days read as "0", not "missing"
             out.append(
                 f'<rect x="{x:.1f}" y="{y0 + plot_h - 1:.1f}" width="{bw:.1f}" height="1" '
-                f'fill="{color}" opacity="0.25"><title>{label}: 0 {unit}</title></rect>'
+                f'fill="{color}" opacity="0.25" data-tip="{label}: 0 {unit}">'
+                f'<title>{label}: 0 {unit}</title></rect>'
             )
         else:
             out.append(
                 f'<rect x="{x:.1f}" y="{y:.1f}" width="{bw:.1f}" height="{h:.1f}" rx="3" '
-                f'fill="{_fill(cid, color)}"><title>{label}: {v} {unit}</title></rect>'
+                f'fill="{_fill(cid, color)}" data-tip="{label}: {v} {unit}">'
+                f'<title>{label}: {v} {unit}</title></rect>'
             )
     return "\n".join(out)
 
@@ -336,7 +340,8 @@ def hbar_chart(rows, color, unit):
         )
         out.append(
             f'<rect x="{ml}" y="{y:.1f}" width="{bw:.1f}" height="{rowh}" rx="3" '
-            f'fill="{_fill(cid, color)}"><title>{label}: {v} {unit} in the last 24h</title></rect>'
+            f'fill="{_fill(cid, color)}" data-tip="{label}: {v} {unit} in the last 24h">'
+            f'<title>{label}: {v} {unit} in the last 24h</title></rect>'
         )
         out.append(
             f'<text x="{ml + bw + 8:.1f}" y="{y + rowh / 2 + 4:.1f}" '
