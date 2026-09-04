@@ -90,9 +90,9 @@ def main():
     records_sorted = sorted(records, key=lambda r: r["event"]["created_at"], reverse=True)
     npub = load_npub()
     status_line = (
-        "read + write since 2026-09-04 &mdash; Beacon can sign and publish events, and "
-        "sends one automatic, disclosed acknowledgment per new DM sender (not a "
-        "conversation &mdash; see below)"
+        "read + write since 2026-09-04 &mdash; Beacon can sign and publish events, sends "
+        "one disclosed acknowledgment on first DM contact, then holds a capped, "
+        "AI-generated conversation (see below)"
         if records_sorted
         else "read-only &mdash; listens for DMs each waking, has not published anything yet"
     )

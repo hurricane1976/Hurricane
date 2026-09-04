@@ -20,9 +20,12 @@ a general chatbot:
     (kind:4) gets a NIP-04 reply, NIP-17 gift-wrapped (kind:1059) DMs get a
     NIP-17 reply (via nostr_nip59.wrap_dm, addressed to both the sender and a
     self-copy) -- so it actually surfaces in whatever client the sender used.
-  - Full, open-ended conversational replies are still NOT built. That remains
-    the separate, ongoing judgment call flagged in ASK.md; this only proves
-    the plumbing and gives a safe, bounded "yes, this works" signal.
+  - This script only ever sends the fixed first-contact disclosure. Every
+    later message from an already-disclosed sender gets a real, AI-generated
+    reply from `nostr_converse.py` (built w232, after josh's explicit
+    "i would like to see full conversational replies") -- bounded per-sender
+    daily/lifetime caps, a locked-down system prompt, and no tool access for
+    the generation call. See that file for the conversational half.
 
 Reads `nostr/inbox/*.jsonl` (written by `nostr_listen.py`, which now decrypts
 NIP-04 and unwraps NIP-17 gift wraps), skips anything already acknowledged
@@ -55,11 +58,12 @@ INBOX_GLOB = os.path.join(HERE, "inbox", "*.jsonl")
 REPLIED_LOG = os.path.join(HERE, "replied.jsonl")  # git-ignored: DM metadata, not public
 
 ACK_TEXT = (
-    "This is an automatic reply from Beacon, an autonomous Claude Code agent "
-    "(not a human) running for josh at https://www.beaconwake.com/. Your "
-    "message reached Beacon -- this confirms the reply path works. Beacon "
-    "does not yet hold open-ended conversations; see /nostr.html for what "
-    "it has published, or use the site's contact info to reach josh directly."
+    "This is an automatic first reply from Beacon, an autonomous Claude Code "
+    "agent (not a human) running for josh at https://www.beaconwake.com/. "
+    "Your message reached Beacon. Anything you send after this gets a real, "
+    "AI-generated reply (not written live by josh, and capped per day to "
+    "avoid runaway exchanges) -- see /nostr.html for what Beacon has "
+    "published, or use the site's contact info to reach josh directly."
 )
 
 
@@ -129,26 +133,37 @@ def find_pending(our_pubkey_hex, already_replied):
                     yield sender, "nip17", ev
 
 
-def send_nip04_ack(priv, priv_int, our_pubkey_hex, recipient_pub_hex, dry_run):
-    content = nip04_encrypt(priv, recipient_pub_hex, ACK_TEXT)
+def send_nip04_text(priv, priv_int, our_pubkey_hex, recipient_pub_hex, text, dry_run, label="reply"):
+    """Generalized NIP-04 send, reused by nostr_converse.py for generated
+    replies (not just the fixed ack)."""
+    content = nip04_encrypt(priv, recipient_pub_hex, text)
     event = builder.build_event(priv_int, our_pubkey_hex, kind=4, content=content,
                                  tags=[["p", recipient_pub_hex]])
     if dry_run:
-        print(f"  [dry-run] would send NIP-04 ack event {event['id']} to {recipient_pub_hex[:12]}…")
+        print(f"  [dry-run] would send NIP-04 {label} event {event['id']} to {recipient_pub_hex[:12]}…")
         return None
     return publish.publish_event(event, log=False)
 
 
-def send_nip17_ack(priv_int, our_pubkey_hex, recipient_pub_hex, reply_to_id, dry_run):
+def send_nip17_text(priv_int, our_pubkey_hex, recipient_pub_hex, text, reply_to_id, dry_run, label="reply"):
+    """Generalized NIP-17 gift-wrapped send, reused by nostr_converse.py."""
     wrap_for_recipient, wrap_for_self, rumor = nip59.wrap_dm(
-        priv_int, our_pubkey_hex, recipient_pub_hex, ACK_TEXT, reply_to_event_id=reply_to_id
+        priv_int, our_pubkey_hex, recipient_pub_hex, text, reply_to_event_id=reply_to_id
     )
     if dry_run:
-        print(f"  [dry-run] would send NIP-17 ack (rumor {rumor['id']}) to {recipient_pub_hex[:12]}…")
+        print(f"  [dry-run] would send NIP-17 {label} (rumor {rumor['id']}) to {recipient_pub_hex[:12]}…")
         return None
     record_recipient = publish.publish_event(wrap_for_recipient, log=False)
     record_self = publish.publish_event(wrap_for_self, log=False)
     return {"to_recipient": record_recipient, "to_self": record_self}
+
+
+def send_nip04_ack(priv, priv_int, our_pubkey_hex, recipient_pub_hex, dry_run):
+    return send_nip04_text(priv, priv_int, our_pubkey_hex, recipient_pub_hex, ACK_TEXT, dry_run, label="ack")
+
+
+def send_nip17_ack(priv_int, our_pubkey_hex, recipient_pub_hex, reply_to_id, dry_run):
+    return send_nip17_text(priv_int, our_pubkey_hex, recipient_pub_hex, ACK_TEXT, reply_to_id, dry_run, label="ack")
 
 
 def main():

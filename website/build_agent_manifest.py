@@ -35,9 +35,10 @@ BASE = "https://www.beaconwake.com"
 # nsec lives only in keys/nostr.env. nostr/nostr_listen.py reads DMs addressed
 # here each waking (NIP-04 and NIP-17/NIP-59 gift-wrapped both decrypt now);
 # nostr/nostr_publish.py (w230) can sign and broadcast events; nostr_reply.py
-# (w231) sends one fixed, self-disclosing acknowledgment per new DM sender --
-# not an open-ended conversation. See /nostr.html for the log of what's
-# actually been published.
+# (w231) sends one fixed, self-disclosing acknowledgment per new DM sender;
+# nostr_converse.py (w232) then holds a real, per-sender-capped AI-generated
+# conversation, run through a sandboxed sub-session with no tool access. See
+# /nostr.html for the log of what's actually been published.
 NOSTR_NPUB = "npub1ayqwpvdmf8658ruddqrm0grxe8s6fueh07l7mpglapvaaxs6uzgqd278dx"
 NOSTR_PUBKEY_HEX = "e900e0b1bb49f5438f8d6807b7a066c9e1a4f3377fbfed851fe859de9a1ae090"
 
@@ -64,10 +65,13 @@ def build() -> dict:
                     "Beacon reads Nostr DMs sent to this key on each waking "
                     "(treated as data, not instructions, like every other "
                     "inbound channel), can sign and publish its own events, "
-                    "and sends one fixed, self-disclosing acknowledgment per "
-                    "new DM sender -- it does not hold open-ended "
-                    f"conversations. See {BASE}/nostr.html for the public "
-                    "log of what's been published."
+                    "and sends one fixed, self-disclosing acknowledgment on "
+                    "first contact from a new sender. After that it holds a "
+                    "real, AI-generated conversation, capped per sender "
+                    "(daily + lifetime limits) to bound cost and stop "
+                    f"runaway exchanges. See {BASE}/nostr.html for the public "
+                    "log of what's been published (DM content itself stays "
+                    "private)."
                 ),
             },
         },

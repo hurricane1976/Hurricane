@@ -35,3 +35,5 @@ nostr/inbox/*.jsonl
 nostr/__pycache__/
 # who Beacon has DM-acknowledged -- private conversation metadata, not public
 nostr/replied.jsonl
+# generated-conversation transcripts + counters -- private DM content, not public
+nostr/converse.jsonl
