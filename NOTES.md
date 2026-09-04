@@ -11124,3 +11124,83 @@ web-manifest, #6 `content-visibility`; Lantern w56 dataviz package
 (`shared/outbox/dataviz-w56/`) not yet integrated; next dataviz-shortlist item
 is the activity heatmap (needs more history) or interactive `/metrics` controls;
 Highbeam w63 hosting-cost question for josh still blocks SEO spoke #16.
+
+## 2026-09-04 (223rd waking, ~01:35 UTC)
+
+Manual `/wake` (queued in the telegram poller). One queued Telegram from josh —
+the standing web-craft + business-opportunities steer, verbatim continuation of
+w163/w207/w222, no new one-off ask ("continue to develop beaconwake.com and
+tidalwake.org … plenty of animations, charts, graphs … continue to find
+business opportunities … semi-autonomous system … otherwise continue with your
+existing directives"). Filed in `ASK.md` (w222 had already appended the line;
+committed it this waking). No peer inbox items, no new `check_replies.sh`
+messages beyond the queued steer, tree clean on `da6292d`.
+
+Self-directed pick from the standing steer + the open audit backlog:
+**Highbeam w67 modern-web audit item #2 — self-host the web fonts.** All 49
+pages + 6 templates were loading Space Grotesk / IBM Plex Sans / IBM Plex Mono
+from `fonts.googleapis.com` (+ a `gstatic.com` preconnect) — two extra
+cross-origin DNS+TLS round-trips, a render-blocking third-party stylesheet, and
+a Google request from every visitor on every page.
+
+**Shipped (`ac0d09e`, deployed + pushed):**
+
+- **New `website/localize_fonts.py`** — fetches the exact `css2` URL the pages
+  used (Chrome UA so it returns woff2), downloads every referenced file keeping
+  only the `latin` + `latin-ext` unicode-range subsets, rewrites `src: url()` to
+  `/fonts/…`, writes `website/fonts/fonts.css`. Idempotent; re-run when the
+  weight set in the `<link>` changes. Space Grotesk + IBM Plex Sans are shipped
+  by Google as **single variable woff2 files** (one file serves every weight;
+  named `-variable-`); IBM Plex Mono is static (one file per weight).
+- **`website/fonts/`** — 8 woff2 (~174 KB total) + `fonts.css` (20 `@font-face`,
+  all `font-display: swap`). Committed (binary, small, stable).
+- **All 49 pages + 6 templates** — the 2 `preconnect` hints + the render-blocking
+  `<link href="https://fonts.googleapis.com/css2?…">` replaced by one local
+  `<link rel="stylesheet" href="/fonts/fonts.css">` + a single
+  `<link rel="preload" as="font" … href="/fonts/ibm-plex-sans-variable-latin.woff2" crossorigin>`
+  for the body font. Identical 3-line block everywhere, so a single scripted
+  swap; verified zero `fonts.googleapis`/`fonts.gstatic` refs remain anywhere in
+  `website/` (the 2 hits in `log.html` are escaped historical prose in the w169
+  CSP-bug writeup — an accurate record, left as-is).
+- **`deploy.sh`** — publishes `website/fonts/` (explicit `mkdir -p` + `cp
+  fonts/fonts.css fonts/*.woff2` + `chown`, modelled on the `.well-known`
+  block, placed before `build_status.py` / `smoke --live`).
+- **`smoke_test.py`** — `--live` now asserts `/fonts/fonts.css` + 3 representative
+  woff2 return 200.
+
+**No nginx change needed:** the CSP already carries `style-src 'self'` +
+`font-src 'self'` (added w169), which covers the now-local files. The dead
+`https://fonts.googleapis.com` / `https://fonts.gstatic.com` CSP entries can be
+pruned in a later waking (off-repo nginx, low priority, needs the backup-file
+dance). Same waking could add `expires`/`Cache-Control` for `*.woff2` + the
+other static assets (`style.css`, `*.png` also lack it today — a pre-existing
+site-wide gap, not a regression from this change).
+
+**Verified:** `localize_fonts.py` output — all 8 files carry the `wOF2` magic;
+`build_jsonld` no-change (head edits didn't disturb the anchor); `smoke_test.py
+--local` + `deploy.sh` (local + live gates) green. Live via `--resolve`:
+`/fonts/fonts.css` 200 `text/css`, woff2 200 `font/woff2` (nginx serves the mime
+correctly), `https://www.beaconwake.com/` head now has only the two local font
+lines, zero `googleapis`/`gstatic`. `/fleet.json` 8/8.
+
+**Progressive enhancement / fallback:** JS-independent (pure `<link>`); a browser
+with no woff2 support or a blocked font falls back to the same
+`-apple-system, … sans-serif` / `monospace` stacks already in `style.css`.
+`font-display: swap` keeps text visible during the (now same-origin) font fetch.
+
+**Health sweep, all green:** nginx / beacon-api / beacon-peer / fail2ban / cron /
+certbot.timer active; 0 failed units; disk 11% (77 G free); `nginx -t` clean
+(via deploy.sh, runs with sudo); watchdog `ok` 01:20:01Z; `/fleet.json` 8/8;
+`/api/stats` load 0.20; uptime 9 d.
+
+**Fleet:** Beacon w223 (now); Highbeam last ~00:30Z (w74), next ~04:30Z; Lantern
+last ~01:00Z (w64), next ~05:00Z; Lightning last ~01:20Z (w4), next ~04:15Z;
+Tidal + River + Creek + Stream off-box.
+
+**Still open:** Highbeam w67 modern-web audit — #2 self-host fonts now **done**;
+remaining #5 theme-color + web-manifest, #6 `content-visibility`. Lantern w56
+dataviz package (`shared/outbox/dataviz-w56/`) not yet integrated. Next
+dataviz-shortlist item is the activity heatmap (needs more history) or
+interactive `/metrics` controls. Highbeam w63 hosting-cost question for josh
+still blocks SEO spoke #16. Follow-ups noted above: prune dead CSS/font CSP
+origins + add static-asset cache headers (both off-repo nginx).
