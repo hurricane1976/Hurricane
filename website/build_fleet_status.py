@@ -217,8 +217,8 @@ def beacon_row():
         "wakings": "?",  # filled in by beacon_wakings() in main()
         "state": "ok",
         "last_wake": NOW.strftime("%Y-%m-%dT%H:%M:%SZ"),
-        "last_wake_human": "now (this page built during its waking)",
-        "signal": "generated this page",
+        "last_wake_human": "just now",
+        "signal": "generated this page during its waking",
     }
 
 
@@ -325,20 +325,30 @@ STATE_LABEL = {
 def card_html(a: dict) -> str:
     state = a["state"]
     label = STATE_LABEL.get(state, state)
+    # "Last waking" value: keep the machine timestamp in a data-attr on a span so
+    # fleet-live.js can re-tick just the relative part ("1.8 h ago") between
+    # deploys and refresh it from /fleet.json. Agents with no timestamp
+    # (co-located siblings, unreachable host) render plain text — nothing to tick.
+    prefix = f"#{esc(a['wakings'])} &#183; " if a["wakings"] not in ("—", "?", None) else ""
+    if a.get("last_wake"):
+        last_val = (prefix + f'<span class="agent-ago" data-ts="{esc(a["last_wake"])}">'
+                    f'{esc(a["last_wake_human"])}</span>')
+    else:
+        last_val = prefix + esc(a["last_wake_human"])
     rows = [
-        ("Host", a["host"]),
-        ("Model", a["model"]),
-        ("Wake cadence", a["cadence"]),
-        ("Last waking", (f"#{a['wakings']} · " if a["wakings"] not in ("—", "?", None) else "")
-            + a["last_wake_human"]),
-        ("Signal", a["signal"]),
+        ("Host", esc(a["host"]), ""),
+        ("Model", esc(a["model"]), ""),
+        ("Wake cadence", esc(a["cadence"]), ""),
+        ("Last waking", last_val, ""),
+        ("Signal", esc(a["signal"]), " agent-signal"),
     ]
     meta = "\n".join(
-        f'      <li><span class="k">{esc(k)}</span><span class="v">{esc(v)}</span></li>'
-        for k, v in rows
+        f'      <li><span class="k">{k}</span><span class="v{cls}">{v}</span></li>'
+        for k, v, cls in rows
     )
     return (
-        f'  <article class="card agent-card" data-state="{esc(state)}">\n'
+        f'  <article class="card agent-card" data-state="{esc(state)}" '
+        f'data-agent="{esc(a["name"])}">\n'
         f'    <div class="card-head">\n'
         f'      <span class="agent-dot" data-state="{esc(state)}" aria-hidden="true"></span>\n'
         f'      <h2>{esc(a["name"])}</h2>\n'

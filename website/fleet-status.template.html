@@ -46,6 +46,14 @@
   .agent-meta li:first-child { border-top: none; }
   .agent-meta .k { font-family: "IBM Plex Mono", monospace; color: var(--muted); font-size: 0.78rem; }
   .agent-meta .v { color: var(--fg); word-break: break-word; }
+  .fleet-synced { display: flex; align-items: center; gap: 0.5rem; margin: 0.9rem 0 0; font-family: "IBM Plex Mono", monospace; font-size: 0.74rem; letter-spacing: 0.03em; color: var(--muted); }
+  .fleet-synced-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; background: var(--teal); box-shadow: 0 0 0 3px var(--teal-dim); }
+  .fleet-synced.is-stale .fleet-synced-dot { background: var(--amber); box-shadow: 0 0 0 3px var(--amber-dim); }
+  .fleet-synced.is-error .fleet-synced-dot { background: #e0533d; box-shadow: none; }
+  @media (prefers-reduced-motion: no-preference) {
+    .fleet-synced-dot { animation: fleet-synced-pulse 2.4s ease-in-out infinite; }
+  }
+  @keyframes fleet-synced-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
 </style>
 </head>
 <body>
@@ -105,7 +113,7 @@
       <path d="M16 24 L32 16 L48 24 M22 46 L16 24 M42 46 L48 24 M22 46 L42 46" fill="none" stroke="var(--fg)" stroke-width="1.6" opacity="0.5"/>
     </svg>
     <h1 style="font-size: clamp(1.8rem, 4vw, 2.4rem);">Fleet operations center</h1>
-    <p class="tagline">Every agent josh runs, in one view &mdash; an animated topology, a live activity stream, and per-agent liveness. Measured from real checks at the end of Beacon's waking: sibling wake logs on this box, a live HTTP fetch of the off-box host's manifest, git history, and the shared fleet log. Stale by at most one wake cycle. Machine-readable copy at <a href="/fleet.json">/fleet.json</a>.</p>
+    <p class="tagline">Every agent josh runs, in one view &mdash; an animated topology, a live activity stream, and per-agent liveness. Measured from real checks at the end of Beacon's waking: sibling wake logs on this box, a live HTTP fetch of the off-box host's manifest, git history, and the shared fleet log. Stale by at most one wake cycle &mdash; and with JavaScript on, the page re-checks <a href="/fleet.json">/fleet.json</a> every 90&nbsp;seconds and re-ticks the "last waking" times in place.</p>
   </div>
 
   <div class="trace" aria-hidden="true">
@@ -127,7 +135,7 @@
       <div class="stat-label">agents in the fleet</div>
     </div>
     <div class="stat">
-      <div class="stat-value {{HEALTHY_CLASS}}">{{HEALTHY}}/{{TOTAL_AGENTS}}</div>
+      <div class="stat-value {{HEALTHY_CLASS}}" id="fleet-healthy-stat">{{HEALTHY}}/{{TOTAL_AGENTS}}</div>
       <div class="stat-label">reporting healthy</div>
     </div>
     <div class="stat">
@@ -139,6 +147,11 @@
       <div class="stat-label">model families (Claude, Gemini, DeepSeek)</div>
     </div>
   </div>
+
+  <p class="fleet-synced" id="fleet-synced" hidden aria-live="polite">
+    <span class="fleet-synced-dot" aria-hidden="true"></span>
+    <span id="fleet-synced-text">live</span>
+  </p>
 
   <div class="agent-grid">
 {{AGENT_CARDS}}
@@ -313,5 +326,6 @@
   </footer>
 </main>
 <script src="reveal.js" defer></script>
+<script src="fleet-live.js" defer></script>
 </body>
 </html>
