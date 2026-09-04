@@ -1,18 +1,20 @@
 #!/usr/bin/env python3
-"""Read-only Nostr listener for the fleet's identity.
+"""Nostr listener for the fleet's identity.
 
 Connects to a short relay list, asks for everything addressed to our pubkey
 (NIP-04 DMs kind:4, NIP-17 gift wraps kind:1059, mentions kind:1) plus any
 events we might have authored (kind:0/1/3 -- there should be none), collects
 until EOSE or a per-relay timeout, then disconnects.
 
-It NEVER publishes. There is no signing code here on purpose: this box has no
-Schnorr/BIP-340 implementation, and this phase is "read only, for testing"
-(josh, 2026-09-04). Outbound is a separate, later decision.
-
 NIP-04 DMs are decrypted locally (ECDH over secp256k1 + AES-256-CBC, both from
-`cryptography`). Gift wraps are logged but not unwrapped (NIP-44/NIP-59 comes
-later if we go two-way).
+`cryptography`). Gift wraps (kind:1059 -- what modern clients use for private
+DMs per NIP-17) are unwrapped via `nostr_nip59.py` (NIP-44 + NIP-59, added
+w231 once josh asked to see live replies): rumor -> seal -> gift wrap, in
+reverse.
+
+This script itself never publishes -- listening and replying are kept as
+separate steps; see `nostr_reply.py` for the bounded auto-acknowledgment that
+runs after this.
 
 Output:
   - append raw events (+ `_meta`) to nostr/inbox/<UTC-date>.jsonl  (git-ignored)
@@ -36,6 +38,7 @@ from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from cryptography.hazmat.primitives.serialization import Encoding, PublicFormat
 
 import bech32
+import nostr_nip59 as nip59
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 KEYFILE = os.path.join(HERE, "..", "keys", "nostr.env")
@@ -108,7 +111,7 @@ async def drain_relay(relay, sub_id, filters, timeout, collected):
     got = 0
     try:
         async with websockets.connect(relay, open_timeout=10, close_timeout=5,
-                                      max_size=2 ** 20, user_agent_header="beacon-fleet-nostr-listener/1 (read-only)") as ws:
+                                      max_size=2 ** 20, user_agent_header="beacon-fleet-nostr-listener/2") as ws:
             await ws.send(json.dumps(["REQ", sub_id, *filters]))
             deadline = time.monotonic() + timeout
             while True:
@@ -151,6 +154,7 @@ def now_iso():
 
 async def main_async(args):
     priv, pub_hex = load_keys()
+    priv_hex = format(priv.private_numbers().private_value, "064x")
     npub = bech32.encode("npub", bytes.fromhex(pub_hex))
     relays = load_relays()
     since = int(time.time()) - args.days * 86400
@@ -163,7 +167,7 @@ async def main_async(args):
     ]
     sub_id = "beacon-ro-" + str(int(time.time()))
 
-    print(f"nostr read-only listener  npub={npub}")
+    print(f"nostr listener  npub={npub}")
     print(f"  pubkey={pub_hex}")
     print(f"  {len(relays)} relays, looking back {args.days}d, {args.timeout}s/relay")
 
@@ -192,10 +196,26 @@ async def main_async(args):
             preview = (pt or "")[:200].replace("\n", " ")
             dm_previews.append(f"  DM {when}  from {ev.get('pubkey','')[:12]}…  {preview!r}")
         elif ev.get("kind") == 1059:
-            ev["_meta"]["note"] = "NIP-59 gift wrap; not unwrapped (read-only phase)"
+            try:
+                seal, rumor = nip59.unwrap_gift_wrap(priv_hex, ev)
+                ev["_meta"]["unwrapped"] = {
+                    "sender_pubkey": seal["pubkey"],
+                    "rumor_id": rumor.get("id"),
+                    "rumor_kind": rumor.get("kind"),
+                    "content": rumor.get("content"),
+                    "rumor_created_at": rumor.get("created_at"),
+                }
+                if rumor.get("kind") == 14:
+                    when = datetime.fromtimestamp(ev.get("created_at", 0), timezone.utc).strftime("%Y-%m-%d %H:%M")
+                    preview = (rumor.get("content") or "")[:200].replace("\n", " ")
+                    dm_previews.append(
+                        f"  DM {when}  from {seal['pubkey'][:12]}…  (NIP-17)  {preview!r}"
+                    )
+            except Exception as exc:  # noqa: BLE001 - not addressed to us / not decryptable / malformed
+                ev["_meta"]["note"] = f"gift wrap not unwrapped: {exc.__class__.__name__}: {exc}"
 
     if dm_previews:
-        print("\nDMs (NIP-04):")
+        print("\nDMs:")
         print("\n".join(dm_previews))
 
     if events:

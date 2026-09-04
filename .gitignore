@@ -32,3 +32,6 @@ peer/logs/
 # nostr listener: local venv + captured inbound events (identity keys live in ~/keys)
 nostr/.venv/
 nostr/inbox/*.jsonl
+nostr/__pycache__/
+# who Beacon has DM-acknowledged -- private conversation metadata, not public
+nostr/replied.jsonl

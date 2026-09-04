@@ -599,6 +599,82 @@
       back from 3 relays, local smoke test + live smoke test both green,
       `agent.json`/`llms.txt`/sitemap/nostr.html all correct on the live
       site post-deploy.
+- **Telegram (2026-09-04, via /commands):** can you build NIP-44 so i can see live replies?
+  - **w231 (2026-09-04) — DONE, scoped narrowly on purpose.** Built the full
+    crypto stack needed to reply to modern Nostr DMs, and wired up a live
+    reply -- but a fixed, bounded one, not a chatbot. Specifics:
+    - **`nostr/nostr_nip44.py`** (new) — NIP-44 v2 encryption (secp256k1 ECDH
+      → HKDF-extract/expand → power-of-two padding → ChaCha20 → HMAC-SHA256 →
+      base64). Downloaded the real `paulmillr/nip44` test-vector file over
+      the open internet and checked its sha256 against the checksum the
+      NIP-44 spec text itself publishes (exact match — genuine, unmodified
+      vectors), then validated all 236 checks: `get_conversation_key`,
+      `get_message_keys`, `calc_padded_len`, `encrypt_decrypt` (incl. the
+      long-message + extended 6-byte-prefix boundary cases given verbatim in
+      the spec markdown). All pass. Needed because NIP-44 replaces legacy
+      NIP-04 (AES-CBC, what the w228 listener already decrypts inbound) for
+      anything sent by a modern client.
+    - **`nostr/nostr_nip59.py`** (new) — NIP-59 gift wrap / NIP-17 private
+      DMs (rumor → seal → gift wrap, and the reverse), built on the new
+      NIP-44 module + the existing BIP-340 signer. Self-test decrypts the
+      *exact* worked-example events printed in the NIP-59 and NIP-17 spec
+      text — real events built by a different (JS) implementation — and
+      recovers the exact original plaintext ("Are you going to the party
+      tonight?" / "Hola, que tal?"), a genuine cross-implementation check,
+      plus a full round trip of Beacon's own `wrap_dm()`/`unwrap_gift_wrap()`.
+      15/15 checks pass. This is what most modern clients (Amethyst, Damus,
+      etc.) actually use for DMs — without it, a DM from a modern client
+      would arrive as an opaque kind:1059 Beacon couldn't open.
+    - **`nostr/nostr_listen.py`** updated to unwrap kind:1059 gift wraps with
+      the new module (previously logged but not opened) alongside the
+      existing NIP-04 decrypt.
+    - **`nostr/nostr_reply.py`** (new) — sends **one fixed, self-disclosing
+      acknowledgment per distinct DM sender** (never more than once per
+      sender, tracked forever in git-ignored `replied.jsonl`), on whichever
+      protocol (NIP-04 or NIP-17) the DM arrived on. The message states
+      plainly it's automatic, from an AI agent (never claims human, per
+      AGENT.md), confirms the message got through, and points to
+      `/nostr.html` / the site for reaching josh. It does **not** read,
+      reason about, or respond to what the sender actually said — deliberately,
+      so this stays "prove the plumbing works" rather than open-ended
+      "agent talks to strangers," which was the exact judgment call flagged
+      as needing separate consideration back in the w229/w230 writeups.
+      Wired into `wake.sh` to run every waking right after the listener.
+    - **Caught and fixed a real bug before it reached the live site:**
+      `nostr_publish.py`'s `publish_event()` unconditionally appended every
+      sent event to `published.jsonl`, which feeds the public `/nostr.html`
+      page. First live test of `nostr_reply.py` sent a NIP-04 ack to an
+      inbound marketing-spam DM and that ack's ciphertext briefly landed in
+      `published.jsonl` — not the DM content itself (still encrypted), but
+      DM *metadata* (that Beacon exchanged messages with that pubkey) on a
+      page whose whole stated point is "no DM traffic here." Fixed two ways
+      before deploying: (1) `publish_event()` now takes `log=False` for DM
+      sends, so they never touch `published.jsonl`; (2)
+      `build_nostr_page.py` now filters to an explicit allowlist of public
+      kinds (0/1/3) rather than trusting every logged entry, so the same
+      class of bug can't leak through a different path later. Removed the
+      one bad line from `published.jsonl` by hand before any deploy. Live
+      `/nostr.html` was verified afterward to contain only the kind:0
+      profile.
+    - Live-tested for real (not just dry-run): the marketing-spam kind:4 DM
+      already sitting in the inbox from an earlier waking got the fixed
+      acknowledgment, confirming the whole path — decrypt inbound, build
+      reply, encrypt, sign, publish, log — works end to end on a real relay
+      round trip, not just in the self-tests.
+    - Updated `agent.json`'s `identity.nostr.note`, `llms.txt` (both the
+      Nostr entry and the "Contact" line), and `/nostr.html`'s status line +
+      an added explainer paragraph, all to accurately describe "one fixed
+      ack per sender," not "live conversational replies" (which is not what
+      was built, on purpose).
+    - **What this means for josh testing it:** DMing the npub above (from any
+      modern Nostr client, or a legacy NIP-04 one) should get back exactly
+      one automatic acknowledgment message confirming receipt. It will not
+      hold a conversation or respond differently based on what's said.
+    - **Still not built, still an open josh-level decision if wanted:**
+      actual conversational replies (LLM-generated responses to DM content).
+      That's a materially different, ongoing "what does Beacon say, to whom"
+      surface than a fixed disclosure ack, and deserves its own explicit
+      go-ahead rather than growing out of this. Full detail in `nostr/README.md`.
 
 ## On hold
 

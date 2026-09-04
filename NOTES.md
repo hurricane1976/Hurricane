@@ -11638,3 +11638,79 @@ separate go/no-go once it exists, flagged again in ASK.md.
 `/fleet.json` 8/8, disk/load nominal.
 
 **Commit `fc0af1c`.**
+
+## 2026-09-04 (231st waking, ~17:00 UTC)
+
+Scheduled waking. `ASK.md` had one new Telegram message: *"can you build
+NIP-44 so i can see live replies?"* — a direct follow-up to w229/w230's
+"replying to DMs needs NIP-44 and is a separate judgment call" writeup. Peer
+inbox empty. Ran `nostr/nostr_listen.py`: 4/6 relays reachable, 2 events (the
+w230 profile echo + one inbound legacy NIP-04 DM — a "Botrift" NIP-05
+marketing spam message, not from josh).
+
+**Built the full NIP-44/NIP-59 stack and a bounded, live DM acknowledgment.**
+
+- **`nostr/nostr_nip44.py`** (new) — NIP-44 v2 encryption (ECDH → HKDF →
+  padding → ChaCha20 → HMAC-SHA256 → base64). Fetched the real
+  `paulmillr/nip44` vectors file directly (not summarized) and confirmed its
+  sha256 matches the checksum published in the NIP-44 spec text itself —
+  genuine, unmodified vectors. 236/236 checks pass, including the
+  extended-length-prefix boundary cases (65535/65536/65537 bytes) given
+  verbatim in the spec markdown, which the reference vectors.json actually
+  gets wrong (predates that section of the spec and marks those lengths
+  invalid) — followed the current normative spec text instead and said so in
+  a comment.
+- **`nostr/nostr_nip59.py`** (new) — NIP-59 gift wrap / NIP-17 private DMs
+  (rumor → seal → gift wrap, and back), built on the new NIP-44 module.
+  Self-test decrypts the *exact* worked-example gift-wrap events printed in
+  the NIP-59 and NIP-17 spec text (real events from a different, JS,
+  implementation) and recovers the exact original plaintext — genuine
+  cross-implementation validation, not just round-trip-with-itself. 15/15
+  checks pass.
+- **`nostr/nostr_listen.py`** now unwraps kind:1059 gift wraps (previously
+  logged but not opened) using the new module, alongside the existing NIP-04
+  decrypt.
+- **`nostr/nostr_reply.py`** (new) — sends exactly **one fixed,
+  self-disclosing acknowledgment per distinct DM sender** (tracked forever in
+  git-ignored `replied.jsonl`), on whichever protocol (NIP-04/NIP-17) the DM
+  arrived on. Deliberately not a chatbot: the message is a constant string
+  that discloses it's an automatic AI reply and never engages with what the
+  sender actually said. This is the bounded answer to "so I can see live
+  replies" — proves the round trip without opening an unbounded "agent talks
+  to strangers" surface, which stays a separate ask. Wired into `wake.sh` to
+  run every waking right after the listener.
+- **Caught and fixed a real bug before any of this hit the live site:**
+  `nostr_publish.py`'s `publish_event()` unconditionally logged every sent
+  event to `published.jsonl`, which feeds the public `/nostr.html` page.
+  First live test (acknowledging the spam DM above) put that ack's encrypted
+  content briefly into `published.jsonl` — the message text stayed opaque,
+  but DM *metadata* (that Beacon had exchanged messages with that pubkey) has
+  no business on a page whose stated purpose is "no DM traffic here." Fixed
+  before deploying: `publish_event()` gained a `log=False` path (used by all
+  DM sends), and `build_nostr_page.py` now filters to an explicit allowlist
+  of public kinds (0/1/3) as defense in depth. Hand-removed the one bad line
+  from `published.jsonl`; verified the live page afterward shows only the
+  kind:0 profile.
+- Live-tested for real: sent the fixed acknowledgment to the spam DM's
+  sender, confirming decrypt → build → encrypt → sign → publish → log works
+  end to end on an actual relay round trip.
+- Updated `agent.json`'s Nostr note, `llms.txt` (Nostr entry + Contact line),
+  and `/nostr.html` (status line + a new explainer paragraph) to accurately
+  describe "one fixed ack per sender" rather than either "no reply" (stale)
+  or "live conversation" (not what was built). `nostr/README.md` rewritten
+  with the new file table, an "Acknowledge DMs" section, and updated
+  revert steps.
+- Full ASK.md writeup filed under the w231 entry, including an explicit note
+  that open-ended conversational replies remain a separate, not-yet-asked-for
+  step.
+
+**Verified:** all three nostr self-tests green (Schnorr 15/15, NIP-44
+236/236, NIP-59 15/15); live listener round trip clean; `nostr_reply.py
+--dry-run` correctly shows nothing pending after the real send (no
+duplicate acks); local + live smoke gates both green; live `/nostr.html`,
+`agent.json`, and `llms.txt` all correct post-deploy.
+
+**Health:** deploy.sh's nginx config test + live smoke gate both passed,
+`/fleet.json` 8/8, disk/load nominal.
+
+**Commit:** pending (see next NOTES entry or `git log` for the hash).

@@ -82,7 +82,13 @@ async def _publish_to_relay(relay, event, timeout):
         return (relay, None, f"{exc.__class__.__name__}: {exc}")
 
 
-async def publish_event_async(event, timeout=10.0, relays=None):
+async def publish_event_async(event, timeout=10.0, relays=None, log=True):
+    """`log=False` for anything that isn't a public broadcast Beacon wants on
+    /nostr.html -- e.g. DM sends (nostr_reply.py), whose sender/recipient
+    metadata must NOT land in the git-tracked, publicly-rendered
+    published.jsonl even though the ciphertext itself is opaque. Public
+    events (profile posts, notes) should keep log=True so the site's activity
+    feed stays a complete, honest record."""
     relays = relays or load_relays()
     ok, why = builder.verify_event(event)
     if not ok:
@@ -96,13 +102,14 @@ async def publish_event_async(event, timeout=10.0, relays=None):
         "accepted_by": len(accepted),
         "total_relays": len(relays),
     }
-    with open(PUBLISHED_LOG, "a") as fh:
-        fh.write(json.dumps(record, separators=(",", ":")) + "\n")
+    if log:
+        with open(PUBLISHED_LOG, "a") as fh:
+            fh.write(json.dumps(record, separators=(",", ":")) + "\n")
     return record
 
 
-def publish_event(event, timeout=10.0, relays=None):
-    return asyncio.run(publish_event_async(event, timeout=timeout, relays=relays))
+def publish_event(event, timeout=10.0, relays=None, log=True):
+    return asyncio.run(publish_event_async(event, timeout=timeout, relays=relays, log=log))
 
 
 def _publish_profile():

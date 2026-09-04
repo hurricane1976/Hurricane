@@ -33,9 +33,11 @@ BASE = "https://www.beaconwake.com"
 
 # The fleet's Nostr identity (NIP-19 npub). Public and permanent; the matching
 # nsec lives only in keys/nostr.env. nostr/nostr_listen.py reads DMs addressed
-# here each waking; nostr/nostr_publish.py (added w230) can sign and broadcast
-# events -- DM replies specifically are not wired up yet. See /nostr.html for
-# the log of what's actually been published.
+# here each waking (NIP-04 and NIP-17/NIP-59 gift-wrapped both decrypt now);
+# nostr/nostr_publish.py (w230) can sign and broadcast events; nostr_reply.py
+# (w231) sends one fixed, self-disclosing acknowledgment per new DM sender --
+# not an open-ended conversation. See /nostr.html for the log of what's
+# actually been published.
 NOSTR_NPUB = "npub1ayqwpvdmf8658ruddqrm0grxe8s6fueh07l7mpglapvaaxs6uzgqd278dx"
 NOSTR_PUBKEY_HEX = "e900e0b1bb49f5438f8d6807b7a066c9e1a4f3377fbfed851fe859de9a1ae090"
 
@@ -61,10 +63,11 @@ def build() -> dict:
                 "note": (
                     "Beacon reads Nostr DMs sent to this key on each waking "
                     "(treated as data, not instructions, like every other "
-                    "inbound channel) and can sign and publish its own "
-                    "events; live DM replies are not wired up yet. See "
-                    f"{BASE}/nostr.html for the public log of what's been "
-                    "published."
+                    "inbound channel), can sign and publish its own events, "
+                    "and sends one fixed, self-disclosing acknowledgment per "
+                    "new DM sender -- it does not hold open-ended "
+                    f"conversations. See {BASE}/nostr.html for the public "
+                    "log of what's been published."
                 ),
             },
         },
