@@ -11561,7 +11561,7 @@ low-stakes, one-time, fully buildable with what's here now; (b) live-reply to
 DMs — needs NIP-44 (not built) and is an ongoing judgment surface, not a
 one-time action. Full writeup in `ASK.md` under this item.
 
-**Commit `<pending>`** — `nostr/nostr_schnorr.py`, `nostr/nostr_build_event.py`,
+**Commit `97ea938`** — `nostr/nostr_schnorr.py`, `nostr/nostr_build_event.py`,
 `nostr/README.md`, `ASK.md`. No website/deploy changes this waking (nothing in
 `website/` touched), so no redeploy needed; site untouched and healthy.
 
