@@ -26,12 +26,14 @@ A monitoring/status view for the WHOLE agent fleet, not just Beacon:
                fleet manifest. No independent endpoint; liveness mirrors Tidal's
                host, same as River and Creek.
   Mountain  -- independent third host, Claude. Added w239, growth &
-               distribution. No public site yet, so unlike Tidal it can't be
-               checked over HTTPS -- liveness is a `tailscale ping` to its
-               Tailscale IP instead. That IP is a build-time constant here and
-               deliberately never lands in a published value (host/signal
-               strings below), same discretion PEER_COMMUNICATION.md applies
-               to this box's own address.
+               distribution. Now serves a public manifest, so liveness is an
+               HTTP fetch of its /.well-known/agent.json ("updated" field),
+               same method as Tidal. The private Tailscale peer channel is
+               still the coordination path; if the public site is unreachable
+               we fall back to a `tailscale ping` so a coordination-reachable
+               Mountain still reads as alive. The Tailscale IP stays a
+               build-time constant and never lands in a published value, same
+               discretion PEER_COMMUNICATION.md applies to this box's address.
 
 Every value is measured at generation time -- nothing hand-typed -- so the
 page can be at most one Beacon wake-cycle stale, same contract as status.html.
@@ -60,9 +62,13 @@ BEACON_NOTES = ROOT / "NOTES.md"
 
 TIDAL_MANIFEST = "https://tidalwake.org/.well-known/agent.json"
 
+# Mountain now serves a public manifest (independent host, plain HTTP for now).
+MOUNTAIN_MANIFEST = "http://162.243.254.21/.well-known/agent.json"
+
 # Mountain's Tailscale IP. Private (tailnet-only), never published -- used only
-# to run a local `tailscale ping` reachability check. Same discretion
-# PEER_COMMUNICATION.md applies to this box's own address.
+# as a fallback `tailscale ping` reachability check when the public manifest is
+# unreachable. Same discretion PEER_COMMUNICATION.md applies to this box's own
+# address.
 MOUNTAIN_TS_IP = "100.114.14.116"
 
 LOG_TS_RE = re.compile(r"(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})Z\.log$")
@@ -329,29 +335,63 @@ def tidal_and_river():
 
 
 def mountain_row():
-    """Mountain -- independent third host (Claude), peered with Beacon over a
-    private Tailscale channel only, no public site yet. Liveness is a
-    Tailscale-level reachability check, not an HTTPS manifest fetch like
-    Tidal's, since there's nothing public to fetch. Its Tailscale IP never
-    appears in the returned dict -- only used locally to run the check.
+    """Mountain -- independent third host (Claude). Liveness is an HTTP fetch
+    of its public /.well-known/agent.json ("updated" field), same method as
+    Tidal. If the public site is unreachable, fall back to a `tailscale ping`
+    over the private peer channel so a coordination-reachable Mountain still
+    reads as alive. The Tailscale IP never appears in the returned dict --
+    only used locally to run the fallback check.
     """
-    out = run(f"tailscale ping -c 1 --timeout=3s {MOUNTAIN_TS_IP}", timeout=6)
-    reachable = "pong" in out.lower()
+    raw = run(f"curl -s --max-time 8 {MOUNTAIN_MANIFEST}", timeout=12)
+    try:
+        manifest = json.loads(raw)
+    except (ValueError, TypeError):
+        manifest = None
+
+    if manifest:
+        updated = str(manifest.get("updated", "")).strip()
+        state = "ok"
+        signal = "public manifest reachable"
+        last_wake = None
+        udt = None
+        for fmt in ("%Y-%m-%dT%H:%M:%SZ", "%Y-%m-%d %H:%M UTC", "%Y-%m-%d %H:%M:%S UTC"):
+            try:
+                udt = datetime.strptime(updated, fmt).replace(tzinfo=timezone.utc)
+                break
+            except ValueError:
+                continue
+        if udt:
+            last_wake = udt.strftime("%Y-%m-%dT%H:%M:%SZ")
+            signal = f"public manifest reachable; updated {updated}"
+            if (NOW - udt).total_seconds() > 36 * 3600:
+                state = "stale"
+                signal = f"public manifest last updated {ago(udt)}"
+        signal += ". Also linked to this box by a private Tailscale peer channel."
+        last_human = "manifest live"
+    else:
+        out = run(f"tailscale ping -c 1 --timeout=3s {MOUNTAIN_TS_IP}", timeout=6)
+        if "pong" in out.lower():
+            state = "ok"
+            signal = ("public manifest not responding, but reachable over the "
+                      "private Tailscale peer channel")
+            last_human = "peer channel up"
+        else:
+            state = "unreachable"
+            signal = "no HTTP response and not reachable over the Tailscale peer channel"
+            last_human = "not responding"
+        last_wake = None
+
     return {
         "name": "Mountain",
         "role": "Growth & distribution",
-        "host": "independent host (no public URL yet)",
-        "model": "Claude",
-        "cadence": "its own schedule",
+        "host": "162.243.254.21 (independent host)",
+        "model": "Claude (Anthropic)",
+        "cadence": friendly_cadence("0 */2"),
         "wakings": "—",
-        "state": "ok" if reachable else "unreachable",
-        "last_wake": None,
-        "last_wake_human": "reachable now" if reachable else "not responding",
-        "signal": (
-            "reachable over the private Tailscale peer channel; no public "
-            "manifest yet" if reachable else
-            "not reachable over the Tailscale peer channel"
-        ),
+        "state": state,
+        "last_wake": last_wake,
+        "last_wake_human": last_human,
+        "signal": signal,
     }
 
 
@@ -486,8 +526,8 @@ def topology_svg(fleet: list) -> str:
         '    <text class="topo-chan-label" x="500" y="58" text-anchor="middle">Tailscale peer channel</text>\n'
         '    <text class="topo-chan-label" x="500" y="262" text-anchor="middle">Agora bridge</text>'
     )
-    # cross-box channel: Beacon <-> Mountain, Tailscale peer channel only (no
-    # Agora bridge -- Mountain has no public site yet to bridge to).
+    # cross-box channel: Beacon <-> Mountain, Tailscale peer channel only
+    # (no Agora bridge wired to Mountain's board yet).
     parts.append(
         '    <path class="pulse-line chan-peer" d="M250,150 Q690,410 1130,232" fill="none"/>\n'
         '    <circle class="chan-flow chan-flow-mountain" r="3.5" aria-hidden="true"/>\n'

@@ -885,6 +885,7 @@
     flagged a role-wording mismatch (Mountain's Agora intro says "fleet
     protocol & integration"; the charter has "growth & distribution" from
     josh's w239 onboarding) for the two teams to converge.
+- **Telegram (2026-09-05, via /commands):** Ensure mountain is represented fully on fleet status page
 
 ## On hold
 
