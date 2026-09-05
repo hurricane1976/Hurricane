@@ -34,6 +34,11 @@ A monitoring/status view for the WHOLE agent fleet, not just Beacon:
                Mountain still reads as alive. The Tailscale IP stays a
                build-time constant and never lands in a published value, same
                discretion PEER_COMMUNICATION.md applies to this box's address.
+  Canyon    -- co-located on Mountain's box (Josh-direct, w251); DeepSeek V4
+               Pro via OpenRouter. Fleet Scribe / Watchtower: watches fleet
+               traffic and posts digests. Own tailnet listener (:8791), no
+               public site of its own -- so, like River/Creek/Stream mirror
+               Tidal's host, its liveness tracks Mountain's.
 
 Every value is measured at generation time -- nothing hand-typed -- so the
 page can be at most one Beacon wake-cycle stale, same contract as status.html.
@@ -335,13 +340,17 @@ def tidal_and_river():
     return tidal, river, creek, stream
 
 
-def mountain_row():
+def mountain_and_canyon():
     """Mountain -- independent third host (Claude). Liveness is an HTTP fetch
     of its public /.well-known/agent.json ("updated" field), same method as
     Tidal. If the public site is unreachable, fall back to a `tailscale ping`
     over the private peer channel so a coordination-reachable Mountain still
     reads as alive. The Tailscale IP never appears in the returned dict --
     only used locally to run the fallback check.
+
+    Canyon is co-located on Mountain's box with no public endpoint, so its row
+    is derived from Mountain's reachability -- same pattern as River/Creek/
+    Stream off Tidal.
     """
     raw = run(f"curl -s --max-time 8 {MOUNTAIN_MANIFEST}", timeout=12)
     try:
@@ -382,7 +391,7 @@ def mountain_row():
             last_human = "not responding"
         last_wake = None
 
-    return {
+    mountain = {
         "name": "Mountain",
         "role": "Growth & distribution",
         "host": "mountainwake.org (independent host)",
@@ -394,6 +403,23 @@ def mountain_row():
         "last_wake_human": last_human,
         "signal": signal,
     }
+    canyon = {
+        "name": "Canyon",
+        "role": "Fleet Scribe / Watchtower",
+        "host": "mountainwake.org host (co-located with Mountain)",
+        "model": "DeepSeek V4 Pro (via OpenRouter)",
+        "cadence": "on Mountain's host",
+        "wakings": "—",
+        "state": "ok" if state == "ok" else state,
+        "last_wake": None,
+        "last_wake_human": "no independent endpoint",
+        "signal": (
+            "watches fleet traffic and posts digests; own tailnet listener, "
+            "listed in Mountain's fleet manifest. Liveness tracks Mountain's host."
+            if state == "ok" else "Mountain's host not responding"
+        ),
+    }
+    return mountain, canyon
 
 
 STATE_LABEL = {
@@ -458,12 +484,14 @@ TOPO_POS = {
     "Stream":   (620, 250),
     "Creek":    (880, 250),
     "River":    (750, 350),
-    # Third host, independent, solo agent so far -- centered in its own
-    # (narrower) box to the right of Tidal's. viewBox grew 1000->1300 to fit
-    # it (see topology_svg()); the first two host boxes/nodes above are
-    # untouched, so their .chan-flow offset-path values in style.css still
-    # match without changes.
+    # Third host, independent -- its own (narrower) box to the right of Tidal's.
+    # viewBox grew 1000->1300 to fit it (see topology_svg()); the first two host
+    # boxes/nodes above are untouched, so their .chan-flow offset-path values in
+    # style.css still match without changes. Mountain stays at y=232 so the
+    # cross-box channel paths that terminate on it don't move; Canyon sits below
+    # it in the same box (co-located, w251).
     "Mountain": (1130, 232),
+    "Canyon":   (1130, 330),
 }
 # Intra-host links (both ends on the same box). Each host is a full mesh of 4 —
 # the co-located agents coordinate through shared files, not sockets.
@@ -472,6 +500,7 @@ TOPO_LINKS = [
     ("Highbeam", "Lantern"), ("Highbeam", "Lightning"), ("Lantern", "Lightning"),
     ("Tidal", "River"), ("Tidal", "Creek"), ("Tidal", "Stream"),
     ("River", "Creek"), ("River", "Stream"), ("Creek", "Stream"),
+    ("Mountain", "Canyon"),
 ]
 FAMILY_COLOR = {
     "Claude": "var(--amber)", "Gemini": "var(--teal)", "DeepSeek": "var(--diagram-slate)",
@@ -508,7 +537,7 @@ def topology_svg(fleet: list) -> str:
         '    <rect class="topo-host" x="540" y="64" width="420" height="336" rx="12"/>\n'
         '    <text class="topo-host-label" x="560" y="92">OFF-BOX &#183; tidalwake.org</text>\n'
         '    <rect class="topo-host" x="1000" y="64" width="260" height="336" rx="12"/>\n'
-        '    <text class="topo-host-label" x="1020" y="92">MOUNTAIN &#183; independent</text>'
+        '    <text class="topo-host-label" x="1020" y="92">MOUNTAIN + CANYON &#183; independent</text>'
     )
     # intra-host links
     for a, b in TOPO_LINKS:
@@ -576,7 +605,7 @@ def topology_svg(fleet: list) -> str:
         '  <svg class="fleet-topo" viewBox="0 0 1300 460" '
         'xmlns="http://www.w3.org/2000/svg" role="img" '
         'aria-label="Animated fleet topology: four agents on this box, four off-box on tidalwake.org, '
-        'and Mountain, an independent third host, linked to this box by its own Tailscale peer channel.">\n'
+        'and Mountain with Canyon co-located on an independent third host, linked to this box by its own Tailscale peer channel.">\n'
         + "\n".join(parts)
         + "\n  </svg>"
     )
@@ -643,7 +672,7 @@ def activity_stream():
     if SHARED_LOG.exists():
         rx = re.compile(
             r"^-\s*(\d{4}-\d{2}-\d{2})\s*(?:[—–-]\s*)?\[?"
-            r"(Highbeam|Lantern|Tidal|River|Creek|Stream|Lightning)\b\]?(.+)$")
+            r"(Highbeam|Lantern|Tidal|River|Creek|Stream|Lightning|Mountain|Canyon)\b\]?(.+)$")
         rows = []
         for ln in SHARED_LOG.read_text(errors="replace").splitlines():
             m = rx.match(ln.strip())
@@ -657,8 +686,8 @@ def activity_stream():
                     hour=23, minute=59, tzinfo=timezone.utc)
             except ValueError:
                 continue
-            fam = "DeepSeek" if agent.lower() in ("creek", "lightning", "stream") else (
-                "Claude" if agent.lower() == "highbeam" else "Gemini")
+            fam = "DeepSeek" if agent.lower() in ("creek", "lightning", "stream", "canyon") else (
+                "Claude" if agent.lower() in ("highbeam", "mountain") else "Gemini")
             color = FAMILY_COLOR[fam]
             label = date_s[5:]  # MM-DD; siblings' log lines carry no clock time
             events.append((dt, label, agent.upper(), color, _trunc(text)))
@@ -693,9 +722,9 @@ def main():
         "beaconwake.com box (/home/agent/lightning)", "DeepSeek V4 Pro",
         "6×/day (15 */4)", LIGHTNING_LOGS, LIGHTNING_NOTES, "Lightning")
     tidal, river, creek, stream = tidal_and_river()
-    mountain = mountain_row()
+    mountain, canyon = mountain_and_canyon()
 
-    fleet = [beacon, highbeam, lantern, lightning, tidal, river, creek, stream, mountain]
+    fleet = [beacon, highbeam, lantern, lightning, tidal, river, creek, stream, mountain, canyon]
 
     healthy = sum(1 for a in fleet if a["state"] in ("ok", "waking"))
     hosts = {"beaconwake.com (162.243.3.223)", "tidalwake.org", "Mountain (independent, private)"}

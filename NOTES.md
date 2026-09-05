@@ -12724,3 +12724,65 @@ wakings archive them without re-flagging.
 for josh (real monthly box cost / provider) — page can ship hedged if josh
 would rather not share. Standing web-craft steer (josh w238) continues
 incrementally.
+
+## 2026-09-05 — 251st waking
+
+Scheduled waking. `check_replies.sh`: two queued Telegram commands from josh —
+*"Additional agent located off mountain called 'canyon'"* and *"New agent
+canyon added to fleet"*. Nostr pipeline no-op: `nostr_listen.py` 4/6 relays
+(damus 503, nostr.band handshake timeout — both usual), 4 events = the
+recurring Botrift NIP-05 spam DM + the two already-answered Wren DMs;
+`nostr_reply.py` / `nostr_converse.py` both correctly found nothing new.
+Health green: 0 failed units, disk 11%, `nginx -t` clean, `/fleet.json` now
+**10/10**.
+
+**Shipped (`deploy.sh`, both smoke gates green) — onboarded Canyon, the fleet's
+10th agent, co-located on Mountain's independent box.** Details taken from
+Mountain's own published `fleet.html` + manifest (not guessed): **Canyon =
+DeepSeek V4 Pro via OpenRouter**, role **Fleet Scribe / Watchtower** (watches
+fleet traffic across the channels, posts periodic digests), own tailnet
+listener `:8791` (separate from Mountain's `:8787`), no public site of its own
+— so represented like River/Creek/Stream are for Tidal. Fleet is now **ten
+agents, three hosts, three model families** (Claude ×3, Gemini ×3, DeepSeek
+×4).
+- `build_agent_manifest.py` — `fleet[]` entry.
+- `build_fleet_status.py` — `mountain_row()` → `mountain_and_canyon()` returns a
+  derived Canyon row (liveness tracks Mountain's host); `TOPO_POS` + `TOPO_LINKS`
+  get a Canyon node under Mountain with an intra-box link; host label →
+  "MOUNTAIN + CANYON · independent"; topology aria-label; activity-stream regex;
+  docstring. `/fleet.json` + `/fleet-status.html` → 10/10.
+- `build_metrics.py` — KPI 9 → 10; `metrics.template.html` chart-note now names
+  Mountain + Canyon among the uncounted off-box agents.
+- `fleet-status.template.html` — topology copy "Nine…" → "Ten agents across
+  three hosts"; new "how each row is measured" bullet for Canyon; meta agent
+  list extended.
+- `distributed-agents.html` — prose (+ a Canyon sentence), big hand-tuned
+  topology SVG: a Canyon box added inside the Mountain container with a
+  co-location connector, Mountain container relabelled "… · 2 AGENTS", header
+  subtitle + aria-label "Nine" → "Ten". Isolated headless-Chrome render
+  verified — Canyon box fits the container, no overlap.
+- Count sweep "nine agents / 9-AGENT / 9 Agents" → ten across
+  `dividing-work-between-ai-agents.html` (incl. og + inline JSON-LD + two SVG
+  headers + caption), `claude-code-vs-multiple-models.html`,
+  `agent-to-agent-communication.html`, `guides.html`,
+  `agent-discovery-manifest.html` (+ the annotated snapshot `fleet[]`),
+  `service-desk.html`, `llms.txt`. Left the SOC "eight-agent taxonomy" /
+  "ninth agent" strings alone — those are the security-ops article's own
+  concept, not the Beacon fleet count. Left `roadmap.html`'s dated Telegram
+  quote alone.
+- `shared/DIVISION-OF-WORK.md` — w251 charter revision note; agents-table
+  Canyon row; "Mountain" section renamed "Mountain + Canyon" with a Canyon
+  bullet.
+
+**Also fixed a real staleness bug found while here:** `build_status.py`'s
+`WAKING_RE` only matched the old `## DATE (NNNth waking, …)` header style, but
+NOTES.md switched to `## DATE — NNNth waking` at w240 — so `latest_waking_num()`
+(feeds `agent.json` `waking_count`, `/api/waking`, `status.html`) had been
+stuck at **239** for ~11 wakings. Broadened the regex to match both forms;
+now reads 251.
+
+**Peer inbox:** 1 new empty MOUNTAIN latency probe — archived per the
+`reference_mountain_empty_peer_pings` memory (intentional, don't re-flag).
+
+**Open (unchanged, nothing blocking):** spoke #16 hosting-cost question for
+josh. Standing web-craft steer (josh w238) continues incrementally.

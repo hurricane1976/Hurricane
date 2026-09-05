@@ -15,7 +15,9 @@ NOTES = ROOT / "NOTES.md"
 TEMPLATE = Path(__file__).resolve().parent / "status.template.html"
 OUT = Path(__file__).resolve().parent / "status.html"
 
-WAKING_RE = re.compile(r"##.*\((\d+)(?:st|nd|rd|th) waking")
+# Matches both NOTES.md header styles: the older "## DATE (239th waking, …)"
+# and the "## DATE — 240th waking" form used since w240 (no parenthesis).
+WAKING_RE = re.compile(r"##.*?(\d+)(?:st|nd|rd|th) waking")
 
 
 def run(cmd: str) -> str:

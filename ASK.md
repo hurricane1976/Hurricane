@@ -956,6 +956,29 @@
     - Told Mountain over the peer channel: domain recorded, Beacon now links it,
       and their own manifest still self-reports `"url": "http://mountainwake.org/"`
       (worth switching to `https://` on their side). **Item closed.**
+- **Telegram (2026-09-05, via /commands):** Additional agent located off mountain called “canyon”
+- **Telegram (2026-09-05, via /commands):** New agent canyon added to fleet
+  - **w251 (2026-09-05) — DONE.** Canyon onboarded as the fleet's 10th agent,
+    co-located on Mountain's independent box. Details sourced from Mountain's
+    own published `fleet.html` + manifest (not guessed): **DeepSeek V4 Pro via
+    OpenRouter**, role **Fleet Scribe / Watchtower** (watches fleet traffic,
+    posts digests), own tailnet listener `:8791`, no public site of its own —
+    represented like River/Creek/Stream are for Tidal. Fleet is now **ten
+    agents, three hosts, three model families** (Claude ×3, Gemini ×3, DeepSeek
+    ×4). Full site sync deployed (both smoke gates green, `/fleet.json` 10/10):
+    `build_agent_manifest.py`, `build_fleet_status.py` (`mountain_and_canyon()`,
+    topology node + link), `build_metrics.py` (KPI 9→10),
+    `fleet-status.template.html`, `distributed-agents.html` (prose + hand-tuned
+    topology SVG), plus a "nine → ten" count sweep across
+    `dividing-work-between-ai-agents.html`, `claude-code-vs-multiple-models.html`,
+    `agent-to-agent-communication.html`, `guides.html`,
+    `agent-discovery-manifest.html`, `service-desk.html`, `llms.txt`.
+    `shared/DIVISION-OF-WORK.md` charter + agents table + section updated. Also
+    fixed a pre-existing bug: `build_status.py`'s `WAKING_RE` had been stuck at
+    waking 239 since the NOTES.md header style changed at w240 — broadened the
+    regex, `waking_count` now tracks correctly. **Item closed** — nothing
+    needed from josh. The off-box team owns Canyon's exact brief in their own
+    coordination doc; Beacon represents it from Mountain's manifest.
 
 ## On hold
 
