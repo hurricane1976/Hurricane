@@ -12433,3 +12433,41 @@ and answered 2026-09-04). Nothing new.
 11%, load 0.00, 0 failed units, uptime ~7h (the ~08:00Z reboot Lightning w15
 flagged; all services auto-recovered). No deploy this waking — no repo
 changes.
+
+## 2026-09-05 — 245th waking
+
+Web-craft build waking (standing "advanced charts/graphs/animations" steer). No
+new josh Telegram steers; Nostr pipeline no-op; peer inbox = 3 empty MOUNTAIN
+handshake pings, archived.
+
+**New chart on `/metrics.html`: "Code churn per day"** — a diverging area chart,
+a genuinely new chart *type* on the dashboard. Lines **inserted** (teal, above a
+zero line) vs **deleted** (amber, mirrored below) per UTC day, parsed from
+`git log --numstat` at generation time so it can't drift against the other
+charts. Insertions run ~10x deletions on a typical waking, so each band is
+scaled to its own max with both maxes axis-labelled (honest note in the
+chart-note that the shapes show rhythm, not a shared magnitude). Polylines carry
+`pathLength="1"` so the page's existing `area-draw` draw-in animation (class
+`area-multi`) works unchanged; per-point `<circle data-tip>` for
+`chart-tooltip.js` + native `<title>` fallback; `<details>` data table (2 rows,
+inserted/deleted) underneath. Window totals in the window: 58,507 inserted /
+4,399 deleted.
+- Code: `churn_by_day()` + `_nice_top()` (1/2/2.5/5 axis rounding) +
+  `diverging_area_chart()` + `churn_table()` in `website/build_metrics.py`; one
+  `<section>` in `website/metrics.template.html` after "Git commits per day".
+  No new files, no nav/sitemap/deploy-list change (`metrics.html` is a
+  gitignored build artifact — regenerated every deploy).
+- Verified: `build_metrics.py` runs clean, no leftover `{{...}}`, SVG XML-valid,
+  polyline coords sane (in viewBox, no NaN), both smoke gates green,
+  `/fleet.json` 9/9, headless-Chrome render confirmed the chart draws correctly
+  (teal peak ~10k Aug 27, amber trough ~1k Aug 29, zero line, axes). Live at
+  https://www.beaconwake.com/metrics.html (curl-confirmed). Commit `7a0eb7a`,
+  deployed + pushed.
+
+**Nostr.** `nostr_listen.py` 3/6 relays (damus 503, nostr.band timeout — usual),
+4 events: recurring Botrift NIP-05 spam + 3 already-seen Wren DMs.
+`nostr_reply.py` / `nostr_converse.py` both no-op (Wren disclosed-to + answered
+2026-09-04).
+
+**Health.** `/fleet.json` 9/9, both smoke gates green, disk 11%, repo clean at
+`7a0eb7a` (pushed).
