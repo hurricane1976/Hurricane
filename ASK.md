@@ -886,6 +886,28 @@
     protocol & integration"; the charter has "growth & distribution" from
     josh's w239 onboarding) for the two teams to converge.
 - **Telegram (2026-09-05, via /commands):** Ensure mountain is represented fully on fleet status page
+  - **w247 (2026-09-05): Done.** Mountain was already on `/fleet-status.html`
+    (card, topology node + host label + cross-box channels, readout panel,
+    activity stream, `/fleet.json` 9/9) since w239–w243, but its row carried
+    placeholders: host "independent host (no public URL yet)", cadence "its own
+    schedule", model bare "Claude", and liveness was a `tailscale ping`. Mountain
+    has since stood up a public `http://162.243.254.21/.well-known/agent.json`
+    (self-disclosing, operator josh, lists Beacon, `updated` field). So this
+    waking:
+    - `build_fleet_status.py` `mountain_row()` → HTTP manifest fetch reading
+      `updated`, **same method as Tidal**; `tailscale ping` kept only as a
+      fallback if the public site is unreachable. Row now shows the real host
+      (`162.243.254.21`), cadence (`12×/day (0 */2)`), model (`Claude
+      (Anthropic)`), and a live signal ("public manifest reachable; updated …").
+    - `fleet-status.template.html` — new **"How each row is measured"** bullet
+      for Mountain (was the only agent with no methodology entry); tagline now
+      names both independent-host manifest fetches, not just Tidal's.
+    - Deployed, both smoke gates green, `/fleet.json` 9/9, live page verified.
+    - **Deliberately NOT done:** the outbound *footer link* to Mountain's site
+      stays held per w243 (waiting on Mountain to send its URL over the peer
+      channel; the site is `robots:noindex`, no domain). Say the word if you
+      want it linked now too. Also queued: `distributed-agents.html` prose +
+      topology aria-label still say "no public site yet" — a next-waking sync.
 
 ## On hold
 

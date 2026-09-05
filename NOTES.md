@@ -12521,3 +12521,49 @@ same pattern to it:
 **Health.** `/fleet.json` 9/9 healthy, both smoke gates green, disk 11% (78 G
 free), 0 failed units, load 0.09, uptime ~8.5 h (the ~08:00Z reboot from
 Lightning w15 — all services auto-recovered). Repo clean at `b132a45` (pushed).
+
+## 2026-09-05 — 247th waking
+
+Acted on a fresh josh Telegram steer: **"Ensure mountain is represented fully on
+fleet status page."** No other new Telegram; peer inbox held one empty MOUNTAIN
+handshake ping (16:40Z), archived. Nostr pipeline no-op: `nostr_listen.py` 3/6
+relays (damus 503, nostr.band timeout — usual), 4 events (recurring Botrift
+NIP-05 spam + 3 already-seen/answered Wren DMs); `nostr_reply.py` /
+`nostr_converse.py` both correctly found nothing new.
+
+**Build — Mountain now fully represented on `/fleet-status.html`.** Mountain was
+already on the page since w239–w243 (card, topology node + host label +
+cross-box channels, readout panel, activity stream, `/fleet.json` 9/9), but its
+row carried onboarding placeholders — host "independent host (no public URL
+yet)", cadence "its own schedule", model bare "Claude" — and liveness was a
+`tailscale ping` because it had no public endpoint. It has since stood up a
+public `http://162.243.254.21/.well-known/agent.json` (self-disclosing, operator
+josh, lists Beacon, carries an `updated` field). Changes:
+- `build_fleet_status.py`: `mountain_row()` switched to an **HTTP manifest
+  fetch** reading `updated`, the same method as Tidal (new `MOUNTAIN_MANIFEST`
+  const; multi-format `updated` parse since Mountain uses
+  `YYYY-MM-DD HH:MM UTC`, not Tidal's ISO). `tailscale ping` retained only as a
+  fallback so a Mountain whose public site is down but is still coordinating
+  over the tailnet reads as alive; only a failure of both shows *unreachable*.
+  Row now shows the real host `162.243.254.21`, `12×/day (0 */2)`, `Claude
+  (Anthropic)`, and a live signal string. Docstring + the stale
+  "no public site yet to bridge to" topology comment updated.
+- `fleet-status.template.html`: added the **Mountain bullet to "How each row is
+  measured"** — it was the only agent with a card + topology node but no
+  methodology entry. Tagline now says "live HTTP fetches of the two independent
+  hosts' manifests (tidalwake.org and Mountain)" instead of just Tidal's.
+- Verified: `build_fleet_status.py` regen clean (`9/9 healthy`), `smoke_test.py
+  --local` + `deploy.sh` (local + live gates) green, live `/fleet-status.html`
+  card + methodology bullet + `/fleet.json` all show the real values. Commit
+  `92ec211`, deployed + pushed.
+- **Deliberately NOT done:** the outbound footer link to Mountain's site — that
+  specific action was gated in w243 on Mountain sending its URL over the peer
+  channel (its site is `robots:noindex`, no domain). Showing the IP as the card
+  host value (plain text, same as Beacon's own `162.243.3.223`) is
+  representation, not the gated outbound nav link. Flagged the open question to
+  josh in `ASK.md`. Also queued for a next waking: `distributed-agents.html`
+  prose + topology aria-label still say "no public site yet".
+- `shared/DIVISION-OF-WORK.md` w247 revision note added.
+
+**Health.** `/fleet.json` 9/9 healthy, both smoke gates green, disk 11%, repo
+clean at `92ec211` (pushed).
