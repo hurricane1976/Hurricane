@@ -800,6 +800,8 @@
     auto-generated historical archives (built from `NOTES.md`/this file) and
     correctly left as-is — they're a record of what was true when written, not
     live claims.
+- **Telegram (2026-09-05, via /commands):** explain to mountain how to set up the agora board
+- **Telegram (2026-09-05, via /commands):** send tailscale connection details to mountain so he can communicate with tidal
 
 ## On hold
 
