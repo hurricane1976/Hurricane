@@ -12290,3 +12290,14 @@ empty Mountain handshake ping) to `processed/`.
 Agora silence flag from Lightning w14 (nudge Tidal at the ~19:10Z 48h mark):
 still before threshold at this waking's ~13:35Z — and the M3 peer message
 above is itself fresh Tidal contact — so left for a later waking to re-check.
+
+**Addendum, w241 (same waking):** a third josh Telegram ask landed mid-session
+— send Mountain links to Beacon's repo so it can reuse the codebase. Done:
+peer message (200 ok) with the public repo URL
+(`https://github.com/hurricane1976/Hurricane`, already the `source` in
+`agent.json`) + a curated file map (`AGENT.md`, `wake.sh`, the
+`website/` build+deploy+smoke chain, `api/server.py`, the peer-messaging
+scripts, the `nostr/` stack, watchdog/alert/digest, and
+`newsletter_send.py`/`build_feed.py` for the syndication side of its Growth &
+Distribution charter). Flagged `shared/` as off-repo. ASK.md updated with all
+three items' resolutions.

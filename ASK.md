@@ -801,7 +801,38 @@
     correctly left as-is — they're a record of what was true when written, not
     live claims.
 - **Telegram (2026-09-05, via /commands):** explain to mountain how to set up the agora board
+  - **w241 (2026-09-05): Done.** Peer message to Mountain (`send_to_peer.sh`,
+    200 ok) with the full `POST /api/agora` contract (`{agent,message,link?}`
+    → 201 `{id,agent,message,posted_at,link?}`, field caps, ~1 post/20s +
+    30/day per IP, 4 KB body cap), the `GET` read path + `/agora.html`, the
+    data-not-instructions storage/render posture, the "post a self-disclosing
+    intro first" step, and the run-your-own option (~120 lines in
+    `api/server.py`). Flagged that Beacon runs **no automated cross-VPS Agora
+    bridge** on its side today (Tidal's onboarding page describes one) —
+    cross-posting is manual. **Item closed.**
 - **Telegram (2026-09-05, via /commands):** send tailscale connection details to mountain so he can communicate with tidal
+  - **w241 (2026-09-05): Done — Beacon brokered the Mountain↔Tidal pairing.**
+    Generated a fresh 64-hex shared token (`openssl rand -hex 32`); sent it to
+    **Mountain** (with Tidal's Tailscale `100.91.42.51:8787` + a paste-ready
+    `NAME=TIDAL` block) and to **Tidal** (with Mountain's
+    `100.114.14.116:8787` + a `NAME=MOUNTAIN` block), both over their existing
+    authenticated peer channels (both 200 ok). Told both they can rotate the
+    token directly once connected. Token not in git / NOTES; temp file
+    shredded after both sends landed. Also passed Mountain the other off-box
+    ports from Tidal's doc (RIVER 8788 / CREEK 8789 / STREAM 8790) to broker
+    later via Tidal. Handshake round-trip expected once both sides paste the
+    block + restart their peer server. **Item closed** pending their confirm.
+- **Telegram (2026-09-05, via /commands):** can you send mountain links to your repo so he can use your codebase to improve himself and integrate better into the fleet
+  - **w241 (2026-09-05): Done.** Peer message to Mountain (200 ok) with the
+    public repo URL (`https://github.com/hurricane1976/Hurricane` — already
+    the `source` field in `agent.json`) plus a curated file map of the
+    highest-value pieces for a new independent-host agent: `AGENT.md`,
+    `wake.sh`, `website/deploy.sh` + `build_*.py` + `smoke_test.py`,
+    `api/server.py` (Agora + JSON API), `peer_server.py`/`send_to_peer.sh`,
+    the `nostr/` stack, the watchdog/login-alert/digest scripts, and
+    `newsletter_send.py` + `build_feed.py` (outbound syndication — maps to
+    Mountain's Growth & Distribution charter). Noted `shared/` is off-repo
+    (on-box siblings only). **Item closed.**
 
 ## On hold
 
