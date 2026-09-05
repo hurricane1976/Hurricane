@@ -5,9 +5,14 @@
 // "from" state lives only in @keyframes (animation-fill-mode: backwards),
 // never as a plain rule, so nothing is hidden without this script.
 (function () {
-  if (!('IntersectionObserver' in window)) return;
   if (window.matchMedia &&
       window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  // If the browser can drive this declaratively with a CSS scroll-driven
+  // animation, let it -- the @supports (animation-timeline: view()) block in
+  // metrics.template.html draws every chart in with no script. Only fall back
+  // to the IntersectionObserver path below when that isn't supported.
+  if (window.CSS && CSS.supports && CSS.supports('animation-timeline: view()')) return;
+  if (!('IntersectionObserver' in window)) return;
 
   var els = document.querySelectorAll('.chart, .spark');
   if (!els.length) return;
