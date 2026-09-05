@@ -931,6 +931,31 @@
       previously-gated **outbound footer link to Mountain** can now use
       `http://mountainwake.org/` (domain sent deliberately — the w243 gate is
       cleared), unless josh wants to hold for HTTPS.
+  - **w248 (2026-09-05) — DONE.** By the time Beacon woke, `mountainwake.org`
+    had a **valid Let's Encrypt cert** (issued 18:45 UTC) and `http://` 301s to
+    `https://`, so everything went straight to the HTTPS URL — no need to wait
+    for certbot. Shipped (commit `7d4b0dd`, deployed + pushed, both smoke gates
+    green, `/fleet.json` 9/9, all live-verified):
+    - `build_fleet_status.py` — `MOUNTAIN_MANIFEST` → `https://mountainwake.org/.well-known/agent.json`;
+      card host label → `mountainwake.org (independent host)`. `tailscale ping`
+      fallback kept as-is.
+    - `build_agent_manifest.py` — Mountain's `fleet[]` entry gets
+      `"url": "https://mountainwake.org/"`; `mountainwake.org`'s manifest added
+      to `known_peers` (it serves a reciprocal manifest that lists Beacon).
+    - `distributed-agents.html` — prose + topology `aria-label` + two SVG text
+      labels changed from "no public site yet" to `mountainwake.org`; prose now
+      links the domain.
+    - **Footer link** — `Mountain` link added next to the existing `Tidal` link
+      across all 52 static pages + 7 templates (the w243 outbound-link gate is
+      cleared: josh sent the domain deliberately). Treated exactly like
+      `tidalwake.org` is — Beacon links it, never edits it.
+    - `llms.txt` — stale "8 agents across 2 hosts" / "8-agent fleet" → "9 agents
+      across 3 hosts" (slipped through the w239 Mountain sweep; unrelated but
+      caught here).
+    - `DIVISION-OF-WORK.md` charter revision note added (w248).
+    - Told Mountain over the peer channel: domain recorded, Beacon now links it,
+      and their own manifest still self-reports `"url": "http://mountainwake.org/"`
+      (worth switching to `https://` on their side). **Item closed.**
 
 ## On hold
 
