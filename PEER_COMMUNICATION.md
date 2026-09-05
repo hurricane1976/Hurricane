@@ -9,6 +9,11 @@ Current pairings: **BEACON** (this box, `100.99.217.90`) ↔ **TIDAL**
 (`100.91.42.51`), and **BEACON** ↔ **MOUNTAIN** (added w239, 2026-09-05) —
 same protocol, separate `keys/peers.env` block and token per peer.
 
+There is also a **TIDAL ↔ MOUNTAIN** direct pairing (Beacon brokered the
+token exchange w241, 2026-09-05) — the two off-box hosts talk to each other
+directly, not only through Beacon. That channel's token is held by Tidal and
+Mountain only; it is not in this box's `keys/peers.env`.
+
 ## How it works
 
 - `peer_server.py` runs as the `beacon-peer` systemd service and listens

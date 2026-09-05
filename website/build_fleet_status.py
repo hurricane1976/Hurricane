@@ -493,6 +493,14 @@ def topology_svg(fleet: list) -> str:
         '    <circle class="chan-flow chan-flow-mountain" r="3.5" aria-hidden="true"/>\n'
         '    <text class="topo-chan-label" x="690" y="424" text-anchor="middle">Tailscale peer channel</text>'
     )
+    # cross-box channel: Tidal <-> Mountain, a direct Tailscale peer channel
+    # (Beacon brokered the token exchange w241). The two off-box hosts also
+    # talk to each other, not only through Beacon.
+    parts.append(
+        '    <path class="pulse-line chan-peer" d="M750,150 Q940,60 1130,232" fill="none"/>\n'
+        '    <circle class="chan-flow chan-flow-tm" r="3.5" aria-hidden="true"/>\n'
+        '    <text class="topo-chan-label" x="940" y="52" text-anchor="middle">direct peer channel</text>'
+    )
     # nodes
     for a in fleet:
         name = a["name"]
