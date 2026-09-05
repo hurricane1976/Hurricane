@@ -16,6 +16,7 @@ instant, styled tooltip where JS is available (the <title> stays as the
 no-JS fallback).
 """
 import json
+import math
 import re
 import subprocess
 from collections import Counter
@@ -98,6 +99,32 @@ def wakings_by_day(log_dir: Path) -> Counter:
 def commits_by_day() -> Counter:
     out = run(f"git -C {ROOT} log --date=short --pretty=%ad")
     return Counter(d.replace("-", "") for d in out.split())
+
+
+def churn_by_day():
+    """(insertions, deletions) line counts per UTC day from `git log --numstat`.
+
+    Counts every tracked file, generated pages included -- it's a measure of how
+    much text moved on that day, not a hand-authored-only tally. Binary files
+    (numstat prints `-\t-`) are skipped.
+    """
+    out = run(
+        f"git -C {ROOT} log --date=short --numstat --pretty=format:'C%ad'"
+    )
+    ins, dels, day = Counter(), Counter(), None
+    for line in out.splitlines():
+        if line.startswith("C"):
+            day = line[1:].replace("-", "")
+            continue
+        parts = line.split("\t")
+        if len(parts) != 3 or day is None:
+            continue
+        a, d, _ = parts
+        if a.isdigit():
+            ins[day] += int(a)
+        if d.isdigit():
+            dels[day] += int(d)
+    return ins, dels
 
 
 def _parse_iso(s: str):
@@ -407,6 +434,107 @@ def multi_area_chart(series, days, unit="wakings", height=280):
     )
 
 
+def _nice_top(v: int) -> int:
+    """Round an axis maximum up to a tidy 1/2/5 x 10^k value."""
+    if v <= 5:
+        return max(v, 1)
+    mag = 10 ** int(math.log10(v))
+    for m in (1, 2, 2.5, 5, 10):
+        if m * mag >= v:
+            return int(m * mag)
+    return int(10 * mag)
+
+
+def diverging_area_chart(ins: Counter, dels: Counter, days, height=240):
+    """Diverging area chart of code churn: insertions rise above a zero line,
+    deletions fall below it. Insertions run ~10x deletions on a typical waking,
+    so each half is scaled to its own max (top 64% of the plot for insertions,
+    bottom 36% for deletions) and both maxes are labelled -- otherwise the
+    deletion band would be invisible. Built from `git log --numstat` every
+    deploy, same as every other chart here. Lines carry pathLength="1" so the
+    CSS draw-in is a fixed keyframe regardless of real path length.
+    """
+    W, H = 720, height
+    ml, mr, mt, mb = 44, 10, 14, 26
+    plot_w, plot_h = W - ml - mr, H - mt - mb
+    n = len(days)
+    step = plot_w / (n - 1) if n > 1 else 0
+    zy = mt + plot_h * 0.64
+    up_h, down_h = zy - mt, (mt + plot_h) - zy
+
+    ivals = [ins.get(d.strftime("%Y%m%d"), 0) for d in days]
+    dvals = [dels.get(d.strftime("%Y%m%d"), 0) for d in days]
+    itop = _nice_top(max(ivals + [1]))
+    dtop = _nice_top(max(dvals + [1]))
+
+    parts = [
+        f'<line x1="{ml}" y1="{zy:.1f}" x2="{W - mr}" y2="{zy:.1f}" '
+        f'stroke="var(--line)" stroke-width="1.5"/>',
+        f'<text x="{ml - 6}" y="{mt + 4:.1f}" text-anchor="end" class="ax">{itop:,}</text>',
+        f'<text x="{ml - 6}" y="{zy + 3:.1f}" text-anchor="end" class="ax">0</text>',
+        f'<text x="{ml - 6}" y="{mt + plot_h:.1f}" text-anchor="end" class="ax">{dtop:,}</text>',
+    ]
+
+    show = sorted({0, n - 1, n // 3, 2 * n // 3})
+    for i in show:
+        anchor = "start" if i == 0 else "end" if i == n - 1 else "middle"
+        parts.append(
+            f'<text x="{ml + i * step:.1f}" y="{H - 7}" text-anchor="{anchor}" '
+            f'class="ax">{days[i].strftime("%b %-d")}</text>'
+        )
+
+    for name, vals, top, color, sign in (
+        ("insertions", ivals, itop, TEAL, -1),
+        ("deletions", dvals, dtop, AMBER, 1),
+    ):
+        span = up_h if sign < 0 else down_h
+        pts = [
+            (ml + i * step, zy + sign * (v / top) * span)
+            for i, v in enumerate(vals)
+        ]
+        line = " ".join(f"{x:.1f},{y:.1f}" for x, y in pts)
+        area = f"{pts[0][0]:.1f},{zy:.1f} " + line + f" {pts[-1][0]:.1f},{zy:.1f}"
+        gid = f"{_next_cid()}-dg"
+        parts.append(
+            f'<defs><linearGradient id="{gid}" x1="0" y1="0" x2="0" y2="1">'
+            f'<stop offset="0" stop-color="{color}" stop-opacity="0.34"/>'
+            f'<stop offset="1" stop-color="{color}" stop-opacity="0.02"/></linearGradient></defs>'
+            f'<polygon points="{area}" fill="url(#{gid})"/>'
+            f'<polyline points="{line}" fill="none" stroke="{color}" stroke-width="2" '
+            f'pathLength="1" stroke-linejoin="round" stroke-linecap="round" '
+            f'vector-effect="non-scaling-stroke"/>'
+        )
+        for i, (x, y) in enumerate(pts):
+            label = f"{days[i].strftime('%b %-d')}: {vals[i]:,} lines {name}"
+            parts.append(
+                f'<circle cx="{x:.1f}" cy="{y:.1f}" r="3" fill="{color}" '
+                f'data-tip="{label}"><title>{label}</title></circle>'
+            )
+
+    return (
+        f'<svg viewBox="0 0 {W} {H}" class="chart area-multi diverge" role="img" '
+        f'aria-label="Diverging area chart, lines inserted (above zero) and '
+        f'deleted (below zero) per day over the last {n} days">'
+        f'{"".join(parts)}</svg>'
+    )
+
+
+def churn_table(ins: Counter, dels: Counter, days):
+    head = "".join(f"<th>{d.strftime('%b %-d')}</th>" for d in days)
+    irow = "".join(
+        f"<td>{ins.get(d.strftime('%Y%m%d'), 0):,}</td>" for d in days
+    )
+    drow = "".join(
+        f"<td>{dels.get(d.strftime('%Y%m%d'), 0):,}</td>" for d in days
+    )
+    return (
+        f'<details class="datatable"><summary>Data table</summary>'
+        f'<div class="tscroll"><table><thead><tr><th>day</th>{head}</tr></thead>'
+        f'<tbody><tr><th>inserted</th>{irow}</tr>'
+        f'<tr><th>deleted</th>{drow}</tr></tbody></table></div></details>'
+    )
+
+
 def hbar_chart(rows, color, unit):
     """Horizontal single-series bars with direct value labels. rows: [(label, v)]."""
     W = 720
@@ -495,6 +623,7 @@ def main():
     lantern = wakings_by_day(LOG_DIRS["Lantern"])
     lightning = wakings_by_day(LOG_DIRS["Lightning"])
     commits = commits_by_day()
+    ins_churn, del_churn = churn_by_day()
 
     tidal_dts = tidal_wakings()
     tidal = tidal_by_day(tidal_dts)
@@ -562,6 +691,10 @@ def main():
         "{{CHART_LANTERN}}": bar_chart(lantern, days, AMBER, "wakings", height=150),
         "{{CHART_LIGHTNING}}": bar_chart(lightning, days, AMBER, "wakings", height=150),
         "{{CHART_COMMITS}}": bar_chart(commits, days, TEAL, "commits"),
+        "{{CHART_CHURN}}": diverging_area_chart(ins_churn, del_churn, days),
+        "{{CHART_CHURN_TABLE}}": churn_table(ins_churn, del_churn, days),
+        "{{TOT_INSERTED}}": f"{win_total(ins_churn):,}",
+        "{{TOT_DELETED}}": f"{win_total(del_churn):,}",
         "{{CHART_FLEET24}}": hbar_chart(
             [("Beacon", last24(LOG_DIRS["Beacon"])),
              ("Highbeam", last24(LOG_DIRS["Highbeam"])),

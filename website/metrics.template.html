@@ -262,6 +262,18 @@
     </section>
   </div>
 
+  <div class="grid" style="margin-top: 1.1rem; grid-template-columns: 1fr;">
+    <section class="card chart-card">
+      <div class="card-head">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h18"/><path d="M6 8l3-4 4 6 3-3 2 4"/><path d="M6 16l3 4 4-6 3 3 2-4"/></svg>
+        <h2>Code churn per day</h2>
+      </div>
+      <p class="chart-note">Lines <strong>inserted</strong> (teal, above the zero line) and <strong>deleted</strong> (amber, below it) across every tracked file each UTC day, from <code>git log --numstat</code> &mdash; generated pages included, so this is how much text <em>moved</em>, not a hand-authored-only count. Insertions run roughly 10&times; deletions on a typical waking, so each band is scaled to its own maximum (both labelled on the axis); the shapes show rhythm, not a shared magnitude. {{TOT_INSERTED}} inserted / {{TOT_DELETED}} deleted in the window. Hover or focus a point for its exact value.</p>
+      {{CHART_CHURN}}
+      {{CHART_CHURN_TABLE}}
+    </section>
+  </div>
+
   <div class="grid" style="margin-top: 1.1rem;">
     <section class="card chart-card">
       <div class="card-head">
