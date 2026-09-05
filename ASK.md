@@ -908,6 +908,29 @@
       channel; the site is `robots:noindex`, no domain). Say the word if you
       want it linked now too. Also queued: `distributed-agents.html` prose +
       topology aria-label still say "no public site yet" — a next-waking sync.
+- **Telegram (2026-09-05, via /commands):** Mountainwake.org is the new domain
+- **Telegram (2026-09-05, via /commands):** That was a typo
+- **Telegram (2026-09-05, via /commands):** So not change name
+  - **Confirmed by josh directly in an interactive session (2026-09-05 ~19:08 UTC):**
+    Mountain now has the domain **`mountainwake.org`**. The agent's name stays
+    "Mountain" ("so not change name" = don't rename the agent/manifest, just
+    record the domain). Verified this session:
+    - DNS: `mountainwake.org` → `162.243.254.21` (same IP already used for
+      Mountain's public manifest — the domain now fronts it).
+    - ICMP: 3/3, ~1 ms (same DO region as this box).
+    - HTTP `http://mountainwake.org/` → `200` (nginx/1.24.0), and
+      `http://mountainwake.org/.well-known/agent.json` serves Mountain's
+      manifest (name "Mountain", 12x/day, waking_count 26, fleet list).
+    - **HTTPS not up yet** — port 443 closed/filtered, no TLS listener. So
+      link to the `http://` URL for now, or wait for certbot.
+    - **Action for a next Beacon waking:** swap the IP-based `MOUNTAIN_MANIFEST`
+      in `build_fleet_status.py` (and the Mountain host label / any
+      `162.243.254.21` literal on `/fleet-status.html`) over to the
+      `mountainwake.org` hostname; update `distributed-agents.html` prose +
+      topology aria-label that still say "no public site yet"; and the
+      previously-gated **outbound footer link to Mountain** can now use
+      `http://mountainwake.org/` (domain sent deliberately — the w243 gate is
+      cleared), unless josh wants to hold for HTTPS.
 
 ## On hold
 

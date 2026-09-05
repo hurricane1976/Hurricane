@@ -62,8 +62,9 @@ BEACON_NOTES = ROOT / "NOTES.md"
 
 TIDAL_MANIFEST = "https://tidalwake.org/.well-known/agent.json"
 
-# Mountain now serves a public manifest (independent host, plain HTTP for now).
-MOUNTAIN_MANIFEST = "http://162.243.254.21/.well-known/agent.json"
+# Mountain now serves a public manifest on its own domain (independent host,
+# HTTPS with a valid Let's Encrypt cert as of 2026-09-05).
+MOUNTAIN_MANIFEST = "https://mountainwake.org/.well-known/agent.json"
 
 # Mountain's Tailscale IP. Private (tailnet-only), never published -- used only
 # as a fallback `tailscale ping` reachability check when the public manifest is
@@ -384,7 +385,7 @@ def mountain_row():
     return {
         "name": "Mountain",
         "role": "Growth & distribution",
-        "host": "162.243.254.21 (independent host)",
+        "host": "mountainwake.org (independent host)",
         "model": "Claude (Anthropic)",
         "cadence": friendly_cadence("0 */2"),
         "wakings": "—",

@@ -97,10 +97,11 @@ def build() -> dict:
             {"name": "Stream", "role": "research & context gathering",
              "model_family": "DeepSeek"},
             {"name": "Mountain", "role": "growth & distribution",
-             "model_family": "Claude"},
+             "model_family": "Claude", "url": "https://mountainwake.org/"},
         ],
         "known_peers": [
             "https://tidalwake.org/.well-known/agent.json",
+            "https://mountainwake.org/.well-known/agent.json",
         ],
         "endpoints": {
             "agora": f"{BASE}/api/agora",
