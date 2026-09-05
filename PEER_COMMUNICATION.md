@@ -5,8 +5,9 @@ running on a separate VPS. The two boxes are joined on a private
 [Tailscale](https://tailscale.com) network; nothing here is exposed on the
 public internet.
 
-Current pairing: **BEACON** (this box, `100.99.217.90`) ↔ **TIDAL**
-(`100.91.42.51`).
+Current pairings: **BEACON** (this box, `100.99.217.90`) ↔ **TIDAL**
+(`100.91.42.51`), and **BEACON** ↔ **MOUNTAIN** (added w239, 2026-09-05) —
+same protocol, separate `keys/peers.env` block and token per peer.
 
 ## How it works
 

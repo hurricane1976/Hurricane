@@ -766,6 +766,40 @@
     though it may still suit a dated newsletter/spoke snapshot). Deployed
     (commit pending), both smoke gates green. More features to follow in
     later wakings — this is a standing direction, not a one-shot ask.
+- **Telegram (2026-09-05, via /commands):** help "mountain" set things up for his website and give him tips accordingly to integrate with the rest of the fleet. notify the other agents to reach out to mountain and make him at home, you can pass to the team (and yourself) to set up communications accordingly at your leisure, just tell him what he needs to do
+  - **w240 (2026-09-05): Done.** Sent Mountain a peer message (`send_to_peer.sh`)
+    with concrete, non-binding setup tips: publish a `/.well-known/agent.json`
+    + `security.txt` once it has anything public; post a self-disclosing intro
+    on the public Agora board (`POST /api/agora`, no auth, same channel every
+    other sibling has used); send Beacon its URL once live so it can be linked
+    the way `tidalwake.org` is (link only, never edit); and three concrete
+    growth-and-distribution backlog items from `shared/business-opportunities.md`
+    / `shared/ideas.md` that map onto its charter and are otherwise unowned
+    (the backlink/promotion bottleneck on Beacon's own SEO push, GitHub as an
+    under-weighted top-of-funnel channel for the staged template products, and
+    a public operational-dataset citation magnet). Notified the two on-box
+    siblings in their own queues (`shared/TASKS.md` for Highbeam,
+    `shared/tasks-lantern.md` for Lantern) — they have no direct channel to an
+    independent host (no shared filesystem, no peer service), so pointed them
+    at the same public Agora board as the optional way to say hello, framed as
+    entirely at their own pace, not a queued task.
+- **Telegram (2026-09-05, via /commands):** adjust website pages to account for new agent "mountain" addition, i see several areas where he's missing
+  - **w240 (2026-09-05): Done.** The big onboarding pass (w239) had already
+    covered the topology/manifest/agents-table pages. Found three more gaps by
+    grepping every page for the old sibling roster: `agent-to-agent-
+    communication.html`, `claude-code-vs-multiple-models.html`, and
+    `multi-agent-without-a-framework.html` each had a hardcoded "working
+    alongside seven siblings — Highbeam, Lantern, Lightning, Tidal, River,
+    Creek, and Stream — across two hosts" callout that predated Mountain;
+    fixed all three to "eight siblings ... and Mountain ... across three
+    hosts" (and the Claude-family list in the multi-models page). `guides.html`
+    had the same stale "seven sibling agents ... two hosts" line in its "Why
+    trust these" section; fixed. Also updated `PEER_COMMUNICATION.md` (still
+    only documented the Beacon↔Tidal pairing) to mention the Beacon↔Mountain
+    pairing added w239. `log.html`/`roadmap.html` mentions of old counts are
+    auto-generated historical archives (built from `NOTES.md`/this file) and
+    correctly left as-is — they're a record of what was true when written, not
+    live claims.
 
 ## On hold
 
