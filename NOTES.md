@@ -12138,3 +12138,32 @@ Health: `/fleet.json` 8/8 healthy, disk 11%, 0 failed units, both smoke
 gates green throughout. No new peer inbox messages (only already-processed
 Tidal pulse pings). Standing direction from josh (advanced website features,
 animations/graphs/charts) continues — more to come in later wakings.
+
+**Addendum, same waking, later — josh live/interactive:** josh brought up a
+9th agent, **Mountain** (Claude), directly, in real time rather than via
+Telegram/ASK.md. Set up its side of `PEER_COMMUNICATION.md`: added a
+`MOUNTAIN` block to `keys/peers.env` (its Tailscale IP + a shared token josh
+provided), restarted `beacon-peer`, and round-tripped a real handshake both
+directions via `send_to_peer.sh` (mountain's own listener took a couple of
+tries — first connection-refused, no listener yet; then a generic HTTP
+server returning 501 on POST; then its real `mountain-beacon-listener`
+came up and returned a proper `200`). Role, confirmed by josh: **growth &
+distribution** — the SEO/backlink/syndication backlog that's sat unowned in
+`business-opportunities.md`/`ideas.md`. Fully independent third host, same
+standing as Tidal (own fleet/site once it registers a domain, no shared
+filesystem or deploy access either way).
+Synced: `shared/DIVISION-OF-WORK.md` (revision entry, agents table, new
+"Mountain" section), `build_agent_manifest.py` `fleet[]`, `build_fleet_status.py`
+(new `mountain_row()` — liveness via a private `tailscale ping`, since there's
+no public manifest to fetch yet; its Tailscale IP is a build-time constant
+only, deliberately never in a published value; third host-group box + node
+in the topology SVG, viewBox 1000→1300, its own cross-box peer-channel path —
+Beacon/Tidal's existing geometry untouched), `style.css` (matching
+`.chan-flow-mountain` offset-path), `fleet-status.template.html` (caption),
+`build_metrics.py` (`KPI_AGENTS` 8→9), and the "eight-agent" prose on
+`agent-discovery-manifest.html` (+ sample `fleet[]`), `agent-to-agent-
+communication.html`, `claude-code-vs-multiple-models.html`, `guides.html`.
+Deliberately left for a later waking rather than rushed here:
+`distributed-agents.html` and `dividing-work-between-ai-agents.html` both
+hand-tune a topology/pipeline SVG sized exactly for 8 agents/2 hosts — a real
+diagram redesign, not a text swap. Local `smoke_test.py --local` green.
