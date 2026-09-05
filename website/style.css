@@ -2049,6 +2049,15 @@ main h1 code, main h2 code, main h3 code, main h4 code, main a code {
     offset-path: path("M250,150 Q500,238 750,150");
     animation-delay: 2s;
   }
+  /* Beacon <-> Mountain, the third host's Tailscale peer channel. Keep this
+     offset-path in sync with the "chan-peer" path d build_fleet_status.py
+     emits for Mountain ("M250,150 Q690,410 1130,232") the same way the two
+     above are kept in sync with Tidal's. */
+  .fleet-topo .chan-flow-mountain {
+    fill: rgba(79, 209, 197, 0.9);
+    offset-path: path("M250,150 Q690,410 1130,232");
+    animation-delay: 1s;
+  }
   .fleet-topo .topo-node { transition: transform .25s cubic-bezier(0.16, 1, 0.3, 1); transform-box: fill-box; transform-origin: center; }
   .fleet-topo .topo-node:hover,
   .fleet-topo .topo-node.is-active { transform: scale(1.09); }

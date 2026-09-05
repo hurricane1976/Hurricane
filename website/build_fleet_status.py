@@ -25,6 +25,13 @@ A monitoring/status view for the WHOLE agent fleet, not just Beacon:
                for the off-box team. Announced by josh w216, listed in Tidal's
                fleet manifest. No independent endpoint; liveness mirrors Tidal's
                host, same as River and Creek.
+  Mountain  -- independent third host, Claude. Added w239, growth &
+               distribution. No public site yet, so unlike Tidal it can't be
+               checked over HTTPS -- liveness is a `tailscale ping` to its
+               Tailscale IP instead. That IP is a build-time constant here and
+               deliberately never lands in a published value (host/signal
+               strings below), same discretion PEER_COMMUNICATION.md applies
+               to this box's own address.
 
 Every value is measured at generation time -- nothing hand-typed -- so the
 page can be at most one Beacon wake-cycle stale, same contract as status.html.
@@ -52,6 +59,11 @@ LIGHTNING_NOTES = HOME / "lightning" / "NOTES.md"
 BEACON_NOTES = ROOT / "NOTES.md"
 
 TIDAL_MANIFEST = "https://tidalwake.org/.well-known/agent.json"
+
+# Mountain's Tailscale IP. Private (tailnet-only), never published -- used only
+# to run a local `tailscale ping` reachability check. Same discretion
+# PEER_COMMUNICATION.md applies to this box's own address.
+MOUNTAIN_TS_IP = "100.114.14.116"
 
 LOG_TS_RE = re.compile(r"(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})Z\.log$")
 NOW = datetime.now(timezone.utc)
@@ -316,6 +328,33 @@ def tidal_and_river():
     return tidal, river, creek, stream
 
 
+def mountain_row():
+    """Mountain -- independent third host (Claude), peered with Beacon over a
+    private Tailscale channel only, no public site yet. Liveness is a
+    Tailscale-level reachability check, not an HTTPS manifest fetch like
+    Tidal's, since there's nothing public to fetch. Its Tailscale IP never
+    appears in the returned dict -- only used locally to run the check.
+    """
+    out = run(f"tailscale ping -c 1 --timeout=3s {MOUNTAIN_TS_IP}", timeout=6)
+    reachable = "pong" in out.lower()
+    return {
+        "name": "Mountain",
+        "role": "Growth & distribution",
+        "host": "independent host (no public URL yet)",
+        "model": "Claude",
+        "cadence": "its own schedule",
+        "wakings": "—",
+        "state": "ok" if reachable else "unreachable",
+        "last_wake": None,
+        "last_wake_human": "reachable now" if reachable else "not responding",
+        "signal": (
+            "reachable over the private Tailscale peer channel; no public "
+            "manifest yet" if reachable else
+            "not reachable over the Tailscale peer channel"
+        ),
+    }
+
+
 STATE_LABEL = {
     "ok": "healthy", "waking": "waking now", "stale": "stale",
     "error": "check logs", "unreachable": "unreachable", "unknown": "unknown",
@@ -378,6 +417,12 @@ TOPO_POS = {
     "Stream":   (620, 250),
     "Creek":    (880, 250),
     "River":    (750, 350),
+    # Third host, independent, solo agent so far -- centered in its own
+    # (narrower) box to the right of Tidal's. viewBox grew 1000->1300 to fit
+    # it (see topology_svg()); the first two host boxes/nodes above are
+    # untouched, so their .chan-flow offset-path values in style.css still
+    # match without changes.
+    "Mountain": (1130, 232),
 }
 # Intra-host links (both ends on the same box). Each host is a full mesh of 4 —
 # the co-located agents coordinate through shared files, not sockets.
@@ -420,7 +465,9 @@ def topology_svg(fleet: list) -> str:
         '    <rect class="topo-host" x="40" y="64" width="420" height="336" rx="12"/>\n'
         '    <text class="topo-host-label" x="60" y="92">THIS BOX &#183; 162.243.3.223</text>\n'
         '    <rect class="topo-host" x="540" y="64" width="420" height="336" rx="12"/>\n'
-        '    <text class="topo-host-label" x="560" y="92">OFF-BOX &#183; tidalwake.org</text>'
+        '    <text class="topo-host-label" x="560" y="92">OFF-BOX &#183; tidalwake.org</text>\n'
+        '    <rect class="topo-host" x="1000" y="64" width="260" height="336" rx="12"/>\n'
+        '    <text class="topo-host-label" x="1020" y="92">MOUNTAIN &#183; independent</text>'
     )
     # intra-host links
     for a, b in TOPO_LINKS:
@@ -438,6 +485,13 @@ def topology_svg(fleet: list) -> str:
         '    <circle class="chan-flow chan-flow-agora" r="3.5" aria-hidden="true"/>\n'
         '    <text class="topo-chan-label" x="500" y="58" text-anchor="middle">Tailscale peer channel</text>\n'
         '    <text class="topo-chan-label" x="500" y="262" text-anchor="middle">Agora bridge</text>'
+    )
+    # cross-box channel: Beacon <-> Mountain, Tailscale peer channel only (no
+    # Agora bridge -- Mountain has no public site yet to bridge to).
+    parts.append(
+        '    <path class="pulse-line chan-peer" d="M250,150 Q690,410 1130,232" fill="none"/>\n'
+        '    <circle class="chan-flow chan-flow-mountain" r="3.5" aria-hidden="true"/>\n'
+        '    <text class="topo-chan-label" x="690" y="424" text-anchor="middle">Tailscale peer channel</text>'
     )
     # nodes
     for a in fleet:
@@ -470,10 +524,10 @@ def topology_svg(fleet: list) -> str:
         '    </g>'
     )
     svg = (
-        '  <svg class="fleet-topo" viewBox="0 0 1000 460" '
+        '  <svg class="fleet-topo" viewBox="0 0 1300 460" '
         'xmlns="http://www.w3.org/2000/svg" role="img" '
         'aria-label="Animated fleet topology: four agents on this box, four off-box on tidalwake.org, '
-        'linked by a Tailscale peer channel and the Agora bridge.">\n'
+        'and Mountain, an independent third host, linked to this box by its own Tailscale peer channel.">\n'
         + "\n".join(parts)
         + "\n  </svg>"
     )
@@ -590,11 +644,12 @@ def main():
         "beaconwake.com box (/home/agent/lightning)", "DeepSeek V4 Pro",
         "6×/day (15 */4)", LIGHTNING_LOGS, LIGHTNING_NOTES, "Lightning")
     tidal, river, creek, stream = tidal_and_river()
+    mountain = mountain_row()
 
-    fleet = [beacon, highbeam, lantern, lightning, tidal, river, creek, stream]
+    fleet = [beacon, highbeam, lantern, lightning, tidal, river, creek, stream, mountain]
 
     healthy = sum(1 for a in fleet if a["state"] in ("ok", "waking"))
-    hosts = {"beaconwake.com (162.243.3.223)", "tidalwake.org"}
+    hosts = {"beaconwake.com (162.243.3.223)", "tidalwake.org", "Mountain (independent, private)"}
     generated = NOW.strftime("%Y-%m-%d %H:%M UTC")
 
     cards = "\n".join(card_html(a) for a in fleet)

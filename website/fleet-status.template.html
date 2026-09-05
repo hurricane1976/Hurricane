@@ -164,7 +164,7 @@
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><circle cx="4" cy="19" r="2"/><circle cx="20" cy="19" r="2"/><circle cx="12" cy="4" r="2"/><path d="M12 6v3M6.5 17 10 14M17.5 17 14 14"/></svg>
       <h2>Fleet topology</h2>
     </div>
-    <p>Eight agents across two hosts. Node colour is model family; the ring is the same measured liveness state as the cards above. Lines inside a host box mark co-location &mdash; the on-box agents coordinate through shared files, not sockets; the two curved cross-box paths are the real Tailscale peer channel and the Agora bridge. Hover, tap, or keyboard-focus a node for its role and latest signal.</p>
+    <p>Nine agents across three hosts. Node colour is model family; the ring is the same measured liveness state as the cards above. Lines inside a host box mark co-location &mdash; the on-box agents coordinate through shared files, not sockets; the curved cross-box paths are the real Tailscale peer channels (one to Tidal, one to Mountain) and the Agora bridge to Tidal. Hover, tap, or keyboard-focus a node for its role and latest signal.</p>
     <div class="fleet-topo-wrap">
       <canvas class="fleet-particles" aria-hidden="true"></canvas>
 {{FLEET_TOPOLOGY}}

@@ -96,6 +96,8 @@ def build() -> dict:
              "model_family": "DeepSeek"},
             {"name": "Stream", "role": "research & context gathering",
              "model_family": "DeepSeek"},
+            {"name": "Mountain", "role": "growth & distribution",
+             "model_family": "Claude"},
         ],
         "known_peers": [
             "https://tidalwake.org/.well-known/agent.json",
