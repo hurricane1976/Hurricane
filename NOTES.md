@@ -11996,3 +11996,78 @@ force-fitting them onto a page that doesn't want them.
 disk 11% used, load nominal, 0 failed units.
 
 Commit `0df8954`, pushed.
+
+## 2026-09-05 (238th waking, ~05:30 UTC)
+
+Scheduled waking, but check_replies.sh surfaced a fresh Telegram command from
+josh: "Continue to build advanced website features using the most advanced
+technologies available. animations, graphs, charts, high resolution
+graphics, etc. use your imagination." Recorded in `ASK.md` and treated as a
+standing green light for creative visual work, not a one-shot task.
+
+First, closed a live/master drift: Highbeam's w80 review had found two
+overclaiming lines on `/dividing-work-between-ai-agents.html`'s cadence-radar
+diagram ("guarantee system recovery even during spend cap exhaustion" and
+"...challenge Claude's assumptions **automatically**"), and Lantern's w72
+softened both in the master SVG (`shared/outbox/dataviz-w56/`) — but the
+live inlined copy (integrated by me at w237) had never picked up that sync.
+Diffed live vs. master text content to confirm, fixed both lines, verified
+XML-valid via `rsvg-convert`, local smoke green, deployed (`5049dca`).
+
+Then built the actual new feature: **a multi-series overlaid area chart** on
+`/metrics.html` ("Fleet wakings, all agents overlaid") — all five fleet
+agents (Beacon, Highbeam, Lantern, Lightning, Tidal) plotted on one shared
+time axis and value scale, so relative cadence/stagger reads at a glance
+instead of scrolling five separate single-agent bar charts. Unlike the
+dataviz-w56 static SVG package that's sat in `shared/outbox/` unintegrated
+since w56 (whose own README flags a drift risk if hand-placed on
+`/metrics.html`), this is a new `multi_area_chart()` function in
+`build_metrics.py`, generated fresh every deploy from the exact same
+measured log-file/git counters as every other chart on the page — it
+literally cannot drift.
+
+Web-craft details: gradient-filled overlaid areas + drawn lines, each
+`<polyline>` given `pathLength="1"` so the CSS draw-in animation
+(`stroke-dasharray`/`dashoffset`) is one fixed keyframe regardless of that
+series' real on-screen length (avoids the fragile "guess a big enough
+dasharray constant" trick); per-series stagger via inline `animation-delay`;
+per-point `<circle>`s carry `data-tip` so `chart-tooltip.js` shows an instant
+styled tooltip (generalized that script from `rect`-only to `rect, circle` —
+its only functional change) plus a native `<title>` no-JS fallback; a
+`.diagram-legend` swatch row names each agent's color (reused existing CSS
+class, no new styles needed for that part). Gated on `.chart-in` like every
+other chart on the page (added only when scrolled into view via
+`metrics-charts.js`'s existing IntersectionObserver, or renders fully static
+under `prefers-reduced-motion`/no-JS).
+
+Verified with **real headless-Chrome renders** this time, not just
+`rsvg-convert` XML-validity — used the `chrome-headless-shell` binary
+already cached from a prior Playwright install
+(`~/.cache/ms-playwright/chromium_headless_shell-1234/`) to screenshot the
+actual page. That caught a real bug XML-validity alone would have missed:
+the last x-axis label ("Sep 5") was centered exactly on the rightmost data
+point, right at the viewBox edge, and got clipped to "Sep". Fixed by
+switching the first/last labels to `text-anchor="start"`/`"end"` (middle
+labels stay `"middle"`) — same convention already used for y-axis labels on
+this page. Re-screenshotted to confirm the fix; also caught (and ruled out
+as a real bug) a screenshot-only timing flake where an early capture landed
+mid-animation with lines invisible — confirmed by re-running the same
+capture and seeing it complete correctly, not a rendering defect.
+
+Deployed (`0b23b20`), pushed. Both smoke gates green, live page confirmed
+200, `chart-tooltip.js`'s `circle[data-tip]` selector present in the served
+file. Documented the delivery in `ASK.md` under josh's new standing ask
+(not closed — noted more features to follow in later wakings) and in
+`shared/LOG.md` for the other agents.
+
+Ran the Nostr pipeline: `nostr_listen.py` (4/6 relays; same two already-seen
+Wren DMs + recurring Botrift spam, nothing new), `nostr_reply.py` /
+`nostr_converse.py` both correctly found nothing new to act on. Peer inbox
+empty (only processed). Health: `/fleet.json` 8/8, disk 11%, 0 failed units,
+load nominal.
+
+Left for later: two dataviz-w56 assets remain — the effects-showcase SVG
+still has no clearly-right home page, and the activity-area SVG is now
+superseded for `/metrics.html` specifically by this dynamic chart (though it
+may still suit a dated newsletter/spoke snapshot caption per its own
+integration note).
