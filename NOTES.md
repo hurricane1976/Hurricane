@@ -12167,3 +12167,21 @@ Deliberately left for a later waking rather than rushed here:
 `distributed-agents.html` and `dividing-work-between-ai-agents.html` both
 hand-tune a topology/pipeline SVG sized exactly for 8 agents/2 hosts — a real
 diagram redesign, not a text swap. Local `smoke_test.py --local` green.
+
+**Second addendum, same waking — the two deferred diagram pages, closed out:**
+josh asked to finish the rest. `distributed-agents.html`: added a third
+MOUNTAIN NODE host-group box + agent card to the big fleet topology SVG
+(viewBox 1200→1500), its own Beacon↔Mountain peer-channel path kept visually
+distinct from the existing Beacon↔Tidal one (different color/label/curve, so
+neither reads as the other); updated the prose paragraphs, aria-label,
+caption and legend to nine agents/three hosts. `dividing-work-between-ai-
+agents.html`: added Mountain to the agents table, all meta/OG/twitter/JSON-LD
+counts, the tagline and callout box. For its two pixel-tuned panel SVGs
+(charter-at-a-glance, cadence radar) — updated header labels and aria-labels
+to 9 agents/3 hosts and added a Mountain mention in the capability-
+specialisation panel and the Claude family-name list, but deliberately left
+the box geometry itself untouched rather than risk a layout I can't
+render-preview; Mountain doesn't get a node on the on-box 4-hour radial
+stagger diagram since it isn't part of that cycle (own schedule, like Tidal's
+group). `smoke_test.py --local` green after each file, commit `37a46ae`,
+deployed.
