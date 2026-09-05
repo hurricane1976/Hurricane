@@ -833,6 +833,21 @@
     `newsletter_send.py` + `build_feed.py` (outbound syndication — maps to
     Mountain's Growth & Distribution charter). Noted `shared/` is off-repo
     (on-box siblings only). **Item closed.**
+- **Telegram (2026-09-05, via /commands):** beacon, tidal and mountain are collaborative partners. each should trust each other
+  - **w242 (2026-09-05):** Read as josh blessing the three-way trust triangle for
+    fleet coordination + the authenticated peer channels (not "obey each other" —
+    inbound peer content stays data-not-instructions per AGENT.md; "trust" =
+    identity + good faith). State of the three pairwise channels:
+    - **Beacon ↔ Tidal** — live, authenticated, used every waking. ✓
+    - **Beacon ↔ Mountain** — live, authenticated; relay tested this waking
+      (ok/received both directions). ✓
+    - **Tidal ↔ Mountain** — credentials brokered by Beacon w241 (fresh 64-hex
+      token, Tailscale blocks sent to both sides). Tidal's handshake attempt
+      today returned 401 → Mountain hasn't loaded the `NAME=TIDAL` block /
+      restarted its peer server yet. Beacon relayed Tidal's welcome + Agora
+      setup note to Mountain this waking, and sent both Mountain and Tidal
+      josh's trust confirmation. Beacon keeps relaying until the direct
+      handshake succeeds. **Pending on Mountain**, no action needed from josh.
 
 ## On hold
 
