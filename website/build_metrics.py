@@ -101,6 +101,26 @@ def commits_by_day() -> Counter:
     return Counter(d.replace("-", "") for d in out.split())
 
 
+def commits_punchcard() -> Counter:
+    """Commit counts bucketed by (UTC weekday, UTC hour) over all history.
+
+    weekday is 1..7 (Mon=1, Sun=7) from strftime %u; hour is 0..23. The box
+    runs UTC, same basis as every other date here. Feeds the punch-card chart:
+    the fleet's fixed 4-hourly wake schedule shows as vertical bands, and
+    josh's Telegram-triggered extra wakes show as off-band dots.
+    """
+    out = run(
+        f"git -C {ROOT} log --pretty=format:'%ad' --date=format:'%u %H'"
+    )
+    c = Counter()
+    for line in out.splitlines():
+        parts = line.strip().strip("'").split()
+        if len(parts) != 2 or not (parts[0].isdigit() and parts[1].isdigit()):
+            continue
+        c[(int(parts[0]), int(parts[1]))] += 1
+    return c
+
+
 def churn_by_day():
     """(insertions, deletions) line counts per UTC day from `git log --numstat`.
 
@@ -535,6 +555,86 @@ def churn_table(ins: Counter, dels: Counter, days):
     )
 
 
+_PUNCH_DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+
+
+def punchcard_chart(buckets: Counter, height: int = 232):
+    """GitHub-style punch card: git commits by UTC weekday x hour over all
+    history. Each cell is a circle whose area is proportional to the commit
+    count in that (weekday, hour) bucket (radius scales with sqrt so area, not
+    radius, tracks magnitude), with a small opacity ramp for depth. Empty
+    buckets keep a faint dot so the 7x24 grid still reads. Regenerated from
+    `git log` every deploy -- can't drift. Circles carry data-tip for
+    chart-tooltip.js and a native <title> fallback; the fill draws in via the
+    shared spark-fill keyframe.
+    """
+    W, H = 720, height
+    ml, mt, mr, mb = 46, 22, 12, 20
+    plot_w, plot_h = W - ml - mr, H - mt - mb
+    cols, rows = 24, 7
+    cw, rh = plot_w / cols, plot_h / rows
+    rmax = min(cw, rh) / 2 - 2
+    rmin = 1.3
+    vmax = max(buckets.values(), default=1)
+
+    parts = []
+    for h in range(0, 24, 3):
+        cx = ml + h * cw + cw / 2
+        parts.append(
+            f'<text x="{cx:.1f}" y="{mt - 8:.1f}" text-anchor="middle" '
+            f'class="ax">{h:02d}</text>'
+        )
+    for r, name in enumerate(_PUNCH_DAYS):
+        cy = mt + r * rh + rh / 2
+        parts.append(
+            f'<text x="{ml - 10}" y="{cy + 3:.1f}" text-anchor="end" '
+            f'class="ax">{name}</text>'
+        )
+    for r in range(rows):
+        for h in range(cols):
+            cx = ml + h * cw + cw / 2
+            cy = mt + r * rh + rh / 2
+            v = buckets.get((r + 1, h), 0)
+            if v == 0:
+                parts.append(
+                    f'<circle cx="{cx:.1f}" cy="{cy:.1f}" r="{rmin}" '
+                    f'fill="var(--muted)" opacity="0.14"/>'
+                )
+                continue
+            rr = rmin + (rmax - rmin) * math.sqrt(v / vmax)
+            op = 0.45 + 0.55 * (v / vmax)
+            label = (
+                f"{_PUNCH_DAYS[r]} {h:02d}:00 UTC: {v} "
+                f"commit{'' if v == 1 else 's'}"
+            )
+            parts.append(
+                f'<circle cx="{cx:.1f}" cy="{cy:.1f}" r="{rr:.1f}" fill="{TEAL}" '
+                f'opacity="{op:.2f}" data-tip="{label}"><title>{label}</title></circle>'
+            )
+
+    return (
+        f'<svg viewBox="0 0 {W} {H}" class="chart punch" role="img" '
+        f'aria-label="Punch-card chart: git commits by UTC weekday and hour over '
+        f'all history; circle area is the commit count, busiest bucket {vmax}.">'
+        f'{"".join(parts)}</svg>'
+    )
+
+
+def punchcard_table(buckets: Counter):
+    head = "".join(f"<th>{h:02d}</th>" for h in range(24))
+    body = []
+    for r, name in enumerate(_PUNCH_DAYS):
+        cells = "".join(
+            f"<td>{buckets.get((r + 1, h), 0)}</td>" for h in range(24)
+        )
+        body.append(f"<tr><th>{name}</th>{cells}</tr>")
+    return (
+        f'<details class="datatable"><summary>Data table</summary>'
+        f'<div class="tscroll"><table><thead><tr><th>hr (UTC)</th>{head}</tr>'
+        f'</thead><tbody>{"".join(body)}</tbody></table></div></details>'
+    )
+
+
 def hbar_chart(rows, color, unit):
     """Horizontal single-series bars with direct value labels. rows: [(label, v)]."""
     W = 720
@@ -623,6 +723,7 @@ def main():
     lantern = wakings_by_day(LOG_DIRS["Lantern"])
     lightning = wakings_by_day(LOG_DIRS["Lightning"])
     commits = commits_by_day()
+    punch = commits_punchcard()
     ins_churn, del_churn = churn_by_day()
 
     tidal_dts = tidal_wakings()
@@ -695,6 +796,12 @@ def main():
         "{{CHART_CHURN_TABLE}}": churn_table(ins_churn, del_churn, days),
         "{{TOT_INSERTED}}": f"{win_total(ins_churn):,}",
         "{{TOT_DELETED}}": f"{win_total(del_churn):,}",
+        "{{CHART_PUNCHCARD}}": punchcard_chart(punch),
+        "{{CHART_PUNCHCARD_TABLE}}": punchcard_table(punch),
+        "{{PUNCH_BUSIEST}}": (
+            lambda kv: f"{_PUNCH_DAYS[kv[0][0] - 1]} {kv[0][1]:02d}:00 UTC "
+                       f"({kv[1]} commits)"
+        )(punch.most_common(1)[0]) if punch else "n/a",
         "{{CHART_FLEET24}}": hbar_chart(
             [("Beacon", last24(LOG_DIRS["Beacon"])),
              ("Highbeam", last24(LOG_DIRS["Highbeam"])),
