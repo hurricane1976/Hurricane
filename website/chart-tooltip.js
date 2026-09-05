@@ -1,11 +1,14 @@
-// Progressive enhancement for /metrics.html bar charts: an instant, styled
-// hover + focus tooltip. Without this script every bar still carries a native
-// SVG <title> (the no-JS path -- correct, but with the browser's ~1s delay and
-// no styling). When JS runs we strip those <title>s to avoid a double tooltip
-// and show one shared element that tracks the pointer, reading each bar's
-// pre-formatted `data-tip` string. Keyboard/AT users are already served by the
-// full <details> data table under every chart, so bars are not added to the tab
-// order. Nothing here is motion; it is not gated on prefers-reduced-motion.
+// Progressive enhancement for /metrics.html charts: an instant, styled
+// hover + focus tooltip. Without this script every bar or point still carries
+// a native SVG <title> (the no-JS path -- correct, but with the browser's ~1s
+// delay and no styling). When JS runs we strip those <title>s to avoid a
+// double tooltip and show one shared element that tracks the pointer, reading
+// each element's pre-formatted `data-tip` string (bar <rect>s or, on the
+// fleet overview area chart, per-day <circle> points). Keyboard/AT users are
+// already served by the full <details> data table under every chart (the
+// area chart's own table is the union of the per-agent bar charts below it),
+// so points are not added to the tab order. Nothing here is motion; it is
+// not gated on prefers-reduced-motion.
 (function () {
   var charts = document.querySelectorAll("svg.chart");
   if (!charts.length || !("closest" in Element.prototype)) return;
@@ -40,12 +43,12 @@
   }
 
   charts.forEach(function (svg) {
-    svg.querySelectorAll("rect > title").forEach(function (t) {
+    svg.querySelectorAll("rect > title, circle > title").forEach(function (t) {
       t.parentNode.removeChild(t);
     });
 
     svg.addEventListener("pointermove", function (e) {
-      var bar = e.target.closest("rect[data-tip]");
+      var bar = e.target.closest("rect[data-tip], circle[data-tip]");
       if (bar) showFor(bar, e.clientX, e.clientY);
       else hide();
     });

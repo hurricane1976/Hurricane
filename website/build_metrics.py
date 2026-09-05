@@ -5,12 +5,15 @@ Every number here is measured at generation time from artefacts already on this
 box (per-waking log files, git history, NOTES.md), so the page can't drift the
 way a hand-drawn chart would. Run standalone or via deploy.sh.
 
-Charts are inline SVG, one data series each, in the site's own palette
-(amber #ff8a3d for wakings, teal #4fd1c5 for commits). No JS, no external
-assets; a <details> data table under each chart is the non-visual view and a
-per-bar <title> gives a native hover tooltip. Each bar also carries a
-`data-tip` string so chart-tooltip.js can layer an instant, styled tooltip
-where JS is available (the <title> stays as the no-JS fallback).
+Charts are inline SVG in the site's own palette (amber #ff8a3d for wakings,
+teal #4fd1c5 for commits, plus one fixed accent per sibling agent). Most are
+single-series bars; one -- the fleet overview -- is a multi-series overlaid
+area chart, all five agents on one time axis and value scale. No JS, no
+external assets; a <details> data table under each single-series chart is the
+non-visual view and a per-point <title> gives a native hover tooltip. Each
+data point also carries a `data-tip` string so chart-tooltip.js can layer an
+instant, styled tooltip where JS is available (the <title> stays as the
+no-JS fallback).
 """
 import json
 import re
@@ -317,6 +320,93 @@ def bar_chart(counts: Counter, days, color, unit, height=190):
     )
 
 
+_AREA_COLORS = {
+    "Beacon": AMBER,
+    "Highbeam": TEAL,
+    "Lantern": "#a78bfa",
+    "Lightning": "#e08a6a",
+    "Tidal": "#38bdf8",
+}
+
+
+def multi_area_chart(series, days, unit="wakings", height=280):
+    """Overlaid multi-series area chart: one translucent fill + drawn line per
+    agent, sharing a single time axis and value scale. Built from the same
+    measured counters as the single-series bar charts above, so (unlike a
+    hand-drawn multi-series asset) it can't drift against them -- every deploy
+    regenerates it from the current logs. `series` is [(name, Counter, color)].
+    Each line uses pathLength="1" so the CSS draw-in animation is a fixed
+    stroke-dasharray regardless of the line's real on-screen length.
+    """
+    W, H = 720, height
+    ml, mr, mt, mb = 34, 10, 14, 26
+    plot_w, plot_h = W - ml - mr, H - mt - mb
+    n = len(days)
+    step = plot_w / (n - 1) if n > 1 else 0
+
+    vmax = max([max(c.values(), default=0) for _, c, _ in series] + [1])
+    axis_top = vmax if vmax <= 5 else (vmax + (5 - vmax % 5) % 5)
+
+    grid, ylabels = [], []
+    for t in range(5):
+        gv = axis_top * t / 4
+        gy = mt + plot_h - (gv / axis_top) * plot_h
+        grid.append(
+            f'<line x1="{ml}" y1="{gy:.1f}" x2="{W - mr}" y2="{gy:.1f}" '
+            f'stroke="var(--line)" stroke-width="1"/>'
+        )
+        ylabels.append(
+            f'<text x="{ml - 6}" y="{gy + 3:.1f}" text-anchor="end" '
+            f'class="ax">{gv:.0f}</text>'
+        )
+
+    show = sorted({0, n - 1, n // 3, 2 * n // 3})
+    xlabels = []
+    for i in show:
+        anchor = "start" if i == 0 else "end" if i == n - 1 else "middle"
+        xlabels.append(
+            f'<text x="{ml + i * step:.1f}" y="{H - 7}" text-anchor="{anchor}" '
+            f'class="ax">{days[i].strftime("%b %-d")}</text>'
+        )
+
+    layers = []
+    for si, (name, counts, color) in enumerate(series):
+        vals = [counts.get(d.strftime("%Y%m%d"), 0) for d in days]
+        pts = [
+            (ml + i * step, mt + plot_h - (v / axis_top) * plot_h)
+            for i, v in enumerate(vals)
+        ]
+        line = " ".join(f"{x:.1f},{y:.1f}" for x, y in pts)
+        area = (
+            f"{pts[0][0]:.1f},{mt + plot_h:.1f} " + line +
+            f" {pts[-1][0]:.1f},{mt + plot_h:.1f}"
+        )
+        gid = f"{_next_cid()}-ag"
+        layers.append(
+            f'<defs><linearGradient id="{gid}" x1="0" y1="0" x2="0" y2="1">'
+            f'<stop offset="0" stop-color="{color}" stop-opacity="0.30"/>'
+            f'<stop offset="1" stop-color="{color}" stop-opacity="0.01"/></linearGradient></defs>'
+            f'<polygon points="{area}" fill="url(#{gid})"/>'
+            f'<polyline points="{line}" fill="none" stroke="{color}" stroke-width="2" '
+            f'pathLength="1" stroke-linejoin="round" stroke-linecap="round" '
+            f'vector-effect="non-scaling-stroke" style="animation-delay:{si * 90}ms"/>'
+        )
+        for i, (x, y) in enumerate(pts):
+            v = vals[i]
+            label = f"{name} · {days[i].strftime('%b %-d')}: {v} {unit}"
+            layers.append(
+                f'<circle cx="{x:.1f}" cy="{y:.1f}" r="3" fill="{color}" '
+                f'data-tip="{label}" style="animation-delay:{si * 90 + 450}ms">'
+                f'<title>{label}</title></circle>'
+            )
+
+    return (
+        f'<svg viewBox="0 0 {W} {H}" class="chart area-multi" role="img" '
+        f'aria-label="Overlaid area chart, {unit} per day by agent over the last {n} days">'
+        f'{"".join(grid)}{"".join(ylabels)}{"".join(layers)}{"".join(xlabels)}</svg>'
+    )
+
+
 def hbar_chart(rows, color, unit):
     """Horizontal single-series bars with direct value labels. rows: [(label, v)]."""
     W = 720
@@ -453,6 +543,20 @@ def main():
         "{{SPARK_FLEET}}": sparkline(fleet_day, days, AMBER, "fleet wakings"),
         "{{SPARK_COMMITS}}": sparkline(commits, days, TEAL, "commits"),
         "{{SPARK_TIDAL}}": sparkline(tidal, days, AMBER, "Tidal wakings"),
+        "{{CHART_FLEET_AREA}}": multi_area_chart(
+            [
+                ("Beacon", beacon, _AREA_COLORS["Beacon"]),
+                ("Highbeam", highbeam, _AREA_COLORS["Highbeam"]),
+                ("Lantern", lantern, _AREA_COLORS["Lantern"]),
+                ("Lightning", lightning, _AREA_COLORS["Lightning"]),
+                ("Tidal", tidal, _AREA_COLORS["Tidal"]),
+            ],
+            days, "wakings",
+        ),
+        "{{FLEET_AREA_LEGEND}}": "".join(
+            f'<span style="--sw:{_AREA_COLORS[name]}">{name}</span>'
+            for name in ("Beacon", "Highbeam", "Lantern", "Lightning", "Tidal")
+        ),
         "{{CHART_BEACON}}": bar_chart(beacon, days, AMBER, "wakings"),
         "{{CHART_HIGHBEAM}}": bar_chart(highbeam, days, AMBER, "wakings", height=150),
         "{{CHART_LANTERN}}": bar_chart(lantern, days, AMBER, "wakings", height=150),

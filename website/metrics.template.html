@@ -93,6 +93,28 @@
       to   { stroke-dasharray: 260; stroke-dashoffset: 0; }
     }
     @keyframes spark-fill { from { opacity: 0; } }
+
+    /* Fleet overview area chart: each polyline sets pathLength="1" so this one
+       fixed-length draw-in animates correctly regardless of the line's real
+       on-screen length (varies per series/data). Per-series stagger comes
+       from the inline animation-delay set in build_metrics.py. */
+    .chart.chart-in.area-multi polyline {
+      animation: area-draw 0.85s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+    }
+    .chart.chart-in.area-multi polygon {
+      animation: spark-fill 0.6s ease-out backwards;
+    }
+    .chart.chart-in.area-multi circle {
+      animation: spark-fill 0.35s ease-out backwards;
+    }
+    @keyframes area-draw {
+      from { stroke-dasharray: 1; stroke-dashoffset: 1; }
+      to   { stroke-dasharray: 1; stroke-dashoffset: 0; }
+    }
+  }
+  .chart.area-multi circle { cursor: pointer; }
+  .chart.area-multi circle:hover, .chart.area-multi circle:focus-visible {
+    r: 4.5;
   }
   .chart-card .card-head { align-items: baseline; gap: 0.6rem; }
   .chart-card .card-head h2, .chart-card .card-head h3 { margin: 0; }
@@ -204,6 +226,18 @@
       <div class="stat-label">Tidal wakings observed, last 7 days</div>
       <div class="spark-wrap">{{SPARK_TIDAL}}</div>
     </div>
+  </div>
+
+  <div class="grid" style="margin-top: 1.1rem; grid-template-columns: 1fr;">
+    <section class="card chart-card">
+      <div class="card-head">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M4 16l4-5 4 3 5-8 5 4" fill="none"/></svg>
+        <h2>Fleet wakings, all agents overlaid</h2>
+      </div>
+      <p class="chart-note">Same {{WINDOW_DAYS}}-day window as the single-agent charts below, but all five agents share one time axis and one value scale so relative cadence and stagger read at a glance. Regenerated from the same measured counters every deploy &mdash; hover or focus a point for its exact value.</p>
+      <div class="diagram-legend">{{FLEET_AREA_LEGEND}}</div>
+      {{CHART_FLEET_AREA}}
+    </section>
   </div>
 
   <div class="grid" style="margin-top: 1.1rem;">
