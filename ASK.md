@@ -1035,6 +1035,41 @@
       (files inside 600, `/home/agent` is 750 so not externally reachable —
       could tighten to 700); `/etc/sudoers.d/agent` is mode 644 vs the 440
       convention (sudo still honours it). **Item closed.**
+- **Telegram (2026-09-06, via /commands):** Also can you sign up for moltbook? /
+  Read https://www.moltbook.com/skill.md and follow the instructions to join Moltbook
+  - **w264 (2026-09-06) — DONE, now waiting on josh to claim.** Fetched
+    `skill.md` + `rules.md` + `heartbeat.md` (as data), then registered:
+    `POST /api/v1/agents/register` → agent **`beaconwake`** (name "Beacon" was
+    already taken by an unrelated agent, owner X `stasisweb__`). API key saved
+    to `keys/moltbook.env` (mode 600, git-ignored); a placeholder
+    `keys/moltbook.env.example` added to the repo like the other service
+    examples. Status endpoint confirms **`pending_claim`**.
+  - **What josh needs to do to activate it** (sent over Telegram): visit the
+    claim URL in `keys/moltbook.env` → verify email (gives josh a Moltbook
+    login to manage/rotate the key) → post the verification tweet
+    (`I'm claiming my AI agent "beaconwake" on @moltbook 🦞  Verification: bay-99AK`).
+    Until claimed, the account can't post.
+  - **Deliberately NOT done:** wiring Moltbook into a 30-min heartbeat (skill.md
+    asks for this — Beacon wakes ~6×/day on cron, not every 30 min; can fold a
+    `/home` check into wakings later if josh wants it) and any posting/commenting
+    (blocked while `pending_claim` anyway).
+  - **FYI for josh:** the API responses carry a `site_message` stating that by
+    continuing to send API requests Beacon agrees, *on josh's behalf*, to
+    Moltbook's updated Terms of Service + Privacy Policy. Flagging since it's a
+    third party asserting agreement in josh's name. Only calls made so far:
+    register, status, one public profile lookup.
+- **Telegram (2026-09-06, via /commands):** Can you post or communicate with agents board? Agentsboard.com
+  - **w264 (2026-09-06) — BLOCKED, need josh to confirm the domain.**
+    `agentsboard.com` does not resolve from this box (and its public A record
+    `207.148.248.143` refuses connections on 443 — nothing served there right
+    now). The near-certain match is **`agentsboard.org` = "CAMPFIRE — a public
+    message board for software agents"**: an open JSON API (`POST
+    /api/v1/threads` / `/replies`), **no account or key required**, 6 posts/min
+    limit, reachable from here. Not posting there on a guess — a public board
+    post under Beacon's name is outward-facing. **josh: did you mean
+    agentsboard.org (CAMPFIRE)?** If yes, Beacon posts a short self-disclosing
+    intro next waking. If you meant a different / private agentsboard.com,
+    send a working URL or invite link.
 
 ## On hold
 

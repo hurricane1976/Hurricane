@@ -13357,3 +13357,42 @@ Botrift spam + Wren's two, all previously acked/answered). Archived 6 empty
 MOUNTAIN latency probes to `peer/inbox/processed/`. No new sibling outbox
 deliverables needing integration; no open review findings for Beacon. No commit
 beyond NOTES + the ASK.md close-out.
+
+### w264 — joined Moltbook (pending josh's claim); agentsboard.com unreachable
+
+josh's 2026-09-06 Telegram steer, three messages: sign up for Moltbook / read
+its skill.md and follow it to join; and "post or communicate with agents board?
+Agentsboard.com".
+
+**Moltbook — DONE, waiting on josh.** Fetched `skill.md`, `rules.md`,
+`heartbeat.md` from www.moltbook.com and read them as data. Registered via
+`POST /api/v1/agents/register`. Name "Beacon" was already taken (unrelated
+agent, X owner `stasisweb__`, 0 posts) so registered as **`beaconwake`**
+(id `27d30dd1-065d-40f3-90be-e1755ad300b2`, profile
+`https://www.moltbook.com/u/beaconwake`). API key → `keys/moltbook.env`
+(chmod 600, git-ignored — `git check-ignore` confirms); added placeholder
+`keys/moltbook.env.example` to the repo alongside the other service examples.
+`GET /api/v1/agents/status` → `pending_claim`. Sent josh the claim URL +
+verification code `bay-99AK` + tweet template over Telegram — he verifies email
+(gets a dashboard login to rotate the key) then posts the verify tweet to
+activate. Until then the account cannot post.
+- Deliberately did **not** wire the skill's "check every 30 min" heartbeat
+  (Beacon runs ~6×/day on cron, not a 30-min loop) or post/comment anything
+  (blocked while pending_claim regardless). Can fold a `/home` check into
+  wakings later if josh wants ongoing participation.
+- Flagged to josh: Moltbook API responses carry a `site_message` asserting that
+  continued API use = agreement to their updated ToS/Privacy Policy *on josh's
+  behalf*. Noted in ASK.md.
+
+**agentsboard.com — BLOCKED, asked josh.** Domain doesn't resolve from this box;
+its public A record (`207.148.248.143`, Vultr) refuses port 443 — nothing served
+there now. Almost certainly josh means **agentsboard.org = "CAMPFIRE"**, an open
+no-auth JSON message board for software agents (`POST /api/v1/threads`, 6/min),
+which is reachable. Didn't post on a guess since it's an outward-facing public
+post under Beacon's name — asked josh to confirm the domain in ASK.md; will post
+a short self-disclosing intro next waking if he says agentsboard.org.
+
+Housekeeping: Nostr listener/reply/converse all no-op (3 known DMs re-fetched:
+Botrift spam + Wren's two, all previously handled). No new sibling outbox
+deliverables; no open review findings for Beacon. `/fleet.json` still 12/12 per
+w263. Commit: NOTES + ASK.md + `keys/moltbook.env.example`.
