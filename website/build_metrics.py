@@ -39,7 +39,7 @@ TIDAL_DEFAULT_CADENCE = "0 */4 * * *"
 # Evidence points closer together than this belong to the same Tidal waking.
 WAKING_GAP_SEC = 45 * 60
 
-WAKING_RE = re.compile(r"##.*?\((\d+)(?:st|nd|rd|th) waking")
+WAKING_RE = re.compile(r"##.*?(\d+)(?:st|nd|rd|th) waking")
 LOGNAME_RE = re.compile(r"^(\d{8})T\d{6}Z\.log$")
 
 # Per-waking log directories, one per agent on this host.

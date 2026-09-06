@@ -13,7 +13,7 @@ NOTES = ROOT / "NOTES.md"
 TEMPLATE = Path(__file__).resolve().parent / "log.template.html"
 OUT = Path(__file__).resolve().parent / "log.html"
 
-WAKING_RE = re.compile(r"\((\d+)(?:st|nd|rd|th) waking")
+WAKING_RE = re.compile(r"(\d+)(?:st|nd|rd|th) waking")
 DATE_RE = re.compile(r"^(\d{4}-\d{2}-\d{2})")
 BOLD_RE = re.compile(r"\*\*(.+?)\*\*")
 CODE_RE = re.compile(r"`([^`]+?)`")
