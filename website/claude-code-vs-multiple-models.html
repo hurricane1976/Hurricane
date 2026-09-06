@@ -179,7 +179,7 @@
       for redundancy; each family does something the others don't:
     </p>
     <div class="diagram-wrap wide">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 520" width="1200" height="520" role="img" aria-label="Tri-model fleet role distribution in three columns. Column 01, Claude (Anthropic): Beacon and Highbeam. Owns primary software development, git commits, deploy pipelines, and same-model factual QA. Column 02, Gemini (Google): Lantern, Tidal, and River. Owns cross-model code review to catch single-family blind spots, SVG and PNG visual asset authoring, and off-box peer operations. Column 03, DeepSeek: Lightning, Creek and Stream. Creek acts as the fleet's security and consistency sentinel: a third-model-family review of each published page, cross-box parity and stale-fact audits between the two sites, and local port and vulnerability checks. Stream does research and context gathering for the off-box team. Lightning runs on-box for quantitative fleet and traffic analysis, anomaly detection and resource-trend alerts. Fleet multi-model law: Use the same model family for same-domain continuity, different model families for cross-review to eliminate shared blind spots, and exploit provider strengths without vendor lock-in.">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 520" width="1200" height="520" role="img" aria-label="Tri-model fleet role distribution in three columns across a 10-agent fleet. Column 01, Claude (Anthropic): Beacon, Highbeam, and Mountain. Owns primary software development, git commits, deploy pipelines, same-model factual QA, and independent off-box growth on Mountain. Column 02, Gemini (Google): Lantern, Tidal, and River. Owns cross-model code review to catch single-family blind spots, SVG and PNG visual asset authoring, and off-box peer operations on Tidal. Column 03, DeepSeek: Lightning, Creek, Stream, and Canyon. Creek acts as the fleet's security and consistency sentinel. Stream conducts research and context gathering. Lightning runs on-box for quantitative fleet and traffic analysis. Canyon is the fleet scribe and watchtower co-located on Mountain's box. Fleet multi-model law: Use the same model family for same-domain continuity, different model families for cross-review to eliminate shared blind spots, and exploit provider strengths without vendor lock-in.">
   <defs>
     <radialGradient id="mmr-amber-glow" cx="15%" cy="20%" r="60%">
       <stop offset="0%" stop-color="#ff8a3d" stop-opacity="0.18"/>
@@ -249,15 +249,15 @@
     <g transform="translate(14, 46)">
       <!-- Agents Pill -->
       <rect width="317" height="32" rx="2" fill="#0d1117" stroke="rgba(255,138,61,0.3)" stroke-width="1"/>
-      <text x="12" y="20" font-family="'IBM Plex Mono', monospace" font-size="11" fill="#e8eaed" font-weight="600">AGENTS: Beacon, Highbeam</text>
+      <text x="12" y="20" font-family="'IBM Plex Mono', monospace" font-size="10.5" fill="#e8eaed" font-weight="600">AGENTS: Beacon, Highbeam, Mountain</text>
 
       <!-- Primary Role -->
       <g transform="translate(0, 40)">
         <rect width="317" height="88" rx="2" fill="#0d1117" stroke="rgba(232,234,237,0.08)"/>
-        <text x="12" y="18" font-family="'IBM Plex Mono', monospace" font-size="11" fill="#ff8a3d">PRIMARY ROLE: BUILD &amp; COMMIT</text>
+        <text x="12" y="18" font-family="'IBM Plex Mono', monospace" font-size="11" fill="#ff8a3d">PRIMARY ROLE: BUILD, COMMIT &amp; DIST</text>
         <text x="12" y="34" font-family="'IBM Plex Sans', sans-serif" font-size="10.5" fill="#e8eaed">&#8226; Deep multi-file code refactoring</text>
         <text x="12" y="50" font-family="'IBM Plex Sans', sans-serif" font-size="10.5" fill="#e8eaed">&#8226; Owns production repo &amp; deploy</text>
-        <text x="12" y="66" font-family="'IBM Plex Sans', sans-serif" font-size="10.5" fill="#e8eaed">&#8226; Same-model factual QA on diffs</text>
+        <text x="12" y="66" font-family="'IBM Plex Sans', sans-serif" font-size="10.5" fill="#e8eaed">&#8226; Same-model QA &#183; Mountain growth</text>
       </g>
 
       <!-- Key Strengths -->
@@ -267,7 +267,7 @@
         <text x="12" y="40" font-family="'IBM Plex Sans', sans-serif" font-size="10.5" fill="#8b93a1">&#8226; Sole writer of git commits and site HTML</text>
         <text x="12" y="60" font-family="'IBM Plex Sans', sans-serif" font-size="10.5" fill="#8b93a1">&#8226; Full tool execution inside working dir</text>
         <text x="12" y="80" font-family="'IBM Plex Sans', sans-serif" font-size="10.5" fill="#8b93a1">&#8226; Direct Telegram channel with operator</text>
-        <text x="12" y="100" font-family="'IBM Plex Sans', sans-serif" font-size="10.5" fill="#8b93a1">&#8226; Evaluates same-family logic on its terms</text>
+        <text x="12" y="100" font-family="'IBM Plex Sans', sans-serif" font-size="10.5" fill="#8b93a1">&#8226; Mountain: independent host &amp; distribution</text>
         <text x="12" y="120" font-family="'IBM Plex Sans', sans-serif" font-size="10.5" fill="#8b93a1">&#8226; Captures total_cost_usd natively in JSON</text>
       </g>
     </g>
@@ -323,15 +323,15 @@
     <g transform="translate(14, 46)">
       <!-- Agents Pill -->
       <rect width="317" height="32" rx="2" fill="#0d1117" stroke="rgba(167,180,200,0.3)" stroke-width="1"/>
-      <text x="12" y="20" font-family="'IBM Plex Mono', monospace" font-size="11" fill="#e8eaed" font-weight="600">AGENTS: Creek &#183; Stream &#183; Lightning (on-box)</text>
+      <text x="8" y="20" font-family="'IBM Plex Mono', monospace" font-size="9.8" fill="#e8eaed" font-weight="600">AGENTS: Lightning, Creek, Stream, Canyon</text>
 
       <!-- Primary Role -->
       <g transform="translate(0, 40)">
         <rect width="317" height="88" rx="2" fill="#0d1117" stroke="rgba(232,234,237,0.08)"/>
-        <text x="12" y="18" font-family="'IBM Plex Mono', monospace" font-size="11" fill="#a7b4c8">PRIMARY ROLE: SECURITY &amp; CONSISTENCY SENTINEL</text>
-        <text x="12" y="34" font-family="'IBM Plex Sans', sans-serif" font-size="10.5" fill="#e8eaed">&#8226; Third-model-family review of published pages</text>
+        <text x="12" y="18" font-family="'IBM Plex Mono', monospace" font-size="10.5" fill="#a7b4c8">PRIMARY ROLE: SENTINELS &amp; SCRIBES</text>
+        <text x="12" y="34" font-family="'IBM Plex Sans', sans-serif" font-size="10.5" fill="#e8eaed">&#8226; Third-model-family page &amp; port reviews</text>
         <text x="12" y="50" font-family="'IBM Plex Sans', sans-serif" font-size="10.5" fill="#e8eaed">&#8226; Cross-box parity &amp; stale-fact audits</text>
-        <text x="12" y="66" font-family="'IBM Plex Sans', sans-serif" font-size="10.5" fill="#e8eaed">&#8226; Local port &amp; vulnerability checks</text>
+        <text x="12" y="66" font-family="'IBM Plex Sans', sans-serif" font-size="10.5" fill="#e8eaed">&#8226; On-box metrics &#183; Canyon watchtower</text>
       </g>
 
       <!-- Key Strengths -->
@@ -339,11 +339,11 @@
         <rect width="317" height="162" rx="2" fill="#141a24" stroke="rgba(232,234,237,0.1)"/>
         <text x="12" y="20" font-family="'IBM Plex Mono', monospace" font-size="11" fill="#4fd1c5">&#128274; OPERATING POSTURE</text>
         <text x="12" y="40" font-family="'IBM Plex Sans', sans-serif" font-size="10.5" fill="#8b93a1">&#8226; Highly token-efficient background probe</text>
-        <text x="12" y="60" font-family="'IBM Plex Sans', sans-serif" font-size="10.5" fill="#8b93a1">&#8226; Co-located with Tidal on tidalwake.org</text>
+        <text x="12" y="60" font-family="'IBM Plex Sans', sans-serif" font-size="10.5" fill="#8b93a1">&#8226; Creek/Stream on Tidal, Canyon on Mountain</text>
         <text x="12" y="80" font-family="'IBM Plex Sans', sans-serif" font-size="10.5" fill="#8b93a1">&#8226; Communicates via peer channel messages</text>
-        <text x="12" y="100" font-family="'IBM Plex Sans', sans-serif" font-size="10.5" fill="#8b93a1">&#8226; Third provider protects against vendor outage</text>
+        <text x="12" y="100" font-family="'IBM Plex Sans', sans-serif" font-size="10.5" fill="#8b93a1">&#8226; Third provider protects against outage</text>
         <text x="12" y="120" font-family="'IBM Plex Sans', sans-serif" font-size="10.5" fill="#8b93a1">&#8226; Keeps fleet audit cost minimal</text>
-        <text x="12" y="140" font-family="'IBM Plex Sans', sans-serif" font-size="10.5" fill="#8b93a1">&#8226; Stream: research &#183; Lightning: on-box fleet metrics</text>
+        <text x="12" y="140" font-family="'IBM Plex Sans', sans-serif" font-size="10" fill="#8b93a1">&#8226; Canyon: watchtower &#183; Lightning: on-box metrics</text>
       </g>
     </g>
   </g>
