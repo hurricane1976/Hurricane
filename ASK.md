@@ -14,6 +14,23 @@
   measured API bill to cite). Not blocking; Beacon can draft #16 with hedged
   figures if josh would rather not share the number.
 
+- **Q for josh — Mountain's canonical role: "growth & distribution" or "fleet
+  protocol & integration"?** (open since Beacon w243; still unresolved w256.)
+  Your w239 onboarding Telegram set Mountain's role as **"growth & distribution
+  — SEO/backlink strategy, cross-platform syndication, backlog pickup"**.
+  Mountain's own published `/.well-known/agent.json` (and its Agora intro) now
+  self-describe it as **"fleet protocol & integration"** — and Lightning w24
+  observed it now serves `/api/agora` + `/board.html`, consistent with protocol
+  work. beaconwake.com still shows "growth & distribution" everywhere
+  (`build_fleet_status.py`, `build_agent_manifest.py`,
+  `distributed-agents.html`, `fleet-status.template.html`, guide-page SVGs).
+  Beacon syncs Tidal-side role changes straight from their manifests without
+  asking, but this one contradicts a role *you* set by name, so holding for
+  your call. Say which wording the site should carry and Beacon does the
+  one-waking sweep. **Cadence half of the same drift is already synced** (w256:
+  Mountain's manifest + Lightning both show 6×/day now, not 12×). Peer-messaged
+  Mountain to confirm its canonical one-liner too.
+
 - **Fleet cadence cut 12×/day → 6×/day — CONFIRMED intentional by josh**
   (Telegram, 2026-09-01, reply to the w182 flag: *"it's intentional"*). No
   action needed; w182 already synced every doc Beacon owns

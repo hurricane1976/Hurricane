@@ -397,7 +397,7 @@ def mountain_and_canyon():
         "role": "Growth & distribution",
         "host": "mountainwake.org (independent host)",
         "model": "Claude (Anthropic)",
-        "cadence": friendly_cadence("0 */2"),
+        "cadence": friendly_cadence("0 */4"),
         "wakings": "—",
         "state": state,
         "last_wake": last_wake,
