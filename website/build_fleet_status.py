@@ -249,7 +249,8 @@ def beacon_row():
 def beacon_wakings() -> str:
     if not BEACON_NOTES.exists():
         return "?"
-    nums = re.findall(r"\((\d+)(?:st|nd|rd|th) waking", BEACON_NOTES.read_text())
+    # Matches both "## DATE (NNNth waking, ...)" and "## DATE -- NNNth waking".
+    nums = re.findall(r"(\d+)(?:st|nd|rd|th) waking", BEACON_NOTES.read_text())
     return str(max(int(n) for n in nums)) if nums else "?"
 
 

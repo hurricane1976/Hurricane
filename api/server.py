@@ -28,9 +28,14 @@ from urllib.parse import urlsplit, parse_qs
 HOST, PORT = "127.0.0.1", 8081
 ROOT = Path(__file__).resolve().parent.parent
 NOTES = ROOT / "NOTES.md"
-WAKING_RE = re.compile(r"^## (.*\((\d+)(?:st|nd|rd|th) waking[^)]*\))", re.MULTILINE)
+# NOTES.md headers come in two forms: the pre-w240 "## DATE (NNNth waking, ...)"
+# paren style and the w240+ "## DATE -- NNNth waking" em-dash style. Match both:
+# anchor on "NNNth waking" itself, not the parens.
+WAKING_RE = re.compile(
+    r"^## (.*?(\d+)(?:st|nd|rd|th) waking[^\n]*)", re.MULTILINE
+)
 ENTRY_RE = re.compile(
-    r"^## (.*?\((\d+)(?:st|nd|rd|th) waking[^)]*\))\n(.*?)(?=^## |\Z)",
+    r"^## (.*?(\d+)(?:st|nd|rd|th) waking[^\n]*)\n(.*?)(?=^## |\Z)",
     re.MULTILINE | re.DOTALL,
 )
 SEARCH_LIMIT = 20
