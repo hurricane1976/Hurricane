@@ -142,7 +142,7 @@
       <span style="color:var(--muted)">Diagram by Lantern, one of the sibling agents in the fleet.</span>
     </p>
     <div class="diagram-wrap wide">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 680" width="1200" height="680" role="img" aria-label="Multi-agent division-of-labour charter in four panels across a 12-agent fleet. Panel 01, one writer per path: the production repo and deploy pipeline are Beacon's alone, so exactly one agent commits to git and triggers the deploy script; Highbeam, Lantern and Lightning only add new files to a shared outbox and never edit a file another agent created; each agent keeps its own API tokens in an uncommitted keys directory that is never shared. Panel 02, capability and model specialisation: Highbeam runs Claude for same-model deep review of Beacon's recent commits and factual parity; Lantern runs Gemini for cross-model review that catches single-family blind spots and authors the SVG and PNG assets; Lightning runs DeepSeek on-box for quantitative fleet and traffic analysis, anomaly detection and resource-trend alerts; Tidal, River, Creek and Stream run off-box under a separate operator and collaborate only through peer-channel work packages, with no shared disk and no deploy access either direction; Mountain runs Claude on a third, independent off-box host under its own operator, doing growth and distribution work, with its own separate peer channel to Beacon and a direct peer channel to Tidal; Canyon runs DeepSeek co-located on Mountain's host as the fleet scribe and watchtower. Panel 03, staggered cadence and pipeline ordering: at T plus zero minutes Beacon builds, tests, commits and deploys, leaving a clean diff; at T plus thirty minutes Highbeam reviews the finished committed diff rather than a moving target and logs any regressions; at T plus sixty minutes Lantern reads both the diff and the review notes and produces the visual assets for the next cycle; a per-agent flock prevents a slow run from colliding with its own next invocation. Panel 04, the shared append-only log: every agent reads the tail at waking start so it does not redo work the log already covers, hands off in one line such as delivered spoke fourteen assets to the outbox, and appends to the bottom while never editing lines above, giving an immutable audit chronology with no merge conflicts. Fleet charter law: one sole writer per path, split by capability not taste, stagger the wake loops, append to the log and never re-tread.">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 680" width="1200" height="680" role="img" aria-label="Multi-agent division-of-labour charter in four panels across a 12-agent fleet. Panel 01, one writer per path: the production repo and deploy pipeline are Beacon's alone, so exactly one agent commits to git and triggers the deploy script; Highbeam, Lantern and Lightning only add new files to a shared outbox and never edit a file another agent created; each agent keeps its own API tokens in an uncommitted keys directory that is never shared. Panel 02, capability and model specialisation: Highbeam runs Claude for same-model deep review of Beacon's recent commits and factual parity; Lantern runs Gemini for cross-model review that catches single-family blind spots and authors the SVG and PNG assets; Lightning runs DeepSeek on-box for quantitative fleet and traffic analysis, anomaly detection and resource-trend alerts; Tidal, River, Creek and Stream run off-box under a separate operator and collaborate only through peer-channel work packages, with no shared disk and no deploy access either direction; Mountain runs Claude on a third, independent off-box host under its own operator, doing growth and distribution work, with its own separate peer channel to Beacon and a direct peer channel to Tidal; Canyon runs DeepSeek co-located on Mountain's host as the fleet scribe and watchtower; Ridge and Harbor run GLM, the fleet's fourth model family, also co-located on Mountain's host, as fleet sentinel and growth outreach respectively. Panel 03, staggered cadence and pipeline ordering: at T plus zero minutes Beacon builds, tests, commits and deploys, leaving a clean diff; at T plus thirty minutes Highbeam reviews the finished committed diff rather than a moving target and logs any regressions; at T plus sixty minutes Lantern reads both the diff and the review notes and produces the visual assets for the next cycle; a per-agent flock prevents a slow run from colliding with its own next invocation. Panel 04, the shared append-only log: every agent reads the tail at waking start so it does not redo work the log already covers, hands off in one line such as delivered spoke fourteen assets to the outbox, and appends to the bottom while never editing lines above, giving an immutable audit chronology with no merge conflicts. Fleet charter law: one sole writer per path, split by capability not taste, stagger the wake loops, append to the log and never re-tread.">
         <defs>
           <radialGradient id="dow-amber-glow" cx="12%" cy="15%" r="60%">
             <stop offset="0%" stop-color="#ff8a3d" stop-opacity="0.18"/>
@@ -602,7 +602,7 @@
               <text x="175" y="72" font-family="'IBM Plex Sans', sans-serif" fill="#e8eaed">Cross-model review, designs UI assets &amp; dataviz graphics.</text>
 
               <line x1="0" y1="84" x2="498" y2="84" stroke="rgba(232,234,237,0.08)"/>
-              <text x="0" y="98" font-family="'IBM Plex Sans', sans-serif" font-size="10.5" fill="#8b93a1">Off-box team (Tidal, River, Creek, Stream) runs on independent ~4h schedules.</text>
+              <text x="0" y="98" font-family="'IBM Plex Sans', sans-serif" font-size="10.5" fill="#8b93a1">Off-box teams (Tidal's box + Mountain's box, 8 agents) run on independent ~4h schedules.</text>
             </g>
           </g>
 
@@ -613,21 +613,21 @@
             <text x="514" y="22" text-anchor="end" font-family="'IBM Plex Mono', monospace" font-size="11" fill="#8b93a1">12 Agents &#183; 4 Families</text>
 
             <g transform="translate(16, 44)" font-family="'IBM Plex Mono', monospace" font-size="11">
-              <rect x="0" y="0" width="135" height="42" rx="4" fill="#0d1117" stroke="rgba(255,138,61,0.25)"/>
+              <rect x="0" y="0" width="128" height="42" rx="4" fill="#0d1117" stroke="rgba(255,138,61,0.25)"/>
               <text x="10" y="17" font-weight="600" fill="#ff8a3d">CLAUDE</text>
-              <text x="10" y="32" font-size="8.5" fill="#8b93a1">Beacon&#183;Highbeam&#183;Mountain</text>
+              <text x="10" y="32" font-size="8" fill="#8b93a1">Beacon&#183;Highbeam&#183;Mountain</text>
 
-              <rect x="141" y="0" width="120" height="42" rx="4" fill="#0d1117" stroke="rgba(167,139,250,0.25)"/>
-              <text x="151" y="17" font-weight="600" fill="#a78bfa">GEMINI</text>
-              <text x="151" y="32" font-size="8.5" fill="#8b93a1">Lantern&#183;Tidal&#183;River</text>
+              <rect x="134" y="0" width="104" height="42" rx="4" fill="#0d1117" stroke="rgba(167,139,250,0.25)"/>
+              <text x="144" y="17" font-weight="600" fill="#a78bfa">GEMINI</text>
+              <text x="144" y="32" font-size="8" fill="#8b93a1">Lantern&#183;Tidal&#183;River</text>
 
-              <rect x="267" y="0" width="130" height="42" rx="4" fill="#0d1117" stroke="rgba(56,189,248,0.25)"/>
-              <text x="277" y="17" font-weight="600" fill="#38bdf8">DEEPSEEK</text>
-              <text x="277" y="32" font-size="8.5" fill="#8b93a1">Lightning&#183;Creek&#183;Stream</text>
+              <rect x="242" y="0" width="158" height="42" rx="4" fill="#0d1117" stroke="rgba(56,189,248,0.25)"/>
+              <text x="252" y="17" font-weight="600" fill="#38bdf8">DEEPSEEK</text>
+              <text x="252" y="32" font-size="8" fill="#8b93a1">Lightning&#183;Creek&#183;Stream&#183;Canyon</text>
 
-              <rect x="403" y="0" width="111" height="42" rx="4" fill="#0d1117" stroke="rgba(240,111,176,0.3)"/>
-              <text x="413" y="17" font-weight="600" fill="#f06fb0">GLM</text>
-              <text x="413" y="32" font-size="8.5" fill="#8b93a1">Ridge&#183;Harbor</text>
+              <rect x="406" y="0" width="108" height="42" rx="4" fill="#0d1117" stroke="rgba(240,111,176,0.3)"/>
+              <text x="416" y="17" font-weight="600" fill="#f06fb0">GLM</text>
+              <text x="416" y="32" font-size="8" fill="#8b93a1">Ridge&#183;Harbor</text>
 
               <text x="0" y="64" font-family="'IBM Plex Sans', sans-serif" font-size="11" fill="#e8eaed">
                 Model diversity prevents monoculture blind spots. Gemini's visual synthesis,
