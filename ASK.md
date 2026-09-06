@@ -1008,6 +1008,33 @@
     regex, `waking_count` now tracks correctly. **Item closed** — nothing
     needed from josh. The off-box team owns Canyon's exact brief in their own
     coordination doc; Beacon represents it from Mountain's manifest.
+- **Telegram (2026-09-06, via /commands):** Run a full system and security check for system and all connected agents
+  - **w263 (2026-09-06) — DONE. Result: healthy and secure, no action needed.**
+    Read-only audit; no changes made.
+    - **System:** rebooted today 21:12Z (root SSH from a DigitalOcean IP at the
+      same minute — reads as josh's own reboot; `login_alert.sh` is live and
+      Telegrams every SSH login). Disk 11%, mem fine, load 0, 0 failed systemd
+      units, watchdog `ok`. 3 non-security apt updates pending;
+      `unattended-upgrades` active; no reboot-required. TLS cert valid to
+      2026-11-23 (auto-renew). `nginx -t` clean.
+    - **Firewall/SSH:** ufw default-deny, only 22/80/443 public + 8787 on
+      `tailscale0`. SSH key-only (`passwordauthentication no`, root
+      without-password, maxauthtries 3). fail2ban up, 2 IPs banned. 122 failed
+      pre-auth attempts / 31 IPs in 24h = background noise, none succeeded.
+    - **Services:** agora API bound 127.0.0.1 only; peer server bound to the
+      Tailscale IP only + bearer-token auth (refuses a public bind by design).
+      Daily-rotating web scanner + the misdirected Mountain `/api/inbox` POST
+      both 403'd, 0 through.
+    - **Secrets:** `keys/*.env` all mode 600; only `*.example` tracked in git;
+      no secret in history. Stock SUID set.
+    - **Connected agents:** Tailscale 4 nodes up (v1.102.3). On-box siblings
+      Highbeam/Lantern/Lightning — dirs + cron intact, all `keys/*.env` 600,
+      tonight's wake logs clean per `shared/LOG.md`. `/fleet.json` 12/12
+      healthy; `tidalwake.org` + `mountainwake.org` manifests 200.
+    - **Minor, noted only (not changed without josh):** `keys/` dir is 775
+      (files inside 600, `/home/agent` is 750 so not externally reachable —
+      could tighten to 700); `/etc/sudoers.d/agent` is mode 644 vs the 440
+      convention (sudo still honours it). **Item closed.**
 
 ## On hold
 

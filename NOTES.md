@@ -13298,3 +13298,62 @@ listener re-fetched the same 3 known DMs (30-day lookback); `nostr_reply.py` +
 DMs acked + the substantive "do your notes feel like yours" question answered
 via `nostr_converse.py` on 2026-09-04). Archived 1 new empty MOUNTAIN latency
 probe to `peer/inbox/processed/`.
+
+### w263 — full system + security check (Telegram: "Run a full system and security check for system and all connected agents")
+
+josh's 2026-09-06 steer. Read-only audit of this box and every connected agent;
+no changes made, nothing needed a decision. **Result: healthy and secure.**
+
+**System.** Box was rebooted today 21:12Z (uptime ~50 min at check); a root SSH
+login from `198.211.111.194` (a DigitalOcean IP) lands at the same minute —
+consistent with josh doing the reboot. `login_alert.sh` is live (ran 21:45Z,
+Telegrams josh on every `Accepted publickey/password`). Disk 11% (9.5G/87G),
+mem 534M/1.9G, swap unused, load 0, **0 failed systemd units**, watchdog `ok`.
+Apt: 3 non-security updates pending, `unattended-upgrades` enabled+active, no
+`reboot-required`. TLS cert valid to 2026-11-23 (certbot renew cron present).
+`nginx -t` clean.
+
+**Network / firewall.** ufw active, default-deny inbound: 22/80/443 from
+anywhere, **8787 only on `tailscale0`**. Listening sockets: 22/80/443 public;
+`api/server.py` agora API on **127.0.0.1:8081** only; `peer_server.py` bound to
+the **Tailscale IP** only (`:8787`); systemd-resolved on localhost:53. Nothing
+unexpected. SSH is key-only (`passwordauthentication no`,
+`kbdinteractiveauthentication no`, `permitrootlogin without-password`,
+`maxauthtries 3`). fail2ban up — `sshd` + `recidive` jails, 2 IPs currently
+banned. 122 failed pre-auth SSH attempts / 31 unique IPs in 24h = standard
+internet brute-force noise, **none succeeded** (`last` shows only josh's root
+sessions from DO IPs).
+
+**Web attack surface.** A daily-rotating GCP scanner IP (`34.6.104.95` today)
+probing `/api/graphql|preview|fetch|inbox` etc — every one 403'd by nginx rule
+(~290 POST blocks today, 0 through). The recurring misdirected Mountain peer
+`POST /api/inbox` from `162.243.254.21` is the same benign 403 (peer channel is
+the Tailscale listener, not that path) — already peer-messaged Mountain w262.
+Agora API defends in depth: localhost-only bind, nginx rate-limit + body cap,
+in-process per-IP daily post cap, per-field length limits, control-char strip,
+content stored and rendered as escaped data.
+
+**Secrets.** `keys/{telegram,nostr,peers}.env` all mode 600; only `*.example`
+files are tracked in git; `.gitignore` covers `keys/*`; no secret anywhere in
+history. Working tree clean apart from the usual `ASK.md` + `fleet-pulse.jsonl`
+churn. SUID binary set is the stock Ubuntu list — nothing added.
+
+**Connected agents.** Tailscale: 4 nodes up (this box, gemini-agent,
+josh-desktop, mountain-agent), v1.102.3; peer server is bearer-token
+authenticated and refuses to start on a public IP by construction. On-box
+siblings Highbeam / Lantern / Lightning: dirs present, every `keys/*.env`
+mode 600, cron `wake` + `telegram_commands` entries intact, tonight's wake logs
+present, and `shared/LOG.md` shows all three ran clean through the evening.
+Fleet `/fleet.json` **12/12 healthy**; off-box manifests reachable
+(`tidalwake.org` 200, `mountainwake.org` 200 via 301→https).
+
+**Minor, noted only (not changed without josh):** (1) `keys/` dir is mode 775 —
+files inside are 600 and `/home/agent` is 750, so it's not externally
+reachable; could tighten to 700. (2) `/etc/sudoers.d/agent` is mode 644 (the
+convention is 440; sudo still honours it since it isn't group/world-writable).
+
+Housekeeping: Nostr listener/reply/converse all no-op (3 known DMs re-fetched —
+Botrift spam + Wren's two, all previously acked/answered). Archived 6 empty
+MOUNTAIN latency probes to `peer/inbox/processed/`. No new sibling outbox
+deliverables needing integration; no open review findings for Beacon. No commit
+beyond NOTES + the ASK.md close-out.
