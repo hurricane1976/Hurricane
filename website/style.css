@@ -2087,3 +2087,122 @@ main h1 code, main h2 code, main h3 code, main h4 code, main a code {
   from { offset-distance: 0%; }
   to   { offset-distance: 100%; }
 }
+
+/* ==========================================================================
+   w258 — site-wide visual refresh
+   Brings the hand-written / template pages onto the same shell as the React
+   front door (website/site/global.css): slim sticky header, concentric
+   signal-ring backdrop, softer cards, quieter footer. Additive & last —
+   overrides the older component blocks above by cascade order. Colour and
+   type tokens are unchanged (already fleet-canonical).
+   ========================================================================== */
+
+/* ---- slim header (replaces the 18-link header/.site-nav markup) ---- */
+.site-header-v2 {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  max-width: none;
+  margin: 0;
+  padding: 0.85rem clamp(20px, 5vw, 40px);
+  background: rgba(10, 13, 19, 0.82);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--line);
+  flex-wrap: wrap;
+  row-gap: 0.4rem;
+}
+.brand-v2 {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-family: "Space Grotesk", sans-serif;
+  font-weight: 600;
+  font-size: 1.02rem;
+  letter-spacing: -0.01em;
+  color: var(--fg);
+  flex-shrink: 0;
+}
+.brand-v2:hover { text-decoration: none; color: var(--fg); }
+.brand-v2 svg { width: 26px; height: 26px; display: block; }
+.nav-v2 {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: clamp(10px, 2.2vw, 22px);
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.82rem;
+}
+.nav-v2 a { color: var(--muted); white-space: nowrap; transition: color 0.2s ease; }
+.nav-v2 a:hover { color: var(--fg); text-decoration: none; }
+.nav-v2 a[aria-current="page"] { color: var(--accent); }
+.nav-v2 .nav-v2-cta {
+  border: 1px solid var(--glass-border);
+  border-radius: 999px;
+  padding: 6px 14px;
+  color: var(--fg);
+}
+.nav-v2 .nav-v2-cta:hover { border-color: var(--accent); color: var(--fg); }
+@media (max-width: 680px) {
+  .nav-v2 { gap: 14px; }
+  .nav-v2 a:not(.nav-v2-cta) { display: none; }
+}
+
+/* ---- backdrop: concentric signal rings + warm/cool wash ---- */
+.backdrop {
+  background:
+    radial-gradient(120% 80% at 78% 0%, rgba(255, 138, 61, 0.09), transparent 60%),
+    radial-gradient(90% 60% at 12% 100%, rgba(79, 209, 197, 0.06), transparent 55%),
+    var(--bg);
+}
+.backdrop::before, .backdrop::after { content: none; display: none; }
+.backdrop svg {
+  display: block;
+  position: absolute;
+  top: 6%;
+  right: -18%;
+  width: min(1000px, 110vw);
+  opacity: 0.2;
+}
+.backdrop-ring {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 1;
+  opacity: 0;
+  transform-origin: center;
+  animation: ring-out 11s ease-out infinite;
+}
+.backdrop-ring:nth-child(2) { animation-delay: 3.7s; }
+.backdrop-ring:nth-child(3) { animation-delay: 7.4s; }
+@keyframes ring-out {
+  0%   { transform: scale(0.15); opacity: 0; }
+  14%  { opacity: 0.3; }
+  100% { transform: scale(1); opacity: 0; }
+}
+
+/* ---- hero: a touch tighter now the header is slim + sticky ---- */
+.hero { padding-top: 3.5rem; }
+.mark-lg { animation: none; }
+.mark-lg .pulse { animation: none; }
+
+/* ---- cards: match the React radius + hover ---- */
+section.card { border-radius: 14px; }
+section.card:hover { transform: translateY(-3px); }
+
+/* ---- footer: quieter, ruled ---- */
+main > footer {
+  border-top: 1px solid var(--line);
+  margin-top: 4rem;
+  padding-top: 2rem;
+  padding-bottom: 3rem;
+}
+.footer-links { font-family: "IBM Plex Mono", monospace; gap: 1.1rem; }
+
+@media (prefers-reduced-motion: reduce) {
+  .backdrop-ring { animation: none; opacity: 0; }
+}
