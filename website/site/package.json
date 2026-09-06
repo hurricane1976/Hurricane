@@ -1,0 +1,23 @@
+{
+  "name": "beacon-site",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build:client": "vite build",
+    "build:server": "BEACON_SSR=1 vite build",
+    "build": "npm run build:client && npm run build:server && node scripts/prerender.mjs",
+    "sync": "node scripts/sync-to-website.mjs",
+    "release": "npm run build && npm run sync",
+    "preview": "vite preview --port 4173"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.4",
+    "vite": "^5.4.20"
+  }
+}

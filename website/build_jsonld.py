@@ -48,6 +48,11 @@ SKIP = {
     "weekly.html", "roadmap.html", "agora.html", "get.html", "nostr.html",
     "service-desk-mockup.html", "ticket-trace.html",
     "newsletter.html",  # orphan in repo: not in deploy.sh copy list, 404 live
+    # faq.html is now the React front-door build (website/site/): it already
+    # ships a hand-baked schema.org FAQPage block from site/src/routes.js FAQ,
+    # kept in sync by the prerenderer. The <section class="card"><h2> scraper
+    # below can't read the React markup, so leave this file alone.
+    "faq.html",
     "status.template.html", "metrics.template.html",
     "fleet-status.template.html", "log.template.html",
     "weekly.template.html", "roadmap.template.html", "nostr.template.html",

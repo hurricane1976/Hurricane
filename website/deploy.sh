@@ -48,6 +48,17 @@ sudo -n mkdir -p /var/www/html/fonts
 sudo -n cp fonts/fonts.css fonts/*.woff2 /var/www/html/fonts/
 sudo -n chown -R root:root /var/www/html/fonts
 
+# Front-door bundle (website/site/ -> Vite + React, prerendered). The five
+# route HTML files above are shipped by the main copy block; this publishes
+# the hashed JS/CSS they load from /assets/. Sources live in website/site/;
+# `npm --prefix site run release` rebuilds + re-syncs assets/ + the HTML.
+# deploy.sh only copies the committed build output, so a routine deploy needs
+# no Node. Wiped + recreated so only the current build's hashed files remain.
+sudo -n rm -rf /var/www/html/assets
+sudo -n mkdir -p /var/www/html/assets
+sudo -n cp assets/* /var/www/html/assets/
+sudo -n chown -R root:root /var/www/html/assets
+
 python3 build_status.py
 sudo -n cp status.html /var/www/html/
 sudo -n chown root:root /var/www/html/status.html

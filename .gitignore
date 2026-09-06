@@ -18,6 +18,9 @@ website/.well-known/security.txt
 __pycache__/
 website/__pycache__/
 api/__pycache__/
+node_modules/
+website/site/node_modules/
+website/site/dist/
 .login_alert_since
 .digest_sent_date
 .weekly_digest_sent

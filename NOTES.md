@@ -13008,3 +13008,65 @@ asking for its team's canonical one-line role.
 
 **Open (unchanged, nothing blocking):** spoke #16 hosting-cost question for
 josh. Standing web-craft steer (josh w238) continues incrementally.
+
+## 2026-09-06 — 257th waking (interactive, josh-directed)
+
+josh, in an interactive session: *"refactor and rebuild beacon's website
+similar to mountain's website which was recently redone. use the latest and
+most advanced website drafting techniques i.e. react, etc. … make this the best
+website ever."* Mountain had, ~20 min earlier, shipped mountainwake.org as a
+**Vite + React SPA** front door (`<div id="root">`, hashed `/assets/` bundle,
+`noindex`) — one polished page, "everything past it generated from its own git
+history and journal."
+
+Asked josh two scoping questions (`AskUserQuestion`): **scope → "front door +
+core nav pages"** (index + getting-started + build + field-guide + faq as React;
+leave the ~35 keyword-SEO pages and the Python-generated live-data pages alone),
+**cutover → "build and ship it live now."**
+
+**Shipped — new React front door (commits on `agent` repo, deployed + pushed,
+both smoke gates green):**
+
+- **`website/site/`** — Vite 5 + React 18, component architecture. Built with a
+  client build + an SSR build + `scripts/prerender.mjs` that renders each route
+  in `src/routes.js` to a **complete static HTML file** in `website/` (real
+  content in `<body>`, full `<head>`: canonical/og/twitter/JSON-LD/theme-color/
+  manifest/font preloads). `scripts/sync-to-website.mjs` drops the 5 HTML files
+  + hashed `assets/` into `website/`. `deploy.sh` ships them like any other
+  static file — **no Node in the deploy path**; committed build output is the
+  source of truth. `README.md` in `site/` documents the whole flow for the fleet.
+- **Design system** (`src/styles/global.css`): mirrors Mountain's structure
+  (full-viewport hero + animated identity scene, identity/loop split, rules
+  grid, fleet graph, explore grid, footer) but with **Beacon's own lighthouse
+  identity** — a sweeping SVG light-beam + concentric signal rings (the
+  `/.well-known/design-tokens.json` hero-motion note reserves per-site motion;
+  Beacon's is "concentric signal rings") — and **fleet-canonical colour + type
+  tokens** (amber `#ff8a3d` / teal `#4fd1c5` / near-black `#0a0d13`, Space
+  Grotesk / IBM Plex Sans / IBM Plex Mono). Kept those canonical rather than
+  drifting like Mountain's ember/gold/glacier palette did, so the 35 unconverted
+  pages still feel of a piece.
+- **Pages:** Home (hero, "A loop, not a personality", **live pulse** section
+  reading `/api/pulse` off the box — a Beacon-specific touch Mountain doesn't
+  have, "Six rules that don't bend", 10-agent fleet graph, "The rest of the
+  site" explore grid). getting-started / build / field-guide / faq ported from
+  the old hand-written HTML, on a slim sticky header (brand + Log/Fleet/Guides +
+  "Get the editions") instead of the 18-link nav.
+- **Resilience:** `<html class="js">` set by an inline head script; scroll-reveal
+  only hides content when that class is present, so no-JS / failed-hydration
+  visitors still see everything (the old site's progressive-enhancement posture).
+- **Pipeline touches:** `build_jsonld.py` SKIP += `faq.html` (its
+  `<section class="card"><h2>` scraper can't read React markup; the prerenderer
+  emits the FAQPage block from `src/routes.js` `FAQ` instead). `deploy.sh` gains
+  a `website/assets/` publish block (wiped + recopied each deploy so only the
+  current hashed files remain). `.gitignore` += `website/site/node_modules|dist`.
+  build_jsonld reports **no changes** on the other 4 — the prerendered JSON-LD
+  is byte-identical to what it would inject, so deploys don't churn these files.
+- Verified live via headless-Chrome full-page screenshots (`--host-resolver-rules`
+  DNS map, per the field-guide lesson) at 1440px + 390px: hero, all sections,
+  hydration (live pulse shows real 256/372 counts), and the 4 sub-pages.
+
+**Note for the fleet:** the 4 converted sub-pages now render in the new style
+while `guides.html`, `study-guide.html`, `memory-handbook.html` etc. keep the
+old theme — an expected seam from the scope josh chose. URLs, canonicals and
+`smoke_test.py` `LIVE_PATHS` are unchanged; the slim header links back into the
+old library so nothing is stranded.
