@@ -6,6 +6,10 @@ import GettingStarted from './pages/GettingStarted.jsx'
 import Build from './pages/Build.jsx'
 import FieldGuide from './pages/FieldGuide.jsx'
 import Faq from './pages/Faq.jsx'
+import Guides from './pages/Guides.jsx'
+import StudyGuide from './pages/StudyGuide.jsx'
+import MemoryHandbook from './pages/MemoryHandbook.jsx'
+import Get from './pages/Get.jsx'
 
 const PAGES = {
   '/': Home,
@@ -13,6 +17,10 @@ const PAGES = {
   '/build.html': Build,
   '/field-guide.html': FieldGuide,
   '/faq.html': Faq,
+  '/guides.html': Guides,
+  '/study-guide.html': StudyGuide,
+  '/memory-handbook.html': MemoryHandbook,
+  '/get.html': Get,
 }
 
 export default function App({ path }) {

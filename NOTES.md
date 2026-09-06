@@ -13070,3 +13070,36 @@ while `guides.html`, `study-guide.html`, `memory-handbook.html` etc. keep the
 old theme — an expected seam from the scope josh chose. URLs, canonicals and
 `smoke_test.py` `LIVE_PATHS` are unchanged; the slim header links back into the
 old library so nothing is stranded.
+
+### w257 cont. — four more pages onto the React front door
+
+josh: "keep going with other pages." Converted the remaining hand-written
+hub / companion pages to the Vite + React system (same prerender-to-static
+pipeline, no deploy-path Node):
+
+- **`/guides.html`** — the library index. 18 article cards (explore-card style,
+  linking to the unconverted keyword-SEO pages, which keep their old theme) +
+  intro callout + "why trust these". Its special **CollectionPage +
+  BreadcrumbList** JSON-LD is reproduced byte-for-byte by the prerenderer
+  (`graphFor` + new `ogTitle`/`ogDescription` route fields, since guides' page
+  `<title>` and `og:title` legitimately differ) — `build_jsonld.py` reports **no
+  changes**, so no deploy churn.
+- **`/study-guide.html`** — 5 CCA-F exam domain cards (weight %, prose, check
+  lists) + "how to actually study this".
+- **`/memory-handbook.html`** — the 3 memory layers + "why three, not one".
+- **`/get.html`** — 6 paid-edition cards with price + Gumroad buy buttons
+  (`.btn-buy`), CTAs bottom-aligned per row; + "checkout is open". Gumroad
+  links unchanged (`shadowapache.gumroad.com/l/...`).
+
+Content ported faithfully from the old HTML (data lives in `site/src/routes.js`
+alongside `FAQ`, so prerender + pages share one source). New: `Guides` /
+`StudyGuide` / `MemoryHandbook` / `Get` page components, `.guide-index` /
+`.tag` / `.price` / `.btn-buy` CSS, 5 icons, `prose-card` flex so pricing
+cards align. `build_jsonld.py` untouched this round.
+
+Now **9 of the site's pages** are the React build; the ~26 remaining are the
+keyword-SEO articles + the Python-generated live-data pages, still their old
+selves. Deployed; both smoke gates green; verified live via headless-Chrome
+full-page screenshots. (The faint header ghost-text in those fullPage grabs is
+a headless `backdrop-filter` + fullPage compositing artifact — a normal
+viewport render is clean.)

@@ -65,6 +65,31 @@ function graphFor(route) {
       ],
     }
   }
+  if (route.path === '/guides.html') {
+    // Matches build_jsonld.py's guides.html CollectionPage branch exactly
+    // (reads og:title / og:description off the page -> ogTitle / ogDescription).
+    const t = route.ogTitle || route.title
+    const d = route.ogDescription || route.description
+    return {
+      '@context': 'https://schema.org',
+      '@graph': [
+        {
+          '@type': 'CollectionPage',
+          url,
+          name: t,
+          description: d,
+          inLanguage: 'en',
+          breadcrumb: {
+            '@type': 'BreadcrumbList',
+            itemListElement: [
+              { '@type': 'ListItem', position: 1, name: 'Home', item: SITE + '/' },
+              { '@type': 'ListItem', position: 2, name: 'Guides', item: url },
+            ],
+          },
+        },
+      ],
+    }
+  }
   // Matches build_jsonld.py's fallback WebPage node, key order included.
   return {
     '@context': 'https://schema.org',
@@ -75,6 +100,8 @@ function graphFor(route) {
 function headFor(route) {
   const canonical = SITE + route.path
   const img = SITE + '/og-image.png'
+  const ogTitle = route.ogTitle || route.title
+  const ogDesc = route.ogDescription || route.description
   const lines = [
     `<meta name="description" content="${esc(route.description)}">`,
     `<title>${esc(route.title)}</title>`,
@@ -85,16 +112,16 @@ function headFor(route) {
     `<link rel="manifest" href="/site.webmanifest">`,
     `<meta property="og:type" content="${route.ogType || 'website'}">`,
     `<meta property="og:site_name" content="Beacon">`,
-    `<meta property="og:title" content="${esc(route.title)}">`,
-    `<meta property="og:description" content="${esc(route.description)}">`,
+    `<meta property="og:title" content="${esc(ogTitle)}">`,
+    `<meta property="og:description" content="${esc(ogDesc)}">`,
     `<meta property="og:url" content="${canonical}">`,
     `<link rel="canonical" href="${canonical}">`,
     `<meta property="og:image" content="${img}">`,
     `<meta property="og:image:width" content="1200">`,
     `<meta property="og:image:height" content="630">`,
     `<meta name="twitter:card" content="summary_large_image">`,
-    `<meta name="twitter:title" content="${esc(route.title)}">`,
-    `<meta name="twitter:description" content="${esc(route.description)}">`,
+    `<meta name="twitter:title" content="${esc(ogTitle)}">`,
+    `<meta name="twitter:description" content="${esc(ogDesc)}">`,
     `<meta name="twitter:image" content="${img}">`,
     `<link rel="preload" as="font" type="font/woff2" href="/fonts/space-grotesk-variable-latin.woff2" crossorigin>`,
     `<link rel="preload" as="font" type="font/woff2" href="/fonts/ibm-plex-sans-variable-latin.woff2" crossorigin>`,
