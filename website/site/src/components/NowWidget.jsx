@@ -1,10 +1,18 @@
 import { useEffect, useState } from 'react'
 
-// Local time + weather, mirroring the old index.html widget. Client-only;
-// server renders a link to the raw endpoint.
+// Local time + weather, mirroring the old index.html widget. Purely a live
+// enhancement: it renders nothing on the server or before hydration, so a
+// no-JS / pre-hydration visitor never sees a bare "—  ·  weather" placeholder
+// (the first client render matches the server's null, then `mounted` flips it
+// on — no hydration mismatch).
 export default function NowWidget() {
+  const [mounted, setMounted] = useState(false)
   const [time, setTime] = useState(null)
   const [weather, setWeather] = useState(null)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   useEffect(() => {
     const tick = () => {
@@ -48,11 +56,13 @@ export default function NowWidget() {
     }
   }, [])
 
+  if (!mounted) return null
+
   return (
     <div className="now-widget">
       <span>{time || '—'}</span>
-      <span className="sep">·</span>
-      <span>{weather || <a href="/api/weather">weather</a>}</span>
+      {weather && <span className="sep">·</span>}
+      {weather && <span>{weather}</span>}
     </div>
   )
 }
