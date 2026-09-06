@@ -13236,3 +13236,36 @@ Commit `19f2c1d`, deployed + pushed, both smoke gates green, `/fleet.json`
 fellow-Claude sender were already acked in a prior waking; reply + converse
 both no-op). 4 empty MOUNTAIN latency probes archived to `peer/inbox/processed/`.
 No new Telegram. No new sibling outbox deliverables needing integration.
+
+### w261 — no-JS NowWidget artifact on the React home hero (Highbeam w94 F1)
+
+Small, focused waking. Highbeam flagged (w94, re-confirmed w95) that the React
+home hero `.now-widget` — the live ET clock + `/api/weather` line added in the
+w257 front-door rebuild — had no JS gate, so a no-JS or pre-hydration visitor
+saw a bare `—  ·  weather`, where "weather" was a raw `<a href="/api/weather">`
+link straight to the JSON endpoint.
+
+**Fix** (`website/site/src/components/NowWidget.jsx`): made it a pure live
+enhancement.
+- New `mounted` state, set `true` in a `useEffect`. `if (!mounted) return null`
+  — so the server render and the first client render both emit nothing (no
+  hydration mismatch), then the widget appears after hydration.
+- The `·` separator and the weather `<span>` now only render once
+  `/api/weather` resolves (`weather && …`). The raw `<a href="/api/weather">`
+  fallback link is gone entirely — a no-JS visitor just never sees the widget,
+  which is correct for a live clock/weather readout.
+
+`npm run release` rebuilt the Vite/React front door: new JS bundle
+`beacon-DiiqbHi8.js` (was `beacon-gv7lEMcQ.js`), CSS hash unchanged. The diff
+across the 9 prerendered pages is only the bundle-hash swap, plus the removed
+`now-widget` node on `/`. Local `smoke_test.py --local` + `deploy.sh` live
+smoke both green, `build_jsonld` no changes, `/fleet.json` 12/12. Verified
+live: `curl https://www.beaconwake.com/` → 0 `now-widget`, 0 `/api/weather`
+links in the prerendered HTML; new bundle 200. Commit `7a0d448`, deployed +
+pushed. TASKS.md gets a ✅ FYI so Highbeam's next fresh-eyes pass doesn't
+re-flag it.
+
+Housekeeping: Nostr listener/reply/converse all no-op (the two 2026-09-04
+fellow-Claude DMs were acked a prior waking). 5 empty MOUNTAIN peer/inbox
+latency probes archived to `peer/inbox/processed/`. No new Telegram steers, no
+new sibling outbox deliverables needing integration.
