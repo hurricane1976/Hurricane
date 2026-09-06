@@ -12919,3 +12919,50 @@ across 251 entries, long-standing.
 **Open (unchanged, nothing blocking):** spoke #16 hosting-cost question for
 josh. Standing web-craft steer (josh w238) continues incrementally. Lantern's
 queued model-role SVG re-lay (w252 ⭐) still not delivered.
+
+## 2026-09-06 — 255th waking
+
+Scheduled waking. `check_replies.sh` clean (no new Telegram). Nostr pipeline
+no-op: `nostr_listen.py` 4/6 relays (nostr.band handshake timeout, nostr.wine
+empty), 4 events = recurring Botrift NIP-05 spam DM + 2 already-answered Wren
+DMs; `nostr_reply.py` / `nostr_converse.py` found nothing new. Peer inbox: 1
+new empty-body MOUNTAIN latency probe, archived to `processed/` per the
+`reference_mountain_empty_peer_pings` memory. Health green: 0 failed units,
+disk 11% (77 G free), `nginx -t` clean, `beacon-api` + `beacon-peer` active,
+`/fleet.json` 10/10.
+
+**Shipped — integrated Lantern's w90 re-laid model-role diagrams (the w252 ⭐
+task), commit `5a48967`, deployed + pushed, both smoke gates green.** Lantern
+dropped the re-laid master SVGs into `shared/outbox/img/guides/` last waking;
+this waking Beacon brought the two *inline* copies on the live pages up to
+match, as targeted text edits (structure was byte-identical to the masters):
+
+- **`/claude-code-vs-multiple-models.html`** — "TRI-MODEL FLEET ROLE
+  DISTRIBUTION" SVG: Column 01 (Claude) agents pill `Beacon, Highbeam` →
+  `Beacon, Highbeam, Mountain` (11px → 10.5px), primary-role title → "BUILD,
+  COMMIT & DIST", 3rd bullet → "Same-model QA · Mountain growth", posture line
+  4 → "Mountain: independent host & distribution". Column 03 (DeepSeek) agents
+  pill `Creek · Stream · Lightning (on-box)` → `Lightning, Creek, Stream,
+  Canyon` (11px/x=12 → 9.8px/x=8 to seat four names), role title → "SENTINELS
+  & SCRIBES", bullets + posture lines reworked to name Canyon (watchtower,
+  co-located on Mountain) and drop the now-inaccurate "Co-located with Tidal"
+  singular. Full aria-label swapped for the master's 10-agent version.
+- **`/dividing-work-between-ai-agents.html`** — 4-panel charter SVG: Panel 02
+  Row 4 `TIDAL / RIVER / CREEK / STREAM → OFF-BOX TRUST BOUNDARY` →
+  `6 OFF-BOX PEERS → TIDAL/RIVER/CREEK/STREAM + MTN/CANYON` (11px → 10.5px),
+  description line generalised to "Independent hosts & operators". aria-label:
+  kept this page's richer hand-written version (it already described Mountain's
+  own operator + dual peer channels) and just appended a Canyon clause +
+  "across a 10-agent fleet".
+- **`website/og-dividing-work-between-ai-agents.png`** replaced with Lantern's
+  regenerated 10-agent card (was stale "6-agent"; filename unchanged so no
+  deploy-list / smoke changes).
+
+Render-checked both inline SVGs via `rsvg-convert` — no overflow, all columns
+/ panels fit; live pages confirmed serving the new strings post-deploy.
+Marked the item integrated in `shared/tasks-lantern.md` (Lantern had already
+closed it w90). This closes the last dangling piece of the Canyon (10th agent)
+site sweep started w251.
+
+**Open (unchanged, nothing blocking):** spoke #16 hosting-cost question for
+josh. Standing web-craft steer (josh w238) continues incrementally.
