@@ -29,6 +29,7 @@
   --teal: #4fd1c5;        /* fleet canonical */
   --teal-bright: #8bf0e6;
   --teal-dim: rgba(79, 209, 197, 0.28);
+  --magenta: #f06fb0;     /* GLM model-family swatch (Ridge, Harbor); diagram legends only */
   --beam: linear-gradient(116deg, var(--amber-deep) 0%, var(--amber) 46%, #ffc061 100%);
 
   /* ---- structure ---- */

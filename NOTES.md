@@ -13131,3 +13131,82 @@ at 1440 + 390px: an SEO article, `soc-architecture`, `distributed-agents`
 `ticket-trace`. **Whole site now reads as one design.** The 9 front-of-site
 pages are the React/Vite build; the rest are their original HTML/generators
 wearing the same shell.
+
+### w259 — the fleet is 12 agents / 4 model families (Ridge + Harbor, GLM)
+
+josh (interactive): *"beacon website needs to be updated to take into account
+all 12 agents in the fleet."* Mountain's box added two **GLM 5.3 (via
+OpenRouter)** agents — **Ridge** (fleet sentinel) and **Harbor** (growth &
+outreach) — so the fleet is now **12 agents, 3 hosts, 4 model families**
+(Claude ×3, Gemini ×3, DeepSeek ×4, **GLM ×2**). Mountain's host runs 4 agents
+now (Mountain, Canyon, Ridge, Harbor); the fleet is a clean 3 hosts × 4.
+Represented from Mountain's published manifest (`updated 2026-09-06 16:07 UTC`,
+lists all 12) + Highbeam w93 / Lightning w25–26 corroboration — not guessed.
+
+**GLM diagram accent:** new `--magenta` token `#f06fb0` in both `style.css` and
+`site/src/styles/global.css` (josh picked magenta/pink over violet/green in the
+interactive Q). Distinct from amber=Claude / teal=Gemini / `--diagram-slate`=DeepSeek.
+
+Generators (regenerate their HTML on deploy):
+- `build_fleet_status.py` — `mountain_and_canyon()` → `mountain_group()` returns
+  Ridge + Harbor derived rows (liveness tracks Mountain's host, same pattern as
+  Canyon; model `GLM 5.3 (via OpenRouter)`). `FAMILY_COLOR` + `family_of()` gain
+  GLM. Topology SVG: Mountain box is now a 4-node diamond (Mountain 1210,150 /
+  Canyon 1100,250 / Ridge 1320,250 / Harbor 1210,350), full mesh; host rect
+  1000w420, viewBox `0 0 1440 500`, legend gains a GLM swatch and moved to
+  y=470; Beacon↔Mountain channel re-routed as a low swoop `Q730,700` (label at
+  bottom-centre) — matching `.chan-flow-mountain` / `.chan-flow-tm` offset-paths
+  in `style.css`; Tidal↔Mountain endpoint moved to (1210,150). `activity_stream()`
+  regex + family map gain Ridge/Harbor.
+- `build_agent_manifest.py` `fleet[]` +Ridge +Harbor → `/.well-known/agent.json`
+  now 12 entries.
+- `build_metrics.py` `KPI_AGENTS` 10 → 12.
+- `fleet-status.template.html` — meta agent list, `<div class="stat-value">4</div>`
+  + "model families (Claude, Gemini, DeepSeek, GLM)", "Twelve agents across
+  three hosts".
+- `metrics.template.html` — the third-host co-located note (+Ridge +Harbor).
+
+React front door (`site/src/`, rebuilt via `npm run release`):
+- `components/FleetGraph.jsx` +Ridge +Harbor nodes; "nine/nine-agent" →
+  "eleven/twelve-agent".
+- `pages/Home.jsx` / `pages/Guides.jsx` — "ten agents" → "twelve", "three model
+  families" → "four".
+- `styles/global.css` — `--magenta`.
+- New hashed assets: `beacon-gv7lEMcQ.js`, `beacon-BujVsBrV.css`.
+
+Static pages (hand-edited):
+- `distributed-agents.html` — prose (+Ridge +Harbor paragraph), subtitle,
+  ~1500-char aria-label, diagram-caption + legend, and the **hand-tuned
+  topology SVG**: Mountain container relabelled "MOUNTAIN GROUP", now 4 compact
+  agent cards + a co-location spine + the Tidal↔Mountain channel routed down the
+  gutter.
+- `dividing-work-between-ai-agents.html` — meta ×3 + JSON-LD + tagline + body;
+  **charter SVG** ("12-AGENT", "8 OFF-BOX PEERS …/RIDGE/HARBOR"); **cadence-radar
+  SVG** Panel 02 gains a 4th GLM family box (Ridge·Harbor, magenta), header +
+  "12 Agents · 4 Families"; table row → "Mountain / Canyon / Ridge / Harbor"
+  with a GLM cell.
+- `claude-code-vs-multiple-models.html` — page thesis 3 → 4 families throughout
+  (title, tagline, callout, `<h2>`, meta ×3 + JSON-LD); **"TRI-MODEL" →
+  "MULTI-MODEL" role-distribution SVG** widened to a 4th GLM column
+  (viewBox `0 0 1200 520` → `0 0 1560 520`, grid + footer banner extended);
+  new GLM table row.
+- `agent-to-agent-communication.html`, `agent-discovery-manifest.html` (sample
+  `fleet[]` +Ridge +Harbor, "Four model families across twelve agents"),
+  `multi-agent-without-a-framework.html`, `llms.txt`.
+- **`service-desk.html` deliberately left** — its "nine/ten agents" is the
+  service-desk *design's* own agent roster, a coincidental number, not the
+  Beacon fleet.
+
+**Mountain's role kept "Growth & distribution"** per josh (interactive). Harbor
+represented verbatim as "growth & outreach" from its manifest; the wording
+overlap (Mountain "growth & distribution" vs Harbor "growth & outreach", vs
+Mountain's own manifest saying "fleet protocol & integration") is flagged in
+`ASK.md`, not resolved.
+
+Fleet coordination synced: `shared/DIVISION-OF-WORK.md` (w259 revision note +
+agents table + "Mountain group" section), `shared/LOG.md`, `shared/TASKS.md`
+(Highbeam), `shared/tasks-lantern.md` (Lantern — asset-refresh heads-up),
+`shared/tasks-lightning.md` (Lightning — 12/12 baseline). Peer-messaged Tidal +
+Mountain. `build_jsonld` reports no changes. Local `smoke_test.py --local`
+green; all four hand-tuned SVGs re-rendered with `rsvg-convert` and eyeballed
+(12 nodes, 4-node Mountain group, magenta GLM, no overlap/clipping).

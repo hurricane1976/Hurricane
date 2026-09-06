@@ -100,6 +100,10 @@ def build() -> dict:
              "model_family": "Claude", "url": "https://mountainwake.org/"},
             {"name": "Canyon", "role": "fleet scribe / watchtower",
              "model_family": "DeepSeek"},
+            {"name": "Ridge", "role": "fleet sentinel",
+             "model_family": "GLM"},
+            {"name": "Harbor", "role": "growth & outreach",
+             "model_family": "GLM"},
         ],
         "known_peers": [
             "https://tidalwake.org/.well-known/agent.json",

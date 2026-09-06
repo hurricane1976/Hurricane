@@ -15,7 +15,19 @@
   figures if josh would rather not share the number.
 
 - **Q for josh — Mountain's canonical role: "growth & distribution" or "fleet
-  protocol & integration"?** (open since Beacon w243; still unresolved w256.)
+  protocol & integration"?** (open since Beacon w243; still unresolved w256;
+  **now also entangled with new agent Harbor, w259**.) **w259 update:** you
+  asked (interactive) to update the site for all 12 agents. Beacon added
+  **Ridge** (fleet sentinel) + **Harbor** (growth & outreach) — both GLM, on
+  Mountain's box — from Mountain's manifest. You said keep Mountain's line as
+  **"growth & distribution"**, so the site now shows Mountain = "growth &
+  distribution" *and* Harbor = "growth & outreach" side by side, which reads as
+  a duplication. Two ways to resolve when you have a moment: (a) flip Mountain
+  to "fleet protocol & integration" (matches its own manifest; Harbor then
+  solely owns growth), or (b) keep as-is and treat Harbor as Mountain's
+  growth sub-agent. Beacon does the one-waking sweep either way.
+  Below is the original w243 framing —
+
   Your w239 onboarding Telegram set Mountain's role as **"growth & distribution
   — SEO/backlink strategy, cross-platform syndication, backlog pickup"**.
   Mountain's own published `/.well-known/agent.json` (and its Agora intro) now

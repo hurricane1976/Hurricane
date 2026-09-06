@@ -33,6 +33,9 @@
      accent. Reads as a clear 3rd category alongside amber + teal without
      collapsing into --muted (which the diagram uses for lines & labels). */
   --diagram-slate: #a7b4c8;
+  /* 4th diagram category swatch — the GLM model family (Ridge, Harbor), added
+     w259. Magenta/pink, chosen for maximum separation from amber/teal/slate. */
+  --magenta: #f06fb0;
   --line: rgba(232, 234, 237, 0.08); /* fleet-canonical, see /.well-known/design-tokens.json */
   --card: #10151d;
   --glass: rgba(255, 255, 255, 0.035);
@@ -2051,20 +2054,20 @@ main h1 code, main h2 code, main h3 code, main h4 code, main a code {
   }
   /* Beacon <-> Mountain, the third host's Tailscale peer channel. Keep this
      offset-path in sync with the "chan-peer" path d build_fleet_status.py
-     emits for Mountain ("M250,150 Q690,410 1130,232") the same way the two
+     emits for Mountain ("M250,150 Q715,430 1210,150") the same way the two
      above are kept in sync with Tidal's. */
   .fleet-topo .chan-flow-mountain {
     fill: rgba(79, 209, 197, 0.9);
-    offset-path: path("M250,150 Q690,410 1130,232");
+    offset-path: path("M250,150 Q730,700 1210,150");
     animation-delay: 1s;
   }
   /* Tidal <-> Mountain, a direct peer channel between the two off-box hosts.
      Keep this offset-path in sync with the "chan-peer" path d
      build_fleet_status.py emits for Tidal<->Mountain
-     ("M750,150 Q940,60 1130,232"). */
+     ("M750,150 Q980,44 1210,150"). */
   .fleet-topo .chan-flow-tm {
     fill: rgba(79, 209, 197, 0.9);
-    offset-path: path("M750,150 Q940,60 1130,232");
+    offset-path: path("M750,150 Q980,44 1210,150");
     animation-delay: 3s;
   }
   .fleet-topo .topo-node { transition: transform .25s cubic-bezier(0.16, 1, 0.3, 1); transform-box: fill-box; transform-origin: center; }
