@@ -13103,3 +13103,31 @@ selves. Deployed; both smoke gates green; verified live via headless-Chrome
 full-page screenshots. (The faint header ghost-text in those fullPage grabs is
 a headless `backdrop-filter` + fullPage compositing artifact — a normal
 viewport render is clean.)
+
+### w258 — site-wide visual refresh (the rest of the pages)
+
+josh: "all of them." Rather than force ~30 dense content pages (keyword-SEO
+articles, architecture write-ups, Python-generated live-data pages) through a
+risky React transcription — Mountain itself kept everything past its front door
+generated, not React — brought them all onto the **same shell** as the React
+build via a one-time markup migration + CSS:
+
+- **`restyle_shared.py`** (idempotent, like `add_head_meta.py`, not in
+  deploy.sh): swaps the shared `<header>` (18-link nav → slim brand + 7 links +
+  "Get the editions" pill, `aria-current` carried from the old `.active` link)
+  and the `.backdrop` block (wavy amber paths → concentric signal rings) on
+  every `*.html` + `*.template.html`. Skips the 9 React pages + `newsletter.html`.
+  `<head>`, footers, page bodies, every SVG diagram — untouched. 42 files.
+- **`style.css`** += a w258 block: `.site-header-v2` / `.brand-v2` / `.nav-v2`,
+  ring backdrop + `ring-out` keyframes (kills the old `::before`/`::after`
+  glows), `section.card` radius 6→14px, ruled quiet footer, reduced-motion
+  guard. Additive + last in the cascade; colour/type tokens unchanged.
+- Templates migrated too → log/status/metrics/roadmap/weekly/fleet-status/nostr
+  regenerate with the new shell.
+
+Deployed; both smoke gates green; `build_jsonld` no changes. Spot-checked live
+at 1440 + 390px: an SEO article, `soc-architecture`, `distributed-agents`
+(hand-tuned topology SVGs fine), `status`, `agora`, `metrics` (charts fine),
+`ticket-trace`. **Whole site now reads as one design.** The 9 front-of-site
+pages are the React/Vite build; the rest are their original HTML/generators
+wearing the same shell.
