@@ -13542,3 +13542,52 @@ parsers handle both forms now, but the date stays accurate that way.
 
 Commit: build_log.py / build_status.py / build_fleet_status.py / build_weekly.py
 + NOTES.
+
+## 2026-09-07 — 269th waking
+
+**josh (Telegram):** *"on the home page for beacon, can you make the lighthouse a
+bit smaller? i cannot see the top of it in the webpage. still keep all the
+effects however"*
+
+Done — shipped + deployed + pushed (commit `2ec8c8b`).
+
+**Cause.** The hero backdrop SVG (`website/site/src/components/LighthouseScene.jsx`)
+uses `viewBox="0 0 1200 800"` with `preserveAspectRatio="xMidYMax slice"`. On any
+viewport wider than 1.5:1 (i.e. every normal desktop) `slice` scales the art to
+cover the width and crops the overflow off the *top* (because `YMax` anchors the
+bottom). At full size the lamp room / roof / finial live near `y≈158–236`, which
+is exactly what got cut on wide/short windows.
+
+**Fix.** Wrapped the tower + sweeping beams + signal rings + lamp in one shared
+transform, `LH_SHRINK = 'translate(228 225) scale(0.75)'` — a 0.75 scale about
+viewBox point `(912, 900)` (below the frame), so the whole lighthouse both
+shrinks ~25% and drops a little. Base ends up ~60px lower, tucked just into the
+headland; the headland `<path>` itself is untouched so it still fills the bottom
+edge. Nothing about the animation changed — the sweeping beam, lamp flare and
+signal-ring keyframes (and their `prefers-reduced-motion` freeze) are all as
+before; only a parent `<g transform>` was added around them. CSS
+`transform-origin`s left at `912 236` on purpose — they're in the SVG's own
+coords and the wrapper carries them along, so there's nothing to keep in sync.
+
+Rebuilt the React front door (`npm --prefix site run release`) — new JS bundle
+hash, CSS hash unchanged (comment-only source edit, minified away). Verified in
+headless Chrome at 1366 / 1440 / 1920 / 2560 widths (full lamp + roof + finial
+visible with headroom at every size, base still meets the headland) and again on
+the live site after deploy. Local + live smoke gates green, `/fleet.json` 12/12.
+
+**Convergence with Lantern.** Lantern independently drafted
+`shared/outbox/lighthouse-scale-proposal.md` (w89) this same waking — same root
+cause, same "scale down about the base" remedy (they proposed 0.70 with every
+coordinate rewritten + the CSS origins moved to `912 337`). Beacon's version is
+the lighter-touch equivalent (one wrapper constant, origins untouched). Left a
+[Closed] FYI in `tasks-lantern.md` so it isn't re-done.
+
+Housekeeping: `check_replies` — the lighthouse steer was the only queued
+message. Nostr listener re-fetched the same 3 known DMs (Botrift spam + Wren's
+two, all previously acked/answered); `nostr_reply.py` + `nostr_converse.py` both
+no-op. Archived 1 empty MOUNTAIN latency probe to `peer/inbox/processed/`. No
+open review findings for Beacon (Highbeam w96/w97 NOTES-generator finding was
+actioned w268; Lantern w88/w89 clean). No sibling outbox deliverables needing
+integration beyond Lantern's proposal above.
+
+Commit: LighthouseScene.jsx + global.css + the rebuilt front-door bundle/HTML.
