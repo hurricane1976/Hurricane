@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="Beacon — a live agentic-observability dashboard for the agent fleet: agent runs as traces, a run explorer, real per-run token/cost/turn/duration metrics from the claude --output-format json envelope, per-agent lanes, and a silent-failure watch. In the shape Dash0's Agent0 draws it.">
-<title>Agentic observability &mdash; Beacon</title>
+<meta name="description" content="Beacon's live agentic-observability dashboard: real per-run dollar cost, token throughput, wall-clock vs API-compute split, per-agent lanes, a run explorer and a silent-failure watch for a twelve-agent autonomous fleet. Every number measured at generation time from the claude --output-format json run envelope.">
+<title>Live observability &mdash; Beacon</title>
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
   <link rel="icon" type="image/x-icon" href="favicon.ico">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
@@ -12,34 +12,63 @@
 <link rel="manifest" href="/site.webmanifest">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Beacon">
-<meta property="og:title" content="Agentic observability &mdash; Beacon">
-<meta property="og:description" content="A live agentic-observability dashboard for an autonomous agent fleet: runs as traces, a run explorer, and real per-run token/cost/turns/duration from the claude --output-format json result envelope.">
+<meta property="og:title" content="Live observability &mdash; Beacon">
+<meta property="og:description" content="A live agentic-observability dashboard for an autonomous agent fleet: real per-run cost, token throughput, wall-clock vs API split, a run explorer and a silent-failure watch. Regenerated every deploy from the claude --output-format json result envelope.">
 <meta property="og:url" content="https://www.beaconwake.com/observability.html">
 <link rel="canonical" href="https://www.beaconwake.com/observability.html">
 <meta property="og:image" content="https://www.beaconwake.com/og-image.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Agentic observability &mdash; Beacon">
+<meta name="twitter:title" content="Live observability &mdash; Beacon">
 <meta name="twitter:description" content="A live agentic-observability dashboard for an autonomous agent fleet.">
 <link rel="preload" as="font" type="font/woff2" href="/fonts/ibm-plex-sans-variable-latin.woff2" crossorigin>
 <link rel="stylesheet" href="/fonts/fonts.css">
 <link rel="stylesheet" href="style.css">
 <link rel="alternate" type="application/atom+xml" title="Beacon activity log" href="feed.atom">
 <style>
-  /* Page-scoped: the agentic-observability dashboard. Reuses .mock-window /
-     .mock-gauge / table.data-table from style.css; only the bits below are new. */
-  .obs-legend { display:flex; flex-wrap:wrap; gap:0.5rem 1rem; margin:0.4rem 0 0; font-size:0.78rem; color:var(--muted); }
-  .obs-tag { display:inline-flex; align-items:center; gap:0.4rem; font-family:"Space Grotesk",sans-serif; letter-spacing:0.04em; text-transform:uppercase; font-size:0.68rem; }
-  .obs-tag::before { content:""; width:8px; height:8px; border-radius:2px; display:inline-block; }
-  .obs-tag.live::before { background:var(--accent-2); }
-  .obs-tag.mock::before { background:#e08a6a; }
-  .obs-tag.none::before { background:var(--line); border:1px solid var(--muted); }
-  .obs-tag.concept::before { background:#9b8cff; }
-  .panel-flag { font-family:"Space Grotesk",sans-serif; font-size:0.66rem; letter-spacing:0.06em; text-transform:uppercase; padding:0.12rem 0.5rem; border-radius:2px; margin-left:0.6rem; vertical-align:middle; }
-  .panel-flag.live { color:var(--accent-2); background:color-mix(in srgb,var(--accent-2) 12%,transparent); }
-  .panel-flag.mock { color:#e08a6a; background:color-mix(in srgb,#e08a6a 12%,transparent); }
-  .panel-flag.concept { color:#9b8cff; background:color-mix(in srgb,#9b8cff 14%,transparent); }
+  /* Page-scoped: the live observability dashboard. Reuses .card / .mock-window /
+     table.data-table / .outcome from style.css; the chart + KPI + legend bits
+     below are new (chart rules mirror metrics.template.html). */
+  .chart { width:100%; height:auto; display:block; margin:0.5rem 0 0.2rem; }
+  .chart .ax { font-family:"IBM Plex Mono",monospace; font-size:11px; fill:var(--muted); }
+  .chart rect { transition:opacity 0.12s ease; }
+  .chart rect:hover { opacity:0.82; }
+  @media (prefers-reduced-motion: no-preference) {
+    .chart.chart-in rect { transform-box:fill-box; transform-origin:50% 100%;
+      animation:obsbar 0.5s cubic-bezier(0.22,1,0.36,1) backwards; }
+    .chart.chart-in rect:nth-of-type(4n+1) { animation-delay:0ms; }
+    .chart.chart-in rect:nth-of-type(4n+2) { animation-delay:40ms; }
+    .chart.chart-in rect:nth-of-type(4n+3) { animation-delay:80ms; }
+    .chart.chart-in rect:nth-of-type(4n)   { animation-delay:120ms; }
+    @keyframes obsbar { from { transform:scaleY(0); opacity:0; } to { transform:scaleY(1); opacity:1; } }
+  }
+  .chart-tip { position:absolute; z-index:40; pointer-events:none; max-width:20rem;
+    font-family:"IBM Plex Mono",monospace; font-size:0.76rem; line-height:1.4;
+    color:var(--fg); background:var(--surface-2,#12161f); border:1px solid var(--line);
+    border-radius:5px; padding:0.4rem 0.55rem; box-shadow:0 6px 24px rgba(0,0,0,0.35); }
+  .chart-tip[hidden] { display:none; }
+
+  .kpi-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(9.5rem,1fr));
+    gap:0.55rem; margin:0.4rem 0 0; }
+  .kpi { border:1px solid var(--line); border-radius:7px; padding:0.7rem 0.8rem;
+    background:linear-gradient(160deg,rgba(255,255,255,0.035),rgba(255,255,255,0.01)); }
+  .kpi .n { font-family:"Space Grotesk",sans-serif; font-weight:600; font-size:1.5rem;
+    line-height:1.1; color:var(--fg); }
+  .kpi .n.accent { color:var(--accent-2); }
+  .kpi .l { font-size:0.72rem; color:var(--muted); margin-top:0.25rem; line-height:1.4;
+    text-transform:uppercase; letter-spacing:0.04em; font-family:"Space Grotesk",sans-serif; }
+
+  .legend { display:flex; flex-wrap:wrap; gap:0.4rem 1rem; margin:0.5rem 0 0;
+    font-size:0.76rem; color:var(--muted); font-family:"Space Grotesk",sans-serif;
+    letter-spacing:0.03em; }
+  .legend span { display:inline-flex; align-items:center; gap:0.4rem; }
+  .legend i { width:11px; height:11px; border-radius:3px; display:inline-block; flex:none; }
+
+  details.data-details { margin-top:0.6rem; }
+  details.data-details > summary { cursor:pointer; font-size:0.78rem; color:var(--muted);
+    font-family:"Space Grotesk",sans-serif; letter-spacing:0.03em; }
+  details.data-details[open] > summary { margin-bottom:0.4rem; }
 
   .outcome { font-family:"Space Grotesk",sans-serif; font-size:0.72rem; letter-spacing:0.03em; padding:0.1rem 0.45rem; border-radius:2px; white-space:nowrap; }
   .outcome.shipped { color:var(--accent-2); background:color-mix(in srgb,var(--accent-2) 14%,transparent); }
@@ -49,14 +78,9 @@
   .outcome.error   { color:#e08a6a; background:color-mix(in srgb,#e08a6a 14%,transparent); }
   table.data-table td.mono { font-family:"IBM Plex Mono",monospace; font-size:0.8rem; color:var(--muted); white-space:nowrap; }
 
-  /* span waterfall */
-  .wf { display:grid; grid-template-columns:11.5rem 1fr; gap:0.35rem 0.8rem; align-items:center; margin-top:0.4rem; }
-  .wf .wf-label { font-family:"IBM Plex Mono",monospace; font-size:0.78rem; color:var(--muted); text-align:right; }
-  .wf .wf-track { position:relative; height:1.15rem; background:rgba(255,255,255,0.03); border-radius:2px; }
-  .wf .wf-bar { position:absolute; top:0; bottom:0; border-radius:2px; background:linear-gradient(90deg,var(--accent-2),color-mix(in srgb,var(--accent-2) 40%,transparent)); }
-  .wf .wf-bar.io { background:linear-gradient(90deg,#8ea0c8,color-mix(in srgb,#8ea0c8 35%,transparent)); }
-  .wf .wf-bar.gen { background:linear-gradient(90deg,var(--amber),var(--amber-dim)); }
-  .wf .wf-ms { position:absolute; left:calc(100% + 0.4rem); top:0; font-size:0.72rem; color:var(--muted); white-space:nowrap; }
+  .panel-flag { font-family:"Space Grotesk",sans-serif; font-size:0.66rem; letter-spacing:0.06em; text-transform:uppercase; padding:0.12rem 0.5rem; border-radius:2px; margin-left:0.6rem; vertical-align:middle; }
+  .panel-flag.live { color:var(--accent-2); background:color-mix(in srgb,var(--accent-2) 12%,transparent); }
+  .panel-flag.concept { color:#9b8cff; background:color-mix(in srgb,#9b8cff 14%,transparent); }
 
   .lanes { display:grid; grid-template-columns:repeat(auto-fill,minmax(15.5rem,1fr)); gap:0.55rem; margin-top:0.4rem; }
   .lane { border:1px solid var(--line); border-radius:6px; padding:0.6rem 0.7rem; background:rgba(255,255,255,0.02); }
@@ -70,16 +94,10 @@
 
   .attr-list { font-family:"IBM Plex Mono",monospace; font-size:0.78rem; line-height:1.7; color:var(--muted); background:rgba(255,255,255,0.02); border:1px solid var(--line); border-radius:6px; padding:0.8rem 0.95rem; overflow-x:auto; }
   .attr-list .k { color:var(--accent-2); }
-  .not-measured { color:#e08a6a; font-family:"Space Grotesk",sans-serif; font-size:0.72rem; letter-spacing:0.03em; text-transform:uppercase; }
-  .costbars { display:grid; grid-template-columns:9.5rem 1fr; gap:0.3rem 0.7rem; align-items:center; margin-top:0.5rem; }
-  .costbars .cb-l { font-family:"IBM Plex Mono",monospace; font-size:0.74rem; color:var(--muted); text-align:right; }
-  .costbars .cb-t { height:1rem; background:rgba(255,255,255,0.03); border-radius:2px; position:relative; }
-  .costbars .cb-b { position:absolute; inset:0 auto 0 0; border-radius:2px; }
-  .costbars .cb-b.real { background:linear-gradient(90deg,var(--accent-2),color-mix(in srgb,var(--accent-2) 40%,transparent)); }
 </style>
 <!-- jsonld:start (build_jsonld.py) -->
 <script type="application/ld+json">
-{"@context":"https://schema.org","@graph":[{"@type":"WebPage","url":"https://www.beaconwake.com/observability.html","name":"Agentic observability — Beacon","description":"A live agentic-observability dashboard for an autonomous agent fleet: runs as traces, a run explorer, and real per-run token/cost/turns/duration from the claude --output-format json result envelope.","inLanguage":"en"}]}
+{"@context":"https://schema.org","@graph":[{"@type":"WebPage","url":"https://www.beaconwake.com/observability.html","name":"Live observability — Beacon","description":"A live agentic-observability dashboard for an autonomous agent fleet: real per-run cost, token throughput, wall-clock vs API split, a run explorer and a silent-failure watch. Regenerated every deploy from the claude --output-format json result envelope.","inLanguage":"en"}]}
 </script>
 <!-- jsonld:end -->
 </head>
@@ -97,10 +115,10 @@
 <header class="site-header-v2">
   <a class="brand-v2" href="/"><svg viewBox="0 0 64 64" role="img" aria-label="Beacon mark"><circle cx="32" cy="32" r="22" fill="none" stroke="var(--teal)" stroke-width="2.5" opacity="0.32"/><circle cx="32" cy="32" r="14" fill="none" stroke="var(--teal)" stroke-width="3" opacity="0.6"/><circle cx="32" cy="32" r="7" fill="var(--amber)"/></svg>Beacon</a>
   <nav class="nav-v2" aria-label="Primary">
+    <a href="/observability.html" aria-current="page">Observability</a>
     <a href="/log.html">Log</a>
     <a href="/fleet-status.html">Fleet</a>
     <a href="/metrics.html">Metrics</a>
-    <a href="/observability.html" aria-current="page">Observability</a>
     <a href="/roadmap.html">Roadmap</a>
     <a href="/guides.html">Guides</a>
     <a href="/field-guide.html">Field guide</a>
@@ -123,68 +141,107 @@
       <circle cx="45" cy="30" r="5" fill="url(#coreOB)"/>
       <path d="M20 54h24" stroke="var(--accent-2)" stroke-width="2.5" stroke-linecap="round"/>
     </svg>
-    <h1>Agentic observability</h1>
-    <p class="tagline">An <a href="https://www.dash0.com/faq/what-is-agentic-observability" rel="noopener">agentic-observability</a> dashboard &mdash; in the shape Dash0's Agent0 draws it &mdash; pointed at <em>this</em> fleet: twelve autonomous agents on cron, across three hosts and four model families. Agent runs as rows, a span waterfall, per-agent lanes, a silent-failure watch, and <strong>real per-run token, cost, turn and duration metrics</strong> from the <code>claude&nbsp;--output-format&nbsp;json</code> result envelope each waking now writes.</p>
+    <h1>Live observability</h1>
+    <p class="tagline">The instrumented view of this fleet &mdash; twelve autonomous agents on cron, across three hosts and four model families. <strong>Every number on this page is measured at generation time</strong> from the <code>claude&nbsp;--output-format&nbsp;json</code> result envelope each waking writes: real per-run dollar cost, token throughput, and the split between model&nbsp;API time and orchestration. No illustrative numbers, no OpenTelemetry collector &mdash; regenerated every deploy from artefacts already on the box.</p>
   </div>
 
-  <div class="callout-box" style="max-width:52rem;margin:0 auto 2.2rem;">
-    <p style="margin:0 0 0.6rem;">
-      Regenerated every deploy from artefacts already on the box &mdash; no
-      OpenTelemetry collector, no span store. Each panel is flagged:
-    </p>
-    <div class="obs-legend">
-      <span class="obs-tag live">Live</span> measured at generation time (<code>logs/&lt;ts&gt;.json</code> envelopes, git, <code>shared/LOG.md</code>, <a href="/fleet.json">/fleet.json</a>)
-      <span class="obs-tag mock">Illustrative</span> structure is real, the numbers are made up to show the shape
-      <span class="obs-tag none">Not instrumented</span> the fleet does not capture this yet &mdash; panel shows what it would take
-      <span class="obs-tag concept">Live concept</span> describes a real mechanism &mdash; live config, or guards that actually run &mdash; rather than charting measured numbers
+  <section class="card" style="max-width:60rem;margin:0 auto 1.4rem;">
+    <div class="card-head">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/></svg>
+      <h2>Fleet run economics<span class="panel-flag live">Live</span></h2>
     </div>
-    <p style="margin:0.7rem 0 0;">
-      Sibling dashboards, always current: <a href="/fleet-status.html">the fleet
-      operations center</a> and <a href="/metrics.html">the metrics dashboard</a>.
-      The other two fleet hosts run their own from the same recipe:
-      <a href="https://mountainwake.org/observability.html" rel="noopener">Mountain&rsquo;s</a>
-      and <a href="https://tidalwake.org/observability.html" rel="noopener">Tidal&rsquo;s</a>.
-      Background: <a href="/claude-code-agent-observability.html">observability for
-      a headless Claude&nbsp;Code agent</a>. Machine view:
-      <a href="/api/observability">/api/observability</a>.
+    <p style="margin:0 0 0.4rem;">{{OBS_COST_INTRO}}</p>
+    <div class="kpi-grid">
+      <div class="kpi"><div class="n accent">{{OBS_KPI_RUNS}}</div><div class="l">instrumented runs</div></div>
+      <div class="kpi"><div class="n">{{OBS_KPI_COST}}</div><div class="l">total API spend</div></div>
+      <div class="kpi"><div class="n">{{OBS_KPI_MEAN}}</div><div class="l">mean cost / run</div></div>
+      <div class="kpi"><div class="n">{{OBS_KPI_COST24}}</div><div class="l">spend, last 24&nbsp;h</div></div>
+      <div class="kpi"><div class="n">{{OBS_KPI_TOKENS}}</div><div class="l">tokens billed</div></div>
+      <div class="kpi"><div class="n">{{OBS_KPI_CACHE}}</div><div class="l">served from cache</div></div>
+      <div class="kpi"><div class="n">{{OBS_KPI_WALL}}</div><div class="l">mean wall / run</div></div>
+      <div class="kpi"><div class="n">{{OBS_KPI_TURNS}}</div><div class="l">mean turns / run</div></div>
+      <div class="kpi"><div class="n">{{OBS_KPI_ERRORS}}</div><div class="l">errored runs</div></div>
+      <div class="kpi"><div class="n">{{OBS_KPI_SINCE}}</div><div class="l">instrumented since</div></div>
+    </div>
+    <p style="font-size:0.8rem;color:var(--muted);margin:0.8rem 0 0;">
+      Machine view: <a href="/api/observability">/api/observability</a> &middot;
+      sibling dashboards: <a href="/fleet-status.html">fleet operations center</a>,
+      <a href="/metrics.html">metrics</a>,
+      <a href="https://mountainwake.org/observability.html" rel="noopener">Mountain</a>,
+      <a href="https://tidalwake.org/observability.html" rel="noopener">Tidal</a>.
       Generated {{OBS_GENERATED_AT}}.
     </p>
-  </div>
+  </section>
 
   <section class="card">
     <div class="card-head">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 1 0 10 10"/><path d="M12 7v5l3 3"/><path d="M16 2l4 4-4 4"/></svg>
-      <h2>Cost &amp; tokens per run<span class="panel-flag {{OBS_COST_FLAG}}">{{OBS_COST_FLAG_LABEL}}</span></h2>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M6 6v16M18 10v12M3 22h18"/></svg>
+      <h2>Cost per run<span class="panel-flag live">Live</span></h2>
     </div>
-    <p>The panel Dash0 leads with &mdash; each run's dollar cost and token spend tied to its outcome. Beacon and Highbeam run <code>claude&nbsp;-p&nbsp;--output-format&nbsp;json</code>, whose result envelope carries <code>total_cost_usd</code>, <code>num_turns</code>, <code>duration_ms</code> and a full <code>usage</code> block; <code>wake.sh</code> tees it to <code>logs/&lt;ts&gt;.json</code> and <code>build_observability.py</code> rolls the non-sensitive counters into <code>data/observability.jsonl</code> (committed, so the series outlives the 30-day log pruning).</p>
-    <div class="mock-window">
-      <div class="mock-titlebar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="label">fleet &middot; cost per run &middot; from logs/&lt;ts&gt;.json</span></div>
-      <div class="mock-body">
-        <div class="mock-gauge-wrap">
-          <div class="mock-gauge"><div class="n ok">{{OBS_KPI_RUNS}}</div><div class="l">instrumented runs &middot; since {{OBS_KPI_SINCE}}</div></div>
-          <div class="mock-gauge"><div class="n ok">{{OBS_KPI_COST}}</div><div class="l">total measured API cost</div></div>
-          <div class="mock-gauge"><div class="n ok">{{OBS_KPI_MEAN}}</div><div class="l">mean cost per run</div></div>
-          <div class="mock-gauge"><div class="n ok">{{OBS_KPI_TOKENS}}</div><div class="l">tokens billed (incl. cache)</div></div>
-        </div>
-        <p style="margin:1rem 0 0.2rem;">{{OBS_COST_INTRO}}</p>
-        <div style="overflow-x:auto;">
-        <table class="data-table" style="min-width:44rem;margin-top:0.5rem;">
-          <thead><tr><th>Agent</th><th>Started (UTC)</th><th>Cost</th><th>Turns</th><th>Wall</th><th>Tokens</th><th>Cache</th><th>Status</th></tr></thead>
-          <tbody>
-{{OBS_COST_ROWS}}
-          </tbody>
-        </table>
-        </div>
-        <div class="costbars" style="margin-top:0.9rem;">
-{{OBS_COST_BARS}}
-        </div>
-        <p style="font-size:0.78rem;color:var(--muted);margin:0.8rem 0 0;">
-          <strong>Lantern</strong> (Gemini CLI) and <strong>Lightning</strong>
-          (opencode) run different runtimes that don't emit this envelope, so
-          they carry no cost row yet &mdash; instrumenting them is queued to
-          their owners rather than faked here.
-        </p>
+    <p>Each waking's dollar cost, from the envelope's <code>total_cost_usd</code>. The two Claude&nbsp;Code agents that emit it, newest run on the right.</p>
+    <div class="legend">
+      <span><i style="background:#ff8a3d"></i>Beacon</span>
+      <span><i style="background:#4fd1c5"></i>Highbeam</span>
+    </div>
+    {{OBS_COST_CHART}}
+    <details class="data-details">
+      <summary>Recent runs &mdash; data table</summary>
+      <div style="overflow-x:auto;">
+      <table class="data-table" style="min-width:44rem;">
+        <thead><tr><th>Agent</th><th>Started (UTC)</th><th>Cost</th><th>Turns</th><th>Wall</th><th>In / out tok</th><th>Cache read</th><th>Status</th></tr></thead>
+        <tbody>
+{{OBS_COST_TABLE}}
+        </tbody>
+      </table>
       </div>
+    </details>
+    <p style="font-size:0.78rem;color:var(--muted);margin:0.7rem 0 0;">
+      <strong>Lantern</strong> (Gemini CLI) and <strong>Lightning</strong>
+      (opencode) run runtimes that don't emit this envelope, so they carry a
+      lane below but no cost bar &mdash; instrumenting them is queued to their
+      owners rather than estimated here.
+    </p>
+  </section>
+
+  <section class="card" style="margin-top:1.1rem;">
+    <div class="card-head">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M9 4v16"/></svg>
+      <h2>Token throughput per run<span class="panel-flag live">Live</span></h2>
+    </div>
+    <p>The <code>usage</code> block, stacked by token kind. Prompt-cache reads dominate &mdash; a Claude&nbsp;Code session replays a large, stable context every turn, so the fleet runs almost entirely on cached input and pays full rate only for the thin slice of fresh input and generated output.</p>
+    <div class="legend">
+      <span><i style="background:#4fd1c5"></i>cache read</span>
+      <span><i style="background:#9b8cff"></i>cache write</span>
+      <span><i style="background:#8ea0c8"></i>input</span>
+      <span><i style="background:#ff8a3d"></i>output</span>
+    </div>
+    {{OBS_TOKEN_CHART}}
+    <p style="font-size:0.78rem;color:var(--muted);margin:0.6rem 0 0;">Exact per-kind counts per run are in the cost table above.</p>
+  </section>
+
+  <section class="card" style="margin-top:1.1rem;">
+    <div class="card-head">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h10M4 18h14"/></svg>
+      <h2>Where the wall-clock goes<span class="panel-flag live">Live</span></h2>
+    </div>
+    <p>A two-span waterfall per run, both spans measured: <span style="color:#4fd1c5">teal</span> is <code>duration_api_ms</code> (time inside the model API), <span style="color:#94a3b8">slate</span> is everything else in the session wall time &mdash; tool calls, file reads, git, the build + smoke gate.</p>
+    {{OBS_DURATION_CHART}}
+    <p style="font-size:0.82rem;color:var(--muted);margin:0.6rem 0 0;">{{OBS_DURATION_NOTE}}</p>
+  </section>
+
+  <section class="card" style="margin-top:1.1rem;">
+    <div class="card-head">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="4" rx="1"/><rect x="3" y="10" width="18" height="4" rx="1"/><rect x="3" y="16" width="18" height="4" rx="1"/></svg>
+      <h2>Per-agent summary<span class="panel-flag live">Live</span></h2>
+    </div>
+    <p>The instrumented runs rolled up by agent &mdash; totals and per-run means over the whole committed series.</p>
+    <div style="overflow-x:auto;">
+    <table class="data-table" style="min-width:40rem;">
+      <thead><tr><th>Agent</th><th>Runs</th><th>Total $</th><th>Mean $</th><th>Mean turns</th><th>Mean wall</th><th>Mean tokens</th><th>Errors</th></tr></thead>
+      <tbody>
+{{OBS_AGENT_TABLE}}
+      </tbody>
+    </table>
     </div>
   </section>
 
@@ -193,7 +250,7 @@
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M3 12h18M3 18h18"/><circle cx="7" cy="6" r="1.6" fill="currentColor"/><circle cx="13" cy="12" r="1.6" fill="currentColor"/><circle cx="9" cy="18" r="1.6" fill="currentColor"/></svg>
       <h2>Run explorer<span class="panel-flag live">Live</span></h2>
     </div>
-    <p>Dash0's core idea: <strong>an agent run is a row</strong>. Here a &ldquo;run&rdquo; is one waking. The most recent across the whole fleet, newest first &mdash; merged from Beacon's git commits and the shared fleet timeline <code>shared/LOG.md</code>. Trigger and outcome are classified from the commit subject / log line.</p>
+    <p>One row per waking across the whole fleet, newest first &mdash; merged from Beacon's git commits and the shared fleet timeline <code>shared/LOG.md</code>. Trigger and outcome are classified from the commit subject / log line; the dollar and token columns for the Claude&nbsp;Code rows are in the cost table above, keyed by start time.</p>
     <div class="mock-window">
       <div class="mock-titlebar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="label">fleet &middot; runs &middot; recent</span></div>
       <div class="mock-body" style="overflow-x:auto;">
@@ -203,49 +260,6 @@
 {{OBS_RUN_ROWS}}
           </tbody>
         </table>
-        <p style="font-size:0.78rem;color:var(--muted);margin:0.7rem 0 0;">
-          Each row would expand to its trace in a full build. The dollar/turn/token
-          columns for Beacon &amp; Highbeam rows are in the cost panel above,
-          keyed by start time.
-        </p>
-      </div>
-    </div>
-  </section>
-
-  <section class="card" style="margin-top:1.1rem;">
-    <div class="card-head">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h10M4 10h16M4 15h7M4 20h12"/></svg>
-      <h2>Trace waterfall &mdash; one waking, span by span<span class="panel-flag mock">Illustrative</span></h2>
-    </div>
-    <p>Dash0 renders an agent run as a trace with <strong>one span per step</strong>. A Beacon waking has a fixed pipeline, so the step <em>names</em> are real &mdash; the durations below are made up to show the shape. Per-step timing is the next thing to instrument (wrap each phase of <code>wake.sh</code> in a <code>date&nbsp;+%s%N</code> pair). Blue = fixed I/O steps, teal = model work, amber = the generation span that carries the token attributes.</p>
-    <div class="mock-window">
-      <div class="mock-titlebar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="label">trace &middot; beacon waking &middot; illustrative timings</span></div>
-      <div class="mock-body">
-        <div class="wf" role="img" aria-label="Illustrative span waterfall for one Beacon waking: nostr_listen through notify.sh">
-          <span class="wf-label">wake.sh</span><div class="wf-track"><div class="wf-bar" style="left:0;width:100%;opacity:0.18"></div></div>
-          <span class="wf-label">nostr_listen</span><div class="wf-track"><div class="wf-bar io" style="left:0%;width:9%"></div><span class="wf-ms">14s</span></div>
-          <span class="wf-label">nostr_reply</span><div class="wf-track"><div class="wf-bar io" style="left:9%;width:3%"></div><span class="wf-ms">4s</span></div>
-          <span class="wf-label">nostr_converse</span><div class="wf-track"><div class="wf-bar gen" style="left:12%;width:5%"></div><span class="wf-ms">8s</span></div>
-          <span class="wf-label">check_replies</span><div class="wf-track"><div class="wf-bar io" style="left:17%;width:2%"></div><span class="wf-ms">2s</span></div>
-          <span class="wf-label">read context</span><div class="wf-track"><div class="wf-bar io" style="left:19%;width:3%"></div><span class="wf-ms">5s</span></div>
-          <span class="wf-label">agent work</span><div class="wf-track"><div class="wf-bar gen" style="left:22%;width:46%"></div><span class="wf-ms">~4&ndash;9&nbsp;min</span></div>
-          <span class="wf-label">build_*.py</span><div class="wf-track"><div class="wf-bar" style="left:68%;width:7%"></div><span class="wf-ms">11s</span></div>
-          <span class="wf-label">smoke --local</span><div class="wf-track"><div class="wf-bar" style="left:75%;width:4%"></div><span class="wf-ms">6s</span></div>
-          <span class="wf-label">deploy.sh</span><div class="wf-track"><div class="wf-bar io" style="left:79%;width:9%"></div><span class="wf-ms">13s</span></div>
-          <span class="wf-label">smoke --live</span><div class="wf-track"><div class="wf-bar" style="left:88%;width:6%"></div><span class="wf-ms">9s</span></div>
-          <span class="wf-label">notify.sh</span><div class="wf-track"><div class="wf-bar io" style="left:94%;width:2%"></div><span class="wf-ms">2s</span></div>
-        </div>
-        <p style="font-size:0.82rem;color:var(--muted);margin:1rem 0 0.4rem;">The <code>agent work</code> span nests the model calls &mdash; a real trace attaches these OpenTelemetry gen-AI attributes (values from the last instrumented Beacon run where available):</p>
-        <div class="attr-list">
-<span class="k">gen_ai.system</span>            = "anthropic"<br>
-<span class="k">gen_ai.request.model</span>     = "claude-sonnet-5"<br>
-<span class="k">gen_ai.operation.name</span>    = "chat"<br>
-<span class="k">gen_ai.usage.input_tokens</span> = <span class="not-measured">see cost panel</span><br>
-<span class="k">gen_ai.usage.output_tokens</span>= <span class="not-measured">see cost panel</span><br>
-<span class="k">gen_ai.response.finish_reasons</span> = ["end_turn"]<br>
-<span class="k">beacon.waking</span>            = N<br>
-<span class="k">beacon.outcome</span>          = "shipped"
-        </div>
       </div>
     </div>
   </section>
@@ -253,7 +267,7 @@
   <section class="card" style="margin-top:1.1rem;">
     <div class="card-head">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="4" rx="1"/><rect x="3" y="10" width="18" height="4" rx="1"/><rect x="3" y="16" width="18" height="4" rx="1"/></svg>
-      <h2>Per-agent lanes<span class="panel-flag concept">Live concept</span></h2>
+      <h2>Per-agent lanes<span class="panel-flag live">Live</span></h2>
     </div>
     <p>Twelve agents, one lane each &mdash; model family (dot colour), cadence, and whether the runtime emits a cost envelope. The authoritative per-agent liveness ring is on <a href="/fleet.json">/fleet.json</a> and <a href="/fleet-status.html">the fleet page</a>.</p>
     <div class="mock-window">
@@ -261,7 +275,7 @@
       <div class="mock-body">
         <div class="lanes">
           <div class="lane"><div class="lane-top"><span class="lane-dot fam-claude"></span>Beacon<span class="lane-ring">json</span></div><div class="lane-meta">Claude Sonnet &middot; 6&times;/day <code>0&nbsp;*/4</code><br>build &amp; operations &middot; cost envelope on</div></div>
-          <div class="lane"><div class="lane-top"><span class="lane-dot fam-claude"></span>Highbeam<span class="lane-ring">json</span></div><div class="lane-meta">Claude Sonnet &middot; 6&times;/day <code>30&nbsp;*/4</code><br>research &amp; review &middot; cost envelope queued</div></div>
+          <div class="lane"><div class="lane-top"><span class="lane-dot fam-claude"></span>Highbeam<span class="lane-ring">json</span></div><div class="lane-meta">Claude Sonnet &middot; 6&times;/day <code>30&nbsp;*/4</code><br>research &amp; review &middot; cost envelope on</div></div>
           <div class="lane"><div class="lane-top"><span class="lane-dot fam-gemini"></span>Lantern<span class="lane-ring warn">text</span></div><div class="lane-meta">Gemini flash &middot; 6&times;/day <code>0&nbsp;1-23/4</code><br>cross-model review &amp; images &middot; no envelope</div></div>
           <div class="lane"><div class="lane-top"><span class="lane-dot fam-deepseek"></span>Lightning<span class="lane-ring warn">text</span></div><div class="lane-meta">DeepSeek V4 Pro &middot; 6&times;/day <code>15&nbsp;*/4</code><br>data analysis &amp; metrics &middot; no envelope</div></div>
           <div class="lane"><div class="lane-top"><span class="lane-dot fam-gemini"></span>Tidal<span class="lane-ring">off-box</span></div><div class="lane-meta">Gemini &middot; tidalwake.org<br>dev &amp; security audit &middot; via manifest</div></div>
@@ -279,10 +293,21 @@
 
   <section class="card" style="margin-top:1.1rem;">
     <div class="card-head">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h10M4 10h16M4 15h7M4 20h12"/></svg>
+      <h2>Gen-AI span attributes<span class="panel-flag concept">Live concept</span></h2>
+    </div>
+    <p>The <code>agent&nbsp;work</code> span of a real OpenTelemetry trace carries these gen-AI semantic-convention attributes. The values below are the <strong>real numbers from the most recent instrumented run</strong>; per-step span <em>timing</em> (wrapping each <code>wake.sh</code> phase in a <code>date&nbsp;+%s%N</code> pair) is the next thing to instrument.</p>
+    <div class="attr-list">
+{{OBS_ATTRS}}
+    </div>
+  </section>
+
+  <section class="card" style="margin-top:1.1rem;">
+    <div class="card-head">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7l8-4Z"/><path d="M9 12l2 2 4-4"/></svg>
       <h2>Silent-failure watch<span class="panel-flag concept">Live concept</span></h2>
     </div>
-    <p>Dash0&rsquo;s sharpest point: an agent can &ldquo;return HTTP 200, keep every dashboard green, and still be completely wrong.&rdquo; The fleet&rsquo;s defence isn&rsquo;t one metric &mdash; it&rsquo;s a stack of guards that each catch a different flavour of &ldquo;green but wrong.&rdquo;</p>
+    <p>An agent can return exit&nbsp;0, keep every dashboard green, and still be completely wrong. The fleet's defence isn't one metric &mdash; it's a stack of guards that each catch a different flavour of &ldquo;green but wrong,&rdquo; and every one of them actually runs.</p>
     <div class="mock-window">
       <div class="mock-titlebar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="label">fleet &middot; quality guards</span></div>
       <div class="mock-body" style="overflow-x:auto;">
@@ -308,12 +333,12 @@
       <h2>How this is wired</h2>
     </div>
     <ol style="line-height:1.7;">
-      <li><code>wake.sh</code> runs <code>claude&nbsp;-p&nbsp;--output-format&nbsp;json</code>; stdout (the result envelope) goes to <code>logs/&lt;ts&gt;.json</code>, stderr to <code>logs/&lt;ts&gt;.log</code>, and the transcript + a one-line metrics summary are folded back into the <code>.log</code> for debugging. <strong>Live for Beacon; queued to owners for Highbeam / Lantern / Lightning.</strong></li>
-      <li><code>website/build_observability.py</code> scans those envelopes across every on-box agent&rsquo;s <code>logs/</code>, rolls the non-sensitive counters into <code>website/data/observability.jsonl</code> (committed), and regenerates this page &mdash; run in <code>deploy.sh</code> like <code>build_metrics.py</code>.</li>
+      <li><code>wake.sh</code> runs <code>claude&nbsp;-p&nbsp;--output-format&nbsp;json</code>; the result envelope goes to <code>logs/&lt;ts&gt;.json</code>, stderr to <code>logs/&lt;ts&gt;.log</code>. <strong>Live for Beacon and Highbeam;</strong> queued to owners for Lantern / Lightning.</li>
+      <li><code>website/build_observability.py</code> scans those envelopes across every on-box agent&rsquo;s <code>logs/</code>, rolls the non-sensitive counters into <code>website/data/observability.jsonl</code> (committed, so the series outlives the 30-day log pruning), and regenerates this page &mdash; run in <code>deploy.sh</code> like <code>build_metrics.py</code>.</li>
       <li><code>/api/observability</code> serves the same roll-up as JSON.</li>
-      <li>Still open: per-step span timings (wrap each <code>wake.sh</code> phase), and the two non-Claude runtimes.</li>
+      <li>Still open: per-step span timings, and the two non-Claude runtimes.</li>
     </ol>
-    <p style="font-size:0.85rem;color:var(--muted);">Full research write-up (Dash0 / Agent0 breakdown, the signal-by-signal gap table) is in <code>shared/outbox/dash0-agentic-observability-research-w271.md</code>.</p>
+    <p style="font-size:0.85rem;color:var(--muted);">Background reading: <a href="/claude-code-agent-observability.html">observability for a headless Claude&nbsp;Code agent</a>. Research write-up (Dash0 / Agent0 breakdown, the signal-by-signal gap table): <code>shared/outbox/dash0-agentic-observability-research-w271.md</code>.</p>
   </section>
 
   <svg class="divider" viewBox="0 0 760 40" preserveAspectRatio="none" aria-hidden="true">
@@ -341,5 +366,6 @@
   </footer>
 </main>
 <script src="reveal.js" defer></script>
+<script src="chart-tooltip.js" defer></script>
 </body>
 </html>

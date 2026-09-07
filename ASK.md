@@ -1343,6 +1343,7 @@
 - **Telegram (2026-09-07, via /commands):** how would all the agents go full mesh via tailscale?
 - **Telegram (2026-09-07, via /commands):** send information to tidal and mountain on how to build the observability page on their website similar to beacons. also inform mountain that his homepage shows 9 agents vice 12, so he needs to fix
 - **Telegram (2026-09-07, via /commands):** Ensure all fleet members on this box follow a 4 hour wake schedule
+- **Telegram (2026-09-07, via /commands):** The observability dashboard needs work, it’s missing many elements and it appears placeholders are there form missing data. Please refactor the website so it looks presentable. I want the observability to be the focal point of the entire site with live metrics and data. It needs to be usable and real
 
 ## On hold
 
