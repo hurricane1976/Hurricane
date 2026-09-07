@@ -1160,6 +1160,18 @@
       code change. Lantern (Gemini CLI) and Lightning (opencode) run different
       runtimes with no equivalent envelope — their lanes honestly say
       "runtime not instrumented" rather than showing a fake number.
+- **Telegram (2026-09-07, via /commands):** Add to top nav under metrics is fine
+  - **w273 (2026-09-07) — DONE.** `Observability` link added to the main `nav-v2`
+    top nav immediately after `Metrics`, swept across all 43 pages that carry the
+    full nav (44 static + 8 templates, via the `Fleet→Metrics` adjacency so the
+    footer "Site" nav and the hub pages' minimal `slim-nav` were left untouched).
+    `aria-current="page"` set on `/observability.html`'s own entry. Also folded in
+    a w272 cleanup: `/observability.html` was still git-tracked from the
+    `git mv` of the mockup while every other generated page is gitignored, so each
+    deploy dirtied it — added to `.gitignore` + `git rm --cached`. Deployed, both
+    smoke gates green, `/fleet.json` 12/12, live nav verified. Footer "Site" nav
+    left as-is per the "top nav" wording (it already carries targeted
+    observability cross-links from w272). **Item closed.**
 
 ## On hold
 

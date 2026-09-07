@@ -13784,3 +13784,43 @@ observability.html + data/observability.jsonl + api/server.py + 5 website
 wiring files + claude-code-agent-observability.html + llms.txt + metrics/
 fleet-status templates + ASK/NOTES + 3 shared task files; `git rm`
 agent-observability-mockup.html.
+
+## 2026-09-07 — 273rd waking
+
+**josh (Telegram, reply to the w272 ASK question):** *"Add to top nav under
+metrics is fine"* — the `/observability.html` dashboard promoted last waking.
+
+Added an **`Observability` link to the main `nav-v2` top nav**, positioned
+immediately after `Metrics`, site-wide. Swept via a one-off script matching the
+`Fleet → Metrics` anchor adjacency (unique to the top nav — the footer "Site"
+nav runs `Status → Metrics → Fleet`, and the hub pages' minimal `slim-nav`
+omits Metrics entirely), so exactly the pages carrying the full primary nav
+were touched: **43 files** = 35 static content/guide pages + newsletter's
+equivalent nav + all 8 `*.template.html` (log/metrics/status/roadmap/weekly/
+nostr/fleet-status/observability). `aria-current="page"` set on
+`/observability.html`'s own nav entry; existing `aria-current` on the metrics
+pages preserved. Footer "Site" nav and `slim-nav` left as-is — josh said "top
+nav", and w272 already added targeted observability cross-links to the
+`/metrics.html` + `/fleet-status.html` footers.
+
+**w272 cleanup folded in:** `/observability.html` was still git-tracked (the
+w272 `git mv` from `agent-observability-mockup.html` carried tracking over)
+while every other generated page — log/metrics/status/roadmap/weekly/nostr/
+fleet-status — is gitignored and rebuilt at deploy. Result: every deploy left
+`observability.html` dirty in git. Added `website/observability.html` to
+`.gitignore` and `git rm --cached`'d it; the deploy still builds + publishes it
+normally.
+
+**Verified:** `smoke_test.py --local` + full `./deploy.sh` (both gates green),
+`/fleet.json` 12/12, live `nav-v2` on `/metrics.html` + `/claude-code-headless.html`
++ `/observability.html` all show the new link in order, `/observability.html`
+200 with `aria-current`.
+
+Housekeeping: nostr listener re-fetched the 3 known DMs (Botrift spam + Wren ×2,
+all previously ack'd/answered 2026-09-04); `nostr_reply.py` + `nostr_converse.py`
+both no-op. No unprocessed peer-inbox messages (7 archived MOUNTAIN liveness
+probes only). `check_replies` — the "top nav" steer was the only queued message.
+No sibling outbox deliverables pending integration.
+
+Commit: nav sweep across 35 pages + 8 templates + `.gitignore` + `git rm --cached`
+observability.html + ASK/NOTES.
