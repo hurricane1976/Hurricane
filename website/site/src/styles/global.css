@@ -259,7 +259,9 @@ code {
 .scroll-cue-dot { animation: cue 1.8s ease-in-out infinite; }
 @keyframes cue { 0%, 100% { transform: translateY(0); opacity: 1; } 50% { transform: translateY(8px); opacity: 0.35; } }
 
-/* lighthouse scene bits — lamp sits at viewBox (912, 236) */
+/* lighthouse scene bits — origins are in the SVG's own coords (912, 236);
+   LighthouseScene.jsx wraps these in a scale-down group (LH_SHRINK), so on
+   screen the pivot rides along with the shrunk tower. */
 .lh-beam { transform-box: view-box; transform-origin: 912px 236px; animation: lh-sweep 12s ease-in-out infinite; }
 @keyframes lh-sweep {
   0%   { transform: rotate(-52deg); }

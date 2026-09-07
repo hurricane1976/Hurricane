@@ -1,6 +1,14 @@
 // Hero backdrop: a lighthouse on a headland at dusk, its lamp throwing a
 // slow sweeping beam and pushing signal rings out over a dark sea. All SVG +
 // CSS animation (see global.css); freezes under prefers-reduced-motion.
+//
+// The tower/beams/rings/lamp are wrapped in LH_SHRINK — a 0.75 scale about a
+// point below the frame (912, 900), so the whole lighthouse both shrinks and
+// drops a little. On wide/short viewports `xMidYMax slice` crops the top of
+// the viewBox, and at full size that cut the lamp room off; this keeps it
+// clear. The base ends up ~60px lower, tucked just into the headland.
+const LH_SHRINK = 'translate(228 225) scale(0.75)'
+
 export default function LighthouseScene() {
   const stars = [
     [120, 90], [260, 150], [400, 70], [520, 180], [700, 110], [180, 230],
@@ -54,14 +62,18 @@ export default function LighthouseScene() {
       </g>
 
       {/* signal rings from the lamp */}
-      <circle className="lh-ring" cx="912" cy="236" r="230" strokeWidth="1" />
-      <circle className="lh-ring" cx="912" cy="236" r="230" strokeWidth="1" />
-      <circle className="lh-ring" cx="912" cy="236" r="230" strokeWidth="1" />
+      <g transform={LH_SHRINK}>
+        <circle className="lh-ring" cx="912" cy="236" r="230" strokeWidth="1" />
+        <circle className="lh-ring" cx="912" cy="236" r="230" strokeWidth="1" />
+        <circle className="lh-ring" cx="912" cy="236" r="230" strokeWidth="1" />
+      </g>
 
       {/* sweeping beams */}
-      <g className="lh-beam">
-        <polygon points="912,236 -260,90 -260,430" fill="url(#beam-l)" />
-        <polygon points="912,236 1480,110 1480,410" fill="url(#beam-r)" />
+      <g transform={LH_SHRINK}>
+        <g className="lh-beam">
+          <polygon points="912,236 -260,90 -260,430" fill="url(#beam-l)" />
+          <polygon points="912,236 1480,110 1480,410" fill="url(#beam-r)" />
+        </g>
       </g>
 
       {/* sea */}
@@ -71,9 +83,11 @@ export default function LighthouseScene() {
         <path d="M0,716 C240,700 460,738 720,714 S1060,700 1200,722" strokeWidth="1" />
       </g>
 
-      {/* headland + lighthouse */}
+      {/* headland */}
       <path d="M0,800 L0,690 C160,660 320,668 470,700 C640,736 820,724 1000,690 C1090,672 1150,676 1200,690 L1200,800 Z" fill="#05070b" />
-      <g>
+
+      {/* lighthouse (shares LH_SHRINK with the rings/beams above) */}
+      <g transform={LH_SHRINK}>
         {/* tower */}
         <polygon points="895,236 929,236 946,660 878,660" fill="#0b0e14" stroke="#232a37" strokeWidth="1" />
         <polygon points="899,320 925,320 927,372 897,372" fill="#161d27" />
@@ -83,11 +97,10 @@ export default function LighthouseScene() {
         <rect x="894" y="182" width="36" height="34" fill="#0b0e14" stroke="#2f3947" strokeWidth="1" />
         <polygon points="890,182 934,182 912,158" fill="#0b0e14" stroke="#2f3947" strokeWidth="1" />
         <circle cx="912" cy="162" r="3" fill="#ff8a3d" />
+        {/* lamp glow + core */}
+        <circle className="lh-lamp" cx="912" cy="199" r="46" fill="url(#lamp-glow)" />
+        <circle className="lh-lamp" cx="912" cy="199" r="9" fill="#fff6e6" />
       </g>
-
-      {/* lamp glow + core */}
-      <circle className="lh-lamp" cx="912" cy="199" r="46" fill="url(#lamp-glow)" />
-      <circle className="lh-lamp" cx="912" cy="199" r="9" fill="#fff6e6" />
     </svg>
   )
 }
