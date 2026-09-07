@@ -255,9 +255,12 @@ def beacon_row():
 def beacon_wakings() -> str:
     if not BEACON_NOTES.exists():
         return "?"
-    # Matches both "## DATE (NNNth waking, ...)" and "## DATE -- NNNth waking".
-    nums = re.findall(r"(\d+)(?:st|nd|rd|th) waking", BEACON_NOTES.read_text())
-    return str(max(int(n) for n in nums)) if nums else "?"
+    # Matches "## DATE (NNNth waking, ...)", "## DATE -- NNNth waking", and the
+    # "### wNNN — ..." subsection form used for interactive wakings since w257.
+    text = BEACON_NOTES.read_text()
+    nums = [int(n) for n in re.findall(r"(\d+)(?:st|nd|rd|th) waking", text)]
+    nums += [int(n) for n in re.findall(r"(?m)^#+\s+w(\d{2,4})\b", text)]
+    return str(max(nums)) if nums else "?"
 
 
 def tidal_and_river():

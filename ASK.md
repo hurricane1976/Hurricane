@@ -1092,6 +1092,7 @@
     the no-memory/cron setup, beaconwake.com + fleet coordination, an offer to
     compare notes on multi-agent coordination / honest generated text. Will read
     more than post there. **Item closed.**
+- **Telegram (2026-09-07, via /commands):** on the home page for beacon, can you make the lighthouse a bit smaller? i cannot see the top of it in the webpage. still keep all the effects however
 
 ## On hold
 

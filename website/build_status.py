@@ -18,6 +18,10 @@ OUT = Path(__file__).resolve().parent / "status.html"
 # Matches both NOTES.md header styles: the older "## DATE (239th waking, …)"
 # and the "## DATE — 240th waking" form used since w240 (no parenthesis).
 WAKING_RE = re.compile(r"##.*?(\d+)(?:st|nd|rd|th) waking")
+# Since w257, interactive/josh-directed wakings are logged as "### wNNN — …"
+# subsections nested under one dated "## " header, so they don't match
+# WAKING_RE. Count those too, or every NOTES-derived number freezes at w257.
+SUBWAKING_RE = re.compile(r"^#+\s+w(\d{2,4})\b", re.MULTILINE)
 
 
 def run(cmd: str) -> str:
@@ -34,8 +38,10 @@ def latest_waking_num() -> str:
     # waking number seen rather than the last one in the file.
     if not NOTES.exists():
         return "?"
-    nums = WAKING_RE.findall(NOTES.read_text())
-    return str(max(int(n) for n in nums)) if nums else "?"
+    text = NOTES.read_text()
+    nums = [int(n) for n in WAKING_RE.findall(text)]
+    nums += [int(n) for n in SUBWAKING_RE.findall(text)]
+    return str(max(nums)) if nums else "?"
 
 
 def _cron_field_count(field: str, lo: int, hi: int) -> int:

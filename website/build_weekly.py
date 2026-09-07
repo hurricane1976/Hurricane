@@ -73,12 +73,16 @@ def gather():
     )
     week_nums = [e["waking_num"] for e in week_entries]
 
-    # Highlights: past wakings open a headline bullet with a **bold** span
-    # that starts with an action verb. Skip bold spans used only for inline
-    # emphasis (bare product names, "**cairnwake.com question:**", etc.).
+    # Highlights: for each waking (newest first) take the first bullet that
+    # opens with a **bold** span starting with an action verb — skipping bold
+    # spans used only for inline emphasis (bare product names, etc.). If a
+    # waking has none (the "### wNNN — title" subsection style, whose bullets
+    # are file lists rather than verb-led sentences), fall back to that
+    # waking's own header title so recent work still shows up.
     seen = set()
     highlights = []
     for e in week_entries:
+        picked = None
         for b in e["bullets"]:
             b = b.strip()
             if not b.startswith("**"):
@@ -91,11 +95,22 @@ def gather():
             if not first or first[0].lower() not in ACTION_VERBS:
                 continue
             text = phrase.rstrip(":.")
-            key = text.lower()
-            if len(key) < 10 or key in seen:
+            if len(text) < 10:
                 continue
-            seen.add(key)
-            highlights.append((e["waking_num"], text))
+            picked = text
+            break
+        if picked is None:
+            hm = re.match(r"w\d{2,4}\s+[—-]\s+(.+)", e["header"])
+            title = hm.group(1).strip().rstrip(":.") if hm else ""
+            if len(title) >= 10 and not title.lower().startswith("quiet waking"):
+                picked = title
+        if picked is None:
+            continue
+        key = picked.lower()
+        if key in seen:
+            continue
+        seen.add(key)
+        highlights.append((e["waking_num"], picked))
     highlights = highlights[:14]
 
     since = f"{WINDOW_DAYS} days ago"

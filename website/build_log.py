@@ -14,6 +14,8 @@ TEMPLATE = Path(__file__).resolve().parent / "log.template.html"
 OUT = Path(__file__).resolve().parent / "log.html"
 
 WAKING_RE = re.compile(r"(\d+)(?:st|nd|rd|th) waking")
+WNUM_RE = re.compile(r"^w(\d{2,4})\b")
+SUBHEAD_RE = re.compile(r"^### +(w\d{2,4}\b.*)$")
 DATE_RE = re.compile(r"^(\d{4}-\d{2}-\d{2})")
 BOLD_RE = re.compile(r"\*\*(.+?)\*\*")
 CODE_RE = re.compile(r"`([^`]+?)`")
@@ -26,6 +28,33 @@ def inline_md(text: str) -> str:
     return text
 
 
+def _waking_num(header: str):
+    m = WAKING_RE.search(header)
+    if m:
+        return int(m.group(1))
+    m = WNUM_RE.match(header)
+    if m:
+        return int(m.group(1))
+    return None
+
+
+def _bullets(body_lines):
+    bullets = []
+    current = None
+    for line in body_lines:
+        if not line.strip():
+            continue
+        if line.startswith("- "):
+            if current is not None:
+                bullets.append(current)
+            current = line[2:].strip()
+        elif line.startswith(("  ", "\t")) and current is not None:
+            current += " " + line.strip()
+    if current is not None:
+        bullets.append(current)
+    return bullets
+
+
 def parse_entries(raw: str):
     # Split on "## " headers (skip the leading "# Notes" preamble).
     parts = re.split(r"^## ", raw, flags=re.MULTILINE)[1:]
@@ -35,34 +64,47 @@ def parse_entries(raw: str):
         header = lines[0].strip()
         body_lines = lines[1:]
 
-        m = WAKING_RE.search(header)
-        waking_num = int(m.group(1)) if m else 1
         d = DATE_RE.match(header)
         date = d.group(1) if d else "unknown date"
+        hdr_num = _waking_num(header) or 1
 
-        bullets = []
-        current = None
-        for line in body_lines:
-            if not line.strip():
-                continue
-            if line.startswith("- "):
-                if current is not None:
-                    bullets.append(current)
-                current = line[2:].strip()
-            elif line.startswith(("  ", "\t")) and current is not None:
-                current += " " + line.strip()
-        if current is not None:
-            bullets.append(current)
+        # Since w257, interactive/josh-directed wakings are logged as
+        # "### wNNN — ..." subsections nested under one dated "## " header.
+        # Treat each subsection as its own waking, inheriting the enclosing
+        # date; prose before the first subsection stays with the "## " header.
+        sub_starts = [i for i, ln in enumerate(body_lines) if SUBHEAD_RE.match(ln)]
+        if sub_starts:
+            segments = [(header, hdr_num, body_lines[: sub_starts[0]])]
+            for j, s in enumerate(sub_starts):
+                nxt = sub_starts[j + 1] if j + 1 < len(sub_starts) else len(body_lines)
+                sub_hdr = SUBHEAD_RE.match(body_lines[s]).group(1).strip()
+                segments.append((sub_hdr, _waking_num(sub_hdr) or hdr_num,
+                                 body_lines[s + 1:nxt]))
+        else:
+            segments = [(header, hdr_num, body_lines)]
 
-        entries.append(
-            {
-                "header": header,
-                "date": date,
-                "waking_num": waking_num,
-                "bullets": bullets,
-            }
-        )
-    return entries
+        for seg_header, seg_num, seg_body in segments:
+            entries.append(
+                {
+                    "header": seg_header,
+                    "date": date,
+                    "waking_num": seg_num,
+                    "bullets": _bullets(seg_body),
+                }
+            )
+
+    # Fold entries that share a waking number (e.g. a "257th waking" section
+    # plus a later "### w257 cont." subsection) into one, keeping the first
+    # header and concatenating bullets.
+    merged, order = {}, []
+    for e in entries:
+        n = e["waking_num"]
+        if n in merged:
+            merged[n]["bullets"].extend(e["bullets"])
+        else:
+            merged[n] = e
+            order.append(n)
+    return [merged[n] for n in order]
 
 
 def render(entries) -> str:
