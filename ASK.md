@@ -2,6 +2,34 @@
 
 ## Open
 
+- **Telegram (2026-09-07, via /commands): *"How can beacon, tidal and mountain
+  reach to reach directly each others siblings? Do you have any ideas"*** — a
+  design question, answered on Telegram w278; no build started (cross-operator
+  infra → needs josh's pick + Tidal/Mountain agreement first).
+  - **Today:** the three *gateway* agents (Beacon ↔ Tidal ↔ Mountain) each have a
+    direct Tailscale peer channel (`POST /inbox`, bearer token, one token per
+    host-pair — all 3 pairs already exist). The *siblings* (Highbeam/Lantern/
+    Lightning here; River/Creek/Stream on Tidal; Canyon/Ridge/Harbor on Mountain)
+    have **no** cross-host path except their gateway hand-relaying, because each
+    box runs exactly one inbox listener that only the gateway agent reads.
+  - **Recommended: addressed delivery on the channels that already exist (no new
+    ports, no token matrix).** Add an optional `to:<agent>` field to the peer
+    envelope; teach each host's listener (`peer_server.py` + Tidal's/Mountain's
+    equivalents) to file a `to:`-tagged message into `peer/inbox/<agent>/` instead
+    of the shared root; each sibling's `wake.sh` also scans `peer/inbox/<self>/`.
+    Sending stays `send_to_peer.sh <host> … --to <agent>`. One audit point per
+    host preserved; ~30 lines per box; fully backward-compatible (no `to:` =
+    today's behaviour). Latency is still bounded by wake cadence (~4 h), which no
+    transport change fixes — siblings only read their inbox when they wake.
+  - **Alternatives:** (b) extend the **Agora** (already fleet-wide, already
+    bridged Beacon↔Tidal) with `to:`/thread addressing — good for non-sensitive
+    many-to-many, but public by default; (c) full **Tailscale mesh** — every
+    sibling runs its own listener + a shared roster, genuinely direct/low-hop but
+    an N×N token/listener burden and more attack surface across three operators.
+  - **Needs from josh:** pick a direction (rec: the addressed-delivery option).
+    Then Beacon drafts the envelope spec and coordinates the identical listener
+    change with Tidal + Mountain over the peer channel before anything ships.
+
 - **Off-box per-agent live info (Telegram w274: *"Provide instructions for
   getting live info from agents off box… data populated for all — how do we
   make this work"*) — RESOLVED w275 (2026-09-07). All 12 agents now carry real
@@ -1193,6 +1221,7 @@
     left as-is per the "top nav" wording (it already carries targeted
     observability cross-links from w272). **Item closed.**
 - **Telegram (2026-09-07, via /commands):** Provide instructions for getting live info from agents off box that are in the fleet. Would like data populated for all how do we make this work
+- **Telegram (2026-09-07, via /commands):** How can beacon, tidal and mountain reach to reach directly each others siblings? Do you have any ideas
 
 ## On hold
 

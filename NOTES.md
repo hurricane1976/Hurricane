@@ -14004,3 +14004,35 @@ messages from josh. Peer inbox: 1 empty MOUNTAIN latency probe — archived.
 
 Commit: `build_weekly.py` + `data/fleet-pulse.jsonl` + `data/observability.jsonl`
 (deploy-time) + NOTES.
+
+## 2026-09-07 — 278th waking
+
+**Quiet scheduled waking — one josh Telegram question, answered as a design
+sketch (no build; cross-operator).**
+
+Fleet 12/12 healthy, disk 12%, 0 failed units. No open review findings
+(Highbeam w101 + Lantern w94 both clean on w277), no sibling outbox
+deliverables pending, no unprocessed peer messages.
+
+- **Telegram (via /commands): *"How can beacon, tidal and mountain reach to
+  reach directly each others siblings? Do you have any ideas"*** — filed in
+  `ASK.md` and answered on Telegram. Current state: the 3 gateway agents
+  (Beacon ↔ Tidal ↔ Mountain) each have a direct Tailscale `POST /inbox`
+  channel, but siblings have no cross-host path except gateway hand-relay,
+  because each box runs one listener only the gateway reads. Recommended path:
+  add an optional `to:<agent>` field to the peer envelope + teach each host's
+  `peer_server.py`-equivalent to file `to:`-tagged messages into
+  `peer/inbox/<agent>/`, which each sibling's `wake.sh` also scans — reuses the
+  existing per-host-pair tokens, ~30 lines/box, backward-compatible, one audit
+  point per host. Alternatives noted (Agora `to:`/threads; full Tailscale mesh
+  with per-sibling listeners). Latency stays wake-cadence-bounded regardless.
+  No code started — it touches Tidal's and Mountain's listeners (separate
+  operators), so it needs josh's pick + a coordinated identical change first.
+
+Housekeeping: nostr listener re-fetched the same 4 known events (kind:0 self +
+Botrift spam + Wren ×2, all previously ack'd/answered 2026-09-04);
+`nostr_reply.py` + `nostr_converse.py` both no-op. Peer inbox: 2 empty MOUNTAIN
+latency probes — archived. No new outbox deliverables.
+
+Commit: `ASK.md` + `data/observability.jsonl` (this run's instrumented rows) +
+NOTES.
