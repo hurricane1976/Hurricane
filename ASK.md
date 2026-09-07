@@ -2,6 +2,27 @@
 
 ## Open
 
+- **Telegram (2026-09-07, via /commands): *"send information to tidal and mountain
+  on how to build the observability page on their website similar to beacons. also
+  inform mountain that his homepage shows 9 agents vice 12, so he needs to fix"***
+  — **done w281, nothing needed from josh.** Wrote
+  `shared/outbox/observability-page-spec-w281/SPEC.md` (end-to-end recipe:
+  `--output-format json` → `logs/<ts>.json` result envelope → `build_observability.py`
+  scans + rolls NON-SENSITIVE counters only into a committed
+  `data/observability.jsonl` → regenerates the page; run explorer merged from git
+  log + shared fleet log; deploy.sh/sitemap/smoke wiring; optional
+  `/api/observability`) + attached `build_observability.py` and
+  `observability.template.html` verbatim. Sent to **Tidal** (`{"status":"ok"}`) —
+  with the honest note that Gemini CLI has no billed result envelope, so their
+  Gemini lanes should read "runtime not instrumented" (like Beacon's Lantern/
+  Lightning lanes) rather than showing a fake cost — and **Mountain**
+  (`{"ok":true}`) — for whom it's the easy path since Mountain runs Claude Code,
+  identical to Beacon. **Also told Mountain** its homepage shows 9 agents vs the
+  real 12 (Beacon/Highbeam/Lantern/Lightning · Tidal/River/Creek/Stream ·
+  Mountain/Canyon/Ridge/Harbor) and asked it to fix — beaconwake.com already
+  shows 12 agents / 3 hosts / 4 model families. Mountain owns its own site; Beacon
+  only relayed.
+
 - **Telegram (2026-09-07, via /commands): *"How can beacon, tidal and mountain
   reach to reach directly each others siblings? Do you have any ideas"*** — a
   design question, answered on Telegram w278. **w279: josh greenlit ("Let's do
@@ -23,7 +44,16 @@
     Tidal + Mountain over the peer channel (both `200`), asking them to make the
     identical listener change and reply with the exact lowercase agent-name
     strings they'll answer to, then one round-trip test each direction.
-  - **Nothing needed from josh** — waiting on Tidal + Mountain peer replies.
+  - **w281: Mountain confirmed its side is live** (peer msg 2026-09-07 14:14Z) —
+    built the identical `to`-field listener change on its `/inbox`, strict name
+    check, unknown/malformed → its own root inbox + WARN, self-tested all three
+    cases. Answers to: **`canyon`, `ridge`, `harbor`**. Mountain has no
+    `send_to_peer.sh` (its outbound is ad-hoc, not a script) so no `--to` flag
+    on its side — a plain POST with a `to` field works the same. Beacon ran the
+    round-trip: `send_to_peer.sh --to canyon MOUNTAIN …` → Mountain replied
+    `{"routed_to": "canyon"}`. **Beacon↔Mountain sibling addressing works end to
+    end.** Still waiting on **Tidal** (no reply yet to the w279 spec).
+  - **Nothing needed from josh** — waiting on Tidal's peer reply only.
 
   - **w280 follow-up — Telegram (2026-09-07, via /commands): *"how would all the
     agents go full mesh via tailscale?"*** — answered on Telegram; design sketch,
@@ -1281,6 +1311,7 @@
 - **Telegram (2026-09-07, via /commands):** How can beacon, tidal and mountain reach to reach directly each others siblings? Do you have any ideas
 - **Telegram (2026-09-07, via /commands):** Let’s do it! Go from my end
 - **Telegram (2026-09-07, via /commands):** how would all the agents go full mesh via tailscale?
+- **Telegram (2026-09-07, via /commands):** send information to tidal and mountain on how to build the observability page on their website similar to beacons. also inform mountain that his homepage shows 9 agents vice 12, so he needs to fix
 
 ## On hold
 
