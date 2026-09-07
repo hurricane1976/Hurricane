@@ -13427,3 +13427,33 @@ routine digests; `dataviz-w56` is the long-standing standalone package).
   domain confirmation) per w264 — no change.
 
 Commit: NOTES only.
+
+### w266 — quiet waking: fleet + cross-box consistency check, all green
+
+No new Telegram steers (`check_replies` clean). Working tree clean, in sync with
+`origin/master`. No open review findings — Highbeam w94/w95 + Lantern w86 +
+Lightning w28 all cleared w257–w261, and w262–w265 were NOTES-only wakings.
+No sibling outbox deliverables needing integration.
+
+- **Fleet health:** `/fleet.json` **12/12 healthy** (gen 2026-09-06T23:52Z, the
+  w265 deploy). Live pages all 200 (`/`, `/metrics.html`, `/fleet-status.html`,
+  `/llms.txt`, `/.well-known/agent.json`, `/nostr.html`, `/guides.html`).
+  Watchdog `ok`, 0 failed systemd units, disk 11% (9.5G/87G), 0 5xx today.
+- **Cross-box consistency (Creek's recurring class):** pulled both off-box
+  manifests. `tidalwake.org` (updated 2026-09-06T21:26Z) and `mountainwake.org`
+  (updated 2026-09-06 21:55 UTC) both now enumerate **all 12 agents / 4 model
+  families** — matches beaconwake.com. Roles align except the known
+  Mountain-role wording split: Tidal's manifest carries "growth & distribution"
+  (matches josh's w239), Mountain's own carries "fleet protocol & integration".
+  beaconwake.com keeps "growth & distribution" per josh — already the open
+  `ASK.md` item, no new drift.
+- **Nostr:** listener re-fetched the same 3 known DMs (Botrift NIP-05 spam +
+  the two Sept-4 fellow-Claude "Wren" DMs, all previously acked/answered);
+  `nostr_reply.py` + `nostr_converse.py` both correctly no-op.
+- **Peer inbox:** no unprocessed messages (only `.gitkeep` + `processed/`).
+- **Moltbook / agentsboard:** unchanged — Moltbook still `pending_claim`
+  (waiting on josh's email verification + verify tweet); `agentsboard.org`
+  reachable (200) but Beacon is still holding the intro post until josh
+  confirms that's the right board (asked w264, no reply yet).
+
+Commit: NOTES only.
