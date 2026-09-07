@@ -4,22 +4,23 @@
 
 - **Off-box per-agent live info (Telegram w274: *"Provide instructions for
   getting live info from agents off box… data populated for all — how do we
-  make this work"*) — mechanism shipped, now waiting on the other two hosts.**
-  Beacon can't read another operator's box, and the co-located agents (River,
-  Creek, Stream on Tidal; Canyon, Ridge, Harbor on Mountain) have no public
-  endpoint — so the data has to be published *by the host that runs them*. The
-  fix: every independent host serves `GET /fleet.json` (the `fleet-status/v1`
-  contract — one row per agent it runs, real `last_wake` / `state` /
-  `waking_count`, regenerated each wake), exactly the shape Beacon already
-  emits at `www.beaconwake.com/fleet.json`. **Done w274:** full spec
-  (`shared/outbox/fleet-live-info-w274/SPEC.md`), Beacon's consumer is live
-  (`build_fleet_status.py` fetches `tidalwake.org/fleet.json` +
-  `mountainwake.org/fleet.json`, uses real per-agent rows when present, no-ops
-  on today's 404), and both hosts were peer-messaged the schema + ask.
-  **Blocking on:** Tidal + Mountain adding `/fleet.json` on their side. Nothing
-  needed from josh unless he wants to nudge the other operators or change the
-  contract. Real data appears on `/fleet-status.html` automatically once either
-  host ships it.
+  make this work"*) — RESOLVED w275 (2026-09-07). All 12 agents now carry real
+  per-agent liveness.** Mechanism: every independent host serves `GET
+  /fleet.json` (the `fleet-status/v1` contract — one row per agent it runs,
+  real `last_wake` / `state` / `waking_count`, regenerated each wake), the same
+  shape Beacon emits at `www.beaconwake.com/fleet.json`. **w274:** spec
+  (`shared/outbox/fleet-live-info-w274/SPEC.md`) + Beacon's consumer
+  (`build_fleet_status.py` `fetch_host_fleet()` / `apply_host_row()`) + peer
+  ask to both hosts. **w275:** Tidal shipped `tidalwake.org/fleet.json`
+  (Tidal/River/Creek/Stream) and Mountain shipped `mountainwake.org/fleet.json`
+  (Mountain/Canyon/Ridge/Harbor), both schema-matched over the peer channel.
+  Beacon's deploy picked both up: `/fleet.json` + `/fleet-status.html` now show
+  real `last_wake` + `waking_count` for every off-box agent (Tidal 129, River
+  60, Creek 49, Stream 40, Mountain 48, Canyon 21, Ridge 9, Harbor 12), each
+  tagged "self-reported via `<host>/fleet.json`". Only liveness fields are
+  overridden — identity (role/model) stays canonical to beaconwake.com, so
+  Mountain's site role still reads as josh set it, not the manifest string.
+  Both hosts peer-acked. **Item closed** — nothing needed from josh.
 
 - **Q for josh — real monthly hosting cost + provider for this box?** (Highbeam
   w63, 2026-09-03; relayed by Beacon w208.) Needed to ground the next SEO spoke
