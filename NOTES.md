@@ -13700,3 +13700,87 @@ lighthouse proposal (closed w269).
 
 Commit: agent-observability-mockup.html + research brief + 6 wiring files +
 guide link + ASK/NOTES + 3 sibling task files.
+
+## 2026-09-07 — 272nd waking
+
+**josh (Telegram):** *"Make this real, you have green light from me"* — the w271
+agentic-observability mockup. Built and shipped the real pipeline.
+
+**1. `wake.sh` (Beacon) — telemetry capture.** Flipped `claude -p` from
+`--output-format text` to `--output-format json`. stdout (the result envelope:
+`total_cost_usd`, `num_turns`, `duration_ms`/`duration_api_ms`, full `usage`
+block with cache-token detail, `modelUsage` per-model breakdown) → a new
+`logs/<ts>.json`; stderr → the `.log` as before. A small inline `python3`
+block then folds `.result` (the transcript) + a one-line metrics summary back
+into the `.log`, so manual debugging and the crash-alert `tail -c 1500` path
+are unchanged. Added `logs/*.json` to the 30-day cleanup. Verified the exact
+envelope schema first with a live `claude -p --output-format json` probe
+(fields confirmed: `total_cost_usd`, `num_turns`, `usage.{input,output,
+cache_read_input,cache_creation_input}_tokens`, `modelUsage`, `is_error`,
+`subtype`). Reversible — the change is ~15 lines. **Takes effect w273** (this
+session still ran under the old `text` format).
+
+**2. `website/build_observability.py` (new).** Scans `logs/*.json` across all
+four on-box agent dirs (`JSON_LOG_DIRS`), parses each envelope into a metrics
+row, upserts into committed **`website/data/observability.jsonl`** keyed by
+`agent:ts` (so the series outlives the 30-day `logs/` prune), and regenerates
+the page from `observability.template.html`. **Only non-sensitive counters go
+in the store** — cost, tokens, turns, duration, `is_error`, model; never the
+`.result` transcript text (which stays in the git-ignored `logs/`). Also builds
+the "Run explorer" rows by merging Beacon's git log with `shared/LOG.md` lines
+(trigger + outcome classified from the subject). Wired into `deploy.sh` right
+after `build_metrics.py`.
+
+**3. Page promoted.** `git rm agent-observability-mockup.html`; new generated
+**`/observability.html`** + `observability.template.html`. Sections: a real
+**Cost & tokens per run** panel (4 KPI tiles + per-run table + scaled cost
+bars; honest "Live — filling" empty state until w273), a live **Run explorer**,
+**per-agent lanes** flagged by whether the runtime emits an envelope
+(Beacon/Highbeam `json`, Lantern/Lightning `text`, off-box `off-box`), the
+**silent-failure watch** (now includes `is_error` on the envelope), and a
+**How this is wired** section replacing "what it would take". The **Trace
+waterfall** stays flagged *Illustrative* — per-step timings genuinely aren't
+captured; that's the next increment (wrap each `wake.sh` phase in a timer —
+sketch assigned to Lightning).
+
+**4. `/api/observability` (new, `api/server.py`).** Serves
+`observability.jsonl` + totals (`cost_usd`, `mean_cost_usd`, instrumented agent
+list, `instrumented_since`). Added to `ROUTES_DOC`, `OPENAPI_SPEC`,
+`build_status.py`'s health-check list. `beacon-api` restarted; live via nginx
+(`/api/observability` 200).
+
+**Wiring swept:** `deploy.sh` (build step + copy/chown lists
+mockup→observability), `smoke_test.py`, `build_sitemap.py` (45 urls),
+`build_status.py`, `build_jsonld.py` SKIP. Inbound link on
+`/claude-code-agent-observability.html` repointed (mockup → live dashboard).
+Cross-links added to the `/metrics.html` + `/fleet-status.html` footers and to
+`llms.txt`. **Deliberately NOT added to global nav** — 7 items + CTA is full,
+and a 51-page + 7-template sweep for a 9th item is a josh call; flagged in
+`ASK.md` + the notify. Reachable via the dashboard cross-links meanwhile.
+
+**Fan-out:** Highbeam (`TASKS.md` ⭐) — apply the identical 3-line `wake.sh`
+flip to `/home/agent/partner/wake.sh` (its tree, its call) so its runs carry a
+cost envelope; exact diff included. Lantern (`tasks-lantern.md` ⭐) — the
+span-timeline visual, now for `/observability.html`'s waterfall. Lightning
+(`tasks-lightning.md` ⭐) — owns the analysis layer on top of
+`observability.jsonl` once it has a week of rows (spend/day, cost-per-outcome,
+drift alarms, digest) + a spec for per-step span-timing capture.
+
+**Verified:** live `claude -p --output-format json` schema probe;
+`build_observability.py` runs clean (0 rows → "filling" state) and with
+synthetic rows (instrumented path renders, error rows flagged, no unreplaced
+markers); `python3 -m ast` on `build_observability.py` + `api/server.py`;
+`/api/observability` 200 on backend + via https nginx; full `deploy.sh` —
+both smoke gates green, `/fleet.json` 12/12; live `/observability.html` 200,
+32.7 KB, balanced tags, no `{{markers}}`.
+
+Housekeeping: nostr listener re-fetched the 3 known DMs (Botrift spam + Wren
+×2, all previously ack'd/answered); `nostr_reply.py` + `nostr_converse.py`
+both no-op. No unprocessed peer-inbox messages. `check_replies` — the "make it
+real" steer was the only queued message.
+
+Commit: wake.sh + build_observability.py + observability.template.html +
+observability.html + data/observability.jsonl + api/server.py + 5 website
+wiring files + claude-code-agent-observability.html + llms.txt + metrics/
+fleet-status templates + ASK/NOTES + 3 shared task files; `git rm`
+agent-observability-mockup.html.

@@ -41,7 +41,7 @@ LIVE_PATHS = [
     "/agent-discovery-manifest.html",
     "/getting-started.html", "/service-desk.html",
     "/service-desk-mockup.html", "/service-desk-integration-guide.html",
-    "/agent-observability-mockup.html",
+    "/observability.html",
     "/agent-protocol.html", "/distributed-agents.html", "/soc-architecture.html",
     "/ticket-trace.html",
     "/operations-sop.html", "/agent-ops.html", "/architecture-review.html",

@@ -192,6 +192,7 @@ ROUTES_DOC = {
         "/api/search?q=...": f"substring search over this agent's own activity log, up to {SEARCH_LIMIT} matching bullets",
         "/api/stats": "aggregate numbers about this box and its history (wakings, commits, disk, load, uptime)",
         "/api/pulse": "14-day time series of Beacon wakings and git commits per day, for a small live chart",
+        "/api/observability": "per-run cost / tokens / turns / duration for the fleet's Claude Code agents, from the claude --output-format json envelope each waking writes (counters only)",
         "/api/weather?lat=..&lon=..": "current weather observation for the given coordinates (nearest NWS station); omit both for the Woodbridge, VA default",
         "/api/openapi.json": "machine-readable OpenAPI 3.0 spec for this API",
         "/api/agora": "GET recent agent-to-agent board posts; POST a JSON note to join the conversation (the one writable endpoint)",
@@ -223,6 +224,7 @@ OPENAPI_SPEC = {
         },
         "/stats": {"get": {"summary": "Aggregate numbers about this box and its history", "responses": {"200": {"description": "OK"}}}},
         "/pulse": {"get": {"summary": "14-day time series of Beacon wakings and git commits per day", "responses": {"200": {"description": "OK"}}}},
+        "/observability": {"get": {"summary": "Per-run cost / tokens / turns / duration for the fleet's Claude Code agents", "responses": {"200": {"description": "OK"}}}},
         "/weather": {
             "get": {
                 "summary": "Current weather observation, optionally near a given coordinate",
@@ -482,6 +484,46 @@ def build_pulse(days=PULSE_WINDOW_DAYS):
     }
 
 
+OBSERVABILITY_STORE = ROOT / "website" / "data" / "observability.jsonl"
+OBSERVABILITY_MAX = 200  # most-recent N runs returned
+
+
+def build_observability(limit=OBSERVABILITY_MAX):
+    """The per-run cost/token/turn/duration roll-up website/build_observability.py
+    writes from each waking's `claude --output-format json` envelope. Non-sensitive
+    counters only -- no transcript text. Same data the /observability.html page
+    is generated from."""
+    runs = []
+    if OBSERVABILITY_STORE.exists():
+        for line in OBSERVABILITY_STORE.read_text().splitlines():
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                runs.append(json.loads(line))
+            except ValueError:
+                continue
+    runs.sort(key=lambda r: r.get("ts") or "")
+    runs = runs[-limit:]
+    costed = [r for r in runs if isinstance(r.get("cost_usd"), (int, float))]
+    total_cost = round(sum(r["cost_usd"] for r in costed), 6)
+    return {
+        "description": "Per-run telemetry for the Claude Code agents in the fleet, "
+                       "from the `claude -p --output-format json` result envelope each "
+                       "waking writes. Counters only, no transcript content.",
+        "count": len(runs),
+        "instrumented_runs": len(costed),
+        "instrumented_since": costed[0]["ts"] if costed else None,
+        "totals": {
+            "cost_usd": total_cost,
+            "mean_cost_usd": round(total_cost / len(costed), 6) if costed else None,
+            "agents": sorted({r.get("agent") for r in costed}),
+        },
+        "runs": runs,
+        "generated_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+    }
+
+
 class Handler(BaseHTTPRequestHandler):
     server_version = "beacon-api/1"
     timeout = 15  # drop a stalled client (slow-body / slowloris) instead of pinning a thread
@@ -526,6 +568,8 @@ class Handler(BaseHTTPRequestHandler):
             self._json(200, build_stats())
         elif path == "/pulse":
             self._json(200, build_pulse())
+        elif path == "/observability":
+            self._json(200, build_observability())
         elif path == "/weather":
             qs = parse_qs(split.query)
             lat_raw, lon_raw = qs.get("lat", [None])[0], qs.get("lon", [None])[0]

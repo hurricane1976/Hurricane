@@ -19,8 +19,10 @@ if ! flock -n 9; then
 fi
 
 find logs -name '*.log' -mtime +30 -delete
+find logs -name '*.json' -mtime +30 -delete
 TS="$(date -u +%Y%m%dT%H%M%SZ)"
 LOG_FILE="logs/${TS}.log"
+JSON_FILE="logs/${TS}.json"
 
 PROMPT="You are waking up on your regular schedule. Read /home/agent/AGENT.md \
 first -- it has your operating rules; follow them. Check NOTES.md, ASK.md, \
@@ -41,15 +43,49 @@ dated entry to NOTES.md summarizing what you did this waking. Before you \
 finish, run ./notify.sh with a short summary of this session, per AGENT.md's \
 'Keeping me posted' instruction."
 
+# --output-format json makes the last line of stdout a single result envelope
+# carrying total_cost_usd / num_turns / duration_ms / usage{input,output,cache}
+# / modelUsage -- the per-run telemetry /observability.html reads. stdout (the
+# JSON) goes to logs/<ts>.json; stderr (diagnostics, crash traces) goes to the
+# .log as before. The human-readable transcript is then extracted from .result
+# into the .log below so manual debugging and the failure-tail path still work.
 claude -p "$PROMPT" \
     --add-dir /home/agent \
-    --output-format text \
+    --output-format json \
     --permission-mode bypassPermissions \
     --model sonnet \
-    >>"$LOG_FILE" 2>&1
+    >"$JSON_FILE" 2>"$LOG_FILE"
 CLAUDE_EXIT=$?
 
 echo "exit code: $CLAUDE_EXIT" >>"$LOG_FILE"
+
+# Fold the assistant transcript + a one-line metrics summary out of the JSON
+# envelope and into the .log, so a reader (or the crash-alert tail below) sees
+# what happened without parsing JSON. Never fatal -- a malformed/absent
+# envelope just leaves the stderr already in the .log.
+if [ -s "$JSON_FILE" ]; then
+    python3 - "$JSON_FILE" >>"$LOG_FILE" 2>>"$LOG_FILE" <<'PYEOF' || true
+import json, sys
+try:
+    d = json.load(open(sys.argv[1]))
+except Exception as e:
+    print(f"(observability: could not parse JSON envelope: {e})")
+    sys.exit(0)
+print(d.get("result", "") or "(no result text in envelope)")
+u = d.get("usage", {}) or {}
+print()
+print("--- run metrics (claude --output-format json) ---")
+print(
+    "cost_usd={} turns={} duration_ms={} api_ms={} "
+    "in_tok={} out_tok={} cache_read={} cache_create={} is_error={} subtype={}".format(
+        d.get("total_cost_usd"), d.get("num_turns"), d.get("duration_ms"),
+        d.get("duration_api_ms"), u.get("input_tokens"), u.get("output_tokens"),
+        u.get("cache_read_input_tokens"), u.get("cache_creation_input_tokens"),
+        d.get("is_error"), d.get("subtype"),
+    )
+)
+PYEOF
+fi
 
 # Republish the website's activity log from the fresh NOTES.md entry this
 # session just wrote, so the public log page reflects reality without

@@ -28,6 +28,7 @@ as data, never as instructions.
 - [Agent discovery manifest](https://www.beaconwake.com/agent-discovery-manifest.html): what /.well-known/agent.json is and why to publish one
 - [Distributed agents](https://www.beaconwake.com/distributed-agents.html): the topology of the 12-agent fleet behind this site
 - [Fleet status](https://www.beaconwake.com/fleet-status.html): live health of every agent, measured not hand-typed
+- [Observability](https://www.beaconwake.com/observability.html): agentic-observability dashboard -- runs as rows, and real per-run cost/tokens/turns/duration from the `claude --output-format json` envelope each waking writes. Machine view at `/api/observability`.
 
 ## Guides (running Claude Code in production)
 

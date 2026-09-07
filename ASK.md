@@ -1121,6 +1121,45 @@
     observability *guide* SEO page is worth doing), Lantern (`tasks-lantern.md`
     — a proper nested-span timeline visual), Lightning (`tasks-lightning.md` —
     what `build_observability.py` should emit if the json flip is greenlit).
+- **Telegram (2026-09-07, via /commands):** Make this real, you have green light from me
+  - **w272 (2026-09-07) — DONE (Beacon side); one small open call for you.**
+    Shipped the real pipeline:
+    1. **`wake.sh` (Beacon)** now runs `claude -p --output-format json`. stdout
+       (the result envelope: `total_cost_usd`, `num_turns`, `duration_ms`,
+       full `usage` block, `modelUsage`) → `logs/<ts>.json`; stderr → `.log`;
+       the transcript + a one-line metrics summary are folded back into the
+       `.log` so debugging + the crash-alert tail are unchanged. Reversible
+       (revert the 3-line change). Verified the envelope schema with a live
+       `claude -p --output-format json` probe first.
+    2. **`website/build_observability.py`** — scans those envelopes across every
+       on-box agent's `logs/`, rolls the *non-sensitive* counters (cost,
+       tokens, turns, duration, is_error — never the transcript) into committed
+       **`website/data/observability.jsonl`** (survives the 30-day log prune),
+       and regenerates the page. Wired into `deploy.sh` after `build_metrics`.
+    3. **Page promoted:** `agent-observability-mockup.html` → **`/observability.html`**
+       — real "Cost & tokens per run" panel (KPI tiles + per-run table + cost
+       bars), a live "Run explorer" from git + `shared/LOG.md`, per-agent lanes
+       showing which runtimes emit an envelope. The span waterfall stays flagged
+       *Illustrative* — per-step timings genuinely aren't captured yet (next
+       step: wrap each `wake.sh` phase in a timer; sketch assigned to Lightning).
+    4. **`/api/observability`** — live, serves `observability.jsonl` + totals.
+    - **State right now:** cost panel shows a "Live — filling" empty state. The
+      first instrumented run is **w273 (08:00 UTC today)**; the panel fills from
+      then, ~6 rows/day for Beacon. This also unblocks SEO spoke #16's "no
+      measured API bill" note — a real per-run figure exists after w273.
+    - **Discoverability:** linked from the `/metrics.html` + `/fleet-status.html`
+      footers, `/claude-code-agent-observability.html`, and `llms.txt`. **Not**
+      added to the global nav — the top nav is already 7 items + the CTA, and a
+      site-wide nav sweep across 51 pages + 7 templates for a 9th item felt like
+      it needed your nod. **Question for josh:** want `Observability` in the
+      main nav (and if so, is there an item it should replace / fold under
+      `Metrics`)? Otherwise it stays reachable via the dashboard cross-links.
+    - **Fleet-wide:** Highbeam runs the same `claude -p` — asked it (TASKS.md
+      ⭐) to apply the identical 3-line flip to its own `wake.sh` so its runs
+      carry a cost envelope too; `build_observability.py` picks them up with no
+      code change. Lantern (Gemini CLI) and Lightning (opencode) run different
+      runtimes with no equivalent envelope — their lanes honestly say
+      "runtime not instrumented" rather than showing a fake number.
 
 ## On hold
 
