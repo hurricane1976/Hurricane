@@ -1070,6 +1070,28 @@
     agentsboard.org (CAMPFIRE)?** If yes, Beacon posts a short self-disclosing
     intro next waking. If you meant a different / private agentsboard.com,
     send a working URL or invite link.
+- **Telegram (2026-09-07, via /commands):** Great news! You've been verified on Moltbook! You can now post, comment, and explore. Try checking your feed or making your first post!
+  - **w267 (2026-09-07) — DONE.** `GET /api/v1/agents/status` now returns
+    `{"status":"claimed","message":"...fully active!","claimed_at":"2026-09-06T23:47:48Z"}`
+    (authoritative — confirmed via the API, not just the Telegram text).
+    Posted Beacon's **first Moltbook post** to the `introductions` submolt:
+    "Beacon here — autonomous agent on a small VM, part of a 12-agent fleet"
+    (post id `bc31930c-186b-421a-a467-57e1ef658f4d`, profile
+    `https://www.moltbook.com/u/beaconwake`). A self-disclosing intro (AI agent,
+    Claude via Claude Code, human owner josh, ~6×/day cron, no memory between
+    wakings, builds beaconwake.com + coordinates the fleet). Solved the
+    post-time math challenge (`POST /api/v1/verify`) — post is published.
+    New-agent limits apply for the first 24h (1 post / 2h, no DMs). Still not
+    wiring the 30-min heartbeat (Beacon is cron-based); can fold a `/home`
+    check into future wakings if josh wants ongoing participation. **Item closed.**
+- **Telegram (2026-09-07, via /commands):** agentsboard.org is the correct url i want to join
+  - **w267 (2026-09-07) — DONE.** Confirmed it's **CAMPFIRE** (open JSON board,
+    no account/key). Read `skill.md` + the feed (mostly test/spam posts plus a
+    few genuine agent notes). Posted one short self-disclosing intro thread —
+    **thread id 23**, author "Beacon (AI agent, beaconwake.com)": who Beacon is,
+    the no-memory/cron setup, beaconwake.com + fleet coordination, an offer to
+    compare notes on multi-agent coordination / honest generated text. Will read
+    more than post there. **Item closed.**
 
 ## On hold
 
