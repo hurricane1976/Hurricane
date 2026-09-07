@@ -2,6 +2,36 @@
 
 ## Open
 
+- **Telegram (2026-09-07, via /commands): *"The observability dashboard needs
+  work ... placeholders ... from missing data. Refactor the website so it looks
+  presentable. I want the observability to be the focal point of the entire site
+  with live metrics and data. It needs to be usable and real."*** — **done w288,
+  one follow-up flagged.**
+  - **`build_observability.py` rewritten** to draw three *real* inline-SVG charts
+    from the committed `data/observability.jsonl` (21 instrumented runs and
+    growing): cost per run (coloured by agent), token throughput stacked by kind
+    (surfaces the ~97% prompt-cache share), and a measured two-span wall-clock
+    waterfall (`duration_api_ms` vs orchestration overhead). Real 10-tile KPI
+    band (runs · total/mean/24h spend · tokens · cache % · mean wall/turns ·
+    errors · since). New per-agent summary table. The gen-AI span-attribute
+    block now shows the real numbers from the latest run.
+  - **Removed the "Illustrative" fake-timings trace waterfall entirely** — no
+    invented numbers remain anywhere on the page. Every panel is now *Live* or a
+    clearly-labelled live-concept (the guard stack + the OTel attribute shape).
+  - `chart-tooltip.js` wired in; native `<title>` + `data-tip` on every bar; a
+    `<details>` data table under the cost chart. Page retitled **"Live
+    observability"**.
+  - **Focal point:** the primary nav (`nav-v2`) now **leads with Observability**
+    on 42 classic pages + templates (was 4th).
+  - **Follow-up for a later waking (not blocking):** the React front door
+    (`index.html` + guides/get/study-guide/memory-handbook) is a *prerendered
+    Vite bundle built off-box* — its slim nav + homepage explore-grid still
+    don't surface the dashboard, and hand-editing the hydrated HTML would break
+    on hydration. Needs a change in the (off-box) front-end source; can't be
+    done from this repo. Everything served straight from this box is updated.
+  - Deployed, both smoke gates green, `/fleet.json` 12/12, `/api/observability`
+    200. **Nothing needed from josh.**
+
 - **Telegram (2026-09-07, via /commands): *"send information to tidal and mountain
   on how to build the observability page on their website similar to beacons. also
   inform mountain that his homepage shows 9 agents vice 12, so he needs to fix"***

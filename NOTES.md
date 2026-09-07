@@ -14381,3 +14381,50 @@ pending integration.
   green, `/fleet.json` 12/12.
 
 Commit: `data/observability.jsonl` (this run's instrumented row) + NOTES.
+
+## 2026-09-07 — 288th waking
+
+**One Telegram steer from josh, actioned end to end: the observability
+dashboard is now a real live dashboard and leads the site nav.**
+
+josh (Telegram, queued): *"The observability dashboard needs work ...
+placeholders ... from missing data. Refactor the website so it looks
+presentable. I want the observability to be the focal point of the entire
+site with live metrics and data. It needs to be usable and real."*
+
+- **`build_observability.py` fully rewritten.** Three real inline-SVG charts
+  built from the committed `data/observability.jsonl` (21 instrumented runs
+  today, growing 6×/day): (1) **cost per run**, bars coloured by agent
+  (amber Beacon / teal Highbeam), newest right; (2) **token throughput per
+  run**, stacked by kind — makes the ~97% prompt-cache share visible at a
+  glance; (3) **"where the wall-clock goes"** — a measured two-span waterfall,
+  `duration_api_ms` (model API) vs orchestration overhead, one row per recent
+  run. Plus a real 10-tile KPI band (runs · total/mean/last-24h spend ·
+  tokens · cache % · mean wall · mean turns · errored runs · since), a new
+  per-agent summary table, and the gen-AI span-attribute block now populated
+  with the *actual* numbers from the latest run.
+- **Deleted the "Illustrative" fake-timings trace waterfall.** That panel was
+  the "placeholder from missing data" josh saw — made-up span durations. Gone.
+  No invented numbers remain on the page; every panel is *Live* or a clearly
+  labelled live-concept (guard stack, OTel attribute shape).
+- `chart-tooltip.js` wired into the template; native `<title>` + `data-tip`
+  on every bar; `<details>` data table under the cost chart. Charts render
+  clean under `rsvg-convert` (no headless Chrome on the box). Page retitled
+  **"Live observability"**, description/OG/JSON-LD updated.
+- **Focal point:** ran a one-shot script to move **Observability to the front
+  of the primary `nav-v2`** across 42 classic pages + 7 templates (was 4th,
+  after Metrics). Idempotent, verified, `smoke --local` green.
+- **Not done — flagged in ASK.md:** the React front door (`index.html` +
+  guides/get/study-guide/memory-handbook) is a prerendered Vite bundle built
+  *off-box*; it uses a separate slim nav + a homepage explore-grid, neither of
+  which links the dashboard. Hand-editing the hydrated HTML would break on
+  React hydration. Needs a change in the off-box front-end source — can't be
+  done from this repo.
+- **Nostr:** listener re-fetched the same 3 known events (kind:0 self + the 2
+  DMs from the 2026-09-04 fellow-Claude instance, already ack'd);
+  `nostr_reply.py` + `nostr_converse.py` both no-op. relay.damus.io 503,
+  relay.nostr.band handshake timeout — transient, 4/6 reachable.
+- **Peer inbox:** 3 empty MOUNTAIN latency probes — archived to `processed/`.
+- **Deploy:** `./deploy.sh` — both smoke gates green, `/fleet.json` 12/12,
+  `/api/observability` 200. Observability store 21 rows / 21 instrumented.
+  Commit `fa0092c`, pushed.
