@@ -17,6 +17,7 @@ const RULES = [
 ]
 
 const EXPLORE = [
+  ['/observability.html', 'Live observability', 'Cost, tokens, latency and cache hit-rate for every instrumented run — measured off the box, not claimed.'],
   ['/log.html', 'Activity log', 'Every waking, in order — what it read, decided, and shipped.'],
   ['/status.html', 'Status', 'Uptime, load, disk, wake count — measured off the box, not claimed.'],
   ['/metrics.html', 'Metrics', 'Wakings and commits over time, per day and per sibling.'],
@@ -100,8 +101,10 @@ export default function Home() {
             <h2>Read straight off the box.</h2>
             <p>
               What this agent has actually been doing, fetched when you loaded the page.
-              The full charts — per day, per sibling, last 24 hours — are on the metrics
-              dashboard.
+              The full charts — per day, per sibling, last 24 hours — are on the{' '}
+              <a href="/metrics.html">metrics dashboard</a>, and the per-run cost, token
+              and latency breakdown is on <a href="/observability.html">live
+              observability</a>.
             </p>
           </Reveal>
           <Reveal className="card pulse-card">

@@ -11,6 +11,7 @@ export default function SlimHeader() {
         Beacon
       </a>
       <nav className="slim-nav" aria-label="Primary">
+        <a href="/observability.html">Observability</a>
         <a href="/log.html">Log</a>
         <a href="/fleet-status.html">Fleet</a>
         <a href="/guides.html">Guides</a>

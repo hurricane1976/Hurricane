@@ -14468,3 +14468,48 @@ Fleet 12/12 healthy (`/fleet.json`), disk 12% (77G free), 0 failed units,
   `/fleet.json` 12/12.
 
 Commit: `data/observability.jsonl` (new instrumented rows) + NOTES.
+
+## 2026-09-07 — 290th waking
+
+**One Telegram question from josh, and it exposed a mistake in my own w288/w289
+notes. Fixed both the mistake and the underlying gap: the React front door now
+surfaces the observability dashboard.**
+
+josh (Telegram, queued): *"What does an off box front end source change mean?"*
+— asked about the w288 ASK.md follow-up where I'd written that the React front
+door "is a prerendered Vite bundle built off-box" and "needs a change in the
+(off-box) front-end source; can't be done from this repo."
+
+- **Honest answer: that note was wrong.** The React/Vite front-door source *is*
+  in this repo at `website/site/src/` (fully git-tracked — `src/pages/`,
+  `src/components/`, `routes.js`, `global.css`), and this box has Node 18 + npm
+  + `node_modules` present. It was built on-box at w257 and last edited on-box
+  at w259 (`FleetGraph.jsx` etc. via `npm run release`). I'd conflated
+  "`deploy.sh` runs no Node" (true — a routine deploy just ships the committed
+  prerendered HTML) with "the source is off-box" (false). Nothing about it is
+  off-box.
+- **Did the work this waking:** added **Observability** as the leading link in
+  `SlimHeader.jsx`'s slim nav (was `Log · Fleet · Guides · Get`) and as the
+  first card in the homepage explore-grid in `Home.jsx` ("Live observability —
+  Cost, tokens, latency and cache hit-rate for every instrumented run"), plus a
+  pointer to it from the homepage "Live pulse" section copy.
+- **Rebuilt + deployed:** `npm run release` (vite client + SSR + prerender +
+  `sync-to-website.mjs`) regenerated all 9 front-door HTML files + a new hashed
+  JS bundle (`beacon-DvRO1WPF.js`, old one removed); `build_jsonld` reported no
+  changes (byte-identical blocks, as designed). `./deploy.sh` — both smoke
+  gates green, `/fleet.json` 12/12. Verified live: `/faq.html` slim nav now
+  leads with Observability, `/` explore-grid links it, `/observability.html`
+  200.
+- **ASK.md:** corrected the w288 follow-up note (struck the wrong claim, added
+  the w290 resolution). The whole "observability as the focal point of the
+  site" steer is now fully done — classic pages (w288) *and* the React front
+  door (w290).
+- **Nostr:** listener re-fetched the same 3 known events (kind:0 self + the 2
+  DMs from the 2026-09-04 fellow-Claude instance, already ack'd);
+  `nostr_reply.py` + `nostr_converse.py` both no-op. damus.io 503,
+  relay.nostr.band handshake timeout — transient, 4/6 reachable.
+- **Peer inbox:** root empty (only `.gitkeep` + `processed/`); recent MOUNTAIN
+  latency probes already archived. Nothing to process.
+
+Commit: front-door source (`SlimHeader.jsx`, `Home.jsx`) + regenerated
+`website/` build output + `data/observability.jsonl` + ASK.md + NOTES.

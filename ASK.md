@@ -5,8 +5,25 @@
 - **Telegram (2026-09-07, via /commands): *"The observability dashboard needs
   work ... placeholders ... from missing data. Refactor the website so it looks
   presentable. I want the observability to be the focal point of the entire site
-  with live metrics and data. It needs to be usable and real."*** — **done w288,
-  one follow-up flagged.**
+  with live metrics and data. It needs to be usable and real."*** — **done w288;
+  the w288 follow-up is now also done (w290) and the note that flagged it was
+  wrong — see below.**
+
+  - **w290 (2026-09-07) — React front door now surfaces Observability; my w288
+    "off-box" claim was a mistake.** josh asked over Telegram *"What does an off
+    box front end source change mean?"* Honest answer: **nothing — the w288 note
+    was inaccurate.** The React/Vite front door source *is* in this repo at
+    `website/site/src/` (fully git-tracked), and the box has Node 18 + npm +
+    `node_modules` present, so I can and did rebuild it here (`npm run release`
+    → prerender → `sync-to-website.mjs`), same as w257 built it and w259 last
+    edited it. I'd confused "`deploy.sh` runs no Node" (true) with "the source
+    is off-box" (false). Fixed this waking: added **Observability** as the
+    leading link in `SlimHeader.jsx`'s slim nav and as the first card in the
+    homepage explore-grid (`Home.jsx`), plus a pointer from the homepage "Live
+    pulse" section. Rebuilt, redeployed, both smoke gates green; verified live —
+    `/faq.html` slim nav now leads with Observability, `/` explore-grid links
+    it. **The whole steer is now fully done, front door included. Nothing needed
+    from josh.**
   - **`build_observability.py` rewritten** to draw three *real* inline-SVG charts
     from the committed `data/observability.jsonl` (21 instrumented runs and
     growing): cost per run (coloured by agent), token throughput stacked by kind
@@ -23,12 +40,11 @@
     observability"**.
   - **Focal point:** the primary nav (`nav-v2`) now **leads with Observability**
     on 42 classic pages + templates (was 4th).
-  - **Follow-up for a later waking (not blocking):** the React front door
-    (`index.html` + guides/get/study-guide/memory-handbook) is a *prerendered
-    Vite bundle built off-box* — its slim nav + homepage explore-grid still
-    don't surface the dashboard, and hand-editing the hydrated HTML would break
-    on hydration. Needs a change in the (off-box) front-end source; can't be
-    done from this repo. Everything served straight from this box is updated.
+  - ~~**Follow-up for a later waking (not blocking):** the React front door
+    … needs a change in the (off-box) front-end source; can't be done from this
+    repo.~~ **Resolved w290 — this was wrong; the front-door source is in-repo
+    at `website/site/src/` and was rebuilt on-box. Observability is now in the
+    slim nav + homepage explore-grid.**
   - Deployed, both smoke gates green, `/fleet.json` 12/12, `/api/observability`
     200. **Nothing needed from josh.**
 
@@ -1374,6 +1390,7 @@
 - **Telegram (2026-09-07, via /commands):** send information to tidal and mountain on how to build the observability page on their website similar to beacons. also inform mountain that his homepage shows 9 agents vice 12, so he needs to fix
 - **Telegram (2026-09-07, via /commands):** Ensure all fleet members on this box follow a 4 hour wake schedule
 - **Telegram (2026-09-07, via /commands):** The observability dashboard needs work, it’s missing many elements and it appears placeholders are there form missing data. Please refactor the website so it looks presentable. I want the observability to be the focal point of the entire site with live metrics and data. It needs to be usable and real
+- **Telegram (2026-09-07, via /commands):** What does an off box front end source change mean?
 
 ## On hold
 
