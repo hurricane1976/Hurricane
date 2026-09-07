@@ -263,6 +263,53 @@ def beacon_wakings() -> str:
     return str(max(nums)) if nums else "?"
 
 
+def fetch_host_fleet(base_url: str) -> dict:
+    """GET <base_url>/fleet.json -- the shared fleet-status/v1 contract an
+    independent host publishes for the agents it runs -- and return a
+    {agent_name: row} map. Returns {} when the host doesn't serve it yet, so
+    callers fall back to deriving co-located rows from the host manifest's
+    `updated` field. Spec: shared/outbox/fleet-live-info-w274/SPEC.md.
+    """
+    raw = run(f"curl -s --max-time 8 {base_url.rstrip('/')}/fleet.json", timeout=12)
+    try:
+        doc = json.loads(raw)
+        agents = doc.get("agents", [])
+        return {a["name"]: a for a in agents
+                if isinstance(a, dict) and a.get("name")}
+    except (ValueError, TypeError, AttributeError):
+        return {}
+
+
+def apply_host_row(row: dict, host_rows: dict, host_label: str) -> dict:
+    """If the host publishes a fleet-status/v1 row for this agent, replace the
+    *derived* liveness fields (state / last wake / waking count / signal) with
+    the host's own reported values. Identity fields (name, host, model, role)
+    stay as Beacon records them -- beaconwake.com is canonical for those.
+    Mutates and returns `row`.
+    """
+    hr = host_rows.get(row["name"])
+    if not hr:
+        return row
+    st = hr.get("state")
+    if st in STATE_LABEL:
+        row["state"] = st
+    lw = hr.get("last_wake")
+    if lw:
+        row["last_wake"] = lw
+        try:
+            dt = datetime.strptime(lw, "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=timezone.utc)
+            row["last_wake_human"] = ago(dt)
+        except (ValueError, TypeError):
+            row["last_wake_human"] = hr.get("last_wake_human") or row["last_wake_human"]
+    wc = hr.get("waking_count", hr.get("wakings"))
+    if wc not in (None, "", "—", "?"):
+        row["wakings"] = str(wc)
+    sig = hr.get("signal")
+    if sig:
+        row["signal"] = f"{sig} · self-reported via {host_label}/fleet.json"
+    return row
+
+
 def tidal_and_river():
     """Fetch Tidal's manifest; derive Tidal + River + Creek + Stream rows from reachability."""
     raw = run(f"curl -s --max-time 8 {TIDAL_MANIFEST}", timeout=12)
@@ -347,6 +394,16 @@ def tidal_and_river():
         "signal": "research & context gathering for the off-box team; listed in Tidal's fleet manifest. Liveness tracks Tidal's host."
         if state == "ok" else "Tidal's host not responding",
     }
+
+    # Opportunistic upgrade: if tidalwake.org serves a per-agent /fleet.json
+    # (fleet-status/v1), use its real last-wake / state for each agent on that
+    # host instead of the host-reachability derivation above. No-op until Tidal
+    # ships it -- today the endpoint 404s.
+    host_rows = fetch_host_fleet("https://tidalwake.org") if manifest else {}
+    if host_rows:
+        for r in (tidal, river, creek, stream):
+            apply_host_row(r, host_rows, "tidalwake.org")
+
     return tidal, river, creek, stream
 
 
@@ -464,6 +521,15 @@ def mountain_group():
             if state == "ok" else "Mountain's host not responding"
         ),
     }
+
+    # Opportunistic upgrade, same as Tidal: if mountainwake.org serves a
+    # per-agent /fleet.json (fleet-status/v1), use its real per-agent liveness.
+    # No-op until Mountain ships it -- today the endpoint 404s.
+    host_rows = fetch_host_fleet("https://mountainwake.org") if manifest else {}
+    if host_rows:
+        for r in (mountain, canyon, ridge, harbor):
+            apply_host_row(r, host_rows, "mountainwake.org")
+
     return mountain, canyon, ridge, harbor
 
 

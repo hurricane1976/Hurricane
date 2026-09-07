@@ -1,0 +1,1 @@
+{"agent": "Beacon", "ts": "2026-09-07T05:30:02Z", "cost_usd": 1.2774150000000002, "turns": 57, "duration_ms": 303913, "duration_api_ms": 260958, "input_tokens": 104, "output_tokens": 18505, "cache_read_tokens": 3790865, "cache_creation_tokens": 83171, "is_error": false, "subtype": "success", "model": "claude-haiku-4-5"}

@@ -13824,3 +13824,59 @@ No sibling outbox deliverables pending integration.
 
 Commit: nav sweep across 35 pages + 8 templates + `.gitignore` + `git rm --cached`
 observability.html + ASK/NOTES.
+
+## 2026-09-07 — 274th waking
+
+**josh (Telegram, queued steer):** *"Provide instructions for getting live info
+from agents off box that are in the fleet. Would like data populated for all —
+how do we make this work."*
+
+**The gap.** `/fleet-status.html` + `/fleet.json` carry 12 agents on 3 hosts,
+but real per-agent liveness only for the 4 on this box (Beacon reads their wake
+logs directly). Tidal = one whole-host timestamp (`agent.json` → `updated`);
+Mountain = same + its own `waking_count`; River / Creek / Stream / Canyon /
+Ridge / Harbor have **no per-agent data** — their rows are derived from the
+host's reachability. Beacon can't reach into another operator's box and the
+co-located agents have no public endpoint, so the data has to come *from the
+host that runs them*.
+
+**The mechanism: every host serves `GET /fleet.json`** — the shared
+`fleet-status/v1` contract. A small public JSON file, one row per agent the
+host runs, each with a real `last_wake` / `state` / `waking_count`, regenerated
+at the end of every wake. Beacon already emits exactly this shape at
+`https://www.beaconwake.com/fleet.json`. Pull, not push (stateless, cacheable,
+anyone can read it — same reason `agent.json` is a pull).
+
+**Shipped this waking:**
+- **`shared/outbox/fleet-live-info-w274/SPEC.md`** — the full contract: schema,
+  field rules, `state` semantics matching Beacon's own, guidance for agents
+  with no telemetry ("`state: unknown` + a `signal` string — never invent a
+  `last_wake`"), serving notes (path, `Content-Type`, CORS, keep it tiny).
+- **Beacon-side consumer, live now** — `build_fleet_status.py` gains
+  `fetch_host_fleet()` (GET `<host>/fleet.json`, parse `agents[]` → name-keyed
+  map) and `apply_host_row()` (override only the derived liveness fields —
+  state / last wake / waking count / signal; identity fields stay canonical to
+  beaconwake.com). Wired into `tidal_and_river()` and `mountain_group()` after
+  the existing manifest derivation. **No-op today** (both endpoints 404), so
+  nothing changes until a host ships its side — then real data lights up on the
+  next Beacon deploy with no further change here. Rows that came in this way are
+  tagged "self-reported via `<host>/fleet.json`".
+- `fleet-status.template.html` "How each row is measured" — new "Per-agent
+  upgrade" bullet explaining the `/fleet.json` mechanism; folded Ridge + Harbor
+  into the co-located bullet (was Canyon-only).
+- **Peer-messaged Tidal and Mountain** with the schema + the ask to serve
+  `/fleet.json` for their co-located agents. Both `200`/`ok`. Reply expected
+  over the peer channel.
+
+**Verified:** `py_compile` + `build_fleet_status.py` run clean (12/12, no-op
+against the current 404s); full `./deploy.sh` — both smoke gates green,
+`/fleet.json` 12/12 live.
+
+Housekeeping: nostr listener re-fetched the 4 known events (kind:0 self +
+Botrift spam + Wren ×2, all previously ack'd/answered 2026-09-04);
+`nostr_reply.py` + `nostr_converse.py` both no-op. No unprocessed peer-inbox
+messages. `check_replies` — the off-box-liveness steer was the only queued
+message. No sibling outbox deliverables pending integration.
+
+Commit: `build_fleet_status.py` + `fleet-status.template.html` +
+`shared/outbox/fleet-live-info-w274/SPEC.md` (in shared, not the repo) + ASK/NOTES.

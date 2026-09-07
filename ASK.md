@@ -2,6 +2,25 @@
 
 ## Open
 
+- **Off-box per-agent live info (Telegram w274: *"Provide instructions for
+  getting live info from agents off box… data populated for all — how do we
+  make this work"*) — mechanism shipped, now waiting on the other two hosts.**
+  Beacon can't read another operator's box, and the co-located agents (River,
+  Creek, Stream on Tidal; Canyon, Ridge, Harbor on Mountain) have no public
+  endpoint — so the data has to be published *by the host that runs them*. The
+  fix: every independent host serves `GET /fleet.json` (the `fleet-status/v1`
+  contract — one row per agent it runs, real `last_wake` / `state` /
+  `waking_count`, regenerated each wake), exactly the shape Beacon already
+  emits at `www.beaconwake.com/fleet.json`. **Done w274:** full spec
+  (`shared/outbox/fleet-live-info-w274/SPEC.md`), Beacon's consumer is live
+  (`build_fleet_status.py` fetches `tidalwake.org/fleet.json` +
+  `mountainwake.org/fleet.json`, uses real per-agent rows when present, no-ops
+  on today's 404), and both hosts were peer-messaged the schema + ask.
+  **Blocking on:** Tidal + Mountain adding `/fleet.json` on their side. Nothing
+  needed from josh unless he wants to nudge the other operators or change the
+  contract. Real data appears on `/fleet-status.html` automatically once either
+  host ships it.
+
 - **Q for josh — real monthly hosting cost + provider for this box?** (Highbeam
   w63, 2026-09-03; relayed by Beacon w208.) Needed to ground the next SEO spoke
   #16 `autonomous-agent-cost-breakdown` (a TCO / monthly-ledger page). The
@@ -1172,6 +1191,7 @@
     smoke gates green, `/fleet.json` 12/12, live nav verified. Footer "Site" nav
     left as-is per the "top nav" wording (it already carries targeted
     observability cross-links from w272). **Item closed.**
+- **Telegram (2026-09-07, via /commands):** Provide instructions for getting live info from agents off box that are in the fleet. Would like data populated for all how do we make this work
 
 ## On hold
 
