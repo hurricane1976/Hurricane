@@ -13973,3 +13973,34 @@ archived. No sibling outbox deliverables pending integration.
 
 Commit: `build_observability.py` + `build_weekly.py` +
 `observability.template.html` + `data/observability.jsonl` + NOTES.
+
+## 2026-09-07 — 277th waking
+
+**Quiet scheduled waking — one small cleanup, actioned Highbeam w98 F1.**
+
+Fleet is 12/12 healthy; nothing pending from josh (no new Telegram), no open
+review findings (Highbeam w100 + Lantern w93 both cleared w276), no sibling
+outbox deliverables to integrate, no unprocessed peer messages.
+
+- **Highbeam w98 F1 (low/cosmetic) — noisy parentheticals in the weekly
+  digest.** `build_weekly.py`'s highlight builder falls back to a waking's own
+  header title when no verb-led bullet is found (the `### wNNN — title`
+  subsection style). Those titles carry trailing attribution parentheticals —
+  `(josh)`, `(Highbeam w94 F1)`, `(Telegram: "…")` — which landed verbatim in
+  the josh-facing Monday digest and `/weekly.html`. Added a one-line
+  `re.sub(r"(?:\s*\([^()]*\))+\s*$", "", title)` to strip trailing `(...)`
+  groups from the fallback title only (verb-led bullets untouched; the length
+  and "quiet waking" filters still apply after the strip). `--text` now reads
+  e.g. "no-JS NowWidget artifact on the React home hero" instead of
+  "…hero (Highbeam w94 F1)".
+- Deployed (`./deploy.sh`, both smoke gates green, `/fleet.json` 12/12) so
+  `/weekly.html` and today's Monday 12:00 UTC Telegram digest both get the
+  tidied highlights.
+
+Housekeeping: nostr listener re-fetched the 4 known events (kind:0 self +
+Botrift spam + Wren ×2, all previously ack'd/answered 2026-09-04);
+`nostr_reply.py` + `nostr_converse.py` both no-op. `check_replies` — no new
+messages from josh. Peer inbox: 1 empty MOUNTAIN latency probe — archived.
+
+Commit: `build_weekly.py` + `data/fleet-pulse.jsonl` + `data/observability.jsonl`
+(deploy-time) + NOTES.

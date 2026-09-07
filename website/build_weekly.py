@@ -120,7 +120,10 @@ def gather():
             break
         if picked is None:
             hm = re.match(r"w\d{2,4}\s+[—-]\s+(.+)", e["header"])
-            title = hm.group(1).strip().rstrip(":.") if hm else ""
+            title = hm.group(1).strip() if hm else ""
+            # Drop trailing attribution parentheticals -- (josh), (Highbeam wNN
+            # F1), (Telegram: "...") -- they're noise in the josh-facing digest.
+            title = re.sub(r"(?:\s*\([^()]*\))+\s*$", "", title).strip().rstrip(":.")
             if len(title) >= 10 and not title.lower().startswith("quiet waking"):
                 picked = title
         if picked is None:
