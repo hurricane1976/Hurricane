@@ -32,6 +32,17 @@ LOG_FILE = os.path.join(SCRIPT_DIR, "peer", "logs", "peer_server.log")
 MAX_BODY_BYTES = 32 * 1024          # refuse anything bigger than this
 RATE_LIMIT_PER_PEER_PER_HOUR = 30   # accepted-message cap, per peer
 
+# Optional "to" field: address a message at a named sibling on this box so it
+# lands in peer/inbox/<name>/ instead of the shared root. The regex is the
+# only thing standing between client input and a filesystem path, so it is
+# deliberately strict -- lowercase, must start with a letter, no dots, no
+# slashes, no traversal. Anything that doesn't match (or names a reserved
+# housekeeping dir) is filed to the root inbox instead of bounced: on a
+# human-paced channel, delivering to the wrong-but-visible place beats losing
+# the message.
+AGENT_NAME_RE = re.compile(r"[a-z][a-z0-9_-]{0,31}\Z")
+RESERVED_INBOX_NAMES = {"processed", "logs"}
+
 
 def load_config():
     """Parse keys/peers.env: SELF_NAME=/SELF_BIND=, then one NAME=/ADDR=/
@@ -183,21 +194,29 @@ class Handler(BaseHTTPRequestHandler):
         subject = str(payload.get("subject", ""))[:200]
         body = str(payload.get("body", ""))[:MAX_BODY_BYTES]
 
-        os.makedirs(INBOX_DIR, exist_ok=True)
+        to_raw = str(payload.get("to", "")).strip().lower()
+        to = to_raw if (AGENT_NAME_RE.match(to_raw)
+                        and to_raw not in RESERVED_INBOX_NAMES) else ""
+        if to_raw and not to:
+            log(f"WARN peer={peer_name} to={to_raw[:40]!r} invalid -- filing to root inbox")
+        dest_dir = os.path.join(INBOX_DIR, to) if to else INBOX_DIR
+
+        os.makedirs(dest_dir, exist_ok=True)
         fname = (
             f"{time.strftime('%Y%m%dT%H%M%SZ', time.gmtime())}"
             f"-{peer_name}-{os.urandom(4).hex()}.json"
         )
         record = {
             "from": peer_name,  # from the token match -- never client-supplied
+            "to": to,           # "" = shared root inbox
             "subject": subject,
             "body": body,
             "received_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
         }
-        with open(os.path.join(INBOX_DIR, fname), "w") as fh:
+        with open(os.path.join(dest_dir, fname), "w") as fh:
             json.dump(record, fh, indent=2)
 
-        log(f"ACCEPT peer={peer_name} subject={subject[:60]!r} file={fname}")
+        log(f"ACCEPT peer={peer_name} to={to or '-'} subject={subject[:60]!r} file={fname}")
         self._respond(200, {"status": "ok"})
 
 

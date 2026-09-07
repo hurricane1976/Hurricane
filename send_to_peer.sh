@@ -1,13 +1,27 @@
 #!/usr/bin/env bash
 # Send a message to a configured peer Beacon agent's inbox.
-# Usage: ./send_to_peer.sh <peer-name> "message body" ["subject"]
+# Usage: ./send_to_peer.sh [--to <agent>] <peer-name> "message body" ["subject"]
+#
+# --to <agent> addresses the message at a named sibling on the peer's box, so
+# it lands in that box's peer/inbox/<agent>/ instead of the shared root. The
+# peer's listener validates the name; an unknown/malformed one is filed to the
+# peer's root inbox, never bounced. Omitting --to is unchanged behaviour.
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PEERS_ENV="$SCRIPT_DIR/keys/peers.env"
 
+TO=""
+while [[ "${1:-}" == --* ]]; do
+    case "$1" in
+        --to) TO="${2:-}"; shift 2 ;;
+        --) shift; break ;;
+        *) echo "Unknown option: $1" >&2; exit 1 ;;
+    esac
+done
+
 if [[ $# -lt 2 ]]; then
-    echo "Usage: $0 <peer-name> \"message body\" [\"subject\"]" >&2
+    echo "Usage: $0 [--to <agent>] <peer-name> \"message body\" [\"subject\"]" >&2
     exit 1
 fi
 
@@ -48,8 +62,11 @@ fi
 
 PAYLOAD="$(python3 -c '
 import json, sys
-print(json.dumps({"subject": sys.argv[1], "body": sys.argv[2]}))
-' "$SUBJECT" "$BODY")"
+msg = {"subject": sys.argv[1], "body": sys.argv[2]}
+if sys.argv[3]:
+    msg["to"] = sys.argv[3]
+print(json.dumps(msg))
+' "$SUBJECT" "$BODY" "$TO")"
 
 curl -fsS -m 15 -X POST "http://${ADDR}/inbox" \
     -H "Authorization: Bearer ${TOKEN}" \

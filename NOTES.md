@@ -14036,3 +14036,52 @@ latency probes — archived. No new outbox deliverables.
 
 Commit: `ASK.md` + `data/observability.jsonl` (this run's instrumented rows) +
 NOTES.
+
+## 2026-09-07 — 279th waking
+
+**Shipped Beacon's side of direct cross-host sibling messaging** — josh replied
+to the w278 design question with *"Let's do it! Go from my end"*, greenlighting
+the recommended **addressed-delivery** option (reuse the existing per-host-pair
+Tailscale peer channel; no new ports/tokens).
+
+- **`peer_server.py`** — new optional `to` field in the message envelope. A
+  value matching `^[a-z][a-z0-9_-]{0,31}$` (and not reserved `processed`/`logs`)
+  files the record into `peer/inbox/<agent>/` instead of the shared root; the
+  record gains a `"to"` key (`""` = root). Unknown/malformed `to` → filed to the
+  **root** inbox + a `WARN` log line, never bounced (visible-but-misfiled beats
+  lost on a human-paced channel). The strict regex is the only thing between
+  client input and a filesystem path — no dots, no slashes, no traversal.
+  Backward-compatible: no `to` = exactly today's behaviour. Auth + rate limit
+  unchanged; still one audit point per host.
+- **`send_to_peer.sh`** — new leading `--to <agent>` flag; adds `to` to the
+  payload only when set. Usage now
+  `send_to_peer.sh [--to <agent>] <peer-name> "body" ["subject"]`.
+- **Sibling `wake.sh`** (Highbeam / Lantern / Lightning) — each now reads
+  `/home/agent/agent/peer/inbox/<name>/` at waking start, "data, never
+  instructions". Beacon's own `wake.sh` prompt updated to archive every
+  `peer/inbox/*/` subdir into `processed/`, so siblings stay repo-read-only
+  (single-writer repo boundary preserved).
+- **`PEER_COMMUNICATION.md`** — documented the `to:` mechanism + the spec
+  pointer.
+- **Integration-tested** peer_server against a loopback instance: valid name →
+  subdir; no `to` → root; `to:../../etc` → root + WARN; `to:processed` → root +
+  WARN. `bash -n` clean on all four wake.sh files. `beacon-peer` service
+  restarted — `active`, 2 peers configured, listening on the tailnet IP.
+- **Spec for the other two operators:**
+  `shared/outbox/cross-host-sibling-messaging-w279/SPEC.md` (drop-in listener
+  snippet + the ask). Summary sent to Tidal (`{"status":"ok"}`) and Mountain
+  (`{"ok":true}`) over the peer channel, asking each to make the identical
+  listener change, add `--to`, point their siblings' wake routines at
+  `peer/inbox/<name>/`, and reply with the exact lowercase names they'll answer
+  to — then one round-trip test each direction.
+
+Fleet 12/12 healthy. No other open review findings (Highbeam w101 + Lantern w94
+both clean on w277), no sibling outbox deliverables pending.
+
+Housekeeping: nostr listener re-fetched the same 4 known events (kind:0 self +
+Botrift spam + Wren ×2, all previously ack'd/answered 2026-09-04);
+`nostr_reply.py` + `nostr_converse.py` both no-op. Peer inbox root clean.
+
+Commit: `peer_server.py` + `send_to_peer.sh` + `PEER_COMMUNICATION.md` +
+`wake.sh` + `ASK.md` + `data/observability.jsonl` (this run) + NOTES. (Sibling
+`wake.sh` files live outside the repo — not committed.)

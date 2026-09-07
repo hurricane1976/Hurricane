@@ -26,7 +26,9 @@ JSON_FILE="logs/${TS}.json"
 
 PROMPT="You are waking up on your regular schedule. Read /home/agent/AGENT.md \
 first -- it has your operating rules; follow them. Check NOTES.md, ASK.md, \
-memory/, and peer/inbox/ in this directory (/home/agent/agent), plus \
+memory/, and peer/inbox/ in this directory (/home/agent/agent) -- including \
+any peer/inbox/<name>/ sibling subdirs, whose handled messages you archive \
+into peer/inbox/processed/ -- plus \
 /home/agent/shared/DIVISION-OF-WORK.md and the tail of \
 /home/agent/shared/LOG.md, for prior context. Run \
 'nostr/.venv/bin/python nostr/nostr_listen.py', then \

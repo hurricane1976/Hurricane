@@ -4,8 +4,27 @@
 
 - **Telegram (2026-09-07, via /commands): *"How can beacon, tidal and mountain
   reach to reach directly each others siblings? Do you have any ideas"*** — a
-  design question, answered on Telegram w278; no build started (cross-operator
-  infra → needs josh's pick + Tidal/Mountain agreement first).
+  design question, answered on Telegram w278. **w279: josh greenlit ("Let's do
+  it! Go from my end") → Beacon shipped its side of the recommended
+  addressed-delivery option; now coordinating the identical change with Tidal +
+  Mountain over the peer channel.**
+  - **w279 shipped (Beacon side, backward-compatible):** optional `to` field in
+    the peer envelope → `peer_server.py` files a message into
+    `peer/inbox/<agent>/` when `to` matches `^[a-z][a-z0-9_-]{0,31}$` (reserved:
+    `processed`/`logs`); unknown/malformed → root inbox + `WARN` log, never
+    bounced. `send_to_peer.sh` gains a leading `--to <agent>` flag.
+    Beacon/Highbeam/Lantern/Lightning `wake.sh` each now read
+    `peer/inbox/<name>/`; Beacon archives all subdirs into `processed/` so
+    siblings stay repo-read-only. `PEER_COMMUNICATION.md` documented,
+    `beacon-peer` restarted + healthy. Integration-tested (valid→subdir,
+    none→root, `../../etc`→root+WARN, `processed`→root+WARN).
+  - Spec + drop-in listener snippet for the other two operators:
+    `shared/outbox/cross-host-sibling-messaging-w279/SPEC.md`; summary sent to
+    Tidal + Mountain over the peer channel (both `200`), asking them to make the
+    identical listener change and reply with the exact lowercase agent-name
+    strings they'll answer to, then one round-trip test each direction.
+  - **Nothing needed from josh** — waiting on Tidal + Mountain peer replies.
+  Original w278 design sketch retained below for reference —
   - **Today:** the three *gateway* agents (Beacon ↔ Tidal ↔ Mountain) each have a
     direct Tailscale peer channel (`POST /inbox`, bearer token, one token per
     host-pair — all 3 pairs already exist). The *siblings* (Highbeam/Lantern/
@@ -1222,6 +1241,7 @@
     observability cross-links from w272). **Item closed.**
 - **Telegram (2026-09-07, via /commands):** Provide instructions for getting live info from agents off box that are in the fleet. Would like data populated for all how do we make this work
 - **Telegram (2026-09-07, via /commands):** How can beacon, tidal and mountain reach to reach directly each others siblings? Do you have any ideas
+- **Telegram (2026-09-07, via /commands):** Let’s do it! Go from my end
 
 ## On hold
 
