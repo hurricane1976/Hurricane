@@ -13624,3 +13624,79 @@ to `peer/inbox/processed/`.
 
 No commit this waking (no file changes beyond this NOTES entry and the archived
 peer probe).
+
+## 2026-09-07 — 271st waking
+
+**josh (Telegram):** *"Dash0.com has an agentic ai dashboard offering. Research
+this and see if this is something you can create. I specifically like the
+observability portion but considering others. Seeing what the art of the
+possible is. If you can mock something up ok with me."*
+
+Researched Dash0, then built + shipped a mockup.
+
+**Research** → `shared/outbox/dash0-agentic-observability-research-w271.md`.
+Dash0 = OpenTelemetry-native observability platform (SignalStore). AI lines:
+**Agent0** (built-in troubleshoot/query/instrument/triage agents; Live Insights,
+Automations, Log AI, RCA, AutoFix) and **Darkplane** (AI coding insights).
+"Agentic observability" = an agent run is one **trace, one span per step**
+(prompt/response each hop, retrieved context + source, every tool call with
+args/results, decision branch); runs shown as **rows sortable by cost / turns /
+error count** with replay; **token + cost per run tied to the outcome** (OTel
+`gen_ai.*` attrs); headline risk is **silent failure** — "HTTP 200, every
+dashboard green, still completely wrong." Mapped signal-by-signal to what the
+Beacon fleet emits: run-as-waking, runs-as-rows, silent-failure guards and
+liveness are all there; **per-run token count / `total_cost_usd` / `num_turns` /
+duration are not** — because every agent's `wake.sh` runs
+`claude -p --output-format text`. Flipping to `--output-format json` + teeing
+`logs/<ts>.json` closes that gap (same root cause as the ASK.md spoke-#16 "no
+measured API bill" note). Flagged that flip to josh as a decision rather than
+just doing it.
+
+**Mockup** → new page **`website/agent-observability-mockup.html`** (live,
+33 KB). House style, same "wireframe not a product" frame as
+`service-desk-mockup.html`. Panels flagged:
+- **Live snapshot** (real telemetry frozen 2026-09-07): signal row (12/12
+  healthy, 26 commits/24h, 0 failed units, 12% disk, 4 families/3 hosts);
+  **run explorer** — last 16 fleet wakings as rows (agent · started · trigger ·
+  outcome pill shipped/clean/no-op/error · result), from git + NOTES +
+  `shared/LOG.md`; 12 **per-agent lanes** (model-family dot, cadence, signal,
+  state from `/fleet.json`); **silent-failure watch** — the fleet's actual
+  "green but wrong" guards as a live checklist.
+- **Illustrative**: span waterfall — real fixed step names
+  (`nostr_listen`…`notify.sh`), made-up timings — plus the OTel `gen_ai.*`
+  attribute block a real trace carries.
+- **Not instrumented**: token & cost per run — honest empty state showing the
+  `--output-format json` result schema that would fill it + a clearly-greyed
+  "illustrative, not measured" cost-per-run bar strip.
+- Closing section: "what it would take to make this real"
+  (`wake.sh` json flip → `build_observability.py` → `/api/observability` →
+  promote to `/observability.html` in nav).
+
+**Wiring** (same pattern as `service-desk-mockup.html`): `deploy.sh` copy +
+chown lists, `smoke_test.py` PAGES, `build_sitemap.py` (45 urls),
+`build_status.py` page list, `build_jsonld.py` SKIP set. Linked from
+`/claude-code-agent-observability.html` (the topical guide) — **not** in global
+nav; it's a mockup pending josh's read. Verified: HTML parses clean (no unclosed
+tags), `smoke_test.py --local` + `--live` both green, page 200 live, in live
+sitemap, guide link live, `/fleet.json` 12/12. Headless-Chrome render check
+skipped — no chrome binary on the box this waking; page reuses established
+style.css classes (`mock-window`/`mock-gauge`/`data-table`/`callout-box`/`hero`)
+plus a small scoped `<style>` block of plain grid/flex, low layout risk.
+
+**Fan-out:** Highbeam (`TASKS.md` ⭐ — review labelling honesty + the
+silent-failure table's accuracy + whether an observability SEO *guide* page is
+worth it), Lantern (`tasks-lantern.md` ⭐ — a proper nested-span timeline visual
+for the waterfall panel), Lightning (`tasks-lightning.md` ⭐ — design-ahead
+`build_observability.py` spec, hers to own if the json flip is greenlit).
+ASK.md item updated with the w271 response + the one open decision for josh.
+
+Housekeeping: `check_replies` — the Dash0 steer was the only queued message
+(and had already been appended to ASK.md, uncommitted, by an earlier partial
+run this cycle). Nostr listener re-fetched the same 3 known DMs (Botrift spam +
+Wren's two, all previously ack'd/answered 2026-09-04); `nostr_reply.py` +
+`nostr_converse.py` both no-op. No unprocessed peer-inbox messages. No sibling
+outbox deliverables pending integration beyond Lantern's already-noted
+lighthouse proposal (closed w269).
+
+Commit: agent-observability-mockup.html + research brief + 6 wiring files +
+guide link + ASK/NOTES + 3 sibling task files.

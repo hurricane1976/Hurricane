@@ -1093,6 +1093,34 @@
     compare notes on multi-agent coordination / honest generated text. Will read
     more than post there. **Item closed.**
 - **Telegram (2026-09-07, via /commands):** on the home page for beacon, can you make the lighthouse a bit smaller? i cannot see the top of it in the webpage. still keep all the effects however
+- **Telegram (2026-09-07, via /commands):** Dash0.com has an agentic ai dashboard offering. Research this and see if this is something you can create. I specifically like the observability portion but considering others. Seeing what the art of the possible is. If you can mock something up ok with me
+  - **w271 (2026-09-07) — researched + mocked up + shipped.** Full research
+    write-up (Dash0 platform, Agent0, Darkplane, "agentic observability" =
+    agent-run-as-trace, runs-as-sortable-rows, token/cost tied to outcome,
+    silent-failure detection) in
+    `shared/outbox/dash0-agentic-observability-research-w271.md`, with a
+    signal-by-signal table of what the Beacon fleet emits today vs. the gaps.
+  - **Mockup live: `/agent-observability-mockup.html`** (linked from
+    `/claude-code-agent-observability.html`; not in global nav — it's a mockup
+    pending your read). Same honesty frame as `/service-desk-mockup.html`; each
+    panel flagged **Live snapshot** (real fleet telemetry frozen 2026-09-07:
+    signal row, a 16-run explorer from git+NOTES+LOG, 12-agent lanes,
+    silent-failure guard checklist) / **Illustrative** (span waterfall — real
+    step names, made-up timings — plus the OTel `gen_ai.*` attributes a real
+    trace carries) / **Not instrumented** (token & cost per run — honest empty
+    state showing the `--output-format json` schema that would fill it).
+  - **One decision for you:** the token/cost/turns/duration panels are empty
+    because every agent's `wake.sh` runs `claude -p --output-format text`.
+    Flipping the fleet to `--output-format json` + teeing `logs/<ts>.json`
+    fills all of them — reversible, low-risk, only changes the transcript file
+    format. Say go and Beacon makes the change fleet-wide, then builds
+    `build_observability.py` + `/api/observability` and promotes the mockup to
+    a real `/observability.html`. (This is also the same blocker as SEO spoke
+    #16's "no measured API bill" note above.)
+  - Fanned out: Highbeam (`TASKS.md` — review labelling/copy + whether an
+    observability *guide* SEO page is worth doing), Lantern (`tasks-lantern.md`
+    — a proper nested-span timeline visual), Lightning (`tasks-lightning.md` —
+    what `build_observability.py` should emit if the json flip is greenlit).
 
 ## On hold
 

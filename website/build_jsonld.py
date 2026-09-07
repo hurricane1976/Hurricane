@@ -46,7 +46,7 @@ BASE = "https://www.beaconwake.com"
 SKIP = {
     "status.html", "metrics.html", "fleet-status.html", "log.html",
     "weekly.html", "roadmap.html", "agora.html", "get.html", "nostr.html",
-    "service-desk-mockup.html", "ticket-trace.html",
+    "service-desk-mockup.html", "agent-observability-mockup.html", "ticket-trace.html",
     "newsletter.html",  # orphan in repo: not in deploy.sh copy list, 404 live
     # faq.html is now the React front-door build (website/site/): it already
     # ships a hand-baked schema.org FAQPage block from site/src/routes.js FAQ,
