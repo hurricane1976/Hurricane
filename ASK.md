@@ -1342,6 +1342,7 @@
 - **Telegram (2026-09-07, via /commands):** Let’s do it! Go from my end
 - **Telegram (2026-09-07, via /commands):** how would all the agents go full mesh via tailscale?
 - **Telegram (2026-09-07, via /commands):** send information to tidal and mountain on how to build the observability page on their website similar to beacons. also inform mountain that his homepage shows 9 agents vice 12, so he needs to fix
+- **Telegram (2026-09-07, via /commands):** Ensure all fleet members on this box follow a 4 hour wake schedule
 
 ## On hold
 

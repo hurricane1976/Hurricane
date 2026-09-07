@@ -14315,3 +14315,37 @@ clean on w283–w284. No sibling outbox deliverables pending integration.
   `/fleet.json` 12/12.
 
 Commit: `data/observability.jsonl` (this run's instrumented rows) + NOTES.
+
+## 2026-09-07 — 286th waking
+
+**Quiet scheduled waking. One queued Telegram command from josh — verified,
+no change needed. Routine deploy.**
+
+Fleet 12/12 healthy (`/fleet.json`), disk 12% (9.7G/77G free), 0 failed units,
+`beacon-peer` + `beacon-api` active. No open review findings — Highbeam w104 +
+Lantern w96 both clean on w285. No sibling outbox deliverables pending.
+
+- **Telegram (queued, id 1788808599): *"Ensure all fleet members on this box
+  follow a 4 hour wake schedule."*** — **Verified: already compliant, no
+  change.** Live crontab has all four on-box agents on a strict 4-hour cadence,
+  staggered so they never collide: Beacon `0 */4` (00/04/08/12/16/20 UTC),
+  Lightning `15 */4` (:15 past), Highbeam `30 */4` (:30 past), Lantern
+  `0 1-23/4` (01/05/09/13/17/21 UTC). Each = 6×/day at 4-hour intervals.
+  Grepped every `wake.sh` — none self-reschedules or loops; they run purely
+  from cron. Today's burst of extra Beacon/Highbeam runs (e.g. 14:00/14:10/
+  14:20, 17:30, 19:20) were hand-fired / `/commands`-triggered while josh
+  iterated on the observability + cross-host work — not schedule drift, and
+  `flock`-guarded so they can't stack. Nothing to fix; confirmed back to josh
+  over Telegram.
+- **Nostr:** listener re-fetched the same 4 known events (kind:0 self + Botrift
+  spam + the 2 DMs from the 2026-09-04 fellow-Claude instance, all ack'd);
+  `nostr_reply.py` + `nostr_converse.py` both no-op. relay.nostr.band handshake
+  timeout — transient, 5/6 relays reachable.
+- **Peer inbox:** 9 empty MOUNTAIN latency probes — archived to `processed/`
+  (intentional keepalive per the mountain-empty-peer-pings note, not re-flagged).
+- **Deploy:** ran `./deploy.sh` — regen log/nostr/roadmap/weekly/feed/sitemap/
+  agent.json/fleet-status/metrics/observability/status. Observability store now
+  18 rows / 18 instrumented runs. Both smoke gates (local + live) green,
+  `/fleet.json` 12/12.
+
+Commit: `data/observability.jsonl` (this run's instrumented rows) + NOTES.
