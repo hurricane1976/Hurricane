@@ -14085,3 +14085,43 @@ Botrift spam + Wren ×2, all previously ack'd/answered 2026-09-04);
 Commit: `peer_server.py` + `send_to_peer.sh` + `PEER_COMMUNICATION.md` +
 `wake.sh` + `ASK.md` + `data/observability.jsonl` (this run) + NOTES. (Sibling
 `wake.sh` files live outside the repo — not committed.)
+
+## 2026-09-07 — 280th waking
+
+**Quiet scheduled waking — one josh Telegram question, answered as a design
+sketch (no build; cross-operator + exploratory).**
+
+Fleet 12/12 healthy, disk 12%, 0 failed units. No open review findings
+(Highbeam w101 + Lantern w94 both clean on w277/w279), no sibling outbox
+deliverables pending integration. w279's cross-host sibling-messaging spec is
+out to Tidal + Mountain over the peer channel — still waiting on their replies
+(the exact lowercase names they'll answer to + a round-trip test); nothing for
+Beacon to do until those land.
+
+- **Telegram (via /commands): *"how would all the agents go full mesh via
+  tailscale?"*** — follow-up to the w278/w279 cross-host thread. Filed under the
+  same `ASK.md` item (w280 sub-section) and answered on Telegram. Full mesh =
+  each of the 12 agents becomes its own Tailscale node with its own inbox
+  listener, so any agent POSTs directly to any other with no gateway in the
+  path. Four pieces: (1) 12 tailnet identities (per-agent `tailscaled`
+  `--statedir` + userspace networking, or tagged ephemeral nodes; josh owns the
+  tailnet so josh mints keys/approves nodes); (2) 12 listeners, ~4 systemd units
+  per operator; (3) **auth by Tailscale identity (`tailscale whois` + a fleet
+  roster), not a 66-token pairwise matrix**; (4) one published roster +
+  who-talks-to-whom enforced once in josh's Tailscale ACL policy. Buys: gateways
+  out of the trust path, network-layer per-agent ACLs, one fewer hop. Doesn't
+  buy: speed (delivery still bounded by the ~4 h wake cadence). Costs: 12
+  listening services vs 3, split across 3 operators; shared-Unix-user forces
+  per-agent `tailscaled` + proxy. **Rec: not yet** — w279's `to:<agent>` already
+  covers any-agent-by-name at ~30 lines/box; go full mesh only to get the
+  gateways out of the trust path. No code started (cross-operator; josh asked
+  "how would", not "do it").
+
+Housekeeping: nostr listener re-fetched the same 4 known events (kind:0 self +
+Botrift spam + Wren ×2, all previously ack'd/answered 2026-09-04);
+`nostr_reply.py` + `nostr_converse.py` both no-op. `check_replies` — no new
+messages from josh beyond the one above. Peer inbox root clean, no new subdir
+messages.
+
+Commit: `ASK.md` + `data/observability.jsonl` (prior-run instrumented rows +
+this run) + NOTES.

@@ -24,6 +24,44 @@
     identical listener change and reply with the exact lowercase agent-name
     strings they'll answer to, then one round-trip test each direction.
   - **Nothing needed from josh** — waiting on Tidal + Mountain peer replies.
+
+  - **w280 follow-up — Telegram (2026-09-07, via /commands): *"how would all the
+    agents go full mesh via tailscale?"*** — answered on Telegram; design sketch,
+    no build (cross-operator, exploratory). Full mesh = every one of the 12
+    agents becomes its own Tailscale node with its own inbox listener, so any
+    agent POSTs directly to any other with no gateway in the path. Four pieces:
+    1. **12 tailnet identities.** Today each *host* is one node shared by its 4
+       agents; mesh = each agent joins as its own node (per-agent `tailscaled`
+       `--statedir` + `--tun=userspace-networking` exposing a local proxy, or
+       tagged ephemeral nodes via auth keys `tag:fleet-agent`). josh owns the
+       tailnet, so josh mints the keys / approves the nodes. ~4 daemons per box.
+    2. **12 listeners** — each agent runs its own `peer_server.py`-equivalent on
+       its own node IP:port; ~4 systemd units per operator.
+    3. **Auth: drop the shared-token matrix, use Tailscale identity.** 12 nodes
+       pairwise = 66 bearer tokens to mint/rotate/store — unmanageable. Instead
+       authenticate by *source*: the listener does `tailscale whois <peer-ip>`
+       (or reads the `tsnet` identity header) and checks a fleet roster.
+       WireGuard already did the crypto; no secrets in transit.
+    4. **A shared roster + one central ACL.** One published `fleet-mesh.json`
+       (or MagicDNS names like `lantern.<tailnet>.ts.net:8787`) mapping
+       agent → node → port; who-may-talk-to-whom enforced once in josh's
+       Tailscale ACL policy (`tag:fleet-agent` → `tag:fleet-agent:8787`), not
+       in 12 separate allowlists.
+    - **Buys** (over w279's addressed delivery, already shipped): removes the 3
+      gateway agents from the trust path (today Beacon/Tidal/Mountain each *can*
+      read every sibling's mail on their box), network-layer per-agent ACLs, one
+      fewer hop. **Doesn't buy:** speed — delivery is still bounded by the ~4 h
+      wake cadence; a sibling only reads its inbox when it wakes. **Costs:** 12
+      listening services vs 3 (4× attack surface) across 3 operators who each
+      stand up + maintain 4 nodes/units; shared-Unix-user means per-agent
+      `tailscaled` + proxy (our listeners are Python, no clean `tsnet` bind);
+      coordinated cutover; josh owns the ACL + node approvals.
+    - **Rec: not yet.** w279's `to:<agent>` already gives any-agent-by-name over
+      the 3 existing channels at ~30 lines/box. Go full mesh only to get the
+      gateways out of the trust path or for network-layer per-agent ACLs; the
+      one design call that matters then is **auth by Tailscale identity, not a
+      token matrix.** Rough effort ~1 day/operator + a scheduled joint cutover.
+
   Original w278 design sketch retained below for reference —
   - **Today:** the three *gateway* agents (Beacon ↔ Tidal ↔ Mountain) each have a
     direct Tailscale peer channel (`POST /inbox`, bearer token, one token per
@@ -1242,6 +1280,7 @@
 - **Telegram (2026-09-07, via /commands):** Provide instructions for getting live info from agents off box that are in the fleet. Would like data populated for all how do we make this work
 - **Telegram (2026-09-07, via /commands):** How can beacon, tidal and mountain reach to reach directly each others siblings? Do you have any ideas
 - **Telegram (2026-09-07, via /commands):** Let’s do it! Go from my end
+- **Telegram (2026-09-07, via /commands):** how would all the agents go full mesh via tailscale?
 
 ## On hold
 
