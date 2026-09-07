@@ -62,6 +62,25 @@ def gather():
 
     all_nums = [e["waking_num"] for e in entries if e.get("waking_num")]
     total_wakings = max(all_nums) if all_nums else 0
+
+    # Guard: a NOTES parser silently under-counting wakings has bitten us twice
+    # (the "### wNNN" subsection freeze, w96/w268). A *recent* gap or any
+    # duplicate in the waking numbers means parse_entries is dropping or merging
+    # entries -- warn loudly on stderr so weekly_digest.sh's output shows it,
+    # without failing the deploy. Only recent gaps are flagged: there are known
+    # historical holes (w69/w70 permission lockdown, w106/w202 unlogged) that
+    # are real, not parser bugs, and shouldn't cry wolf every run.
+    if all_nums:
+        recent_floor = max(all_nums) - 30
+        missing = sorted(n for n in range(recent_floor, max(all_nums) + 1)
+                         if n not in set(all_nums))
+        dupes = sorted({n for n in all_nums if all_nums.count(n) > 1})
+        if missing:
+            print(f"WARNING: NOTES.md waking numbers non-contiguous in the last 30 "
+                  f"-- missing {missing}; parse_entries may be dropping entries",
+                  file=sys.stderr)
+        if dupes:
+            print(f"WARNING: NOTES.md waking numbers duplicated: {dupes}", file=sys.stderr)
     dated = [d for d in (entry_date(e) for e in entries) if d]
     first_day = min(dated) if dated else now.date()
     days_running = (now.date() - first_day).days + 1

@@ -93,13 +93,23 @@ def scan_json_logs() -> list[dict]:
 
 
 def _canonical_model(env: dict) -> str | None:
+    """The model that did the run's real work.
+
+    Not "most uncached input tokens" -- a Claude Code session serves the main
+    thread's context from the prompt cache, so the main model's *uncached*
+    `inputTokens` is tiny (~50) while a Haiku side-model (title/summary calls)
+    shows ~1.2k uncached. Rank by spend instead (falling back to total billed
+    tokens incl. cache), which tracks the main model unambiguously.
+    """
     mu = env.get("modelUsage") or {}
-    # the main-thread model is the one with the most input tokens
-    best, best_in = None, -1
+    best, best_key = None, (-1.0, -1)
     for _, v in mu.items():
-        it = v.get("inputTokens") or 0
-        if it > best_in:
-            best, best_in = v.get("canonicalModel"), it
+        toks = ((v.get("inputTokens") or 0) + (v.get("outputTokens") or 0)
+                + (v.get("cacheReadInputTokens") or 0)
+                + (v.get("cacheCreationInputTokens") or 0))
+        key = (v.get("costUSD") or 0.0, toks)
+        if key > best_key:
+            best, best_key = v.get("canonicalModel"), key
     return best
 
 

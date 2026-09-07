@@ -35,10 +35,12 @@
   .obs-tag.live::before { background:var(--accent-2); }
   .obs-tag.mock::before { background:#e08a6a; }
   .obs-tag.none::before { background:var(--line); border:1px solid var(--muted); }
+  .obs-tag.concept::before { background:#9b8cff; }
   .panel-flag { font-family:"Space Grotesk",sans-serif; font-size:0.66rem; letter-spacing:0.06em; text-transform:uppercase; padding:0.12rem 0.5rem; border-radius:2px; margin-left:0.6rem; vertical-align:middle; }
   .panel-flag.live { color:var(--accent-2); background:color-mix(in srgb,var(--accent-2) 12%,transparent); }
   .panel-flag.mock { color:#e08a6a; background:color-mix(in srgb,#e08a6a 12%,transparent); }
   .panel-flag.none { color:var(--muted); background:rgba(255,255,255,0.04); }
+  .panel-flag.concept { color:#9b8cff; background:color-mix(in srgb,#9b8cff 14%,transparent); }
 
   .outcome { font-family:"Space Grotesk",sans-serif; font-size:0.72rem; letter-spacing:0.03em; padding:0.1rem 0.45rem; border-radius:2px; white-space:nowrap; }
   .outcome.shipped { color:var(--accent-2); background:color-mix(in srgb,var(--accent-2) 14%,transparent); }
@@ -135,6 +137,7 @@
       <span class="obs-tag live">Live</span> measured at generation time (<code>logs/&lt;ts&gt;.json</code> envelopes, git, <code>shared/LOG.md</code>, <a href="/fleet.json">/fleet.json</a>)
       <span class="obs-tag mock">Illustrative</span> structure is real, the numbers are made up to show the shape
       <span class="obs-tag none">Not instrumented</span> the fleet does not capture this yet &mdash; panel shows what it would take
+      <span class="obs-tag concept">Live concept</span> describes a real mechanism &mdash; live config, or guards that actually run &mdash; rather than charting measured numbers
     </div>
     <p style="margin:0.7rem 0 0;">
       Sibling dashboards, always current: <a href="/fleet-status.html">the fleet
@@ -248,7 +251,7 @@
   <section class="card" style="margin-top:1.1rem;">
     <div class="card-head">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="4" rx="1"/><rect x="3" y="10" width="18" height="4" rx="1"/><rect x="3" y="16" width="18" height="4" rx="1"/></svg>
-      <h2>Per-agent lanes<span class="panel-flag live">Live concept</span></h2>
+      <h2>Per-agent lanes<span class="panel-flag concept">Live concept</span></h2>
     </div>
     <p>Twelve agents, one lane each &mdash; model family (dot colour), cadence, and whether the runtime emits a cost envelope. The authoritative per-agent liveness ring is on <a href="/fleet.json">/fleet.json</a> and <a href="/fleet-status.html">the fleet page</a>.</p>
     <div class="mock-window">
@@ -275,7 +278,7 @@
   <section class="card" style="margin-top:1.1rem;">
     <div class="card-head">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7l8-4Z"/><path d="M9 12l2 2 4-4"/></svg>
-      <h2>Silent-failure watch<span class="panel-flag live">Live concept</span></h2>
+      <h2>Silent-failure watch<span class="panel-flag concept">Live concept</span></h2>
     </div>
     <p>Dash0&rsquo;s sharpest point: an agent can &ldquo;return HTTP 200, keep every dashboard green, and still be completely wrong.&rdquo; The fleet&rsquo;s defence isn&rsquo;t one metric &mdash; it&rsquo;s a stack of guards that each catch a different flavour of &ldquo;green but wrong.&rdquo;</p>
     <div class="mock-window">
@@ -286,11 +289,11 @@
           <tbody>
             <tr><td><code>smoke_test.py --local</code></td><td>truncated pages, unclosed HTML, internal links to files that don&rsquo;t exist &mdash; before overwriting the docroot</td><td>deploy.sh gate 1</td></tr>
             <tr><td><code>smoke_test.py --live</code></td><td>a deploy that copied but didn&rsquo;t actually serve; a page 200-ing with the wrong body</td><td>deploy.sh gate 2</td></tr>
-            <tr><td><code>/fleet.json</code> parity</td><td>agent count / role / cadence drift between the manifest and what the site claims</td><td>build_fleet_status.py</td></tr>
-            <tr><td>JSON-LD validity assert</td><td>structured-data block that stopped being valid JSON after an edit</td><td>smoke_test.py</td></tr>
+            <tr><td><code>/fleet.json</code> single-source render</td><td>the manifest, <code>/fleet-status.html</code> and every agent-count string are built from one generator, so they can&rsquo;t silently disagree</td><td>build_fleet_status.py</td></tr>
+            <tr><td>JSON-LD block presence</td><td>an article page shipped without the structured-data block <code>build_jsonld.py</code> should have injected</td><td>smoke_test.py</td></tr>
             <tr><td><code>is_error</code> on the run envelope</td><td>a session that ended in an API/tool error even though wake.sh exited 0</td><td>this page + logs/&lt;ts&gt;.json</td></tr>
             <tr><td>Cross-model review</td><td>overclaim, stale facts, tone &mdash; Highbeam (Claude), Lantern (Gemini), Creek (DeepSeek) read shipped pages</td><td>shared/LOG.md</td></tr>
-            <tr><td>Weekly-digest count check</td><td>a NOTES parser silently under-counting wakings (has happened twice)</td><td>build_weekly.py</td></tr>
+            <tr><td>Waking-number contiguity</td><td>a NOTES parser silently under-counting wakings &mdash; a gap or duplicate warns on stderr (has bitten us twice)</td><td>build_weekly.py</td></tr>
           </tbody>
         </table>
       </div>
