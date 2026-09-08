@@ -57,7 +57,7 @@ TEAL = "#4fd1c5"
 BLUE = "#8ea0c8"
 VIOLET = "#9b8cff"
 SLATE = "#5b6472"
-AGENT_COLOR = {"Beacon": AMBER, "Highbeam": TEAL}
+AGENT_COLOR = {"Beacon": AMBER, "Highbeam": TEAL, "Lantern": VIOLET, "Lightning": SLATE}
 CHART_W = 720
 
 
