@@ -2,6 +2,28 @@
 
 ## Open
 
+- **Telegram (2026-09-08, via /commands): *"can you tell all the other agents to
+  make the necessary json configurations so you can see telemetry"*** — follow-up
+  to the w304 "missing agents in observability" answer. **Actioned w305; now
+  waiting on the two off-box hosts.**
+  - **On-box (4/4 done, nothing to ask):** Beacon + Highbeam emit full
+    `claude --output-format json` envelopes; Lightning (opencode) emits
+    cost+tokens; Lantern (Gemini CLI) emits tokens+timing (no per-run billing).
+    All four write `logs/*.json` that `build_observability.py` already reads —
+    verified this waking. Lantern was pulled into the token/wall panels w304.
+  - **Mountain:** already publishes `mountainwake.org/observability.json`
+    (consumed — Mountain + Canyon render). Peer-messaged w305 asking for two
+    small additions: add Ridge + Harbor to the `siblings` map, and add
+    `avg_duration_s` per sibling so the new Mean-wall column fills. (`{"ok":true}`)
+  - **Tidal:** its host serves an HTML dashboard only, no JSON roll-up, so
+    Tidal/River/Creek/Stream carry cadence+liveness but no cost/token/duration
+    on Beacon's page. Peer-messaged w305 with the exact schema Beacon's consumer
+    reads (`shared/outbox/observability-json-schema-w305/SPEC.md`), asking them
+    to publish `tidalwake.org/observability.json`. (`{"status":"ok"}`) When it's
+    live Beacon adds the URL to `SIBLING_OBS_URLS` — one-line change, no other
+    work.
+  - **Nothing needed from josh** — waiting on Tidal + Mountain peer replies.
+
 - **Telegram (2026-09-07, via /commands): *"The observability dashboard needs
   work ... placeholders ... from missing data. Refactor the website so it looks
   presentable. I want the observability to be the focal point of the entire site
@@ -1419,6 +1441,7 @@
     `observability.json` roll-up like Mountain (w281 SPEC covers it) before
     its 4 agents can carry measured numbers — Beacon will raise it on the peer
     channel.
+- **Telegram (2026-09-08, via /commands):** can you tell all the other agents to make the necessary json configurations so you can see telemetry
 
 ## On hold
 

@@ -15152,3 +15152,55 @@ channel next.
   item needs josh.
 - Committed the pipeline-appended `observability.jsonl` row so the repo matches
   disk, per the standing pattern.
+
+---
+
+## 2026-09-08 — 305th waking
+
+Regular scheduled waking (`0 */4` cron, ~20:05Z). Health green: 0 failed
+systemd units, disk 12% (77G free), `beacon-peer` / `beacon-api` / nginx
+active, watchdog `ok` through 12:20Z. Nostr: `nostr_listen.py` re-fetched the
+same 4 known events (Botrift NIP-05 spam + the 2 2026-09-04 fellow-Claude DMs
++ kind:0 self, all previously acked); `nostr_reply.py` + `nostr_converse.py`
+no-op. 5/6 relays reachable (relay.nostr.band handshake timeout). Peer inbox
+empty (all in `processed/`).
+
+### Actioned josh's Telegram — "tell all the other agents to make the necessary json configurations so you can see telemetry"
+
+Direct follow-up to w304's "missing agents in the observability dashboard"
+answer. Broke it down by host:
+
+- **On-box (4/4, nothing to ask):** Beacon + Highbeam + Lightning + Lantern
+  all write `logs/*.json` that `build_observability.py` already consumes —
+  verified the four log dirs each have recent files. Lantern (Gemini, no
+  per-run billing) was pulled into the token/wall panels w304; Lightning
+  (opencode, no API span) shows in cost+token panels. Runtime limits, not
+  config — no message needed.
+- **Mountain (peer msg, `{"ok":true}`):** already publishes
+  `mountainwake.org/observability.json` (Mountain + Canyon render on Beacon's
+  off-box table). Asked for two small additions: (1) add **Ridge + Harbor** to
+  the `siblings` map (only Canyon is there now); (2) add **`avg_duration_s`**
+  per sibling entry so the new Mean-wall column fills (Canyon's entry has no
+  duration field → em-dash today). Mountain's top-level `avg_duration_s`
+  already works.
+- **Tidal (peer msg, `{"status":"ok"}`):** its host serves an HTML dashboard
+  only — no JSON roll-up — so Tidal/River/Creek/Stream carry cadence+liveness
+  but no measured cost/token/duration on Beacon's page. Sent the **exact field
+  list** Beacon's consumer (`fetch_sibling_obs()` + `offbox_obs()`) reads, so a
+  matching `tidalwake.org/observability.json` drops in with no Beacon-side code
+  change. Wrote it up as
+  `shared/outbox/observability-json-schema-w305/SPEC.md` (top-level +
+  `siblings` schema, the omit-cost rule for non-billed runtimes, the
+  non-sensitive-counters-only constraint). When Tidal publishes it, Beacon adds
+  the URL to `SIBLING_OBS_URLS` — one line.
+
+Told josh over Telegram: on-box is done, Mountain needs 2 tweaks, Tidal needs
+to stand up the JSON; both asked, waiting on peer replies.
+
+### Housekeeping
+
+- **ASK.md:** new item logged under Open with the per-host breakdown; marked
+  "nothing needed from josh, waiting on peer replies".
+- No repo/deploy changes this waking (spec + peer messages only). Nothing to
+  commit beyond the pipeline-appended `observability.jsonl` row from the last
+  deploy.
