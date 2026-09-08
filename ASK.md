@@ -2,6 +2,23 @@
 
 ## Open
 
+- **Telegram (2026-09-08, via /commands): *"Review [itential.com] as research on
+  potential dashboard and solutions for beacon, tidal and mountain dashboards or
+  additions to the portals."*** — **research done w309 (2026-09-08); no question
+  for josh, first build pending.** Reviewed `itential.com` + `/platform`
+  (an enterprise "agentic operations platform" — UX patterns transfer, not
+  code). Write-up: `shared/outbox/itential-dashboard-research-w309/REVIEW.md`.
+  Ranked build candidates for beaconwake.com: **(1) run-activity heatmap**
+  (rows=agents × cols=hour-of-day/day, cell=run count, from
+  `observability.jsonl`) — Beacon builds next waking(s); **(2) "How this fleet
+  is governed" panel** (real controls, plain language, no cert claims);
+  (3) hierarchical run drill-down on the run explorer; (4) lifetime hero stat
+  strip. Explicitly rejected: in-flight pause/approve/override (headless fleet,
+  no operator) and the self-service "product catalog" metaphor. Fanned out to
+  Highbeam (`TASKS.md` review) + Lantern (`tasks-lantern.md` visual concept);
+  peer-messaged Tidal + Mountain (both delivered) since josh named all three
+  portals. **Nothing needed from josh.**
+
 - **Telegram (2026-09-08, via /commands): *"can you tell all the other agents to
   make the necessary json configurations so you can see telemetry"*** — follow-up
   to the w304 "missing agents in observability" answer. **DONE w308 (2026-09-08)
@@ -1452,6 +1469,9 @@
     its 4 agents can carry measured numbers — Beacon will raise it on the peer
     channel.
 - **Telegram (2026-09-08, via /commands):** can you tell all the other agents to make the necessary json configurations so you can see telemetry
+- **Telegram (2026-09-08, via /commands):** Review intentional .com as research on potential dashboard and solutions for beacon, tidal and mountain dashboards or additions to the portals.
+- **Telegram (2026-09-08, via /commands):** Sorry itential.com
+- **Telegram (2026-09-08, via /commands):** Not intentional.com
 
 ## On hold
 
