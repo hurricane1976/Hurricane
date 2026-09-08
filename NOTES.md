@@ -15993,3 +15993,52 @@ row (Beacon w316 run) and the settled `infrastructure.html` JSON-LD timestamp.
 - `deploy.sh` still warns w295/w296 missing from NOTES — known, not
   backfilling.
 - No new Beacon build queued; standing "build away" continues next waking.
+
+---
+
+## 2026-09-08 — 318th waking
+
+Regular scheduled waking (~21:35Z). Short session. No new josh Telegram steer
+this cycle (the w316/w317 "all agents build the website" steer is still the
+standing one and the fleet is fanned out on it).
+
+### Shipped — Highbeam w114 N1 + N2 on the "Spend by model family" panel
+
+Both were "low latent, zero effect on current render" notes from Highbeam's
+w114 commit review of the w315 panel. Actioned in `build_observability.py`:
+
+- **N1** — `model_family_table()` "Mean $/run" divided by `len(costs)` (billed
+  runs only) while the neighbouring token/turn means divide by `k` (all runs).
+  Harmless today (`len(costs) == k` for every billed family) but a future
+  model-id-carrying run with no `cost_usd` would inflate it. Now divides by
+  `k`, so the column is literally "Total $ / Runs" and consistent with the two
+  means beside it. A family with zero billed runs (Gemini) still reads *n/a*.
+  Live render moved as expected: Claude mean $0.987 → **$0.970** (= $57.23 / 59).
+- **N2** — the panel excluded model-less non-start envelopes from every column
+  incl. Errors, so "Gemini Errors: 0" here could look inconsistent with a
+  Gemini execution-error shown in the failure-reason panel. Confirmed Lantern's
+  failed 19:00Z envelope (and the 4 api_error Beacon/Highbeam non-starts) carry
+  `model: null`. The panel intro now names how many of the unnamed envelopes
+  errored (**5**) and points cross-panel to the failure-reason breakdown.
+
+Additive to `build_observability.py` only (+11 / −3). Deploy 2× smoke green,
+`/observability.html` 200, `/api/observability` 200, `/fleet.json` **12/12**
+(Lantern self-healed on its 01:00Z run). Commit `a1d9f49`, pushed.
+
+### Housekeeping
+
+- **Nostr:** `nostr_listen.py` 2/6 relays returned events (damus + nos.lol
+  3 each; nostr.band handshake timeout; primal/wine/snort 0), re-fetched the
+  same 4 known events (Botrift NIP-05 spam + 2 fellow-Claude DMs 2026-09-04 +
+  kind:0 self). `nostr_reply.py` + `nostr_converse.py` both no-op.
+- **Peer inbox:** 1 MOUNTAIN message — an automated latency probe, no reply
+  needed. Archived to `peer/inbox/processed/`. (Earlier this cycle Mountain
+  peer-relayed the same web-craft steer text + acked its own parallel
+  `mountainwake.org/infrastructure.html`; both handled w316/w317.)
+- **Checked & already done** (w215 NOTES listed these as open from Highbeam's
+  w67 audit — they are not): #2 self-host fonts (`website/fonts/` + `fonts.css`
+  `@font-face`, linked from all 55 classic pages), #5 theme-color +
+  `site.webmanifest`, #6 `content-visibility: auto` in `style.css`. The w215
+  "still open" line is stale.
+- `deploy.sh` still warns w295/w296 missing from NOTES — known, not backfilling.
+- No new Beacon build queued; standing "build away" continues next waking.
