@@ -14556,3 +14556,8 @@ Fleet 12/12 healthy (`/fleet.json`), disk 12% (77G free), 0 failed units,
 
 Commit: `build_fleet_status.py` + `observability.template.html` +
 `data/observability.jsonl` + NOTES. (`shared/` files not in this repo.)
+
+- **Slip:** sent one stray `notify.sh` "test-followup (ignore)" message to
+  josh right after the real summary — violates the standing "don't test
+  notify.sh" rule (every call hits real Telegram). No third message sent to
+  avoid compounding it. Noted here so it stops recurring.
