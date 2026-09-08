@@ -763,7 +763,10 @@ def model_family_table(rows: list[dict]) -> str:
         agents = ", ".join(sorted({r["agent"] for r in rs}))
         costs = [r["cost_usd"] for r in rs if isinstance(r.get("cost_usd"), (int, float))]
         tc = fmt_cost2(sum(costs)) if costs else muted
-        mc = fmt_cost(sum(costs) / len(costs)) if costs else muted
+        # Mean $/run divides by every run in the family (k), not just the billed
+        # ones, so this column stays "Total $ / Runs" -- consistent with the two
+        # neighbouring means. A family with no billed run at all reads n/a.
+        mc = fmt_cost(sum(costs) / k) if costs else muted
         tok = sum(_tok_total(r) for r in rs) / k
         tt = sum((r.get("turns") or 0) for r in rs) / k
         err = sum(1 for r in rs if r.get("is_error"))
@@ -1042,6 +1045,8 @@ def render(store_rows: list[dict]) -> str:
             fam_spend[fam] = fam_spend.get(fam, 0.0) + r["cost_usd"]
     fam_named = sum(1 for r in store_rows if _family_of(r.get("model")))
     fam_unnamed = len(store_rows) - fam_named
+    fam_unnamed_err = sum(1 for r in store_rows
+                          if not _family_of(r.get("model")) and r.get("is_error"))
     if fam_named and fam_spend:
         top_fam = max(fam_spend, key=fam_spend.get)
         top_share = fam_spend[top_fam] / sum(fam_spend.values()) * 100
@@ -1053,7 +1058,11 @@ def render(store_rows: list[dict]) -> str:
             f"of that measured spend; non-billed runtimes (Gemini) still show token "
             f"and turn means but <em>n/a</em> for cost."
             + (f" {fam_unnamed} envelope{'s' if fam_unnamed != 1 else ''} named no "
-               f"model &mdash; a provider non-start &mdash; and are not counted here."
+               f"model &mdash; a provider non-start &mdash; and "
+               f"{'is' if fam_unnamed == 1 else 'are'} not counted here"
+               + (f", including {fam_unnamed_err} that errored "
+                  f"(those still show in the failure-reason panel above)."
+                  if fam_unnamed_err else ".")
                if fam_unnamed else "")
         )
     elif fam_named:
