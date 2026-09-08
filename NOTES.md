@@ -15762,3 +15762,72 @@ change today (all 67 rows plot); correct-by-construction going forward.
   cut (low priority, $ column must read n/a for Lantern/off-box non-billed —
   Highbeam w112 (b)); daily stacked cost trend (deferred, series ~2 days);
   per-turn/tool-span instrumentation (bigger prereq for a real trace tree).
+
+---
+
+## 2026-09-08 — 315th waking
+
+Regular scheduled waking (~20:00Z). Built the "by model family" cost/token
+cut — the last of the three w313 next-build candidates, and the one Highbeam
+had already pre-cleared the honesty approach for (w112 (b)).
+
+### Shipped — "Spend by model family" on /observability.html
+
+New `<section id="by-model">` between "Every runtime — volume & cadence" and
+the run-activity heatmap.
+
+- **What it does:** rolls every result envelope in the committed series up by
+  model-provider family, matched from the envelope's own `model` string —
+  `claude-*` → Claude, `gemini-*` → Gemini, `deepseek/*` → DeepSeek, `glm` →
+  GLM (future-proof, no on-box data yet). A named model that matches nothing
+  known → **Other** (honest — unknown provider, not a guess, per Highbeam
+  w313). A **no-model envelope** (provider non-start) is not attributable and
+  is left out, with the count called out in the intro.
+- **Table** (same style as per-agent summary, no SVG — page is already
+  chart-dense): family · agents · runs · total $ · mean $/run · mean tokens ·
+  mean turns · errors. Cost columns render a muted **n/a** for a family with
+  no billed run (Gemini/Lantern) — never `$0` — matching the discipline on
+  the per-agent table.
+- **First render (70 envelopes / 65 instrumented):** Claude **97%** of
+  measured spend (**$51.68**, Beacon+Highbeam, 55 runs, mean $0.94), DeepSeek
+  **$1.63** (Lightning, 6 runs, mean $0.27), Gemini **n/a** cost (Lantern, 4
+  runs, 2.1M mean tokens, 40 mean turns). 5 no-model provider non-starts
+  excluded. So the panel's takeaway is immediate: fleet spend is almost
+  entirely one provider, and the two alt-model agents are a rounding error on
+  cost — useful context for any "shift work to cheaper models" question.
+- Additive: `build_observability.py` (+`_family_of`, `_fam_spend`,
+  `model_family_table`, `fam_intro` block + 2 repl keys, ~90 lines) and
+  `observability.template.html` (one `<section>` + footnote). No CSS / nav /
+  sitemap / deploy-list change.
+- **Verified:** standalone build clean (0 leftover `{{OBS_*}}`), `py_compile`
+  OK, deploy 2× smoke green, live page carries the section, `/api/observability`
+  200. `11/12` at deploy = Lantern's 19:00 run failed (see below) / mid-run,
+  not a regression.
+
+### Noticed — Lantern's 19:00Z waking failed (0 turns)
+
+New errored envelope this waking: `Lantern 2026-09-08T19:00:03Z`, `is_error`,
+`turns: 0`, `subtype: error`, no `terminal_reason`, no cost. A Gemini-CLI
+startup failure — analogous to the Claude API non-starts earlier today but the
+envelope carries `subtype: error` so the failure-reason panel buckets it as
+**Execution error** (5 API fault + 2 exec error / 7 of 70 now). Not Beacon's
+tree to fix; Lantern runs its own cron and should self-recover next run (01Z),
+same as the Claude faults did. Flagged here + in the Telegram summary so josh
+sees it; if it recurs, it's a real Lantern bug, not a transient.
+
+### Housekeeping
+
+- **Nostr:** `nostr_listen.py` 4/6 relays (nostr.band handshake timeout;
+  primal/wine/snort 0 events), re-fetched the same 4 known events (Botrift
+  NIP-05 spam + 2 fellow-Claude DMs from 2026-09-04 + kind:0 self).
+  `nostr_reply.py` + `nostr_converse.py` both no-op.
+- **Peer inbox:** 1 MOUNTAIN message — automated latency probe, "no reply
+  needed" — archived to `peer/inbox/processed/`.
+- No new Telegram from josh (the queued `/commands` lines — "Go ahead and
+  build", "Continue to look at itential…", "Keep going on builds" — are all
+  already-actioned from w311/w313, no new steer).
+- `deploy.sh` still warns w295/w296 missing from NOTES — known, not
+  backfilling.
+- **Next build candidates:** daily stacked cost trend (still deferred, series
+  ~2 days — revisit ~2026-09-18); per-turn / tool-span instrumentation (the
+  bigger prereq for a real trace tree). All three w313 candidates now built.
