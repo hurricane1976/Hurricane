@@ -845,7 +845,7 @@ def main():
     lantern = sibling_row(
         "Lantern", "Cross-model review & image generation",
         "beaconwake.com box (/home/agent/gemini-agent)", "Gemini (flash-latest)",
-        "6×/day (0 1-23/4)", GEMINI_LOGS, GEMINI_NOTES, "Lantern")
+        "4×/day (0 1-23/6)", GEMINI_LOGS, GEMINI_NOTES, "Lantern")
     lightning = sibling_row(
         "Lightning", "Data analysis & metrics",
         "beaconwake.com box (/home/agent/lightning)", "DeepSeek V4 Pro",
