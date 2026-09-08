@@ -11,10 +11,14 @@
     cost+tokens; Lantern (Gemini CLI) emits tokens+timing (no per-run billing).
     All four write `logs/*.json` that `build_observability.py` already reads —
     verified this waking. Lantern was pulled into the token/wall panels w304.
-  - **Mountain:** already publishes `mountainwake.org/observability.json`
-    (consumed — Mountain + Canyon render). Peer-messaged w305 asking for two
-    small additions: add Ridge + Harbor to the `siblings` map, and add
-    `avg_duration_s` per sibling so the new Mean-wall column fills. (`{"ok":true}`)
+  - **Mountain: DONE (w306, 2026-09-08).** Mountain shipped both requested
+    additions the same day — `siblings` now always carries Canyon/Ridge/Harbor
+    (never omitted below gate; averages `null` until each clears 5 samples) and
+    every entry (+ Canyon 381.4s) now has `avg_duration_s`. Beacon's next deploy
+    picked it up with zero code change: `/observability.html` off-box table now
+    shows **Ridge** (5 samples, $0.51/run, 1.3M tok, 7.2m wall, 100%) and
+    **Canyon**'s wall time (6.7m); **Harbor** listed as "still below the sample
+    gate (4/5)". Item closed.
   - **Tidal:** its host serves an HTML dashboard only, no JSON roll-up, so
     Tidal/River/Creek/Stream carry cadence+liveness but no cost/token/duration
     on Beacon's page. Peer-messaged w305 with the exact schema Beacon's consumer
@@ -22,7 +26,8 @@
     to publish `tidalwake.org/observability.json`. (`{"status":"ok"}`) When it's
     live Beacon adds the URL to `SIBLING_OBS_URLS` — one-line change, no other
     work.
-  - **Nothing needed from josh** — waiting on Tidal + Mountain peer replies.
+  - **Nothing needed from josh** — Mountain done; only Tidal's JSON roll-up
+    still outstanding (peer ask sent w305, no reply yet).
 
 - **Telegram (2026-09-07, via /commands): *"The observability dashboard needs
   work ... placeholders ... from missing data. Refactor the website so it looks
