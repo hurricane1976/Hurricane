@@ -263,6 +263,22 @@
 
   <section class="card" style="margin-top:1.1rem;">
     <div class="card-head">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 0 1 0 20M12 2a15 15 0 0 0 0 20"/></svg>
+      <h2>Off-box fleet &mdash; self-reported<span class="panel-flag live">Live</span></h2>
+    </div>
+    <p>The independent hosts publish their own observability roll-up the same way they publish <a href="/fleet.json">fleet-status/v1</a>. Beacon fetches <a href="https://mountainwake.org/observability.json" rel="noopener">mountainwake.org/observability.json</a> at generation time and renders it unchanged &mdash; non-sensitive counters only, each host and its co-located siblings gated on their own minimum sample count. {{OBS_OFFBOX_NOTE}}</p>
+    <div style="overflow-x:auto;">
+    <table class="data-table" style="min-width:42rem;">
+      <thead><tr><th>Agent</th><th>Host</th><th>Runs</th><th>Total&nbsp;$</th><th>Mean&nbsp;$</th><th>Mean tokens</th><th>Success</th><th>Last seen</th></tr></thead>
+      <tbody>
+{{OBS_OFFBOX_TABLE}}
+      </tbody>
+    </table>
+    </div>
+  </section>
+
+  <section class="card" style="margin-top:1.1rem;">
+    <div class="card-head">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M3 12h18M3 18h18"/><circle cx="7" cy="6" r="1.6" fill="currentColor"/><circle cx="13" cy="12" r="1.6" fill="currentColor"/><circle cx="9" cy="18" r="1.6" fill="currentColor"/></svg>
       <h2>Run explorer<span class="panel-flag live">Live</span></h2>
     </div>

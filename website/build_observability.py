@@ -52,6 +52,13 @@ JSON_LOG_DIRS = {
 TS_RE = re.compile(r"^(\d{8}T\d{6}Z)\.json$")
 STORE_CAP = 4000  # rows kept on disk; ~2 years of an 8-agent fleet at 6x/day
 
+# Independent hosts that publish their own observability roll-up, the same way
+# they publish /fleet.json. Non-sensitive counters only; each host gates itself
+# on a minimum sample count. Tidal's dashboard is HTML-only so far (no JSON).
+SIBLING_OBS_URLS = {
+    "Mountain": "https://mountainwake.org/observability.json",
+}
+
 AMBER = "#ff8a3d"
 TEAL = "#4fd1c5"
 BLUE = "#8ea0c8"
@@ -492,6 +499,103 @@ def all_agent_summary(rows: list[dict]) -> str:
     return "\n".join(out)
 
 
+def _fmt_s(v) -> str:
+    if not isinstance(v, (int, float)) or v <= 0:
+        return "&mdash;"
+    return f"{v:.0f}s" if v < 90 else f"{v / 60:.1f}m"
+
+
+def fetch_sibling_obs() -> list[tuple[str, dict]]:
+    """GET each host's observability.json. Returns [(host_label, doc), ...] for
+    every one that answers with a JSON object; silently skips the unreachable."""
+    out = []
+    for host, url in SIBLING_OBS_URLS.items():
+        try:
+            raw = subprocess.run(["curl", "-s", "--max-time", "8", url],
+                                 capture_output=True, text=True, timeout=12).stdout
+            doc = json.loads(raw)
+        except Exception:
+            continue
+        if isinstance(doc, dict):
+            out.append((host, doc))
+    return out
+
+
+def _offbox_tr(agent: str, host: str, runs, total_c, mean_c, mean_tok, ok_pct, seen) -> str:
+    ok = f"{ok_pct:.0f}%" if isinstance(ok_pct, (int, float)) else "&mdash;"
+    return (f'<tr><td>{esc(agent)}</td><td class="mono">{esc(host)}</td>'
+            f'<td class="mono">{fmt_int(runs)}</td>'
+            f'<td class="mono">{fmt_cost2(total_c) if isinstance(total_c, (int, float)) else "n/a"}</td>'
+            f'<td class="mono">{fmt_cost(mean_c) if isinstance(mean_c, (int, float)) else "n/a"}</td>'
+            f'<td class="mono">{kfmt(mean_tok) if isinstance(mean_tok, (int, float)) else "&mdash;"}</td>'
+            f'<td class="mono">{ok}</td>'
+            f'<td class="mono">{esc(seen)[:16] if seen else "&mdash;"}</td></tr>')
+
+
+def offbox_obs(fetched: list[tuple[str, dict]]) -> tuple[str, str]:
+    """(table-body rows, prose note) for the off-box observability section.
+    The publishing agent's own numbers come from the top-level fields; its
+    co-located siblings come from the `siblings` map, each shown only once it
+    has crossed its own sample gate -- same honesty rule as our own page."""
+    rows, waiting, empty_sibs = [], [], []
+    for host, doc in fetched:
+        gate = doc.get("min_samples") or 5
+        k = doc.get("samples") or 0
+        tot_tok = doc.get("total_tokens")
+        mean_tok = (tot_tok / k) if isinstance(tot_tok, (int, float)) and k else None
+        if k >= gate:
+            rows.append(_offbox_tr(
+                host, f"{host.lower()}wake.org", k,
+                doc.get("total_cost_usd"), doc.get("avg_cost_usd"),
+                mean_tok, doc.get("success_rate_pct"),
+                (doc.get("last_wake") or {}).get("ts") if isinstance(doc.get("last_wake"), dict)
+                else doc.get("last_wake") or doc.get("generated_at"),
+            ))
+        else:
+            waiting.append(f"{host} ({k}/{gate})")
+        sib = doc.get("siblings")
+        if isinstance(sib, dict) and not sib:
+            empty_sibs.append(host)
+        if isinstance(sib, dict):
+            for name, s in sorted(sib.items()):
+                if not isinstance(s, dict):
+                    continue
+                sk = s.get("samples") or 0
+                sgate = s.get("min_samples") or gate
+                nm = name.capitalize()
+                if sk < sgate:
+                    waiting.append(f"{nm} ({sk}/{sgate})")
+                    continue
+                avg_c = s.get("avg_cost_usd")
+                avg_tok = s.get("avg_tokens")
+                rows.append(_offbox_tr(
+                    nm, f"{host}&rsquo;s host", sk,
+                    (avg_c * sk) if isinstance(avg_c, (int, float)) else None, avg_c,
+                    avg_tok if isinstance(avg_tok, (int, float)) else None,
+                    s.get("success_rate_pct"),
+                    s.get("last_seen") or s.get("since"),
+                ))
+
+    if not fetched:
+        note = ("No host roll-up was reachable at generation time &mdash; this "
+                "section fills when the fetch next succeeds.")
+    elif waiting:
+        note = ("Still below the sample gate, so not yet shown: "
+                + ", ".join(waiting) + ".")
+    else:
+        note = "All published lanes have crossed their sample gate."
+    if empty_sibs:
+        note += (" " + " and ".join(empty_sibs) + "&rsquo;s co-located siblings "
+                 "(Canyon, Ridge, Harbor) appear here once each crosses that "
+                 "host&rsquo;s sample gate.")
+    note += (" Tidal&rsquo;s dashboard is HTML-only so far, with no JSON roll-up "
+             "to consume.")
+    body = "\n".join(rows) or (
+        '<tr><td colspan="8" style="text-align:center;color:var(--muted);">'
+        'no host has crossed its sample gate yet</td></tr>')
+    return body, note
+
+
 def cost_table(instrumented: list[dict], keep: int = 14) -> str:
     rs = instrumented[-keep:][::-1]
     return "\n".join(
@@ -571,6 +675,8 @@ def render(store_rows: list[dict]) -> str:
             "not completed yet, so the charts fill on the next scheduled run."
         )
 
+    offbox_body, offbox_note = offbox_obs(fetch_sibling_obs())
+
     latest = instrumented[-1] if instrumented else {}
     attrs = (
         '<span class="k">gen_ai.system</span>            = "anthropic"<br>'
@@ -621,6 +727,8 @@ def render(store_rows: list[dict]) -> str:
         "{{OBS_DURATION_NOTE}}": dur_note,
         "{{OBS_AGENT_TABLE}}": agent_summary(instrumented),
         "{{OBS_ALL_AGENT_TABLE}}": all_agent_summary(store_rows),
+        "{{OBS_OFFBOX_TABLE}}": offbox_body,
+        "{{OBS_OFFBOX_NOTE}}": offbox_note,
         "{{OBS_RUN_ROWS}}": explorer_rows(),
         "{{OBS_ATTRS}}": attrs,
     }
