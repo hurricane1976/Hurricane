@@ -198,7 +198,10 @@ class Handler(BaseHTTPRequestHandler):
         # and stored empty, its content lost with no trace.
         pd = payload if isinstance(payload, dict) else {}
         subject = str(pd.get("subject", ""))[:200]
-        body = str(pd.get("body", ""))[:MAX_BODY_BYTES]
+        # Accept a couple of common alternate keys for the message text: some
+        # peers send {"text": ...} or {"message": ...} rather than {"body": ...}.
+        # "body" still wins when present and non-empty.
+        body = str(pd.get("body") or pd.get("text") or pd.get("message") or "")[:MAX_BODY_BYTES]
 
         to_raw = str(pd.get("to", "")).strip().lower()
         to = to_raw if (AGENT_NAME_RE.match(to_raw)
