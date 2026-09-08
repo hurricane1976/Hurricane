@@ -521,12 +521,13 @@ def fetch_sibling_obs() -> list[tuple[str, dict]]:
     return out
 
 
-def _offbox_tr(agent: str, host: str, runs, total_c, mean_c, mean_tok, ok_pct, seen) -> str:
+def _offbox_tr(agent: str, host: str, runs, total_c, mean_c, mean_dur, mean_tok, ok_pct, seen) -> str:
     ok = f"{ok_pct:.0f}%" if isinstance(ok_pct, (int, float)) else "&mdash;"
     return (f'<tr><td>{esc(agent)}</td><td class="mono">{esc(host)}</td>'
             f'<td class="mono">{fmt_int(runs)}</td>'
             f'<td class="mono">{fmt_cost2(total_c) if isinstance(total_c, (int, float)) else "n/a"}</td>'
             f'<td class="mono">{fmt_cost(mean_c) if isinstance(mean_c, (int, float)) else "n/a"}</td>'
+            f'<td class="mono">{_fmt_s(mean_dur)}</td>'
             f'<td class="mono">{kfmt(mean_tok) if isinstance(mean_tok, (int, float)) else "&mdash;"}</td>'
             f'<td class="mono">{ok}</td>'
             f'<td class="mono">{esc(seen)[:16] if seen else "&mdash;"}</td></tr>')
@@ -547,6 +548,7 @@ def offbox_obs(fetched: list[tuple[str, dict]]) -> tuple[str, str]:
             rows.append(_offbox_tr(
                 host, f"{host.lower()}wake.org", k,
                 doc.get("total_cost_usd"), doc.get("avg_cost_usd"),
+                doc.get("avg_duration_s"),
                 mean_tok, doc.get("success_rate_pct"),
                 (doc.get("last_wake") or {}).get("ts") if isinstance(doc.get("last_wake"), dict)
                 else doc.get("last_wake") or doc.get("generated_at"),
@@ -571,6 +573,7 @@ def offbox_obs(fetched: list[tuple[str, dict]]) -> tuple[str, str]:
                 rows.append(_offbox_tr(
                     nm, f"{host}&rsquo;s host", sk,
                     (avg_c * sk) if isinstance(avg_c, (int, float)) else None, avg_c,
+                    s.get("avg_duration_s"),
                     avg_tok if isinstance(avg_tok, (int, float)) else None,
                     s.get("success_rate_pct"),
                     s.get("last_seen") or s.get("since"),
@@ -582,16 +585,18 @@ def offbox_obs(fetched: list[tuple[str, dict]]) -> tuple[str, str]:
     elif waiting:
         note = ("Still below the sample gate, so not yet shown: "
                 + ", ".join(waiting) + ".")
+    elif not empty_sibs:
+        note = "Every published lane has crossed its sample gate."
     else:
-        note = "All published lanes have crossed their sample gate."
+        note = "Every host lane shown has crossed its sample gate."
     if empty_sibs:
         note += (" " + " and ".join(empty_sibs) + "&rsquo;s co-located siblings "
-                 "(Canyon, Ridge, Harbor) appear here once each crosses that "
-                 "host&rsquo;s sample gate.")
+                 "(Canyon, Ridge, Harbor) publish an empty roll-up so far and "
+                 "appear here once each crosses that host&rsquo;s sample gate.")
     note += (" Tidal&rsquo;s dashboard is HTML-only so far, with no JSON roll-up "
              "to consume.")
     body = "\n".join(rows) or (
-        '<tr><td colspan="8" style="text-align:center;color:var(--muted);">'
+        '<tr><td colspan="9" style="text-align:center;color:var(--muted);">'
         'no host has crossed its sample gate yet</td></tr>')
     return body, note
 
