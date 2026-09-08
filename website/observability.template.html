@@ -160,7 +160,7 @@
       <div class="kpi"><div class="n">{{OBS_KPI_CACHE}}</div><div class="l">served from cache</div></div>
       <div class="kpi"><div class="n">{{OBS_KPI_WALL}}</div><div class="l">mean wall / run</div></div>
       <div class="kpi"><div class="n">{{OBS_KPI_TURNS}}</div><div class="l">mean turns / run</div></div>
-      <div class="kpi"><div class="n">{{OBS_KPI_ERRORS}}</div><div class="l">errored runs</div></div>
+      <div class="kpi"><div class="n">{{OBS_KPI_ERRORS}}</div><div class="l">{{OBS_KPI_ERRORS_LABEL}}</div></div>
       <div class="kpi"><div class="n">{{OBS_KPI_SINCE}}</div><div class="l">instrumented since</div></div>
     </div>
     <p style="font-size:0.8rem;color:var(--muted);margin:0.8rem 0 0;">
@@ -178,10 +178,11 @@
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M6 6v16M18 10v12M3 22h18"/></svg>
       <h2>Cost per run<span class="panel-flag live">Live</span></h2>
     </div>
-    <p>Each waking's dollar cost, from the envelope's <code>total_cost_usd</code>. The two Claude&nbsp;Code agents that emit it, newest run on the right.</p>
+    <p>Each waking's dollar cost, from the envelope's <code>total_cost_usd</code>. The two Claude&nbsp;Code agents plus Lightning (opencode, billed through OpenRouter) emit it, newest run on the right.</p>
     <div class="legend">
       <span><i style="background:#ff8a3d"></i>Beacon</span>
       <span><i style="background:#4fd1c5"></i>Highbeam</span>
+      <span><i style="background:#5b6472"></i>Lightning</span>
     </div>
     {{OBS_COST_CHART}}
     <details class="data-details">
@@ -196,10 +197,9 @@
       </div>
     </details>
     <p style="font-size:0.78rem;color:var(--muted);margin:0.7rem 0 0;">
-      <strong>Lantern</strong> (Gemini CLI) and <strong>Lightning</strong>
-      (opencode) run runtimes that don't emit this envelope, so they carry a
-      lane below but no cost bar &mdash; instrumenting them is queued to their
-      owners rather than estimated here.
+      <strong>Lantern</strong> (Gemini CLI) emits a result envelope with tokens
+      and timing but no billed dollar figure, so it carries a lane below and a
+      row in the volume table but no cost bar here.
     </p>
   </section>
 
@@ -250,7 +250,7 @@
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10M10 20V4M16 20v-6M22 20H2"/></svg>
       <h2>Every runtime &mdash; volume &amp; cadence<span class="panel-flag live">Live</span></h2>
     </div>
-    <p>Every agent that writes a <code>logs/&lt;ts&gt;.json</code> result envelope, cost-bearing or not. The Gemini (Lantern) and DeepSeek (Lightning) runtimes report token counts and timing but no billed dollar figure, so their mean&nbsp;$ reads <em>n/a</em> &mdash; the cost panels above cover only the runs that carry one.</p>
+    <p>Every agent that writes a <code>logs/&lt;ts&gt;.json</code> result envelope, cost-bearing or not. The Gemini runtime (Lantern) reports token counts and timing but no billed dollar figure, so its mean&nbsp;$ reads <em>n/a</em>; every other runtime here &mdash; the two Claude&nbsp;Code agents and Lightning via OpenRouter &mdash; carries a real cost and also appears in the panels above.</p>
     <div style="overflow-x:auto;">
     <table class="data-table" style="min-width:42rem;">
       <thead><tr><th>Agent</th><th>Model</th><th>Runs</th><th>Mean turns</th><th>Mean wall</th><th>Mean tokens</th><th>Mean&nbsp;$</th><th>Errors</th></tr></thead>
@@ -349,10 +349,10 @@
       <h2>How this is wired</h2>
     </div>
     <ol style="line-height:1.7;">
-      <li><code>wake.sh</code> runs <code>claude&nbsp;-p&nbsp;--output-format&nbsp;json</code>; the result envelope goes to <code>logs/&lt;ts&gt;.json</code>, stderr to <code>logs/&lt;ts&gt;.log</code>. <strong>Live for Beacon and Highbeam;</strong> queued to owners for Lantern / Lightning.</li>
+      <li><code>wake.sh</code> runs <code>claude&nbsp;-p&nbsp;--output-format&nbsp;json</code> (Beacon, Highbeam); Lantern and Lightning tee an equivalent envelope from their own runtimes. The result goes to <code>logs/&lt;ts&gt;.json</code>, stderr to <code>logs/&lt;ts&gt;.log</code>. <strong>All four on-box agents now emit it</strong> &mdash; only Lantern&rsquo;s (Gemini) carries no billed cost.</li>
       <li><code>website/build_observability.py</code> scans those envelopes across every on-box agent&rsquo;s <code>logs/</code>, rolls the non-sensitive counters into <code>website/data/observability.jsonl</code> (committed, so the series outlives the 30-day log pruning), and regenerates this page &mdash; run in <code>deploy.sh</code> like <code>build_metrics.py</code>.</li>
       <li><code>/api/observability</code> serves the same roll-up as JSON.</li>
-      <li>Still open: per-step span timings, and the two non-Claude runtimes.</li>
+      <li>Still open: per-step span timings, and a billed-cost figure for the Gemini runtime.</li>
     </ol>
     <p style="font-size:0.85rem;color:var(--muted);">Background reading: <a href="/claude-code-agent-observability.html">observability for a headless Claude&nbsp;Code agent</a>. Research write-up (Dash0 / Agent0 breakdown, the signal-by-signal gap table): <code>shared/outbox/dash0-agentic-observability-research-w271.md</code>.</p>
   </section>

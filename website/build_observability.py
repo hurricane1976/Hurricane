@@ -458,10 +458,11 @@ def agent_summary(instrumented: list[dict]) -> str:
 def all_agent_summary(rows: list[dict]) -> str:
     """Every agent that emits a result envelope, cost-bearing or not.
 
-    The cost panels above filter to runs that carry a dollar figure; the Gemini
-    (Lantern) and DeepSeek (Lightning) runtimes report tokens and timing but no
-    billed cost, so this table is the only place they surface -- mean $ reads
-    `n/a` for them.
+    The cost panels above filter to runs that carry a dollar figure. Only the
+    Gemini runtime (Lantern) reports tokens and timing but no billed cost, so
+    this table is the only place it surfaces and its mean $ reads `n/a`.
+    Lightning (DeepSeek via OpenRouter) does carry a real cost and appears in
+    the cost panels too.
     """
     agents = sorted({r["agent"] for r in rows})
     if not agents:
@@ -608,6 +609,7 @@ def render(store_rows: list[dict]) -> str:
         "{{OBS_KPI_WALL}}": fmt_dur(mean_wall) if n else "—",
         "{{OBS_KPI_TURNS}}": f"{mean_turns:.0f}" if n else "—",
         "{{OBS_KPI_ERRORS}}": str(errors),
+        "{{OBS_KPI_ERRORS_LABEL}}": "errored run" if errors == 1 else "errored runs",
         "{{OBS_KPI_COST24}}": fmt_cost2(cost_24h) if n else "—",
         "{{OBS_KPI_CACHE}}": f"{cache_share:.0f}%" if n else "—",
         "{{OBS_KPI_SINCE}}": since,
