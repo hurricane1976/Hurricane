@@ -716,6 +716,65 @@ def all_agent_summary(rows: list[dict]) -> str:
     return "\n".join(out)
 
 
+# --- spend by model family ------------------------------------------------
+
+# Substring -> family label. First match wins; a non-empty model string that
+# matches nothing lands in "Other" (honest -- an unknown provider, not a guess).
+# A null model (provider non-start envelope) is not attributable and is excluded.
+MODEL_FAMILIES = [
+    ("claude", "Claude"),
+    ("gemini", "Gemini"),
+    ("deepseek", "DeepSeek"),
+    ("glm", "GLM"),
+]
+
+
+def _family_of(model) -> str | None:
+    if not model:
+        return None
+    m = str(model).lower()
+    for key, label in MODEL_FAMILIES:
+        if key in m:
+            return label
+    return "Other"
+
+
+def _fam_spend(rs: list[dict]) -> float:
+    return sum(r["cost_usd"] for r in rs if isinstance(r.get("cost_usd"), (int, float)))
+
+
+def model_family_table(rows: list[dict]) -> str:
+    """The committed series rolled up by model-provider family. Cost columns
+    read n/a for a family with no billed run (Gemini); token / turn means are
+    populated for every runtime that writes an envelope."""
+    fam_rows: dict[str, list[dict]] = {}
+    for r in rows:
+        fam = _family_of(r.get("model"))
+        if fam:
+            fam_rows.setdefault(fam, []).append(r)
+    if not fam_rows:
+        return ('<tr><td colspan="8" style="text-align:center;color:var(--muted);">'
+                'no runs carry a model id yet</td></tr>')
+    muted = '<span style="color:var(--muted);">n/a</span>'
+    out = []
+    for fam in sorted(fam_rows, key=lambda f: (-_fam_spend(fam_rows[f]), -len(fam_rows[f]), f)):
+        rs = fam_rows[fam]
+        k = len(rs)
+        agents = ", ".join(sorted({r["agent"] for r in rs}))
+        costs = [r["cost_usd"] for r in rs if isinstance(r.get("cost_usd"), (int, float))]
+        tc = fmt_cost2(sum(costs)) if costs else muted
+        mc = fmt_cost(sum(costs) / len(costs)) if costs else muted
+        tok = sum(_tok_total(r) for r in rs) / k
+        tt = sum((r.get("turns") or 0) for r in rs) / k
+        err = sum(1 for r in rs if r.get("is_error"))
+        out.append(
+            f'<tr><td>{esc(fam)}</td><td>{esc(agents)}</td>'
+            f'<td class="mono">{k}</td><td class="mono">{tc}</td>'
+            f'<td class="mono">{mc}</td><td class="mono">{kfmt(tok)}</td>'
+            f'<td class="mono">{tt:.0f}</td><td class="mono">{err}</td></tr>')
+    return "\n".join(out)
+
+
 def _fmt_s(v) -> str:
     if not isinstance(v, (int, float)) or v <= 0:
         return "&mdash;"
@@ -976,6 +1035,39 @@ def render(store_rows: list[dict]) -> str:
             f"panel fills the first time a run reports an error."
         )
 
+    fam_spend = {}
+    for r in store_rows:
+        fam = _family_of(r.get("model"))
+        if fam and isinstance(r.get("cost_usd"), (int, float)):
+            fam_spend[fam] = fam_spend.get(fam, 0.0) + r["cost_usd"]
+    fam_named = sum(1 for r in store_rows if _family_of(r.get("model")))
+    fam_unnamed = len(store_rows) - fam_named
+    if fam_named and fam_spend:
+        top_fam = max(fam_spend, key=fam_spend.get)
+        top_share = fam_spend[top_fam] / sum(fam_spend.values()) * 100
+        fam_intro = (
+            f"Every result envelope that names a model, rolled up by provider "
+            f"family. <strong>{len(fam_spend)}</strong> "
+            f"famil{'y' if len(fam_spend) == 1 else 'ies'} carry a billed dollar "
+            f"figure and <strong>{top_fam}</strong> is <strong>{top_share:.0f}%</strong> "
+            f"of that measured spend; non-billed runtimes (Gemini) still show token "
+            f"and turn means but <em>n/a</em> for cost."
+            + (f" {fam_unnamed} envelope{'s' if fam_unnamed != 1 else ''} named no "
+               f"model &mdash; a provider non-start &mdash; and are not counted here."
+               if fam_unnamed else "")
+        )
+    elif fam_named:
+        fam_intro = (
+            f"Every result envelope that names a model, rolled up by provider "
+            f"family. No family carries a billed cost yet, so the dollar columns "
+            f"read <em>n/a</em>; token and turn means fill from every runtime."
+        )
+    else:
+        fam_intro = (
+            "Rolls up every result envelope by model-provider family. Fills once "
+            "a run records a model id in its envelope."
+        )
+
     repl = {
         "{{OBS_GENERATED_AT}}": now,
         "{{OBS_INSTRUMENTED_COUNT}}": str(n),
@@ -1005,6 +1097,8 @@ def render(store_rows: list[dict]) -> str:
         "{{OBS_FAIL_TABLE}}": failure_table(err_rows),
         "{{OBS_AGENT_TABLE}}": agent_summary(instrumented),
         "{{OBS_ALL_AGENT_TABLE}}": all_agent_summary(store_rows),
+        "{{OBS_FAMILY_INTRO}}": fam_intro,
+        "{{OBS_FAMILY_TABLE}}": model_family_table(store_rows),
         "{{OBS_OFFBOX_TABLE}}": offbox_body,
         "{{OBS_OFFBOX_NOTE}}": offbox_note,
         "{{OBS_RUN_ROWS}}": explorer_rows(),

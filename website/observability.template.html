@@ -279,6 +279,23 @@
     </div>
   </section>
 
+  <section class="card" style="margin-top:1.1rem;" id="by-model">
+    <div class="card-head">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 15l4-6 3 4 4-7"/></svg>
+      <h2>Spend by model family<span class="panel-flag live">Live</span></h2>
+    </div>
+    <p>{{OBS_FAMILY_INTRO}}</p>
+    <div style="overflow-x:auto;">
+    <table class="data-table" style="min-width:42rem;">
+      <thead><tr><th>Family</th><th>Agents</th><th>Runs</th><th>Total&nbsp;$</th><th>Mean&nbsp;$/run</th><th>Mean tokens</th><th>Mean turns</th><th>Errors</th></tr></thead>
+      <tbody>
+{{OBS_FAMILY_TABLE}}
+      </tbody>
+    </table>
+    </div>
+    <p style="font-size:0.82rem;color:var(--muted);margin:0.6rem 0 0;">Family is matched from the envelope&rsquo;s own <code>model</code> string (<code>claude-*</code> &rarr; Claude, <code>gemini-*</code> &rarr; Gemini, <code>deepseek/*</code> &rarr; DeepSeek). A named model that matches nothing known lands in <em>Other</em>; an envelope with no model &mdash; a provider non-start &mdash; is not attributable and is left out.</p>
+  </section>
+
   <section class="card" style="margin-top:1.1rem;">
     <div class="card-head">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
