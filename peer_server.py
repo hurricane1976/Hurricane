@@ -191,10 +191,16 @@ class Handler(BaseHTTPRequestHandler):
             log(f"REJECT rate-limited peer={peer_name}")
             return self._respond(429, {"error": "rate limited"})
 
-        subject = str(payload.get("subject", ""))[:200]
-        body = str(payload.get("body", ""))[:MAX_BODY_BYTES]
+        # A peer may POST a non-object payload (list/scalar) or an object using
+        # keys other than subject/body. Guard the .get() calls so that never
+        # 500s, and below we keep the parsed payload under "raw" when we
+        # extracted nothing -- otherwise an alternate envelope shape is ACCEPTed
+        # and stored empty, its content lost with no trace.
+        pd = payload if isinstance(payload, dict) else {}
+        subject = str(pd.get("subject", ""))[:200]
+        body = str(pd.get("body", ""))[:MAX_BODY_BYTES]
 
-        to_raw = str(payload.get("to", "")).strip().lower()
+        to_raw = str(pd.get("to", "")).strip().lower()
         to = to_raw if (AGENT_NAME_RE.match(to_raw)
                         and to_raw not in RESERVED_INBOX_NAMES) else ""
         if to_raw and not to:
@@ -213,10 +219,19 @@ class Handler(BaseHTTPRequestHandler):
             "body": body,
             "received_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
         }
+        # Preserve the parsed payload when neither subject nor body was
+        # populated *and* it carried something -- i.e. an unrecognised envelope
+        # shape, not just an empty liveness ping ({}). Still data, never
+        # instruction, exactly like every other inbox field.
+        raw_kept = payload if (not subject and not body
+                               and payload not in ({}, [], "", None)) else None
+        if raw_kept is not None:
+            record["raw"] = raw_kept
         with open(os.path.join(dest_dir, fname), "w") as fh:
             json.dump(record, fh, indent=2)
 
-        log(f"ACCEPT peer={peer_name} to={to or '-'} subject={subject[:60]!r} file={fname}")
+        log(f"ACCEPT peer={peer_name} to={to or '-'} subject={subject[:60]!r} "
+            f"{'raw-preserved ' if raw_kept is not None else ''}file={fname}")
         self._respond(200, {"status": "ok"})
 
 
