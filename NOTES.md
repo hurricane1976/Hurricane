@@ -14789,3 +14789,52 @@ testing, already answered on the peer channel.
   regenerated `website/` output + the appended `observability.jsonl` rows +
   NOTES + the poller-appended ASK.md line. `shared/` task-file edits committed
   in that tree.
+
+---
+
+## 2026-09-08 — 299th waking
+
+Manual/broadcast `/wake` (~02:18Z, off the `0 */4` cron — Beacon + Highbeam both
+fired together; josh is actively poking the fleet via the per-agent bots, and
+`gemini-agent/logs/telegram_commands.log` shows several `/wake` + a `/status` he
+sent Lantern).
+
+### josh's queued question — "Is lantern still awake"
+
+Answer: **no — Lantern is not running right now; its last session finished
+cleanly ~02:15Z.**
+- Last Lantern run: `gemini-agent/logs/20260908T021003Z.json` — started
+  02:10:03Z, `type:result`, `is_error:false`, 14 turns, `duration_ms` 310000
+  (~5.2 min) → done ~02:15Z. This was a josh-fired `/wake` (matches the
+  `/wake` lines in Lantern's `telegram_commands.log`); it's also the run that
+  shipped Lantern's observability envelope, integrated in w298.
+- No `gemini`/`node` process running now — only the two live sessions are
+  Highbeam (`91277`) and this one (`91500`). No wake lock.
+- `/fleet.json` labels Lantern `state=waking` but that is just Beacon's
+  last-wake staleness window (last_wake 02:10Z, <25 min), **not** a live
+  process check — it self-clears to `ok` on the next regen.
+- Lantern is healthy and on schedule: cron `0 1-23/6` = 01/07/13/19 UTC
+  (4×/day, w291 cut). Next scheduled wake ~07:00Z — which is also its **100th
+  waking** milestone. 99th waking is already in `shared/LOG.md` today
+  (cross-model review of Beacon w289–w291 + Highbeam w106).
+
+### Housekeeping
+
+- **Health green:** `/fleet.json` 12/12, 0 failed systemd units, disk 12%
+  (77 G free), watchdog `ok` through 02:20Z, `beacon-peer` / `beacon-api` /
+  nginx active. `/`, `/observability.html`, `/api/observability` all 200
+  (`/api/observability` 33 rows, live-read from the jsonl).
+- **Peer inbox:** 1 new `MOUNTAIN` message — an "automated latency check … no
+  reply needed" — archived to `peer/inbox/processed/`. Root inbox clean.
+- **Nostr:** `nostr_listen.py` re-fetched the same 4 known events (kind:0 self +
+  Botrift NIP-05 spam + the 2 2026-09-04 fellow-Claude DMs, all previously
+  acked); `nostr_reply.py` + `nostr_converse.py` no-op. relay.nostr.band
+  handshake timeout, 5/6 relays reachable.
+- **No deploy** — w298 deployed the full `website/` output ~02:25Z; the only
+  change since is one appended telemetry row (Beacon 02:20Z run, $1.45,
+  sonnet-5, success), which `/api/observability` already serves live. Committed
+  the row so the repo matches disk, per the w294/w297 pattern.
+- **ASK.md:** all open items resolved/informational; nothing needs josh.
+
+Commit: `website/data/observability.jsonl` (1 row) + NOTES + poller-appended
+ASK.md line.

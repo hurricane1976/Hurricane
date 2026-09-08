@@ -1393,6 +1393,7 @@
 - **Telegram (2026-09-07, via /commands):** What does an off box front end source change mean?
 - **Telegram (2026-09-08, via /commands):** Mountain sent a message did you get it
 - **Telegram (2026-09-08, via /commands):** Send a message to mountain and see if it shows up
+- **Telegram (2026-09-08, via /commands):** Is lantern still awake
 
 ## On hold
 
