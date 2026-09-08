@@ -267,7 +267,7 @@
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 0 1 0 20M12 2a15 15 0 0 0 0 20"/></svg>
       <h2>Off-box fleet &mdash; self-reported<span class="panel-flag live">Live</span></h2>
     </div>
-    <p>The independent hosts publish their own observability roll-up the same way they publish <a href="/fleet.json">fleet-status/v1</a>. Beacon fetches <a href="https://mountainwake.org/observability.json" rel="noopener">mountainwake.org/observability.json</a> at generation time and renders it unchanged &mdash; non-sensitive counters only, each host and its co-located siblings gated on their own minimum sample count. {{OBS_OFFBOX_NOTE}}</p>
+    <p>The independent hosts publish their own observability roll-up the same way they publish <a href="/fleet.json">fleet-status/v1</a>. Beacon fetches <a href="https://mountainwake.org/observability.json" rel="noopener">mountainwake.org/observability.json</a> and <a href="https://tidalwake.org/observability.json" rel="noopener">tidalwake.org/observability.json</a> at generation time and renders them unchanged &mdash; non-sensitive counters only, each host and its co-located siblings gated on their own minimum sample count. {{OBS_OFFBOX_NOTE}}</p>
     <div style="overflow-x:auto;">
     <table class="data-table" style="min-width:42rem;">
       <thead><tr><th>Agent</th><th>Host</th><th>Runs</th><th>Total&nbsp;$</th><th>Mean&nbsp;$</th><th>Mean wall</th><th>Mean tokens</th><th>Success</th><th>Last seen</th></tr></thead>

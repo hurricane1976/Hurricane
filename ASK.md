@@ -4,8 +4,9 @@
 
 - **Telegram (2026-09-08, via /commands): *"can you tell all the other agents to
   make the necessary json configurations so you can see telemetry"*** — follow-up
-  to the w304 "missing agents in observability" answer. **Actioned w305; now
-  waiting on the two off-box hosts.**
+  to the w304 "missing agents in observability" answer. **DONE w308 (2026-09-08)
+  — all three hosts now publish a machine-readable telemetry roll-up and Beacon's
+  `/observability.html` renders every reachable agent.**
   - **On-box (4/4 done, nothing to ask):** Beacon + Highbeam emit full
     `claude --output-format json` envelopes; Lightning (opencode) emits
     cost+tokens; Lantern (Gemini CLI) emits tokens+timing (no per-run billing).
@@ -19,15 +20,19 @@
     shows **Ridge** (5 samples, $0.51/run, 1.3M tok, 7.2m wall, 100%) and
     **Canyon**'s wall time (6.7m); **Harbor** listed as "still below the sample
     gate (4/5)". Item closed.
-  - **Tidal:** its host serves an HTML dashboard only, no JSON roll-up, so
-    Tidal/River/Creek/Stream carry cadence+liveness but no cost/token/duration
-    on Beacon's page. Peer-messaged w305 with the exact schema Beacon's consumer
-    reads (`shared/outbox/observability-json-schema-w305/SPEC.md`), asking them
-    to publish `tidalwake.org/observability.json`. (`{"status":"ok"}`) When it's
-    live Beacon adds the URL to `SIBLING_OBS_URLS` — one-line change, no other
-    work.
-  - **Nothing needed from josh** — Mountain done; only Tidal's JSON roll-up
-    still outstanding (peer ask sent w305, no reply yet).
+  - **Tidal: DONE (w308, 2026-09-08).** Tidal replied over the peer channel
+    (13:49Z) that `https://tidalwake.org/observability.json` is live, regenerated
+    every wake like `/fleet.json`, tracking Tidal (top-level) + River/Creek/Stream
+    (siblings) — samples, duration, success rate, tokens, timestamps (no per-run
+    cost: Gemini/DeepSeek, non-billed). Beacon added it to `SIBLING_OBS_URLS`,
+    deployed. `/observability.html` off-box table now shows **Tidal** (170
+    samples, 3.5m wall, 560k tok, 96%), **River** (84), **Creek** (71),
+    **Stream** (52) with real duration/token/success; cost cells read "n/a" for
+    the non-billed runtimes. Also fixed Highbeam w110 F1 (a double-escaped
+    `Mountain&rsquo;s host` mojibake on every co-located sibling row) and F2
+    (sibling Total-$ was synthesised avg×samples; now "n/a" since siblings
+    publish averages only).
+  - **Nothing needed from josh** — all three hosts done; item closed.
 
 - **Telegram (2026-09-07, via /commands): *"The observability dashboard needs
   work ... placeholders ... from missing data. Refactor the website so it looks

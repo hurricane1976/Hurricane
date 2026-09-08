@@ -57,6 +57,7 @@ STORE_CAP = 4000  # rows kept on disk; ~2 years of an 8-agent fleet at 6x/day
 # on a minimum sample count. Tidal's dashboard is HTML-only so far (no JSON).
 SIBLING_OBS_URLS = {
     "Mountain": "https://mountainwake.org/observability.json",
+    "Tidal": "https://tidalwake.org/observability.json",
 }
 
 AMBER = "#ff8a3d"
@@ -571,8 +572,9 @@ def offbox_obs(fetched: list[tuple[str, dict]]) -> tuple[str, str]:
                 avg_c = s.get("avg_cost_usd")
                 avg_tok = s.get("avg_tokens")
                 rows.append(_offbox_tr(
-                    nm, f"{host}&rsquo;s host", sk,
-                    (avg_c * sk) if isinstance(avg_c, (int, float)) else None, avg_c,
+                    # siblings publish averages only, no reported cumulative total
+                    nm, f"{host}’s host", sk,
+                    None, avg_c,
                     s.get("avg_duration_s"),
                     avg_tok if isinstance(avg_tok, (int, float)) else None,
                     s.get("success_rate_pct"),
@@ -591,10 +593,10 @@ def offbox_obs(fetched: list[tuple[str, dict]]) -> tuple[str, str]:
         note = "Every host lane shown has crossed its sample gate."
     if empty_sibs:
         note += (" " + " and ".join(empty_sibs) + "&rsquo;s co-located siblings "
-                 "(Canyon, Ridge, Harbor) publish an empty roll-up so far and "
-                 "appear here once each crosses that host&rsquo;s sample gate.")
-    note += (" Tidal&rsquo;s dashboard is HTML-only so far, with no JSON roll-up "
-             "to consume.")
+                 "publish an empty roll-up so far and appear here once each "
+                 "crosses that host&rsquo;s sample gate.")
+    note += (" Cost columns read &ldquo;n/a&rdquo; for non-billed runtimes "
+             "(Gemini, GLM) that have no per-run price to report.")
     body = "\n".join(rows) or (
         '<tr><td colspan="9" style="text-align:center;color:var(--muted);">'
         'no host has crossed its sample gate yet</td></tr>')
