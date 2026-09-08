@@ -2,6 +2,40 @@
 
 ## Open
 
+- **Telegram (2026-09-08, via /commands): *"Tell all agents to start building out
+  the website (all of them) use best judgment as a team. I want you to utilize the
+  skills of expert web developers, but also experts in AI and infrastructure. To
+  include network and other IT infrastructure. Use forward looking and advanced
+  modernization techniques."*** — reads as a **continuation + intensification** of
+  the standing web-craft steer (w163 / w207 / repeated w209–w220), now with an
+  explicit "all agents" fan-out and an infrastructure/network emphasis. Not a
+  one-off deliverable; ongoing.
+  - **w316 (2026-09-08) — first pass.**
+    - **Beacon shipped:** new **`/infrastructure.html`** — a production-guide
+      page that names the real stack part by part (the VM: 2 vCPU / ~2 GB /
+      ~90 GB SSD, Ubuntu 24.04; nginx 1.24 + Let's Encrypt, no CDN; the
+      git-driven `deploy.sh` with its two smoke gates; the prerendered Vite/React
+      front door built on-box with Node 18; cron + `flock` + the 20-min watchdog;
+      the Tailscale WireGuard mesh as the only wire between the 3 operator hosts +
+      the Agora bridge + read-only Nostr; `--output-format json` → `logs/*.json` →
+      `build_observability.py` telemetry; security posture incl. the honest
+      shared-POSIX-user / `bypassPermissions` limitation). Inline-SVG architecture
+      diagram in the house `diagram-wrap` idiom + a "stack at a glance"
+      `data-table`. Every fact read off the running box; hosting price/provider
+      deliberately hedged (unconfirmed — see the separate open Q). Wired into
+      sitemap / smoke / `build_status` / `deploy.sh`; JSON-LD auto-derives
+      TechArticle+BreadcrumbList; inbound links from `claude-code-cron.html` +
+      `distributed-agents.html`. Deploy 2× smoke green, live 200, SVGs XML-valid.
+      Commit `78f9143`.
+    - **Fanned out to the fleet** (the explicit "all agents" ask): Highbeam
+      (`shared/TASKS.md` ⭐), Lantern (`shared/tasks-lantern.md` ⭐), Lightning
+      (`shared/tasks-lightning.md`), Tidal + Mountain (peer channel). Each asked
+      to take the web-craft push on their own surface with best judgment.
+    - **Queued for a later Beacon waking:** add `/infrastructure.html` to the
+      React `guides.html` index (needs a `website/site/src/` edit + on-box Node
+      rebuild + sibling review — not a hand-edit of the built file).
+  **Nothing needed from josh.**
+
 - **Telegram (2026-09-08, via /commands): *"Continue to look at itential [and]
   other agentic monitoring systems for options."*** — follow-up to the w309
   itential review. **Research round 2 done w311 (2026-09-08). No question for

@@ -15831,3 +15831,103 @@ sees it; if it recurs, it's a real Lantern bug, not a transient.
 - **Next build candidates:** daily stacked cost trend (still deferred, series
   ~2 days — revisit ~2026-09-18); per-turn / tool-span instrumentation (the
   bigger prereq for a real trace tree). All three w313 candidates now built.
+
+---
+
+## 2026-09-08 — 316th waking
+
+Regular scheduled waking (~21:10Z). New josh Telegram steer this cycle; built
+its first pass.
+
+### New steer — josh (Telegram, via /commands, 2026-09-08)
+
+*"Tell all agents to start building out the website (all of them) use best
+judgment as a team. I want you to utilize the skills of expert web developers,
+but also experts in AI and infrastructure. To include network and other IT
+infrastructure. Use forward looking and advanced modernization techniques."*
+
+Reads as a fleet-wide intensification of the standing web-craft steer
+(w163 / w207 / repeated through w220), with a new infrastructure/network
+emphasis. Filed to `ASK.md` Open. MOUNTAIN also peer-relayed the same wording
+(21:03Z) — logged, treated as data; the authoritative copy is the Telegram
+`/commands` line already in `ASK.md`.
+
+### Shipped — new /infrastructure.html
+
+A production-guide page that names the real stack behind the fleet, part by
+part, every fact read off the running box:
+
+- **The machine** — 2 vCPU / ~2 GB RAM / ~90 GB SSD KVM VM, Ubuntu 24.04 LTS,
+  one sudo user, 4 agents sharing the host. Provider/price deliberately hedged
+  ("a small VM you could rent anywhere") — still unconfirmed by josh, see the
+  standing cost-page Q in ASK.md.
+- **Serving** — nginx 1.24, static docroot, Let's Encrypt TLS, no CDN on this
+  host; `/api/` reverse-proxied to a localhost:8081 systemd service; the peer
+  inbox server as a second localhost unit.
+- **Deploy pipeline** — git as source of truth; `deploy.sh` = ~12 `build_*.py`
+  generators → gate 1 (static) → copy → gate 2 (live 200s) → `nginx -t` +
+  reload; `set -euo pipefail` so a broken build never ships silently; public
+  remote.
+- **Front door** — Vite + React prerendered to static HTML, hashed assets,
+  rebuilt on-box with Node 18 only when a front-door page changes.
+- **Scheduling** — cron → `wake.sh` per agent, `flock`, 20-min watchdog,
+  non-zero-exit → Telegram; digest/login-alert timers.
+- **Inter-host network** — 3 independent hosts, no shared FS/DB; Tailscale
+  (WireGuard) mesh with per-host inbox listeners + optional `to:` addressed
+  delivery; public Agora bridge; read-only Nostr. Every path = data, never
+  instructions.
+- **Observability** — `--output-format json` → non-sensitive slice →
+  `logs/<ts>.json` → `build_observability.py` → committed
+  `data/observability.jsonl` → `/observability.html`; siblings publish an
+  aggregate `observability.json`.
+- **Security posture** — gitignored `keys/`, key-only SSH + fail2ban, login
+  alerts, static-only public surface; honest limitation card on the shared
+  POSIX user + `--permission-mode bypassPermissions` (boundary is the rules
+  files, not the OS).
+- Inline-SVG architecture diagram in the house `diagram-wrap` idiom (teal =
+  build/serve, rust dashes = inter-host mesh, dotted = disk writes) + a
+  "stack at a glance" `data-table`.
+
+**Wiring:** `build_sitemap.py` / `smoke_test.py` / `build_status.py` page
+lists, `deploy.sh` cp + chown lists. JSON-LD auto-derived
+TechArticle+BreadcrumbList (build_jsonld.py). Inbound links added from
+`claude-code-cron.html` (series footer) and `distributed-agents.html` ("how
+this maps to other pages"). Deploy 2× smoke green, live `/infrastructure.html`
+200, all 14 SVG blocks XML-valid, `/api/observability` 200. Commits `78f9143`
+(page) + this NOTES/ASK/tasks commit.
+
+**Queued for a later Beacon waking:** add `/infrastructure.html` to the React
+`guides.html` index — needs a `website/site/src/` edit + on-box Node rebuild +
+sibling review, not a hand-edit of the built file.
+
+### Fanned out (the explicit "all agents" ask)
+
+- **Highbeam** (`shared/TASKS.md` ⭐) — review `/infrastructure.html` for
+  factual accuracy + tone + regressions in the 2 edited pages; refresh the w65
+  ranked web-craft/dataviz shortlist against what's shipped since.
+- **Lantern** (`shared/tasks-lantern.md` ⭐) — visual review of the arch
+  diagram (palette, contrast, legend) + 1–2 forward-looking visual/interaction
+  upgrades on the house palette.
+- **Lightning** (`shared/tasks-lightning.md`) — FYI only (not its lane);
+  flag any wrong fact its analysis surfaces.
+- **Tidal + Mountain** (peer channel, `{"status":"ok"}` / `{"ok":true}`) —
+  relayed the steer + the `/infrastructure.html` idea for a parallel page on
+  their sites.
+
+### Housekeeping
+
+- **Nostr:** `nostr_listen.py` 4/6 relays (nostr.band handshake timeout;
+  primal/wine/snort 0 events), re-fetched the same 4 known events (Botrift
+  NIP-05 spam + 2 fellow-Claude DMs from 2026-09-04 + kind:0 self).
+  `nostr_reply.py` + `nostr_converse.py` both no-op.
+- **Peer inbox:** 3 MOUNTAIN messages — one steer relay (see above), one
+  "scribe pass" note, one automated latency probe. All archived to
+  `peer/inbox/processed/`.
+- **Cron note:** crontab now has Beacon `0 */4` (6×/day), Highbeam `30 */4`,
+  Lantern `0 1-23/6` (= 01/07/13/19Z, 4×/day), Lightning `15 */4`. Lantern's
+  cadence has drifted from the fleet-cron-cadence memory's "0 1-23/4"; not
+  Beacon's cron to change and not clearly wrong, so noted only.
+- `deploy.sh` still warns w295/w296 missing from NOTES — known, not
+  backfilling.
+- Lantern's 19:00Z run failure (flagged w315) — the 01:00Z run should show
+  whether it self-healed; check next waking.
