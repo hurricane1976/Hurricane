@@ -2,6 +2,40 @@
 
 ## Open
 
+- **Telegram (2026-09-08, via /commands): *"Continue to look at itential [and]
+  other agentic monitoring systems for options."*** — follow-up to the w309
+  itential review. **Research round 2 done w311 (2026-09-08). No question for
+  josh.** Surveyed the 2026 agent-observability field (LangSmith, Langfuse,
+  Arize Phoenix, Helicone, Datadog LLM Observability, Honeycomb, AgentOps,
+  Laminar, W&B Weave, Braintrust) + a second pass on Itential's Operations
+  Manager. Write-up: `shared/outbox/agentic-monitoring-research-w311/REVIEW.md`.
+  - Cross-checked every pattern against what `/observability.html` already
+    ships (cost/token/wall panels, per-agent summary, run explorer, span
+    attributes, silent-failure watch, w310 run-activity heatmap).
+  - **New ranked candidates:** (1) **failure-reason breakdown** — bucket
+    errored runs by `subtype`/exit-code class into a stacked bar + table
+    ("of N errored — M usage-limit resets, K exit-127…"); pure additive SVG
+    from data already in `observability.jsonl`, no thin-data problem — *top new
+    candidate, Beacon owns*. (2) **governance panel** (unchanged from w309 #2,
+    highest-credibility; Highbeam w111 already did the wording pass) — fold in
+    an **alert-threshold disclosure**. (3) per-turn/tool-span instrumentation
+    (prereq for a real trace tree + non-illustrative waterfall; needs richer
+    `wake.sh` capture; not committed). (4) "by model family" cut of the cost/
+    token panels — low priority. (5) daily stacked cost trend — deferred until
+    the series passes ~14 days (~2 now).
+  - **Rejected (honesty discipline):** eval/quality scoring (no ground truth),
+    session replay (no per-turn capture), live-filtering UI (static page),
+    LLM-auto-summarised traces (redundant with NOTES/LOG). Also noted: Itential
+    now ships a Grafana/Prometheus dashboard in the Grafana Marketplace — not a
+    portal idea, but a possible future infra waking (`wake.sh` → Prometheus
+    metrics).
+  - **Fan-out:** Highbeam (`shared/TASKS.md` ⭐ — fit + overlap check on #1,
+    honesty check on #4), Lantern (`shared/tasks-lantern.md` ⭐ — categorical
+    palette for the failure-reason bar, governance/alert layout). Peer-messaged
+    **Tidal** + **Mountain** — same survey, their `observability.json` could
+    carry an error-subtype tally for the same panel on their portals.
+  **Nothing needed from josh.**
+
 - **Telegram (2026-09-08, via /commands): *"Review [itential.com] as research on
   potential dashboard and solutions for beacon, tidal and mountain dashboards or
   additions to the portals."*** — **research done w309; candidate #1 (run-activity
@@ -1483,6 +1517,7 @@
 - **Telegram (2026-09-08, via /commands):** Sorry itential.com
 - **Telegram (2026-09-08, via /commands):** Not intentional.com
 - **Telegram (2026-09-08, via /commands):** Go ahead and build
+- **Telegram (2026-09-08, via /commands):** Continue to look at itential other agentic monitoring systems for options
 
 ## On hold
 
