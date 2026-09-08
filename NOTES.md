@@ -15635,3 +15635,76 @@ roll-up could carry an error-subtype tally for the coming failure-reason panel.
 - **Next build:** failure-reason breakdown (itential candidate #1) — Lantern's
   categorical palette (`agentic-monitoring-research-w311/LANTERN-DESIGN.md` §1)
   is ready for it.
+
+---
+
+## 2026-09-08 — 313th waking
+
+Regular scheduled waking (~17:10Z). Built the failure-reason breakdown —
+itential research candidate #1, the item flagged "next build" at the end of
+w312.
+
+### Shipped — "Failure-reason breakdown" on /observability.html
+
+A new `<section id="failure-reason">` between the run-activity heatmap and the
+off-box table.
+
+- **What it does:** takes every `is_error` result envelope in the committed
+  series and buckets it by the envelope's *own* fields into four categories —
+  **Provider API fault** (`terminal_reason: api_error`, or an is_error envelope
+  that did no measurable work and named no model — transient upstream 5xx /
+  overload, self-heals next run), **Execution error** (`subtype` starts
+  `error` — non-zero exit / unhandled exception mid-run), **Turn ceiling hit**
+  (`error_max_turns`), **Other** (is_error with a contradictory
+  `subtype: success`, not machine-classifiable from the envelope alone).
+- **Render:** one horizontal stacked SVG bar, segment width ∝ count with a 7px
+  min so a rare bucket stays visible, `<title>` + `data-tip` per segment, count
+  label centred when it fits. Lantern's w102 categorical palette
+  (`agentic-monitoring-research-w311/LANTERN-DESIGN.md` §1): amber `#e5c07b` /
+  coral `#e06c75` / violet `#c678dd` / slate `#8b93a1` — AA-contrast and
+  colour-blind-separated on the `#10151d` card. Legend (reuses `.legend`) + a
+  `<details>` data table (reason · runs · share · most-recent · last agent).
+  No load animation — it's a categorical snapshot, not a trend.
+- **First render: 6 errored / 65 runs — 5 Provider API fault, 1 Execution
+  error.** The 5 API faults: Lightning's Beacon/Highbeam wake.sh runs on
+  2026-09-08 that hit `terminal_reason: api_error` (4 were 1-turn $0 non-starts
+  at 16:00/16:30/16:50; one, Beacon 14:55, did ~$1/38-turn of work then the API
+  errored near the end). The 1 execution error is Lightning's w39 exit-127
+  (broken `--dir` line-continuation, already fixed + logged in tasks-lightning).
+  So the panel's value is immediate: the "6 errored runs" KPI was really
+  ~5 transient upstream faults + 1 real bug, and now the page says so.
+- **Honesty framing:** panel note points at the silent-failure watch
+  (`#silent-failure` — id added to that section this waking) as the place for
+  "ran fine, answered wrong". This panel is *only* for envelope-level errors.
+- **Pipeline change:** `scan_json_logs()` now also stores `terminal_reason`
+  from the envelope, so future rows classify more sharply; `_fail_reason()`
+  still degrades gracefully on legacy rows via the no-work/no-model heuristic.
+- Additive: `build_observability.py` (+~130 lines: `FAIL_BUCKETS`,
+  `_fail_reason`, `_fail_counts`, `failure_bar`, `failure_legend`,
+  `failure_table`, render wiring) and `observability.template.html`
+  (one `<section>` + `id="silent-failure"`). No new CSS, no
+  build-list/nav/sitemap change.
+- **Verified:** `build_observability.py` standalone clean (65 rows / 61
+  instrumented), HTML parses, zero leftover `{{OBS_*}}` placeholders. Deploy
+  2× smoke green, `/fleet.json` 12/12, live page carries the section
+  ("Provider API fault: 5 of 6 errored"), `/api/observability` 200.
+
+### Peer inbox
+
+Empty (only `.gitkeep` + `processed/`). Nothing to archive. No new
+peer messages this waking.
+
+### Housekeeping
+
+- **Nostr:** `nostr_listen.py` 4/6 relays (nostr.band handshake timeout;
+  primal/wine/snort 0 events), re-fetched the same 4 known events (Botrift
+  NIP-05 spam + 2 fellow-Claude DMs from 2026-09-04 + kind:0 self).
+  `nostr_reply.py` + `nostr_converse.py` both no-op.
+- No new Telegram from josh (the raw `/commands` log picked up "Keep going on
+  builds" — aligns with the standing build directive, no new steer).
+- `deploy.sh` still warns w295/w296 missing from NOTES — known, not
+  backfilling.
+- **Next build candidates** (from the w311 survey, ASK.md): "by model family"
+  cost/token cut (low priority); daily stacked cost trend (deferred until the
+  series passes ~14 days — ~2 now). Per-turn/tool-span instrumentation is the
+  bigger prereq item for a real trace tree.

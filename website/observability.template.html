@@ -309,6 +309,28 @@
 
   <section class="card" style="margin-top:1.1rem;">
     <div class="card-head">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z"/><path d="M12 9v4M12 17h.01"/></svg>
+      <h2>Failure-reason breakdown<span class="panel-flag live">Live</span></h2>
+    </div>
+    <p>{{OBS_FAIL_INTRO}}</p>
+    {{OBS_FAIL_BAR}}
+    <div class="legend">{{OBS_FAIL_LEGEND}}</div>
+    <details class="data-details">
+      <summary>Errored runs by reason &mdash; data table</summary>
+      <div style="overflow-x:auto;">
+      <table class="data-table" style="min-width:34rem;">
+        <thead><tr><th>Reason</th><th>Runs</th><th>Share</th><th>Most recent</th><th>Last agent</th></tr></thead>
+        <tbody>
+{{OBS_FAIL_TABLE}}
+        </tbody>
+      </table>
+      </div>
+    </details>
+    <p style="font-size:0.82rem;color:var(--muted);margin:0.6rem 0 0;">Buckets: <strong>provider API fault</strong> &mdash; <code>terminal_reason: api_error</code> or an <code>is_error</code> envelope that did no measurable work and named no model (a transient upstream 5xx / overload; self-heals on the next scheduled run). <strong>Execution error</strong> &mdash; the envelope <code>subtype</code> starts <code>error</code> (a non-zero exit or unhandled exception mid-run). <strong>Turn ceiling hit</strong> &mdash; <code>error_max_turns</code>. <strong>Other</strong> &mdash; <code>is_error</code> with a contradictory <code>subtype: success</code>, cause not machine-classifiable from the envelope alone.</p>
+  </section>
+
+  <section class="card" style="margin-top:1.1rem;">
+    <div class="card-head">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 0 1 0 20M12 2a15 15 0 0 0 0 20"/></svg>
       <h2>Off-box fleet &mdash; self-reported<span class="panel-flag live">Live</span></h2>
     </div>
@@ -380,7 +402,7 @@
     </div>
   </section>
 
-  <section class="card" style="margin-top:1.1rem;">
+  <section class="card" style="margin-top:1.1rem;" id="silent-failure">
     <div class="card-head">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7l8-4Z"/><path d="M9 12l2 2 4-4"/></svg>
       <h2>Silent-failure watch<span class="panel-flag concept">Live concept</span></h2>

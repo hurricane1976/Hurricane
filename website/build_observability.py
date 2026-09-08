@@ -117,6 +117,7 @@ def scan_json_logs() -> list[dict]:
                 "cache_creation_tokens": u.get("cache_creation_input_tokens"),
                 "is_error": bool(env.get("is_error")),
                 "subtype": env.get("subtype"),
+                "terminal_reason": env.get("terminal_reason"),
                 "model": _canonical_model(env),
             })
     return rows
@@ -546,6 +547,111 @@ def heatmap_chart(rows: list[dict]) -> tuple[str, str]:
     return svg, table
 
 
+# --- failure-reason breakdown ------------------------------------------------
+
+# Categorical (not sequential) -- each bucket is an independent identity, so the
+# palette is a qualitative scale, not shades of one hue. Swatches are tested on
+# the card surface (#10151d) for AA contrast and colour-blind separation per
+# Lantern's w102 design spec
+# (shared/outbox/agentic-monitoring-research-w311/LANTERN-DESIGN.md, sec 1).
+FAIL_BUCKETS = [
+    ("api-fault",  "Provider API fault",   "#e5c07b"),  # warm amber
+    ("exec-error", "Execution error",      "#e06c75"),  # soft coral
+    ("max-turns",  "Turn ceiling hit",     "#c678dd"),  # violet
+    ("other",      "Other / unclassified", "#8b93a1"),  # muted slate
+]
+FAIL_LABEL = {k: (lbl, col) for k, lbl, col in FAIL_BUCKETS}
+
+
+def _fail_reason(r: dict) -> str | None:
+    """Bucket an errored run by the result envelope's own fields. Returns None
+    for a clean run. Works on legacy rows that predate the `terminal_reason`
+    capture via a fallback: an is_error envelope that did no measurable work and
+    names no model is a provider fault that never got started."""
+    if not r.get("is_error"):
+        return None
+    sub = (r.get("subtype") or "").lower()
+    term = (r.get("terminal_reason") or "").lower()
+    did_work = (r.get("turns") or 0) > 1 or (r.get("cost_usd") or 0) > 0 or _tok_total(r) > 0
+    if term == "api_error" or (not did_work and not r.get("model")):
+        return "api-fault"
+    if "max_turns" in sub:
+        return "max-turns"
+    if sub.startswith("error"):
+        return "exec-error"
+    return "other"
+
+
+def _fail_counts(err_rows: list[dict]) -> dict:
+    counts = {}
+    for r in err_rows:
+        k = _fail_reason(r)
+        counts[k] = counts.get(k, 0) + 1
+    return counts
+
+
+def failure_bar(counts: dict) -> str:
+    """One horizontal stacked bar; segment width proportional to count, clamped
+    so a rare bucket stays visible. No load animation (categorical, not a trend)."""
+    total = sum(counts.values())
+    if not total:
+        return ""
+    W, H, bar_h = CHART_W, 46, 30
+    pad = 2
+    present = [(k, counts[k]) for k, _, _ in FAIL_BUCKETS if counts.get(k)]
+    avail = W - pad * max(len(present) - 1, 0)
+    segs, x = [], 0.0
+    for k, c in present:
+        w = max(7.0, c / total * avail)
+        lbl, col = FAIL_LABEL[k]
+        pct = c / total * 100
+        tip = f'{lbl}: {c} of {total} errored run{"s" if total != 1 else ""} ({pct:.0f}%)'
+        segs.append(
+            f'<rect x="{x:.1f}" y="{(H - bar_h) / 2:.1f}" width="{w:.1f}" height="{bar_h}" '
+            f'rx="4" fill="{col}" data-tip="{esc(tip)}"><title>{esc(tip)}</title></rect>')
+        if w > 22:
+            segs.append(
+                f'<text x="{x + w / 2:.1f}" y="{H / 2 + 4:.1f}" text-anchor="middle" '
+                f'style="font-family:\'IBM Plex Mono\',monospace;font-size:12px;'
+                f'font-weight:600;fill:#0a0d13;pointer-events:none;">{c}</text>')
+        x += w + pad
+    return (f'<svg viewBox="0 0 {W} {H}" class="chart" role="img" '
+            f'aria-label="Failure-reason breakdown of {total} errored runs; '
+            f'{", ".join(f"{FAIL_LABEL[k][0]} {c}" for k, c in present)}">'
+            f'{"".join(segs)}</svg>')
+
+
+def failure_legend(counts: dict) -> str:
+    return "".join(
+        f'<span><i style="background:{col}"></i>{esc(lbl)}: {counts.get(k, 0)}</span>'
+        for k, lbl, col in FAIL_BUCKETS)
+
+
+def failure_table(err_rows: list[dict]) -> str:
+    if not err_rows:
+        return ('<tr><td colspan="5" style="text-align:center;color:var(--muted);">'
+                'no errored runs in the committed series</td></tr>')
+    counts, latest, example = {}, {}, {}
+    for r in err_rows:
+        k = _fail_reason(r)
+        counts[k] = counts.get(k, 0) + 1
+        ts = r.get("ts") or ""
+        if ts >= latest.get(k, ""):
+            latest[k], example[k] = ts, r.get("agent") or "?"
+    total = sum(counts.values())
+    trs = []
+    for k, lbl, _ in FAIL_BUCKETS:
+        c = counts.get(k, 0)
+        if not c:
+            continue
+        trs.append(
+            f'<tr><td>{esc(lbl)}</td><td class="mono">{c}</td>'
+            f'<td class="mono">{c / total * 100:.0f}%</td>'
+            f'<td class="mono">{esc(latest.get(k, "")[:16].replace("T", " "))}</td>'
+            f'<td class="mono">{esc(example.get(k, ""))}</td></tr>')
+    return "".join(trs)
+
+
 # --- tables --------------------------------------------------------------
 
 def agent_summary(instrumented: list[dict]) -> str:
@@ -847,6 +953,26 @@ def render(store_rows: list[dict]) -> str:
     else:
         heat_note = "Fills on the first instrumented run."
 
+    err_rows = [r for r in store_rows if r.get("is_error")]
+    fail_counts = _fail_counts(err_rows)
+    if err_rows:
+        fail_intro = (
+            f"Of the <strong>{len(store_rows):,}</strong> result envelopes in the "
+            f"committed series, <strong>{len(err_rows)}</strong> ended in "
+            f"<code>is_error</code>. Each is bucketed by the envelope's own "
+            f"<code>subtype</code> and <code>terminal_reason</code> &mdash; a "
+            f"provider API fault (the model API returned an error, usually before "
+            f"the agent did any real work) is a different failure from a run that "
+            f"worked and got the answer wrong, which is what the "
+            f'<a href="#silent-failure">silent-failure watch</a> below is for.'
+        )
+    else:
+        fail_intro = (
+            f"All <strong>{len(store_rows):,}</strong> result envelopes in the "
+            f"committed series ended cleanly (<code>is_error: false</code>). This "
+            f"panel fills the first time a run reports an error."
+        )
+
     repl = {
         "{{OBS_GENERATED_AT}}": now,
         "{{OBS_INSTRUMENTED_COUNT}}": str(n),
@@ -870,6 +996,10 @@ def render(store_rows: list[dict]) -> str:
         "{{OBS_HEATMAP}}": heat_svg,
         "{{OBS_HEATMAP_TABLE}}": heat_table,
         "{{OBS_HEATMAP_NOTE}}": heat_note,
+        "{{OBS_FAIL_INTRO}}": fail_intro,
+        "{{OBS_FAIL_BAR}}": failure_bar(fail_counts),
+        "{{OBS_FAIL_LEGEND}}": failure_legend(fail_counts),
+        "{{OBS_FAIL_TABLE}}": failure_table(err_rows),
         "{{OBS_AGENT_TABLE}}": agent_summary(instrumented),
         "{{OBS_ALL_AGENT_TABLE}}": all_agent_summary(store_rows),
         "{{OBS_OFFBOX_TABLE}}": offbox_body,

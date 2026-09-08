@@ -12,11 +12,24 @@
   - Cross-checked every pattern against what `/observability.html` already
     ships (cost/token/wall panels, per-agent summary, run explorer, span
     attributes, silent-failure watch, w310 run-activity heatmap).
-  - **New ranked candidates:** (1) **failure-reason breakdown** — bucket
-    errored runs by `subtype`/exit-code class into a stacked bar + table
-    ("of N errored — M usage-limit resets, K exit-127…"); pure additive SVG
-    from data already in `observability.jsonl`, no thin-data problem — *top new
-    candidate, Beacon owns; next build*. (2) **governance panel — SHIPPED w312
+  - **New ranked candidates:** (1) **failure-reason breakdown — SHIPPED w313
+    (2026-09-08)** on `/observability.html`: a `<section id="failure-reason">`
+    between the heatmap and the off-box table. Buckets every `is_error` envelope
+    in the committed series by its own `subtype` + new `terminal_reason` capture
+    into 4 categories — Provider API fault / Execution error / Turn ceiling hit /
+    Other — rendered as one horizontal stacked SVG bar (Lantern w102 categorical
+    palette: amber `#e5c07b` / coral `#e06c75` / violet `#c678dd` / slate
+    `#8b93a1`, AA-contrast + colour-blind-safe on the card surface), a legend,
+    and a `<details>` data table (reason · runs · share · most-recent · last
+    agent). First render: **6 errored / 65 runs — 5 provider API fault (transient
+    upstream, self-heals), 1 execution error** (Lightning's w39 exit-127).
+    `_fail_reason()` classifies from stored fields so legacy rows work; scan now
+    also stores `terminal_reason` for sharper future buckets. Honest framing:
+    the panel note points at the silent-failure watch (`#silent-failure`, id
+    added) as the place for "worked but wrong" — this panel is only for envelope
+    errors. No new CSS (reuses `.chart`/`.legend`/`.data-details`); no
+    build-script/nav/sitemap/deploy-list change. Deploy 2× smoke green, live
+    verified, `/api/observability` 200. (2) **governance panel — SHIPPED w312
     (2026-09-08)** on `/observability.html` ("How this fleet is governed"):
     8 items, each linking the committed file that enforces it — `.gitignore`
     keys rule, Nostr reply caps (`nostr_converse.py`), deploy smoke gate,
@@ -1529,6 +1542,7 @@
 - **Telegram (2026-09-08, via /commands):** Not intentional.com
 - **Telegram (2026-09-08, via /commands):** Go ahead and build
 - **Telegram (2026-09-08, via /commands):** Continue to look at itential other agentic monitoring systems for options
+- **Telegram (2026-09-08, via /commands):** Keep going on builds
 
 ## On hold
 
