@@ -247,6 +247,22 @@
 
   <section class="card" style="margin-top:1.1rem;">
     <div class="card-head">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10M10 20V4M16 20v-6M22 20H2"/></svg>
+      <h2>Every runtime &mdash; volume &amp; cadence<span class="panel-flag live">Live</span></h2>
+    </div>
+    <p>Every agent that writes a <code>logs/&lt;ts&gt;.json</code> result envelope, cost-bearing or not. The Gemini (Lantern) and DeepSeek (Lightning) runtimes report token counts and timing but no billed dollar figure, so their mean&nbsp;$ reads <em>n/a</em> &mdash; the cost panels above cover only the runs that carry one.</p>
+    <div style="overflow-x:auto;">
+    <table class="data-table" style="min-width:42rem;">
+      <thead><tr><th>Agent</th><th>Model</th><th>Runs</th><th>Mean turns</th><th>Mean wall</th><th>Mean tokens</th><th>Mean&nbsp;$</th><th>Errors</th></tr></thead>
+      <tbody>
+{{OBS_ALL_AGENT_TABLE}}
+      </tbody>
+    </table>
+    </div>
+  </section>
+
+  <section class="card" style="margin-top:1.1rem;">
+    <div class="card-head">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M3 12h18M3 18h18"/><circle cx="7" cy="6" r="1.6" fill="currentColor"/><circle cx="13" cy="12" r="1.6" fill="currentColor"/><circle cx="9" cy="18" r="1.6" fill="currentColor"/></svg>
       <h2>Run explorer<span class="panel-flag live">Live</span></h2>
     </div>
@@ -276,8 +292,8 @@
         <div class="lanes">
           <div class="lane"><div class="lane-top"><span class="lane-dot fam-claude"></span>Beacon<span class="lane-ring">json</span></div><div class="lane-meta">Claude Sonnet &middot; 6&times;/day <code>0&nbsp;*/4</code><br>build &amp; operations &middot; cost envelope on</div></div>
           <div class="lane"><div class="lane-top"><span class="lane-dot fam-claude"></span>Highbeam<span class="lane-ring">json</span></div><div class="lane-meta">Claude Sonnet &middot; 6&times;/day <code>30&nbsp;*/4</code><br>research &amp; review &middot; cost envelope on</div></div>
-          <div class="lane"><div class="lane-top"><span class="lane-dot fam-gemini"></span>Lantern<span class="lane-ring warn">text</span></div><div class="lane-meta">Gemini flash &middot; 4&times;/day <code>0&nbsp;1-23/6</code><br>cross-model review &amp; images &middot; no envelope</div></div>
-          <div class="lane"><div class="lane-top"><span class="lane-dot fam-deepseek"></span>Lightning<span class="lane-ring warn">text</span></div><div class="lane-meta">DeepSeek V4 Pro &middot; 6&times;/day <code>15&nbsp;*/4</code><br>data analysis &amp; metrics &middot; no envelope</div></div>
+          <div class="lane"><div class="lane-top"><span class="lane-dot fam-gemini"></span>Lantern<span class="lane-ring">json</span></div><div class="lane-meta">Gemini flash &middot; 4&times;/day <code>0&nbsp;1-23/6</code><br>cross-model review &amp; images &middot; envelope, no billed cost</div></div>
+          <div class="lane"><div class="lane-top"><span class="lane-dot fam-deepseek"></span>Lightning<span class="lane-ring">json</span></div><div class="lane-meta">DeepSeek V4 Pro &middot; 6&times;/day <code>15&nbsp;*/4</code><br>data analysis &amp; metrics &middot; envelope + OpenRouter cost</div></div>
           <div class="lane"><div class="lane-top"><span class="lane-dot fam-gemini"></span>Tidal<span class="lane-ring">off-box</span></div><div class="lane-meta">Gemini &middot; tidalwake.org<br>dev &amp; security audit &middot; via manifest</div></div>
           <div class="lane"><div class="lane-top"><span class="lane-dot fam-gemini"></span>River<span class="lane-ring">off-box</span></div><div class="lane-meta">Gemini &middot; on Tidal&rsquo;s host<br>autonomous ops &amp; systems</div></div>
           <div class="lane"><div class="lane-top"><span class="lane-dot fam-deepseek"></span>Creek<span class="lane-ring">off-box</span></div><div class="lane-meta">DeepSeek V4 Pro &middot; on Tidal&rsquo;s host<br>security &amp; consistency sentinel</div></div>

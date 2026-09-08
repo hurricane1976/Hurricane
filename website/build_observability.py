@@ -66,6 +66,15 @@ def _iso_from_ts(ts: str) -> str:
     return f"{ts[0:4]}-{ts[4:6]}-{ts[6:8]}T{ts[9:11]}:{ts[11:13]}:{ts[13:15]}Z"
 
 
+MAX_SANE_MS = 2 * 60 * 60 * 1000  # a waking longer than 2h is a runaway, not data
+
+
+def _sane_ms(v):
+    """Drop implausible duration values (e.g. a sibling teeing `date +%s%3N`
+    instead of an elapsed delta) so one bad envelope can't blow out a chart axis."""
+    return v if isinstance(v, (int, float)) and 0 < v <= MAX_SANE_MS else None
+
+
 def scan_json_logs() -> list[dict]:
     """One metrics row per parseable logs/<ts>.json across every agent dir."""
     rows = []
@@ -92,8 +101,8 @@ def scan_json_logs() -> list[dict]:
                 "ts": _iso_from_ts(m.group(1)),
                 "cost_usd": env.get("total_cost_usd"),
                 "turns": env.get("num_turns"),
-                "duration_ms": env.get("duration_ms"),
-                "duration_api_ms": env.get("duration_api_ms"),
+                "duration_ms": _sane_ms(env.get("duration_ms")),
+                "duration_api_ms": _sane_ms(env.get("duration_api_ms")),
                 "input_tokens": u.get("input_tokens"),
                 "output_tokens": u.get("output_tokens"),
                 "cache_read_tokens": u.get("cache_read_input_tokens"),
@@ -446,6 +455,42 @@ def agent_summary(instrumented: list[dict]) -> str:
     return "\n".join(out)
 
 
+def all_agent_summary(rows: list[dict]) -> str:
+    """Every agent that emits a result envelope, cost-bearing or not.
+
+    The cost panels above filter to runs that carry a dollar figure; the Gemini
+    (Lantern) and DeepSeek (Lightning) runtimes report tokens and timing but no
+    billed cost, so this table is the only place they surface -- mean $ reads
+    `n/a` for them.
+    """
+    agents = sorted({r["agent"] for r in rows})
+    if not agents:
+        return ('<tr><td colspan="8" style="text-align:center;color:var(--muted);">'
+                'no result envelopes yet</td></tr>')
+    out = []
+    for a in agents:
+        rs = [r for r in rows if r["agent"] == a]
+        k = len(rs)
+        model = next((r.get("model") for r in reversed(rs) if r.get("model")), None)
+        costs = [r["cost_usd"] for r in rs if isinstance(r.get("cost_usd"), (int, float))]
+        mc = fmt_cost(sum(costs) / len(costs)) if costs else \
+            '<span style="color:var(--muted);">n/a</span>'
+        durs = [r["duration_ms"] for r in rs if isinstance(r.get("duration_ms"), (int, float))]
+        mw = fmt_dur(sum(durs) / len(durs)) if durs else "&mdash;"
+        tt = sum((r.get("turns") or 0) for r in rs) / k
+        tok = sum(_tok_total(r) for r in rs) / k
+        err = sum(1 for r in rs if r.get("is_error"))
+        out.append(
+            f'<tr><td>{esc(a)}</td><td class="mono">{esc(model) if model else "&mdash;"}</td>'
+            f'<td class="mono">{k}</td>'
+            f'<td class="mono">{tt:.0f}</td>'
+            f'<td class="mono">{mw}</td>'
+            f'<td class="mono">{kfmt(tok)}</td>'
+            f'<td class="mono">{mc}</td>'
+            f'<td class="mono">{err}</td></tr>')
+    return "\n".join(out)
+
+
 def cost_table(instrumented: list[dict], keep: int = 14) -> str:
     rs = instrumented[-keep:][::-1]
     return "\n".join(
@@ -573,6 +618,7 @@ def render(store_rows: list[dict]) -> str:
         "{{OBS_DURATION_CHART}}": duration_chart(instrumented),
         "{{OBS_DURATION_NOTE}}": dur_note,
         "{{OBS_AGENT_TABLE}}": agent_summary(instrumented),
+        "{{OBS_ALL_AGENT_TABLE}}": all_agent_summary(store_rows),
         "{{OBS_RUN_ROWS}}": explorer_rows(),
         "{{OBS_ATTRS}}": attrs,
     }

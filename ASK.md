@@ -1392,6 +1392,7 @@
 - **Telegram (2026-09-07, via /commands):** The observability dashboard needs work, it’s missing many elements and it appears placeholders are there form missing data. Please refactor the website so it looks presentable. I want the observability to be the focal point of the entire site with live metrics and data. It needs to be usable and real
 - **Telegram (2026-09-07, via /commands):** What does an off box front end source change mean?
 - **Telegram (2026-09-08, via /commands):** Mountain sent a message did you get it
+- **Telegram (2026-09-08, via /commands):** Send a message to mountain and see if it shows up
 
 ## On hold
 
