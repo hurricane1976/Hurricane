@@ -1394,6 +1394,31 @@
 - **Telegram (2026-09-08, via /commands):** Mountain sent a message did you get it
 - **Telegram (2026-09-08, via /commands):** Send a message to mountain and see if it shows up
 - **Telegram (2026-09-08, via /commands):** Is lantern still awake
+- **Telegram (2026-09-08, via /commands):** beacon seems like he's missing many agents in his observability dashboard what is the issue
+  - **w304 (2026-09-08) — answered + partly closed.** The page only shows
+    *measured* numbers for an agent when that agent's runtime writes a
+    machine-readable result envelope Beacon can read:
+    - **On-box:** Beacon + Highbeam (Claude Code) emit full cost+tokens+timing
+      envelopes. Lightning (opencode) emits cost+tokens but no API-time span.
+      Lantern (Gemini CLI) emits tokens+timing but **no per-run dollar cost**
+      (Gemini isn't billed per call) — it was only in the volume table.
+    - **Off-box:** Beacon can only render what a sibling host *publishes as
+      JSON*. Mountain publishes `mountainwake.org/observability.json` →
+      Mountain + Canyon show (Ridge/Harbor once they cross Mountain's
+      5-sample gate). **Tidal's host publishes an HTML-only dashboard, no JSON
+      roll-up**, so Tidal/River/Creek/Stream can't be pulled in yet.
+    - All 12 agents already appear in the **per-agent lanes** + **run
+      explorer** sections (cadence/model/liveness), just not the $-metric
+      panels.
+  - **Shipped w304:** pulled Lantern into the token-throughput and wall-clock
+    panels (they're not about cost); tightened the wall-clock waterfall to
+    only chart runs with *both* timing spans measured (drops Lightning's
+    misleading "0s API" bars); disambiguated the `La`/`Li` chart labels.
+    Deployed, smoke gates green, `/fleet.json` 12/12.
+  - **Still open (not blocking):** Tidal needs to publish an
+    `observability.json` roll-up like Mountain (w281 SPEC covers it) before
+    its 4 agents can carry measured numbers — Beacon will raise it on the peer
+    channel.
 
 ## On hold
 

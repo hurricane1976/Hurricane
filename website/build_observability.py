@@ -423,7 +423,7 @@ def duration_chart(runs: list[dict], keep: int = DUR_WINDOW) -> str:
         aw = api / axis_top_ms * pw
         ow = over / axis_top_ms * pw
         rows.append(f'<text x="{ml - 8}" y="{y + 11:.1f}" text-anchor="end" class="ax">'
-                    f'{esc(r["agent"][:1])} {esc(_label(r))}</text>')
+                    f'{esc(r["agent"][:2])} {esc(_label(r))}</text>')
         t1 = f'{r["agent"]} · {_label(r)} · API compute {fmt_dur(api)}'
         t2 = f'{r["agent"]} · {_label(r)} · orchestration {fmt_dur(over)}'
         rows.append(f'<rect x="{ml}" y="{y}" width="{aw:.1f}" height="15" rx="2" fill="{TEAL}" '
@@ -642,6 +642,15 @@ def render(store_rows: list[dict]) -> str:
 
     instrumented = [r for r in store_rows if isinstance(r.get("cost_usd"), (int, float))]
     n = len(instrumented)
+    # The token and wall-clock panels are not about cost, so they also carry the
+    # runtimes that emit usage/timing but no billed dollar figure (Lantern /
+    # Gemini). Only the cost chart, cost KPIs and cost table stay cost-gated.
+    tok_rows = [r for r in store_rows if _tok_total(r) > 0]
+    # The wall-clock waterfall promises "both spans measured", so it only carries
+    # runs whose envelope reports duration_api_ms as well as total wall time.
+    dur_rows = [r for r in store_rows
+                if isinstance(r.get("duration_ms"), (int, float)) and r["duration_ms"] > 0
+                and isinstance(r.get("duration_api_ms"), (int, float)) and r["duration_api_ms"] > 0]
     total_cost = sum(r["cost_usd"] for r in instrumented)
     total_tok = sum(_tok_total(r) for r in instrumented)
     cache_read = sum((r.get("cache_read_tokens") or 0) for r in instrumented)
@@ -698,7 +707,7 @@ def render(store_rows: list[dict]) -> str:
 
     # Note sits under the duration chart, which shows the last DUR_WINDOW runs;
     # keep its means on the same window so prose and chart never diverge.
-    dur_win = instrumented[-DUR_WINDOW:]
+    dur_win = dur_rows[-DUR_WINDOW:]
     dw = len(dur_win)
     mean_api = (sum(min(r.get("duration_api_ms") or 0, r.get("duration_ms") or 0)
                     for r in dur_win) / dw) if dw else 0
@@ -708,7 +717,7 @@ def render(store_rows: list[dict]) -> str:
         f"<strong>{fmt_dur(mean_api)}</strong> of a <strong>{fmt_dur(mean_wall_win)}</strong> "
         f"mean waking; the rest is orchestration &mdash; tool calls, file I/O, git, "
         f"the deploy gate."
-    ) if n else "Fills on the first instrumented run."
+    ) if dw else "Fills on the first instrumented run."
 
     repl = {
         "{{OBS_GENERATED_AT}}": now,
@@ -727,8 +736,8 @@ def render(store_rows: list[dict]) -> str:
         "{{OBS_COST_INTRO}}": cost_intro,
         "{{OBS_COST_CHART}}": cost_chart(instrumented),
         "{{OBS_COST_TABLE}}": cost_table(instrumented),
-        "{{OBS_TOKEN_CHART}}": token_chart(instrumented),
-        "{{OBS_DURATION_CHART}}": duration_chart(instrumented),
+        "{{OBS_TOKEN_CHART}}": token_chart(tok_rows),
+        "{{OBS_DURATION_CHART}}": duration_chart(dur_rows),
         "{{OBS_DURATION_NOTE}}": dur_note,
         "{{OBS_AGENT_TABLE}}": agent_summary(instrumented),
         "{{OBS_ALL_AGENT_TABLE}}": all_agent_summary(store_rows),
