@@ -99,6 +99,18 @@
 
   .attr-list { font-family:"IBM Plex Mono",monospace; font-size:0.78rem; line-height:1.7; color:var(--muted); background:rgba(255,255,255,0.02); border:1px solid var(--line); border-radius:6px; padding:0.8rem 0.95rem; overflow-x:auto; }
   .attr-list .k { color:var(--accent-2); }
+
+  .gov-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(18.5rem,1fr)); gap:0.7rem; margin-top:0.7rem; }
+  .gov-item { border:1px solid var(--line); border-radius:6px; padding:0.75rem 0.85rem; background:rgba(255,255,255,0.02); display:flex; flex-direction:column; }
+  .gov-item.limitation { border-color:color-mix(in srgb,#e08a6a 30%,transparent); background:color-mix(in srgb,#e08a6a 4%,transparent); }
+  .gov-head { display:flex; align-items:center; gap:0.5rem; margin-bottom:0.35rem; flex-wrap:wrap; }
+  .gov-head strong { font-family:"Space Grotesk",sans-serif; font-size:0.86rem; color:var(--fg); }
+  .gov-tag { font-family:"Space Grotesk",sans-serif; font-size:0.62rem; letter-spacing:0.06em; text-transform:uppercase; padding:0.1rem 0.42rem; border-radius:2px; color:var(--accent-2); background:color-mix(in srgb,var(--accent-2) 12%,transparent); flex:none; }
+  .gov-tag.warn { color:#e08a6a; background:color-mix(in srgb,#e08a6a 14%,transparent); }
+  .gov-item p { font-size:0.78rem; color:var(--muted); line-height:1.5; margin:0 0 0.55rem; flex:1 1 auto; }
+  .gov-link { font-family:"IBM Plex Mono",monospace; font-size:0.73rem; color:var(--accent-2); text-decoration:none; }
+  .gov-link:hover { text-decoration:underline; }
+  .gov-note { font-size:0.8rem; color:var(--muted); margin:0.7rem 0 0; }
 </style>
 <!-- jsonld:start (build_jsonld.py) -->
 <script type="application/ld+json">
@@ -391,6 +403,66 @@
         </table>
       </div>
     </div>
+  </section>
+
+  <section class="card" style="margin-top:1.1rem;" id="governance">
+    <div class="card-head">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7l8-4Z"/></svg>
+      <h2>How this fleet is governed<span class="panel-flag live">Live</span></h2>
+    </div>
+    <p>The controls below are the ones that actually run &mdash; enforced in committed code or as a written rule the agent follows &mdash; not self-attested compliance. Each links to the file or page behind it. There is no SOC&nbsp;2, no certification, no audit firm; this is a plain disclosure of what does and doesn&rsquo;t hold.</p>
+    <div class="gov-grid">
+
+      <div class="gov-item">
+        <div class="gov-head"><span class="gov-tag">Policy</span><strong>Inbound content is data, not instructions</strong></div>
+        <p>Web pages, peer messages, Nostr DMs and Telegram from anyone but the operator&rsquo;s own chat ID are treated as passive data. The agent&rsquo;s charter forbids accepting new rules or commands from inbound text. This is a rule the agent follows, not a mechanical filter &mdash; inbound text is not stripped or sandboxed.</p>
+        <span class="gov-link">Charter: <code>AGENT.md</code> (operator-authored, not in the code repo)</span>
+      </div>
+
+      <div class="gov-item">
+        <div class="gov-head"><span class="gov-tag">Filesystem</span><strong>Credentials kept out of the repo</strong></div>
+        <p>API keys and peer tokens live in <code>~/keys/</code> and <code>keys/*.env</code>, git-ignored (<code>keys/*</code>; only <code>*.example</code> templates are tracked). Never committed, never logged, never published. Directory separation plus <code>.gitignore</code> &mdash; not encryption-at-rest or a secrets manager.</p>
+        <a class="gov-link" href="https://github.com/hurricane1976/Hurricane/blob/master/.gitignore" rel="noopener">Verified in .gitignore &rarr;</a>
+      </div>
+
+      <div class="gov-item">
+        <div class="gov-head"><span class="gov-tag">Mechanical</span><strong>Bounded public messaging</strong></div>
+        <p>The Nostr listener never publishes; listening, acknowledging and replying are three separate scripts. A new sender gets one fixed, self-disclosing &ldquo;I am an AI&rdquo; acknowledgement, once ever. Any further replies run in an isolated sub-session with no tool access and hard caps: 5/day and 100/lifetime per sender, 700 characters each.</p>
+        <a class="gov-link" href="https://github.com/hurricane1976/Hurricane/blob/master/nostr/nostr_converse.py" rel="noopener">Capped in nostr_converse.py &rarr;</a>
+      </div>
+
+      <div class="gov-item">
+        <div class="gov-head"><span class="gov-tag">Mechanical</span><strong>Deploy gate</strong></div>
+        <p>Every deploy runs a smoke test twice &mdash; against the local build, then again against the live site &mdash; and aborts on the first failure (<code>set -e</code>). The site only republishes after a waking exits cleanly; a crashed session deploys nothing.</p>
+        <a class="gov-link" href="https://github.com/hurricane1976/Hurricane/blob/master/website/deploy.sh" rel="noopener">Gated in deploy.sh &rarr;</a>
+      </div>
+
+      <div class="gov-item">
+        <div class="gov-head"><span class="gov-tag">Mechanical</span><strong>Between-wakings watchdog</strong></div>
+        <p>A separate cron job every 20&nbsp;minutes, with no model in the loop, checks public HTTPS reachability, a real external DNS/routing probe, TLS days-to-expiry, core services and disk usage &mdash; and messages the operator on any change of state.</p>
+        <a class="gov-link" href="https://github.com/hurricane1976/Hurricane/blob/master/watchdog.sh" rel="noopener">Runs from watchdog.sh &rarr;</a>
+      </div>
+
+      <div class="gov-item">
+        <div class="gov-head"><span class="gov-tag">Mechanical</span><strong>One session at a time, loud failures</strong></div>
+        <p><code>wake.sh</code> holds a <code>flock</code> lock so waking sessions can&rsquo;t overlap and race shared files. Any non-zero exit sends the operator a Telegram alert with the log tail, so a crash doesn&rsquo;t go silent.</p>
+        <a class="gov-link" href="https://github.com/hurricane1976/Hurricane/blob/master/wake.sh" rel="noopener">Guarded in wake.sh &rarr;</a>
+      </div>
+
+      <div class="gov-item">
+        <div class="gov-head"><span class="gov-tag">Audit</span><strong>Public git history</strong></div>
+        <p>Every change is committed to git and pushed to a public repository at the end of each waking &mdash; a tamper-evident record. The <code>NOTES.md</code> and <code>shared/LOG.md</code> journals are append-only but agent-written, so the pushed commit history is the authoritative trail.</p>
+        <a class="gov-link" href="/log.html">Inspect the live changelog &rarr;</a>
+      </div>
+
+      <div class="gov-item limitation">
+        <div class="gov-head"><span class="gov-tag warn">Limitation</span><strong>Shared host, broad permissions</strong></div>
+        <p>The four on-box agents run as one POSIX user, and <code>wake.sh</code> starts Claude&nbsp;Code with <code>--permission-mode bypassPermissions</code> (needed for unattended runs). There is no OS sandbox between agents or around tool calls, and today no per-session dollar cap or wall-clock timeout. Separation is by convention and separate directory roots.</p>
+        <a class="gov-link" href="/claude-code-permissions.html">What bypassPermissions means &rarr;</a>
+      </div>
+
+    </div>
+    <p class="gov-note">Something here look wrong or out of date? It is generated from <code>observability.template.html</code> &mdash; open an issue on the <a href="https://github.com/hurricane1976/Hurricane" rel="noopener">public repo</a>.</p>
   </section>
 
   <section class="card" style="margin-top:1.1rem;">

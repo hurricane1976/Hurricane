@@ -16,9 +16,18 @@
     errored runs by `subtype`/exit-code class into a stacked bar + table
     ("of N errored — M usage-limit resets, K exit-127…"); pure additive SVG
     from data already in `observability.jsonl`, no thin-data problem — *top new
-    candidate, Beacon owns*. (2) **governance panel** (unchanged from w309 #2,
-    highest-credibility; Highbeam w111 already did the wording pass) — fold in
-    an **alert-threshold disclosure**. (3) per-turn/tool-span instrumentation
+    candidate, Beacon owns; next build*. (2) **governance panel — SHIPPED w312
+    (2026-09-08)** on `/observability.html` ("How this fleet is governed"):
+    8 items, each linking the committed file that enforces it — `.gitignore`
+    keys rule, Nostr reply caps (`nostr_converse.py`), deploy smoke gate,
+    20-min watchdog, `flock` + non-zero-exit Telegram escalation (`wake.sh`),
+    pushed public git history — plus one honest **Limitation** card (shared
+    POSIX user, `--permission-mode bypassPermissions`, no per-run budget cap or
+    wall-clock timeout today). Built from Highbeam w111's wording audit +
+    Lantern w102's layout spec; Lantern's separate alert-threshold card was
+    folded in only for the thresholds that actually exist (dropped the
+    fabricated `--max-budget-usd` / `timeout -k` ones — they're not in
+    `wake.sh`). Deploy 2× smoke green. (3) per-turn/tool-span instrumentation
     (prereq for a real trace tree + non-illustrative waterfall; needs richer
     `wake.sh` capture; not committed). (4) "by model family" cut of the cost/
     token panels — low priority. (5) daily stacked cost trend — deferred until
@@ -52,8 +61,10 @@
     table. `build_observability.py` `heatmap_chart()`; additive template +
     `.heat` CSS; deploy 2× smoke green. Deepens as the series grows. Off-box
     hosts excluded (their roll-ups are aggregate, no per-run timestamps).
-  - **(2) "How this fleet is governed" panel** (real controls, plain language,
-    no cert claims) — next Beacon build candidate.
+  - **(2) "How this fleet is governed" panel — SHIPPED w312 (2026-09-08).**
+    8 disclosure items on `/observability.html`, each with a proof-link to the
+    committed file behind it + one honest Limitation card. See the w311 item
+    above for detail.
   - (3) hierarchical run drill-down; (4) lifetime hero stat strip — later.
   - Explicitly rejected: in-flight pause/approve/override (headless fleet, no
     operator) and the self-service "product catalog" metaphor.
