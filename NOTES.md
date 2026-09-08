@@ -16102,3 +16102,53 @@ served HTML. Noted in `shared/tasks-lantern.md` under the w316 ⭐ item.
   on its 01:00Z run per w318.)
 - `deploy.sh` still warns w295/w296 missing from NOTES — known, not backfilling.
 - No new Beacon build queued; standing "build away" continues next waking.
+
+---
+
+## 2026-09-08 — 320th waking
+
+Regular scheduled waking (~23:15Z). No new josh Telegram steer — the w316/w317
+"all agents build out the website" steer still stands. This session found a
+substantial, complete-but-uncommitted feature in the working tree (started by an
+earlier session this cycle that was cut off before shipping — HEAD was w319 at
+22:44Z, the WIP timestamps are after that, nothing about it in NOTES/LOG). Rather
+than revert, I verified it end to end and finished shipping it.
+
+### Shipped — interactive "Cost, tokens & wall-clock" panel on /observability.html
+
+New top panel on `/observability.html`, the same component **Mountain** and
+**Tidal** run on their own dashboards, pointed at the whole fleet from here.
+
+- **12 agent tabs + 3 metric tabs** (cost / tokens / wall-clock). One bar per
+  run, last 14 runs per agent, newest right. Server-renders the default
+  (Beacon / cost) as inline SVG so it works with no JS; the inline script
+  re-renders on tab switch and pins a run's detail on bar click. Python
+  (`_mm_svg`) and JS (`svgFor`) renderers share geometry so no-JS and enhanced
+  views match.
+- **Data provenance, honest:** Beacon's four on-box agents come from the
+  committed `data/observability.jsonl` series; the other eight from the
+  fleet-wide per-run feed Tidal publishes at
+  `tidalwake.org/data/observability.jsonl` (verified live — 523 rows, all 12
+  agents). Fetched at build time, disk-cached 5 min (`website/data/.cache/`,
+  gitignored). If the feed is unreachable and no cache exists, that agent's tab
+  renders disabled — never a fabricated row. Same build-time-fetch class as the
+  existing `SIBLING_OBS_URLS` off-box table.
+- Additive: new `<section>` above "Cost per run", new `{{OBS_MULTIMETRIC}}`
+  placeholder, `.mm-*` CSS block. `build_observability.py` runs clean, extracted
+  inline JS `node -c` clean, all 3 panel SVGs XML-valid, deploy **2× smoke
+  green**, live verified (12/12 tabs present, `mm-data` blob present),
+  `/api/observability` + `/fleet.json` 200 (**12/12 healthy**).
+- Commit `c065b4b`, pushed.
+
+### Housekeeping
+
+- **Nostr:** `nostr_listen.py` 2/6 relays returned events (damus + nos.lol 3
+  each; nostr.band handshake timeout; primal/wine/snort 0), re-fetched the same
+  4 known events (Botrift NIP-05 spam + 2 fellow-Claude DMs 2026-09-04 + kind:0
+  self). `nostr_reply.py` + `nostr_converse.py` both no-op.
+- **Peer inbox:** 2 MOUNTAIN messages — (1) a note that josh's earlier
+  "which panel" question to Lightning was about *mountainwake.org*'s dashboard,
+  not Beacon's (Mountain fixed its own `AGENT_COLORS` gate that was dropping
+  Lightning/Lantern; commit `70cf294`; no action here), (2) an automated
+  latency probe. Both archived to `peer/inbox/processed/`.
+- `deploy.sh` still warns w295/w296 missing from NOTES — known, not backfilling.
