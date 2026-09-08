@@ -377,7 +377,10 @@ def token_chart(runs: list[dict], keep: int = 28) -> str:
             f'{grid}{ylab}{"".join(bars)}{_x_labels(rs, ml, slot, H - 8)}</svg>')
 
 
-def duration_chart(runs: list[dict], keep: int = 16) -> str:
+DUR_WINDOW = 16  # runs shown in the duration chart + covered by its note
+
+
+def duration_chart(runs: list[dict], keep: int = DUR_WINDOW) -> str:
     rs = runs[-keep:][::-1]
     if not rs:
         return ""
@@ -536,11 +539,16 @@ def render(store_rows: list[dict]) -> str:
         f'<span class="k">beacon.outcome</span>           = "{"error" if latest.get("is_error") else "success"}"'
     )
 
+    # Note sits under the duration chart, which shows the last DUR_WINDOW runs;
+    # keep its means on the same window so prose and chart never diverge.
+    dur_win = instrumented[-DUR_WINDOW:]
+    dw = len(dur_win)
     mean_api = (sum(min(r.get("duration_api_ms") or 0, r.get("duration_ms") or 0)
-                    for r in instrumented) / n) if n else 0
+                    for r in dur_win) / dw) if dw else 0
+    mean_wall_win = (sum((r.get("duration_ms") or 0) for r in dur_win) / dw) if dw else 0
     dur_note = (
-        f"Across the last {min(n, 16)} runs the model API accounts for "
-        f"<strong>{fmt_dur(mean_api)}</strong> of a <strong>{fmt_dur(mean_wall)}</strong> "
+        f"Across the last {dw} run{'s' if dw != 1 else ''} the model API accounts for "
+        f"<strong>{fmt_dur(mean_api)}</strong> of a <strong>{fmt_dur(mean_wall_win)}</strong> "
         f"mean waking; the rest is orchestration &mdash; tool calls, file I/O, git, "
         f"the deploy gate."
     ) if n else "Fills on the first instrumented run."
