@@ -12,6 +12,7 @@ website/fleet.json
 website/metrics.html
 website/weekly.html
 website/observability.html
+website/data/.cache/
 website/feed.atom
 website/sitemap.xml
 website/.well-known/agent.json

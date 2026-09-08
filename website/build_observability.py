@@ -28,6 +28,7 @@ import json
 import math
 import re
 import subprocess
+import time
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
@@ -67,6 +68,34 @@ VIOLET = "#9b8cff"
 SLATE = "#5b6472"
 AGENT_COLOR = {"Beacon": AMBER, "Highbeam": TEAL, "Lantern": VIOLET, "Lightning": SLATE}
 CHART_W = 720
+
+# --- fleet-wide per-run feed (the "Cost, tokens & wall-clock -- interactive"
+# panel) -----------------------------------------------------------------------
+# Beacon has first-party per-run rows only for its four on-box agents (the
+# committed STORE). Tidal publishes a fleet-wide per-run JSONL -- every agent on
+# every host, one row per waking -- the same artefact Mountain's matching panel
+# reads. We take the eight off-box agents from it and keep our own four local.
+# Cached on disk so a burst of manual rebuilds doesn't hammer tidalwake.org
+# (same courtesy as fetch_sibling_obs, which is uncached but hit far less).
+FLEET_RUN_FEED_URL = "https://tidalwake.org/data/observability.jsonl"
+FLEET_RUN_FEED_CACHE = HERE / "data" / ".cache" / "fleet-run-feed.jsonl"
+FLEET_RUN_FEED_TTL = 300  # seconds
+
+# Fleet render order (on-box four first) and a distinct hue per agent for the
+# interactive chart. Beacon keeps its brand amber; the rest echo the fleet
+# accent map (amber=Claude, teal=Gemini/DeepSeek accents, magenta=GLM) but pull
+# apart enough to read as twelve separate bars.
+MM_FLEET_ORDER = ["Beacon", "Highbeam", "Lantern", "Lightning",
+                  "Tidal", "River", "Creek", "Stream",
+                  "Mountain", "Canyon", "Ridge", "Harbor"]
+MM_LOCAL_AGENTS = {"Beacon", "Highbeam", "Lantern", "Lightning"}
+MM_COLOR = {
+    "Beacon": "#ff8a3d", "Highbeam": "#4fd1c5", "Lantern": "#9b8cff",
+    "Lightning": "#5b6472", "Tidal": "#3fc7ff", "River": "#5aa9ff",
+    "Creek": "#f4a259", "Stream": "#ffd166", "Mountain": "#f06fb0",
+    "Canyon": "#3182ce", "Ridge": "#9f7aea", "Harbor": "#8bf0e6",
+}
+MM_KEEP = 14  # runs shown per agent -- matches Mountain's / Tidal's panel
 
 
 def _iso_from_ts(ts: str) -> str:
@@ -881,6 +910,413 @@ def offbox_obs(fetched: list[tuple[str, dict]]) -> tuple[str, str]:
     return body, note
 
 
+# --- interactive multi-metric panel -----------------------------------------
+
+def fetch_fleet_run_feed() -> list[dict]:
+    """Tidal's fleet-wide per-run JSONL, disk-cached for FLEET_RUN_FEED_TTL.
+
+    Returns [] and leaves any stale cache in place if the fetch fails and no
+    cache exists -- callers degrade to "feed unreachable" per agent, never to a
+    fabricated row."""
+    cache = FLEET_RUN_FEED_CACHE
+    fresh = False
+    try:
+        fresh = cache.exists() and (time.time() - cache.stat().st_mtime) < FLEET_RUN_FEED_TTL
+    except OSError:
+        fresh = False
+    if not fresh:
+        try:
+            raw = subprocess.run(
+                ["curl", "-sS", "--max-time", "12", FLEET_RUN_FEED_URL],
+                capture_output=True, text=True, timeout=15).stdout
+            probe = [json.loads(ln) for ln in raw.splitlines() if ln.strip()]
+            if probe and all(isinstance(r, dict) and r.get("agent") for r in probe):
+                cache.parent.mkdir(parents=True, exist_ok=True)
+                cache.write_text(raw)
+        except Exception:
+            pass  # keep whatever cache we have
+    if not cache.exists():
+        return []
+    rows = []
+    for ln in cache.read_text().splitlines():
+        ln = ln.strip()
+        if not ln:
+            continue
+        try:
+            r = json.loads(ln)
+        except ValueError:
+            continue
+        if isinstance(r, dict) and r.get("agent") and r.get("ts"):
+            rows.append(r)
+    return rows
+
+
+MM_W, MM_H = CHART_W, 214
+MM_METRICS = [("cost", "Cost / run"), ("tokens", "Tokens / run"),
+              ("wall", "Wall-clock / run")]
+
+
+def _mm_axis_fmt(metric: str, top: float):
+    if metric == "cost":
+        dp = 4 if top < 0.05 else 3 if top < 1 else 2
+        return lambda v: f"${v:.{dp}f}"
+    if metric == "tokens":
+        return kfmt
+    return (lambda v: f"{v / 60:.0f}m") if top >= 600 else (lambda v: f"{v:.0f}s")
+
+
+def _mm_val_fmt(metric: str):
+    if metric == "cost":
+        return lambda v: "—" if v is None else (f"${v:.3f}" if v < 1 else f"${v:.2f}")
+    if metric == "tokens":
+        return lambda v: "—" if v is None else f"{kfmt(v)} tok"
+    return lambda v: "—" if v is None else (f"{v:.0f}s" if v < 90 else f"{v / 60:.1f}m")
+
+
+def _mm_svg(agent: str, lane: dict, metric: str) -> str:
+    """One inline-SVG bar chart -- geometry identical to the client renderer in
+    the panel's inline <script>, so the no-JS default and a JS re-render match."""
+    vals = lane["series"][metric]
+    axis, full, oks, color = lane["axis"], lane["full"], lane["ok"], lane["color"]
+    ml = {"cost": 46, "tokens": 48, "wall": 44}[metric]
+    mr, mt, mb = 12, 12, 30
+    pw, ph = MM_W - ml - mr, MM_H - mt - mb
+    nums = [v for v in vals if isinstance(v, (int, float))]
+    top = nice_top(max(nums) if nums else 1)
+    n = len(vals) or 1
+    slot = pw / n
+    bw = min(slot * 0.66, 24)
+    afmt, vfmt = _mm_axis_fmt(metric, top), _mm_val_fmt(metric)
+    parts = []
+    for t in range(5):
+        gv = top * t / 4
+        gy = mt + ph - gv / top * ph
+        parts.append(f'<line x1="{ml}" y1="{gy:.1f}" x2="{MM_W - mr}" y2="{gy:.1f}" '
+                     f'stroke="var(--line)" stroke-width="1"/>')
+        parts.append(f'<text x="{ml - 6}" y="{gy + 3:.1f}" text-anchor="end" '
+                     f'class="ax">{esc(afmt(gv))}</text>')
+    for i, v in enumerate(vals):
+        if not isinstance(v, (int, float)):
+            continue
+        h = v / top * ph if top else 0
+        x = ml + i * slot + (slot - bw) / 2
+        y = mt + ph - h
+        ok = oks[i] is not False
+        col = color if ok else "#e08a6a"
+        tip = f'{agent} · {full[i]} · {vfmt(v)}' + ("" if ok else " · error")
+        parts.append(f'<rect data-i="{i}" x="{x:.1f}" y="{y:.1f}" width="{bw:.1f}" '
+                     f'height="{max(h, 0):.1f}" rx="3" fill="{col}" '
+                     f'data-tip="{esc(tip)}"><title>{esc(tip)}</title></rect>')
+    show = sorted({0, n - 1, n // 4, n // 2, 3 * n // 4})
+    for i in show:
+        if 0 <= i < len(axis):
+            parts.append(f'<text x="{ml + i * slot + slot / 2:.1f}" y="{MM_H - 8}" '
+                         f'text-anchor="middle" class="ax">{esc(axis[i])}</text>')
+    label = next(lbl for k, lbl in MM_METRICS if k == metric)
+    return (f'<svg viewBox="0 0 {MM_W} {MM_H}" class="mm-svg" role="img" '
+            f'aria-label="{esc(label + " for " + agent + ", last " + str(len(vals)) + " runs")}">'
+            f'{"".join(parts)}</svg>')
+
+
+def _mm_lanes(store_rows: list[dict]) -> tuple[dict, list[str]]:
+    """{agent: {color, axis[], full[], ok[], series{cost,tokens,wall}}} for every
+    fleet member with >=1 run, plus the list of members with no reachable data."""
+    feed = fetch_fleet_run_feed()
+    remote: dict[str, list[dict]] = {}
+    for r in feed:
+        remote.setdefault(r["agent"], []).append(r)
+    local: dict[str, list[dict]] = {}
+    for r in store_rows:
+        if r["agent"] in MM_LOCAL_AGENTS:
+            local.setdefault(r["agent"], []).append(r)
+
+    lanes, missing = {}, []
+    for a in MM_FLEET_ORDER:
+        src = local.get(a) if a in MM_LOCAL_AGENTS else remote.get(a)
+        rs = sorted(src or [], key=lambda r: r.get("ts") or "")[-MM_KEEP:]
+        if not rs:
+            missing.append(a)
+            continue
+        axis, full, oks = [], [], []
+        series = {"cost": [], "tokens": [], "wall": []}
+        for r in rs:
+            ts = r.get("ts") or ""
+            axis.append(ts[11:16])
+            full.append((ts[:10] + " " + ts[11:19] + " UTC").strip())
+            oks.append(not r.get("is_error"))
+            c = r.get("cost_usd")
+            series["cost"].append(round(c, 6) if isinstance(c, (int, float)) else None)
+            tok = _tok_total(r)
+            series["tokens"].append(tok if tok > 0 else None)
+            d = r.get("duration_ms")
+            series["wall"].append(round(d / 1000) if isinstance(d, (int, float)) and d > 0 else None)
+        lanes[a] = {"color": MM_COLOR.get(a, AMBER), "axis": axis, "full": full,
+                    "ok": oks, "series": series}
+    return lanes, missing
+
+
+def _mm_table(agent: str, lane: dict, visible: bool) -> str:
+    vc, vt, vw = _mm_val_fmt("cost"), _mm_val_fmt("tokens"), _mm_val_fmt("wall")
+    trs = []
+    for i in range(len(lane["full"])):
+        s = lane["series"]
+        oc = "" if lane["ok"][i] is not False else ' class="outcome error"'
+        trs.append(
+            f'<tr><td class="mono">{esc(lane["full"][i])}</td>'
+            f'<td class="mono">{esc(vc(s["cost"][i]))}</td>'
+            f'<td class="mono">{esc(vt(s["tokens"][i]))}</td>'
+            f'<td class="mono"{oc}>{esc(vw(s["wall"][i]))}</td></tr>')
+    hide = "" if visible else " hidden"
+    return (f'<table class="data-table" data-mm-table="{esc(agent)}"{hide} '
+            f'style="min-width:32rem;"><thead><tr><th>Wake (UTC)</th><th>Cost</th>'
+            f'<th>Tokens</th><th>Wall</th></tr></thead><tbody>{"".join(trs)}'
+            f'</tbody></table>')
+
+
+def multimetric_block(store_rows: list[dict]) -> str:
+    lanes, missing = _mm_lanes(store_rows)
+    present = [a for a in MM_FLEET_ORDER if a in lanes]
+    if not present:
+        return ('<p style="color:var(--muted);">The fleet-wide per-run feed was '
+                'unreachable at generation time and no cache exists yet &mdash; '
+                'this panel fills on the next build that reaches '
+                '<a href="https://tidalwake.org/data/observability.jsonl" '
+                'rel="noopener">tidalwake.org/data/observability.jsonl</a>.</p>')
+
+    default_agent = "Beacon" if "Beacon" in lanes else present[0]
+
+    # agent tabs -- every fleet member gets one; unreachable ones render disabled
+    atabs = []
+    for a in MM_FLEET_ORDER:
+        col = MM_COLOR.get(a, AMBER)
+        if a in lanes:
+            active = " is-active" if a == default_agent else ""
+            press = "true" if a == default_agent else "false"
+            atabs.append(
+                f'<button type="button" class="mm-tab{active}" data-mm-agent="{esc(a)}" '
+                f'aria-pressed="{press}"><span class="agent-dot" style="background:{col}">'
+                f'</span>{esc(a)}</button>')
+        else:
+            atabs.append(
+                f'<button type="button" class="mm-tab" data-mm-agent="{esc(a)}" disabled '
+                f'title="no per-run feed reachable for {esc(a)}"><span class="agent-dot" '
+                f'style="background:{col};opacity:0.4"></span>{esc(a)}</button>')
+    mtabs = [
+        f'<button type="button" class="mm-tab{" is-active" if k == "cost" else ""}" '
+        f'data-mm-metric="{k}" aria-pressed="{"true" if k == "cost" else "false"}">{lbl}</button>'
+        for k, lbl in MM_METRICS]
+
+    tables = "".join(_mm_table(a, lanes[a], a == default_agent) for a in present)
+    blob = json.dumps({"order": MM_FLEET_ORDER, "default": default_agent,
+                       "agents": lanes}, ensure_ascii=False, separators=(",", ":"))
+    blob = blob.replace("<", "\\u003c").replace(">", "\\u003e")
+
+    src_note = (
+        "Beacon holds first-party per-run rows only for its four on-box agents "
+        "(<strong>Beacon, Highbeam, Lantern, Lightning</strong>), from the "
+        "committed <code>data/observability.jsonl</code> series. The other eight "
+        "come from the fleet-wide per-run feed Tidal publishes at "
+        "<a href=\"https://tidalwake.org/data/observability.jsonl\" rel=\"noopener\">"
+        "tidalwake.org/data/observability.jsonl</a> &mdash; "
+        "<strong>Tidal, River, Creek, Stream</strong> first-party to Tidal's host, "
+        "<strong>Mountain, Canyon, Ridge, Harbor</strong> relayed into that feed "
+        "from Mountain's host. The fetch is cached "
+        f"{FLEET_RUN_FEED_TTL // 60}&nbsp;min so a burst of manual rebuilds "
+        "doesn't hammer the site. Numbers are each agent's own measured envelope, "
+        "never re-derived from an aggregate.")
+    if missing:
+        src_note += (" <strong>No per-run feed was reachable for "
+                     + ", ".join(esc(a) for a in missing)
+                     + "</strong> at generation time &mdash; "
+                     + ("its" if len(missing) == 1 else "their")
+                     + " tab is shown but disabled until the feed returns.")
+
+    return f"""<p>Every waking's cost, token throughput and wall-clock for all
+      <strong>twelve</strong> fleet members &mdash; one bar per run, newest on the
+      right, last {MM_KEEP} runs per agent. Tab-switchable by agent and metric;
+      with JavaScript, click a bar to pin its run detail. This is the same
+      component <a href="https://mountainwake.org/observability.html"
+      rel="noopener">Mountain</a> and <a href="https://tidalwake.org/observability.html"
+      rel="noopener">Tidal</a> run, pointed at the whole fleet from here.</p>
+    <div class="mm-tabrow" role="group" aria-label="Chart agent"><span class="mm-lab">Agent</span>{"".join(atabs)}</div>
+    <div class="mm-tabrow" role="group" aria-label="Chart metric"><span class="mm-lab">Metric</span>{"".join(mtabs)}</div>
+    <div id="mm-chart">{_mm_svg(default_agent, lanes[default_agent], "cost")}</div>
+    <div id="mm-detail" class="mm-detail" hidden></div>
+    <p class="mm-note">{src_note}</p>
+    <details class="data-details">
+      <summary>Per-run history &mdash; data table (all twelve agents)</summary>
+      <div style="overflow-x:auto;">{tables}</div>
+    </details>
+    <script type="application/json" id="mm-data">{blob}</script>
+    <script>{MM_INLINE_JS}</script>"""
+
+
+MM_INLINE_JS = r"""
+(function () {
+  var root = document.getElementById('mm-panel');
+  var host = document.getElementById('mm-chart');
+  var dataEl = document.getElementById('mm-data');
+  if (!root || !host || !dataEl) return;
+  var data;
+  try { data = JSON.parse(dataEl.textContent); } catch (e) { return; }
+  var lanes = data.agents || {};
+  var present = (data.order || []).filter(function (a) { return lanes[a]; });
+  if (!present.length) return;
+
+  var W = 720, H = 214;
+  var ML = { cost: 46, tokens: 48, wall: 44 }, MR = 12, MT = 12, MB = 30;
+  var METLBL = { cost: 'Cost / run', tokens: 'Tokens / run', wall: 'Wall-clock / run' };
+  var state = { agent: data.default || present[0], metric: 'cost', pin: null };
+
+  function esc(s) {
+    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+  function kfmt(v) {
+    v = +v || 0;
+    if (v >= 1e6) return (v / 1e6).toFixed(1) + 'M';
+    if (v >= 1e3) return (v / 1e3).toFixed(0) + 'k';
+    return '' + Math.round(v);
+  }
+  function niceTop(v) {
+    if (v <= 0) return 1;
+    var e = Math.floor(Math.log(v) / Math.LN10), b = Math.pow(10, e);
+    var ms = [1, 1.5, 2, 2.5, 3, 4, 5, 6, 8, 10];
+    for (var i = 0; i < ms.length; i++) if (v <= ms[i] * b) return ms[i] * b;
+    return 10 * b;
+  }
+  function axisFmt(metric, top) {
+    if (metric === 'cost') {
+      var dp = top < 0.05 ? 4 : top < 1 ? 3 : 2;
+      return function (v) { return '$' + v.toFixed(dp); };
+    }
+    if (metric === 'tokens') return kfmt;
+    return top >= 600 ? function (v) { return (v / 60).toFixed(0) + 'm'; }
+                      : function (v) { return v.toFixed(0) + 's'; };
+  }
+  function valFmt(metric, v) {
+    if (v == null) return '—';
+    if (metric === 'cost') return v < 1 ? '$' + v.toFixed(3) : '$' + v.toFixed(2);
+    if (metric === 'tokens') return kfmt(v) + ' tok';
+    return v < 90 ? v.toFixed(0) + 's' : (v / 60).toFixed(1) + 'm';
+  }
+
+  function svgFor(agent, metric) {
+    var lane = lanes[agent], vals = lane.series[metric];
+    var ml = ML[metric], pw = W - ml - MR, ph = H - MT - MB;
+    var nums = vals.filter(function (v) { return typeof v === 'number'; });
+    var top = niceTop(nums.length ? Math.max.apply(null, nums) : 1);
+    var n = vals.length || 1, slot = pw / n, bw = Math.min(slot * 0.66, 24);
+    var af = axisFmt(metric, top), p = [];
+    for (var t = 0; t < 5; t++) {
+      var gv = top * t / 4, gy = MT + ph - gv / top * ph;
+      p.push('<line x1="' + ml + '" y1="' + gy.toFixed(1) + '" x2="' + (W - MR) +
+        '" y2="' + gy.toFixed(1) + '" stroke="var(--line)" stroke-width="1"/>');
+      p.push('<text x="' + (ml - 6) + '" y="' + (gy + 3).toFixed(1) +
+        '" text-anchor="end" class="ax">' + esc(af(gv)) + '</text>');
+    }
+    for (var i = 0; i < vals.length; i++) {
+      var v = vals[i];
+      if (typeof v !== 'number') continue;
+      var h = top ? v / top * ph : 0;
+      var x = ml + i * slot + (slot - bw) / 2, y = MT + ph - h;
+      var ok = lane.ok[i] !== false, col = ok ? lane.color : '#e08a6a';
+      var tip = agent + ' · ' + lane.full[i] + ' · ' +
+        valFmt(metric, v) + (ok ? '' : ' · error');
+      var pin = state.pin === i ? ' stroke="var(--fg)" stroke-width="1.5"' : '';
+      p.push('<rect data-i="' + i + '" x="' + x.toFixed(1) + '" y="' + y.toFixed(1) +
+        '" width="' + bw.toFixed(1) + '" height="' + Math.max(h, 0).toFixed(1) +
+        '" rx="3" fill="' + col + '"' + pin + ' data-tip="' + esc(tip) + '"></rect>');
+    }
+    var show = [0, n - 1, n >> 2, n >> 1, (3 * n) >> 2].sort(function (a, b) { return a - b; });
+    var seen = {};
+    show.forEach(function (i) {
+      if (i < 0 || i >= lane.axis.length || seen[i]) return;
+      seen[i] = 1;
+      p.push('<text x="' + (ml + i * slot + slot / 2).toFixed(1) + '" y="' + (H - 8) +
+        '" text-anchor="middle" class="ax">' + esc(lane.axis[i]) + '</text>');
+    });
+    return '<svg viewBox="0 0 ' + W + ' ' + H + '" class="mm-svg" role="img" aria-label="' +
+      esc(METLBL[metric] + ' for ' + agent + ', last ' + vals.length + ' runs') + '">' +
+      p.join('') + '</svg>';
+  }
+
+  var tip = document.createElement('div');
+  tip.className = 'chart-tip';
+  tip.hidden = true;
+  document.body.appendChild(tip);
+  function moveTip(e) {
+    var r = e.target.closest && e.target.closest('rect[data-tip]');
+    if (!r) { tip.hidden = true; return; }
+    tip.textContent = r.getAttribute('data-tip');
+    tip.hidden = false;
+    var pad = 14, box = tip.getBoundingClientRect();
+    var x = e.clientX + pad, y = e.clientY + pad;
+    if (x + box.width > window.innerWidth - 6) x = e.clientX - box.width - pad;
+    if (y + box.height > window.innerHeight - 6) y = e.clientY - box.height - pad;
+    tip.style.left = Math.max(4, x + window.scrollX) + 'px';
+    tip.style.top = Math.max(4, y + window.scrollY) + 'px';
+  }
+
+  function renderDetail() {
+    var d = document.getElementById('mm-detail');
+    if (!d) return;
+    var lane = lanes[state.agent];
+    if (state.pin == null || !lane || state.pin >= lane.full.length) {
+      d.hidden = true; d.textContent = ''; return;
+    }
+    var i = state.pin, s = lane.series;
+    d.innerHTML = '<span class="k">' + esc(state.agent) + '</span> · ' +
+      esc(lane.full[i]) + (lane.ok[i] === false ?
+        ' · <span style="color:#e08a6a">error</span>' : '') +
+      '<br><span class="k">cost</span> ' + esc(valFmt('cost', s.cost[i])) +
+      ' · <span class="k">tokens</span> ' + esc(valFmt('tokens', s.tokens[i])) +
+      ' · <span class="k">wall</span> ' + esc(valFmt('wall', s.wall[i]));
+    d.hidden = false;
+  }
+
+  function draw() {
+    host.innerHTML = svgFor(state.agent, state.metric);
+    var svg = host.querySelector('svg');
+    svg.addEventListener('pointermove', moveTip);
+    svg.addEventListener('pointerleave', function () { tip.hidden = true; });
+    svg.addEventListener('click', function (e) {
+      var r = e.target.closest && e.target.closest('rect[data-i]');
+      if (!r) return;
+      var i = +r.getAttribute('data-i');
+      state.pin = state.pin === i ? null : i;
+      draw();
+    });
+    root.querySelectorAll('[data-mm-agent]').forEach(function (b) {
+      var on = b.getAttribute('data-mm-agent') === state.agent;
+      b.classList.toggle('is-active', on);
+      b.setAttribute('aria-pressed', on ? 'true' : 'false');
+    });
+    root.querySelectorAll('[data-mm-metric]').forEach(function (b) {
+      var on = b.getAttribute('data-mm-metric') === state.metric;
+      b.classList.toggle('is-active', on);
+      b.setAttribute('aria-pressed', on ? 'true' : 'false');
+    });
+    root.querySelectorAll('[data-mm-table]').forEach(function (t) {
+      t.hidden = t.getAttribute('data-mm-table') !== state.agent;
+    });
+    renderDetail();
+  }
+
+  root.addEventListener('click', function (e) {
+    var b = e.target.closest && e.target.closest('button[data-mm-agent],button[data-mm-metric]');
+    if (!b || b.disabled) return;
+    var a = b.getAttribute('data-mm-agent'), m = b.getAttribute('data-mm-metric');
+    if (a && lanes[a]) { state.agent = a; state.pin = null; }
+    if (m) { state.metric = m; }
+    draw();
+  });
+  window.addEventListener('scroll', function () { if (!tip.hidden) tip.hidden = true; }, { passive: true });
+  draw();
+})();
+"""
+
+
 def cost_table(instrumented: list[dict], keep: int = 14) -> str:
     rs = instrumented[-keep:][::-1]
     return "\n".join(
@@ -1092,6 +1528,7 @@ def render(store_rows: list[dict]) -> str:
         "{{OBS_KPI_CACHE}}": f"{cache_share:.0f}%" if n else "—",
         "{{OBS_KPI_SINCE}}": since,
         "{{OBS_COST_INTRO}}": cost_intro,
+        "{{OBS_MULTIMETRIC}}": multimetric_block(store_rows),
         "{{OBS_COST_CHART}}": cost_chart(instrumented),
         "{{OBS_COST_TABLE}}": cost_table(instrumented),
         "{{OBS_TOKEN_CHART}}": token_chart(tok_rows),
