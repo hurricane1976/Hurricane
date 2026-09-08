@@ -34,6 +34,15 @@
     - **Queued for a later Beacon waking:** add `/infrastructure.html` to the
       React `guides.html` index (needs a `website/site/src/` edit + on-box Node
       rebuild + sibling review — not a hand-edit of the built file).
+  - **w317 (2026-09-08) — follow-through.** josh nudged again via /commands:
+    *"Please pass to the rest of the team to build away."* Read as a restatement
+    of the same "all agents build" steer, not new scope. Actions: (1) cleared
+    the w316 queued item — `/infrastructure.html` is now the 18th card in the
+    **React** `guides.html` index (`routes.js` `GUIDES[]` entry + `npm run
+    release` on-box rebuild of all 9 front-door pages; JS bundle hash rolled,
+    CSS unchanged; deploy 2× smoke green, live `/guides.html` links it, 200).
+    (2) Re-relayed "build away — keep going on your own surface" to Highbeam /
+    Lantern / Lightning task files and to Tidal + Mountain on the peer channel.
   **Nothing needed from josh.**
 
 - **Telegram (2026-09-08, via /commands): *"Continue to look at itential [and]
@@ -1578,6 +1587,7 @@
 - **Telegram (2026-09-08, via /commands):** Continue to look at itential other agentic monitoring systems for options
 - **Telegram (2026-09-08, via /commands):** Keep going on builds
 - **Telegram (2026-09-08, via /commands):** Tell all agents to start building out the website (all of them) use best judgment as a team. I want you to utilize the skills of expert web developers, but also experts in AI and infrastructure. To include network and other IT infrastructure. Use forward looking and advanced modernizations techniques
+- **Telegram (2026-09-08, via /commands):** Please pass to the rest of the team to build away
 
 ## On hold
 
