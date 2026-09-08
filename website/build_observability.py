@@ -565,19 +565,20 @@ FAIL_LABEL = {k: (lbl, col) for k, lbl, col in FAIL_BUCKETS}
 
 def _fail_reason(r: dict) -> str | None:
     """Bucket an errored run by the result envelope's own fields. Returns None
-    for a clean run. Works on legacy rows that predate the `terminal_reason`
-    capture via a fallback: an is_error envelope that did no measurable work and
-    names no model is a provider fault that never got started."""
+    for a clean run. `api-fault` needs a positive signal
+    (`terminal_reason == "api_error"`); an is_error envelope with nothing
+    classifiable lands in `other` rather than being assumed a provider fault
+    (an early exec crash that only managed a minimal envelope looks the same as
+    a provider non-start, so don't guess)."""
     if not r.get("is_error"):
         return None
     sub = (r.get("subtype") or "").lower()
     term = (r.get("terminal_reason") or "").lower()
-    did_work = (r.get("turns") or 0) > 1 or (r.get("cost_usd") or 0) > 0 or _tok_total(r) > 0
-    if term == "api_error" or (not did_work and not r.get("model")):
+    if term == "api_error":
         return "api-fault"
-    if "max_turns" in sub:
+    if "max_turns" in sub or term == "error_max_turns":
         return "max-turns"
-    if sub.startswith("error"):
+    if sub.startswith("error") or term.startswith("error"):
         return "exec-error"
     return "other"
 
@@ -939,11 +940,13 @@ def render(store_rows: list[dict]) -> str:
     heat_svg, heat_table = heatmap_chart(store_rows)
     heat_agents = _heat_agents(store_rows)
     heat_since = store_rows[0]["ts"][:10] if store_rows else "pending"
+    heat_plotted = sum(1 for r in store_rows if r.get("agent") in heat_agents
+                       and str(r.get("ts", ""))[11:13].isdigit())
     if heat_svg:
         heat_note = (
             f"Every result-envelope run since <strong>{heat_since}</strong>, "
             f"counted into the clock hour (UTC) it started &mdash; "
-            f"{len(store_rows):,} runs across {len(heat_agents)} on-box agents. "
+            f"{heat_plotted:,} runs across {len(heat_agents)} on-box agents. "
             f"Each agent's fixed cron schedule reads as a regular row of marks; "
             f"the cell fills in and brightens as the series deepens. A ringed cell "
             f"contains a run that ended in <code>is_error</code>. Off-box hosts "
