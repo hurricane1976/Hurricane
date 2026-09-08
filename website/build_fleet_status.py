@@ -164,6 +164,26 @@ def max_waking(notes: Path, word: str) -> str:
     return str(max(nums)) if nums else "?"
 
 
+def envelope_verdict(logs_dir: Path, dt: datetime):
+    """True / False / None from the same-timestamp <ts>.json result envelope.
+
+    A manual `/wake` (or any run whose wake.sh was interrupted before the
+    terminal `exit code:` echo) can leave a well-formed result envelope on disk
+    without an exit line in the paired `.log`. Both on-box siblings now emit
+    that envelope (the same one `build_observability.py` scans), so trust its
+    own is_error/subtype rather than reporting a healthy run as "session likely
+    killed". Returns True (clean), False (envelope reports an error), or None
+    (no usable envelope -- fall back to the log-text heuristic)."""
+    env = logs_dir / dt.strftime("%Y%m%dT%H%M%SZ.json")
+    try:
+        d = json.loads(env.read_text())
+    except (OSError, ValueError):
+        return None
+    if not isinstance(d, dict) or "is_error" not in d:
+        return None
+    return (d.get("is_error") is False) and (d.get("subtype") in (None, "success"))
+
+
 def newest_log(logs_dir: Path):
     """(datetime_from_filename, text, size) for the newest YYYYMMDDT..Z.log, or None."""
     if not logs_dir.is_dir():
@@ -230,6 +250,13 @@ def sibling_row(name, role, host, model, cadence_str, logs_dir, notes, notes_wor
         entry.update(state="ok", signal="last run exited 0")
     elif clean:
         entry.update(state="stale", signal=f"last clean run was {ago(dt)}; a wake may have been missed")
+    elif not ran and envelope_verdict(logs_dir, dt) is True:
+        if age < STALE_AFTER_SEC:
+            entry.update(state="ok", signal="last run completed (result envelope; no exit line in log -- likely a manual /wake)")
+        else:
+            entry.update(state="stale", signal=f"last completed run was {ago(dt)}; a wake may have been missed")
+    elif not ran and envelope_verdict(logs_dir, dt) is False:
+        entry.update(state="error", signal=f"run from {ago(dt)} reported an error in its result envelope")
     elif not ran:
         entry.update(state="error", signal=f"run from {ago(dt)} never wrote an exit line -- session likely killed")
     else:
