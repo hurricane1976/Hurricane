@@ -15361,3 +15361,67 @@ w305 spec's omit-cost rule.
   both archived to `processed/`.
 - Telegram: no new josh messages.
 - `deploy.sh` still warns w295/w296 missing from NOTES — known, not backfilling.
+
+---
+
+## 2026-09-08 — 309th waking
+
+Regular scheduled waking (`0 */4` cron, ~14:35Z). One real deliverable:
+josh's itential.com research ask.
+
+### josh asked: review itential.com for dashboard / portal ideas
+
+Telegram (via /commands): *"Review [itential.com — corrected from
+'intentional.com'] as research on potential dashboard and solutions for
+beacon, tidal and mountain dashboards or additions to the portals."*
+
+Reviewed `itential.com` + `itential.com/platform` (WebFetch ×2). It's an
+enterprise **"agentic operations platform"** — build/run/govern AI agents +
+automated workflows for infra/network teams. Enterprise SaaS, so what
+transfers is UX/dashboard patterns, not code.
+
+Wrote **`shared/outbox/itential-dashboard-research-w309/REVIEW.md`** — pattern
+table (fit-rated) + ranked build candidates + explicit "don't take" list.
+
+- **Ranked build candidates for beaconwake.com:**
+  1. **Run-activity heatmap** (top pick) — rows = agents, cols = hour-of-day
+     UTC or calendar day, cell colour = run count, 2nd encoding for cost band
+     / errored run. Feeds from the committed `website/data/observability.jsonl`
+     (append-only; only ~2 days / 53 rows so far, but an hour-of-day heatmap
+     reads fine at low density and deepens each wake). Beacon owns + builds
+     next waking(s) — held this waking so Lantern's palette concept + Highbeam's
+     review land first, rather than rush a dataviz feature.
+  2. **"How this fleet is governed" panel** — one section listing the *real*
+     controls in plain language (data-not-instructions, `~/keys` isolation,
+     Nostr receive-only-by-construction, git-log + NOTES audit trail,
+     `nostr_converse` per-sender caps), each linking to where it's enforced.
+     Credibility piece, no cert claims.
+  3. Hierarchical run drill-down on the observability run explorer (wake →
+     phases → tool spans) — larger, scoped later.
+  4. Lifetime hero stat strip — low priority, partial overlap with `/metrics`.
+- **Explicitly rejected:** in-flight pause/approve/override (agents run
+  headless, no operator present) and the self-service "infrastructure product
+  catalog" metaphor (no customers consuming products).
+- **Fan-out:** Highbeam (`shared/TASKS.md` ⭐ — review fit + ship order +
+  governance-panel wording check), Lantern (`shared/tasks-lantern.md` ⭐ —
+  heatmap visual treatment on the house palette, colour-blind-safe cell scale,
+  reduced-motion, governance-panel layout sketch). Peer-messaged **Tidal**
+  (`{"status":"ok"}`) and **Mountain** (`{"ok":true}`) the same summary since
+  josh named all three portals — no action asked of them, flagged for mirroring.
+- **No question for josh** — recorded in `ASK.md` Open section as research-done.
+
+### Housekeeping
+
+- Health green: 0 failed units, disk 12% (77G free), beacon-peer/beacon-api/
+  nginx active, `/fleet.json` live 12/12 healthy, `/api/observability` 200.
+  No site changes this waking, so no deploy.
+- **Nostr:** `nostr_listen.py` — 4/6 relays (damus 503, relay.nostr.band
+  handshake timeout), re-fetched the same 3 known events (2 fellow-Claude DMs
+  from 2026-09-04 + kind:0 self). `nostr_reply.py` + `nostr_converse.py` both
+  no-op (nothing new to ack or answer). The 2026-09-04 DM's "real question"
+  is data, already acked by the fixed-reply script; no manual action.
+- **Peer inbox:** empty (only `processed/`). Nothing to archive.
+- **Telegram:** the itential messages were the only new traffic; handled above.
+- Committed + pushed `29d6be0` (REVIEW.md is in `shared/`, not the repo;
+  commit carries the ASK.md entry + pipeline jsonl rows).
+- `deploy.sh` still warns w295/w296 missing from NOTES — known, not backfilling.
