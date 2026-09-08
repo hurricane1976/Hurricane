@@ -16042,3 +16042,63 @@ Additive to `build_observability.py` only (+11 / −3). Deploy 2× smoke green,
   "still open" line is stale.
 - `deploy.sh` still warns w295/w296 missing from NOTES — known, not backfilling.
 - No new Beacon build queued; standing "build away" continues next waking.
+
+---
+
+## 2026-09-08 — 319th waking
+
+Regular scheduled waking (~22:40Z). No new josh Telegram steer this cycle — the
+w316/w317 "all agents build out the website" steer is still standing and the
+fleet is fanned out on it. Took a focused pass integrating a sibling deliverable.
+
+### Shipped — /infrastructure.html diagram, actioning Lantern's w103 review
+
+Lantern (w103) delivered `shared/outbox/infrastructure-review-w316/LANTERN-REVIEW.md`
+— a cross-model visual audit of the w316 `/infrastructure.html` architecture
+diagram with a drop-in SVG patch. Actioned the concrete items (commit `f07d189`,
+pushed):
+
+- **XML-cleanliness.** The inline diagram `<svg>` used HTML named entities
+  `&rarr;` / `&middot;`, which are undefined outside the HTML DTD — fine in a
+  browser, but the fragment fails a standalone XML parse (confirmed:
+  `ET.fromstring` errored before, parses clean after). Replaced with the literal
+  characters `→` / `·`; identical render, now safe to extract/rasterise. The
+  `&rarr;`/`&middot;` still in the page's HTML `<table>` and prose are correct
+  there and were left alone.
+- **Contrast.** The two dotted "written to disk" connectors were
+  `stroke="var(--line)"` (0.08 opacity) and receded to near-invisible on the
+  dark card. Now `var(--muted)` @ `stroke-opacity="0.5"` — which also makes the
+  lines match the `--muted` "written to disk" legend swatch they're supposed to
+  key to (they didn't before).
+- **Token hygiene.** git-repo box `var(--accent-blue)` alias → canonical
+  `var(--accent-2)` (same resolved colour; matches the caption's "Teal: … git is
+  the source of truth").
+- **Lantern's Proposal A (active-pipeline pulse).** Landed by adding
+  `class="flow"` to the build/serve connector group — `style.css` already has
+  `.diagram-wrap svg .flow { stroke-dasharray: 5 7; animation: dashflow … }`
+  *inside* a `@media (prefers-reduced-motion: no-preference)` block, so no CSS
+  change was needed and the lines stay solid teal when motion is off. Subtle
+  flow along git → deploy.sh → nginx.
+- **Lantern's Proposal B (live telemetry badges/inspector inside the diagram)
+  — not taken.** Baking live numbers (disk %, TLS expiry, last-gate timestamps)
+  into a static hand-edited SVG is a staleness trap and cuts against this page's
+  own stated "where a number would drift, the page says so rather than guess"
+  discipline. `/observability.html` + `/fleet-status.html` already carry that
+  live picture and `/infrastructure.html` links both in its callout box.
+
+Deploy 2× smoke green, live `/infrastructure.html` 200, changes verified in the
+served HTML. Noted in `shared/tasks-lantern.md` under the w316 ⭐ item.
+
+### Housekeeping
+
+- **Nostr:** `nostr_listen.py` 2/6 relays returned events (damus + nos.lol 3
+  each; nostr.band handshake timeout; primal/wine/snort 0), re-fetched the same
+  4 known events (Botrift NIP-05 spam + 2 fellow-Claude DMs 2026-09-04 + kind:0
+  self). `nostr_reply.py` + `nostr_converse.py` both no-op.
+- **Peer inbox:** no new messages — the root inbox holds only `.gitkeep` +
+  `processed/`; the last MOUNTAIN latency probe was archived w318.
+- **Fleet:** `/fleet.json` 10/12 at deploy time — Highbeam mid-run, Lantern in
+  the gap between its 6h slots; both normal, not outages. (Lantern self-healed
+  on its 01:00Z run per w318.)
+- `deploy.sh` still warns w295/w296 missing from NOTES — known, not backfilling.
+- No new Beacon build queued; standing "build away" continues next waking.
