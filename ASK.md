@@ -4,20 +4,30 @@
 
 - **Telegram (2026-09-08, via /commands): *"Review [itential.com] as research on
   potential dashboard and solutions for beacon, tidal and mountain dashboards or
-  additions to the portals."*** — **research done w309 (2026-09-08); no question
-  for josh, first build pending.** Reviewed `itential.com` + `/platform`
-  (an enterprise "agentic operations platform" — UX patterns transfer, not
-  code). Write-up: `shared/outbox/itential-dashboard-research-w309/REVIEW.md`.
-  Ranked build candidates for beaconwake.com: **(1) run-activity heatmap**
-  (rows=agents × cols=hour-of-day/day, cell=run count, from
-  `observability.jsonl`) — Beacon builds next waking(s); **(2) "How this fleet
-  is governed" panel** (real controls, plain language, no cert claims);
-  (3) hierarchical run drill-down on the run explorer; (4) lifetime hero stat
-  strip. Explicitly rejected: in-flight pause/approve/override (headless fleet,
-  no operator) and the self-service "product catalog" metaphor. Fanned out to
-  Highbeam (`TASKS.md` review) + Lantern (`tasks-lantern.md` visual concept);
-  peer-messaged Tidal + Mountain (both delivered) since josh named all three
-  portals. **Nothing needed from josh.**
+  additions to the portals."*** — **research done w309; candidate #1 (run-activity
+  heatmap) shipped w310 (2026-09-08). No question for josh.** Reviewed
+  `itential.com` + `/platform` (an enterprise "agentic operations platform" — UX
+  patterns transfer, not code). Write-up:
+  `shared/outbox/itential-dashboard-research-w309/REVIEW.md`.
+  - **(1) Run-activity heatmap — SHIPPED w310** on `/observability.html`: rows =
+    on-box agents (Beacon/Highbeam/Lantern/Lightning), cols = 24 clock hours
+    (UTC), cell = run count from `observability.jsonl`, single-hue amber
+    sequential ramp (validated for the dark surface via the dataviz skill's
+    `validate_palette.js --ordinal`), a 2px amber-red ring on any cell holding an
+    `is_error` run, per-cell count label + tooltip, and a 3-hour-block data
+    table. `build_observability.py` `heatmap_chart()`; additive template +
+    `.heat` CSS; deploy 2× smoke green. Deepens as the series grows. Off-box
+    hosts excluded (their roll-ups are aggregate, no per-run timestamps).
+  - **(2) "How this fleet is governed" panel** (real controls, plain language,
+    no cert claims) — next Beacon build candidate.
+  - (3) hierarchical run drill-down; (4) lifetime hero stat strip — later.
+  - Explicitly rejected: in-flight pause/approve/override (headless fleet, no
+    operator) and the self-service "product catalog" metaphor.
+  - **Mountain** independently built its own run-activity heatmap the same day
+    (day-of-week × hour-of-day axis for its single-host sample) — good parallel,
+    no coordination needed; both additive. Highbeam (`TASKS.md`) + Lantern
+    (`tasks-lantern.md`) still hold the review / visual-refinement asks.
+  **Nothing needed from josh.**
 
 - **Telegram (2026-09-08, via /commands): *"can you tell all the other agents to
   make the necessary json configurations so you can see telemetry"*** — follow-up
@@ -1472,6 +1482,7 @@
 - **Telegram (2026-09-08, via /commands):** Review intentional .com as research on potential dashboard and solutions for beacon, tidal and mountain dashboards or additions to the portals.
 - **Telegram (2026-09-08, via /commands):** Sorry itential.com
 - **Telegram (2026-09-08, via /commands):** Not intentional.com
+- **Telegram (2026-09-08, via /commands):** Go ahead and build
 
 ## On hold
 

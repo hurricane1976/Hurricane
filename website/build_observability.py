@@ -437,6 +437,115 @@ def duration_chart(runs: list[dict], keep: int = DUR_WINDOW) -> str:
             f'{"".join(vlines)}{"".join(rows)}{"".join(xlab)}</svg>')
 
 
+# --- run-activity heatmap (agent x hour-of-day) --------------------------
+
+# Single-hue amber sequential ramp, validated for a dark chart surface
+# (dataviz scripts/validate_palette.js --mode dark --surface #10151d --ordinal:
+# monotone lightness, adjacent dL >= 0.06, light end 2.5:1 on the card, one hue).
+HEAT_RAMP = ["#7a4a2a", "#a35c30", "#c8763a", "#e89444", "#ffb85c"]
+HEAT_EMPTY = "rgba(255,255,255,0.03)"
+HEAT_ERR = "#e08a6a"
+HEAT_ORDER = ["Beacon", "Highbeam", "Lantern", "Lightning"]
+
+
+def _heat_agents(rows: list[dict]) -> list[str]:
+    present = {r["agent"] for r in rows}
+    ordered = [a for a in HEAT_ORDER if a in present]
+    return ordered + sorted(present - set(ordered))
+
+
+def heatmap_chart(rows: list[dict]) -> tuple[str, str]:
+    """(inline-SVG heatmap, data-table body) of runs by agent x clock hour (UTC).
+
+    One cell per (agent, hour); fill = sequential amber scaled to the busiest
+    cell; a cell that contains an errored run gets an amber-red ring. Every
+    on-box agent that writes a result envelope is a row -- off-box hosts publish
+    only aggregate roll-ups (no per-run timestamps) so they cannot appear here.
+    """
+    agents = _heat_agents(rows)
+    if not rows or not agents:
+        return "", ""
+    # grid[agent][hour] = [count, errored_count, latest_date]
+    grid = {a: {h: [0, 0, ""] for h in range(24)} for a in agents}
+    for r in rows:
+        a = r["agent"]
+        if a not in grid:
+            continue
+        try:
+            h = int(r["ts"][11:13])
+        except (ValueError, IndexError):
+            continue
+        cell = grid[a][h]
+        cell[0] += 1
+        if r.get("is_error"):
+            cell[1] += 1
+        d = r["ts"][:10]
+        if d > cell[2]:
+            cell[2] = d
+    peak = max((grid[a][h][0] for a in agents for h in range(24)), default=0) or 1
+
+    ml, mr, mt, mb = 96, 12, 22, 24
+    cw = (CHART_W - ml - mr) / 24
+    ch = 26
+    gap = 2
+    H = mt + ch * len(agents) + mb
+
+    marks, xlab, ylab = [], [], []
+    for h in range(0, 24, 3):
+        gx = ml + h * cw + cw / 2
+        xlab.append(f'<text x="{gx:.1f}" y="{mt - 8:.1f}" text-anchor="middle" '
+                    f'class="ax">{h:02d}</text>')
+    for ai, a in enumerate(agents):
+        cy = mt + ai * ch
+        ylab.append(f'<text x="{ml - 10}" y="{cy + ch / 2 + 3:.1f}" text-anchor="end" '
+                    f'class="ax">{esc(a)}</text>')
+        for h in range(24):
+            cnt, errs, last = grid[a][h]
+            x = ml + h * cw
+            if cnt == 0:
+                marks.append(f'<rect class="cell" x="{x + gap / 2:.1f}" y="{cy + gap / 2:.1f}" '
+                             f'width="{cw - gap:.1f}" height="{ch - gap:.1f}" rx="2" '
+                             f'fill="{HEAT_EMPTY}"/>')
+                continue
+            bucket = min(5, math.ceil(cnt / peak * 5)) or 1
+            fill = HEAT_RAMP[bucket - 1]
+            ring = (f' stroke="{HEAT_ERR}" stroke-width="2"' if errs else "")
+            tip = (f'{a} · {h:02d}:00–{(h + 1) % 24:02d}:00 UTC · '
+                   f'{cnt} run{"s" if cnt != 1 else ""}'
+                   + (f' ({errs} errored)' if errs else "")
+                   + (f' · latest {last}' if last else ""))
+            marks.append(
+                f'<rect class="cell" x="{x + gap / 2:.1f}" y="{cy + gap / 2:.1f}" '
+                f'width="{cw - gap:.1f}" height="{ch - gap:.1f}" rx="2" fill="{fill}"{ring} '
+                f'data-tip="{esc(tip)}"><title>{esc(tip)}</title></rect>')
+            tcol = "#0a0d13" if bucket >= 3 else "#e8eaed"
+            marks.append(
+                f'<text x="{x + cw / 2:.1f}" y="{cy + ch / 2 + 3:.1f}" text-anchor="middle" '
+                f'style="font-family:\'IBM Plex Mono\',monospace;font-size:10px;fill:{tcol};'
+                f'pointer-events:none;">{cnt}</text>')
+
+    svg = (f'<svg viewBox="0 0 {CHART_W} {H}" class="heat" role="img" '
+           f'aria-label="Run count by agent and clock hour (UTC); busiest cell is '
+           f'{peak} runs">{"".join(xlab)}{"".join(ylab)}{"".join(marks)}</svg>')
+
+    # data table: agent x 3-hour block totals, so it fits without a 24-col scroll
+    blocks = [(b, b + 3) for b in range(0, 24, 3)]
+    head = "".join(f"<th>{s:02d}–{e:02d}</th>" for s, e in blocks)
+    trs = []
+    for a in agents:
+        tds = []
+        row_total = 0
+        for s, e in blocks:
+            v = sum(grid[a][h][0] for h in range(s, e))
+            row_total += v
+            tds.append(f'<td class="mono">{v or "&middot;"}</td>')
+        trs.append(f'<tr><td>{esc(a)}</td>' + "".join(tds)
+                   + f'<td class="mono">{row_total}</td></tr>')
+    table = (f'<thead><tr><th>Agent</th>{head}<th>Total</th></tr></thead>'
+             f'<tbody>{"".join(trs)}</tbody>')
+    return svg, table
+
+
 # --- tables --------------------------------------------------------------
 
 def agent_summary(instrumented: list[dict]) -> str:
@@ -721,6 +830,23 @@ def render(store_rows: list[dict]) -> str:
         f"the deploy gate."
     ) if dw else "Fills on the first instrumented run."
 
+    heat_svg, heat_table = heatmap_chart(store_rows)
+    heat_agents = _heat_agents(store_rows)
+    heat_since = store_rows[0]["ts"][:10] if store_rows else "pending"
+    if heat_svg:
+        heat_note = (
+            f"Every result-envelope run since <strong>{heat_since}</strong>, "
+            f"counted into the clock hour (UTC) it started &mdash; "
+            f"{len(store_rows):,} runs across {len(heat_agents)} on-box agents. "
+            f"Each agent's fixed cron schedule reads as a regular row of marks; "
+            f"the cell fills in and brightens as the series deepens. A ringed cell "
+            f"contains a run that ended in <code>is_error</code>. Off-box hosts "
+            f"publish aggregate roll-ups without per-run timestamps, so they are "
+            f"not on this grid."
+        )
+    else:
+        heat_note = "Fills on the first instrumented run."
+
     repl = {
         "{{OBS_GENERATED_AT}}": now,
         "{{OBS_INSTRUMENTED_COUNT}}": str(n),
@@ -741,6 +867,9 @@ def render(store_rows: list[dict]) -> str:
         "{{OBS_TOKEN_CHART}}": token_chart(tok_rows),
         "{{OBS_DURATION_CHART}}": duration_chart(dur_rows),
         "{{OBS_DURATION_NOTE}}": dur_note,
+        "{{OBS_HEATMAP}}": heat_svg,
+        "{{OBS_HEATMAP_TABLE}}": heat_table,
+        "{{OBS_HEATMAP_NOTE}}": heat_note,
         "{{OBS_AGENT_TABLE}}": agent_summary(instrumented),
         "{{OBS_ALL_AGENT_TABLE}}": all_agent_summary(store_rows),
         "{{OBS_OFFBOX_TABLE}}": offbox_body,

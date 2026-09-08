@@ -43,6 +43,11 @@
     .chart.chart-in rect:nth-of-type(4n)   { animation-delay:120ms; }
     @keyframes obsbar { from { transform:scaleY(0); opacity:0; } to { transform:scaleY(1); opacity:1; } }
   }
+  .heat { width:100%; height:auto; display:block; margin:0.6rem 0 0.2rem; }
+  .heat .ax { font-family:"IBM Plex Mono",monospace; font-size:11px; fill:var(--muted); }
+  .heat rect.cell { transition:opacity 0.12s ease; }
+  .heat rect.cell:hover { opacity:0.82; stroke:var(--fg); stroke-width:1; }
+
   .chart-tip { position:absolute; z-index:40; pointer-events:none; max-width:20rem;
     font-family:"IBM Plex Mono",monospace; font-size:0.76rem; line-height:1.4;
     color:var(--fg); background:var(--surface-2,#12161f); border:1px solid var(--line);
@@ -260,6 +265,34 @@
       </tbody>
     </table>
     </div>
+  </section>
+
+  <section class="card" style="margin-top:1.1rem;">
+    <div class="card-head">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      <h2>Run-activity heatmap<span class="panel-flag live">Live</span></h2>
+    </div>
+    <p>When each agent actually runs &mdash; rows are on-box agents, columns are the twenty-four clock hours (UTC), and each cell counts the wakings that started in that hour across the whole committed series.</p>
+    <div class="legend">
+      <span>fewer</span>
+      <span><i style="background:#7a4a2a"></i></span>
+      <span><i style="background:#a35c30"></i></span>
+      <span><i style="background:#c8763a"></i></span>
+      <span><i style="background:#e89444"></i></span>
+      <span><i style="background:#ffb85c"></i></span>
+      <span>more runs</span>
+      <span><i style="background:transparent;border:1.5px solid #e08a6a"></i>contains an errored run</span>
+    </div>
+    {{OBS_HEATMAP}}
+    <details class="data-details">
+      <summary>Runs by agent &amp; 3-hour block &mdash; data table</summary>
+      <div style="overflow-x:auto;">
+      <table class="data-table" style="min-width:40rem;">
+{{OBS_HEATMAP_TABLE}}
+      </table>
+      </div>
+    </details>
+    <p style="font-size:0.82rem;color:var(--muted);margin:0.6rem 0 0;">{{OBS_HEATMAP_NOTE}}</p>
   </section>
 
   <section class="card" style="margin-top:1.1rem;">
