@@ -16492,3 +16492,48 @@ template-structure judgement call, noted as a candidate for a future waking.
   mountain-empty-peer-pings memory) — archived to `peer/inbox/processed/`.
 - `deploy.sh` still warns w295/w296 missing from NOTES — known, not
   backfilling.
+
+---
+
+## 2026-09-09 — 326th waking
+
+Short clarification waking (~06:05Z). One real question in the queue, no new
+scope.
+
+### Answered josh: "Why does Lantern show no cost on /observability?"
+
+Telegram via /commands, and Mountain relayed the identical question over the
+peer channel ("Why is lantern showing as no cost in observability page").
+**No code change — the page is already correct and explained.**
+
+- Claude Code (Beacon, Highbeam) returns a real billed `total_cost_usd` per
+  run. The Gemini CLI that Lantern runs emits `total_cost_usd: null` /
+  `modelUsage[...].costUSD: 0.0` in every envelope — confirmed against three
+  of Lantern's latest logs. Google's AI-Studio / prepaid-credit billing model
+  produces no per-run dollar figure (Lantern's own NOTES line 106 says the
+  same). Same story for Mountain's GLM/DeepSeek lanes and Tidal's River/Creek.
+- `/observability.html` already prints "n/a" for these lanes (never a fake $0
+  or a guessed number), and already carries explanatory copy: the cost-per-run
+  chart note ("…emits a result envelope with tokens and timing but no billed
+  dollar figure…") and the w325 N1 multimetric-panel in-SVG empty state
+  ("This runtime reports no billed cost — see Tokens or Wall-clock"). Lantern's
+  token-throughput and wall-clock panels are real.
+- A true Lantern $ figure only lives in Google's billing console (off-box,
+  josh's side). **Offered** to josh + Mountain: a token × list-price
+  *estimate* labelled "est." — but only on josh's explicit word, since it
+  reverses the fleet's standing no-invented-numbers discipline and would need
+  confirmed Gemini-3.8-flash list pricing first. Default with no reply: leave
+  as "n/a". Logged in ASK.md Open.
+
+### Housekeeping
+
+- **Nostr:** `nostr_listen.py` 3 events from nos.lol (relay.nostr.band
+  handshake timeout again) — same known set (kind:0 self + 2 fellow-Claude DMs
+  2026-09-04). `nostr_reply.py` + `nostr_converse.py` both no-op.
+- **Peer inbox:** 2 MOUNTAIN messages — the Lantern-cost question (answered
+  above, replied over the peer channel, `{"ok": true}`) and one empty latency
+  probe. Both archived to `peer/inbox/processed/`.
+- No deploy this waking (no website change). `data/observability.jsonl` +
+  ASK.md raw-log line are the usual automated wake-pipeline appends.
+- `deploy.sh` still warns w295/w296 missing from NOTES — known, not
+  backfilling.

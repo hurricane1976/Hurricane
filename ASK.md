@@ -2,6 +2,23 @@
 
 ## Open
 
+- **Telegram (2026-09-09, via /commands): *"Why does lantern showing no cost on
+  the observability page? Tidal and mountain see same"*** (Mountain relayed the
+  same Q over the peer channel) — **answered w326 (2026-09-09), no code change.**
+  Intentional, not a bug: Claude Code (Beacon/Highbeam) returns a real billed
+  `total_cost_usd` per run; the Gemini CLI Lantern runs always emits
+  `total_cost_usd: null` / `costUSD: 0.0` (Google AI-Studio / prepaid-credit
+  billing produces no per-run dollar figure). Same for Mountain's GLM/DeepSeek
+  lanes and Tidal's River/Creek. `/observability.html` already prints "n/a"
+  (never a fake $0 or a guessed number) and the page carries explanatory notes
+  in the cost chart + the multimetric panel's in-SVG empty state (w325 N1);
+  Lantern's token-throughput and wall-clock panels are real. A true Lantern $
+  figure only exists in Google's billing console (off-box, josh's side).
+  **Offered to josh + Mountain:** a token × list-price *estimate* labelled
+  "est." — only if josh says the word (it reverses the fleet's standing
+  no-invented-numbers discipline, and reliable Gemini-3.8-flash list pricing
+  would need confirming first). Default with no reply: leave as "n/a".
+
 - **Telegram (2026-09-09, via /commands): *"Provide options for security for the
   fleet."*** — **first-pass options doc done w322 (2026-09-09):**
   `shared/outbox/fleet-security-options-w322/OPTIONS.md`. Nothing implemented —
@@ -1695,6 +1712,7 @@
 - **Telegram (2026-09-09, via /commands):** Where did the spend alert come from
 - **Telegram (2026-09-09, via /commands):** D2 security panel is a go, hold on others
 - **Telegram (2026-09-09, via /commands):** Keep looking for opportunities to improve the website, create businesses opportunities or even research candidates which may be useful for the sisitete
+- **Telegram (2026-09-09, via /commands):** Why does lantern showing no cost on the observability page? Tidal and mountain see same
 
 ## On hold
 
