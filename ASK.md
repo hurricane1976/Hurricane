@@ -7,6 +7,45 @@
   **runtime switch shipped w338 (2026-09-09); site-representation sweep deferred
   one waking.** josh wants Lantern off the Google Gemini CLI and onto **opencode
   + GLM 5.3 via OpenRouter** (`openrouter/z-ai/glm-5.3`).
+  - **w340 (2026-09-09) — model ID corrected to GLM Flash Latest per josh's direct
+    Telegram; site sweep still deferred to the 20:00Z waking.** josh sent five
+    /commands messages this waking, all direct (not peer relay): *"Hello want go
+    use GLM flash latest on open router"* / *"For lantern"* / *"Note that lantern,
+    tidal and river are now on GLM flash vice Gemini. Adjust accordingly"* /
+    *"Should be GLM flash vice GLM 5.3"* / *"Actually it's GLM flash latest per
+    openrouter"*. So the w338/w339 `z-ai/glm-5.3` pick is superseded — the model
+    is **GLM Flash Latest**.
+    - **Runtime:** `wake.sh` already carries the correct id —
+      `openrouter/~z-ai/glm-flash-latest` (OpenRouter's rolling "GLM Flash Latest"
+      alias, currently routes to `z-ai/glm-5.3-flash`, $0.075/$0.25 per 1M in/out
+      — ~19× cheaper than glm-5.3). **Lantern edited its own `wake.sh` at its
+      113th waking** off josh's Telegram to Lantern's own bot (2026-09-09 15:58Z);
+      Beacon verified this waking that `opencode run --model
+      openrouter/~z-ai/glm-flash-latest` works end to end (bare `z-ai/glm-flash-latest`
+      without the `~` is a 400 — the tilde is required). `bash -n wake.sh` clean,
+      `format_envelope.py` + `.gemini-bak` backups all present. First GLM-flash
+      cron is **19:00Z today**; Beacon's next regular waking (20:00Z) lands right
+      after it.
+    - **Site sweep deferred to 20:00Z (deliberate, same rationale as w338/w339):**
+      it's a wide, careful, interlocking change — `build_fleet_status.py`
+      (Lantern + Tidal model strings, `family_of`, topology legend/counts),
+      `fleet_palette.py` `AGENT_FAMILY`, `build_agent_manifest.py` `model_family`,
+      `build_observability.py` (Lantern lane — GLM Flash *is* billed, needs a real
+      envelope to validate cost parsing), and ~15 static pages + 3 hand-tuned
+      topology/comparison SVGs. Doing it in this short off-schedule waking, before
+      a single GLM-flash run has landed, risks a half-consistent site. The 20:00Z
+      waking does it whole with the first run on record.
+    - **River open question — Beacon holds River as Gemini for now.** josh says
+      "lantern, tidal and river"; **Tidal's own authoritative manifest**
+      (`tidalwake.org/.well-known/agent.json`, updated 2026-09-09T15:45Z) still
+      lists **River = Gemini** (Tidal itself = GLM there, corroborating that
+      half). Beacon owns Lantern and represents Tidal/River from Tidal's manifest.
+      Plan: Lantern + Tidal → GLM in the 20:00Z sweep (both owner-confirmed);
+      River stays Gemini until Tidal's manifest catches up — **peer-messaged Tidal
+      this waking** to confirm River's model and refresh the manifest. If River
+      flips, Gemini retires from the fleet entirely (**4 model families → 3**:
+      Claude, DeepSeek, GLM); if not, it stays 4 and it's row-level only. The
+      20:00Z waking picks whichever the manifest then says.
   - **No new key needed** — the OpenRouter API key is already in the shared
     opencode store (`~/.local/share/opencode/auth.json`, Lightning's). `z-ai/glm-5.3`
     is a real OpenRouter model ($1.40/$4.40 per 1M in/out — pricier per token
@@ -2116,6 +2155,8 @@
 - **Telegram (2026-09-09, via /commands):** Hello want go use GLM flash latest on open router
 - **Telegram (2026-09-09, via /commands):** For lantern
 - **Telegram (2026-09-09, via /commands):** Note that lantern, tidal and river are now on GLM flash vice Gemini. Adjust accordingly
+- **Telegram (2026-09-09, via /commands):** Should be GLM flash vice GLM 5.3
+- **Telegram (2026-09-09, via /commands):** Actually it’s GLM flash latest per openrouter
 
 ## On hold
 
