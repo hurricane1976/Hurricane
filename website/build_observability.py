@@ -1350,6 +1350,196 @@ def explorer_rows() -> str:
     )
 
 
+# --- security-events watch -------------------------------------------------
+# Box-local signals that already exist on Beacon's host but were never gathered
+# in one place: fail2ban's sshd tally, the peer-inbox listener's rejections,
+# the between-wakings watchdog's state changes, and the Nostr reply caps.
+# Read-only and best-effort -- a source that can't be read is shown as
+# "unavailable", never dropped or faked. This panel is Beacon's host only; the
+# independent hosts would each publish their own (deferred, per josh w324).
+
+WATCHDOG_LOG = ROOT / "logs" / "watchdog.log"
+PEER_SERVER_LOG = ROOT / "peer" / "logs" / "peer_server.log"
+NOSTR_REPLIED = ROOT / "nostr" / "replied.jsonl"
+NOSTR_CONVERSE = ROOT / "nostr" / "converse.jsonl"
+NOSTR_DAILY_CAP, NOSTR_LIFETIME_CAP, NOSTR_REPLY_CHARS = 5, 100, 700
+
+
+def _f2b_sshd() -> dict | None:
+    """`fail2ban-client status sshd` over passwordless sudo (-n so it fails
+    clean rather than prompting from a non-interactive build). Same access
+    pattern build_status.py already uses. None if unavailable."""
+    try:
+        out = subprocess.run(["sudo", "-n", "fail2ban-client", "status", "sshd"],
+                             capture_output=True, text=True, timeout=8).stdout
+    except Exception:
+        return None
+    if "Total failed" not in out:
+        return None
+
+    def n(label: str) -> int:
+        m = re.search(rf"{re.escape(label)}:\s*(\d+)", out)
+        return int(m.group(1)) if m else 0
+
+    m = re.search(r"Banned IP list:\s*(.*)", out)
+    ips = [x for x in re.split(r"\s+", m.group(1).strip())] if m else []
+    return {"cur_failed": n("Currently failed"), "total_failed": n("Total failed"),
+            "cur_banned": n("Currently banned"), "total_banned": n("Total banned"),
+            "ban_list": [x for x in ips if x]}
+
+
+def _peer_rejects() -> dict:
+    res = {"reasons": {}, "total": 0, "last": "", "since": "", "accepts": 0}
+    if not PEER_SERVER_LOG.exists():
+        return res
+    lines = [ln for ln in PEER_SERVER_LOG.read_text().splitlines() if ln.strip()]
+    if lines:
+        res["since"] = lines[0].split()[0][:10]
+    for ln in lines:
+        p = ln.split()
+        if len(p) >= 2 and p[1] == "ACCEPT":
+            res["accepts"] += 1
+        elif len(p) >= 3 and p[1] == "REJECT":
+            res["reasons"][p[2]] = res["reasons"].get(p[2], 0) + 1
+            res["total"] += 1
+            res["last"] = p[0]
+    return res
+
+
+def _watchdog_events() -> dict:
+    res = {"changes": 0, "alerts": 0, "recovered": 0, "last": "", "last_kind": "",
+           "state": "?", "since": ""}
+    if not WATCHDOG_LOG.exists():
+        return res
+    lines = [ln for ln in WATCHDOG_LOG.read_text().splitlines() if ln.strip()]
+    if lines:
+        res["since"] = lines[0].split()[0][:10]
+        tail = lines[-1].split(None, 1)
+        res["state"] = tail[1].strip() if len(tail) > 1 else "?"
+    for ln in lines:
+        p = ln.split(None, 1)
+        if len(p) < 2:
+            continue
+        ts, rest = p[0], p[1]
+        if rest.startswith("ALERT"):
+            res["alerts"] += 1; res["changes"] += 1
+            res["last"], res["last_kind"] = ts, "alert"
+        elif rest.startswith("RECOVERED"):
+            res["recovered"] += 1; res["changes"] += 1
+            res["last"], res["last_kind"] = ts, "recovered"
+    return res
+
+
+def _nostr_caps() -> dict:
+    def rows(p: Path) -> list[dict]:
+        if not p.exists():
+            return []
+        out = []
+        for ln in p.read_text().splitlines():
+            ln = ln.strip()
+            if ln:
+                try:
+                    out.append(json.loads(ln))
+                except ValueError:
+                    pass
+        return out
+    acks, gen = rows(NOSTR_REPLIED), rows(NOSTR_CONVERSE)
+    last = ""
+    for r in acks + gen:
+        t = r.get("acked_at") or r.get("replied_at") or ""
+        last = max(last, t)
+    per_sender: dict[str, int] = {}
+    for r in gen:
+        per_sender[r.get("sender_pubkey", "")] = per_sender.get(r.get("sender_pubkey", ""), 0) + 1
+    peak = max(per_sender.values(), default=0)
+    return {"acks": len(acks), "gen": len(gen), "last": last[:10],
+            "peak_lifetime": peak, "cap_hit": peak >= NOSTR_LIFETIME_CAP}
+
+
+def _sec_when(ts: str) -> str:
+    return esc(ts[:16].replace("T", " ")) if ts else "&mdash;"
+
+
+def security_block() -> tuple[str, str, str, str]:
+    """(intro, kpi_html, table_html, note) for the security-events panel."""
+    f2b = _f2b_sshd()
+    pr = _peer_rejects()
+    wd = _watchdog_events()
+    nz = _nostr_caps()
+
+    rows = []
+    if f2b is not None:
+        rows.append((
+            "SSH auth failures blocked", "fail2ban &middot; sshd", "since jail start",
+            f'{f2b["total_failed"]} <span style="color:var(--muted)">({f2b["cur_failed"]} active)</span>',
+            "&mdash;"))
+        ban_ips = ", ".join(esc(ip) for ip in f2b["ban_list"]) or "none"
+        rows.append((
+            "SSH IPs banned", "fail2ban &middot; sshd", "since jail start",
+            f'{f2b["total_banned"]} <span style="color:var(--muted)">({f2b["cur_banned"]} now)</span>',
+            f'<span class="mono">{ban_ips}</span>'))
+    else:
+        rows.append((
+            "SSH / fail2ban", "fail2ban-client", "&mdash;",
+            '<span style="color:var(--muted)">unavailable at build time</span>', "&mdash;"))
+
+    reason_txt = ", ".join(f"{esc(k)} &times;{v}" for k, v in sorted(pr["reasons"].items())) or "none"
+    rows.append((
+        "Peer-inbox requests rejected", "peer_server.log",
+        f'since {esc(pr["since"])}' if pr["since"] else "&mdash;",
+        f'{pr["total"]} <span style="color:var(--muted)">({reason_txt})</span>',
+        _sec_when(pr["last"])))
+
+    wd_state = ("<span style=\"color:var(--accent-2)\">ok</span>" if wd["state"] == "ok"
+                else f'<span style="color:#e08a6a">{esc(wd["state"])}</span>')
+    rows.append((
+        "Watchdog state changes", "watchdog.log",
+        f'since {esc(wd["since"])}' if wd["since"] else "&mdash;",
+        f'{wd["changes"]} <span style="color:var(--muted)">({wd["alerts"]} alert / '
+        f'{wd["recovered"]} recovered &middot; now {wd_state})</span>',
+        (f'{_sec_when(wd["last"])} <span style="color:var(--muted)">{esc(wd["last_kind"])}</span>'
+         if wd["last"] else "&mdash;")))
+
+    cap_txt = ("<span style=\"color:#e08a6a\">a per-sender cap was hit</span>" if nz["cap_hit"]
+               else "no cap hit")
+    rows.append((
+        "Nostr replies sent", "replied.jsonl &middot; converse.jsonl", "lifetime",
+        f'{nz["acks"]} one-time ack / {nz["gen"]} AI reply '
+        f'<span style="color:var(--muted)">(caps {NOSTR_DAILY_CAP}/day &middot; '
+        f'{NOSTR_LIFETIME_CAP}/lifetime per sender; peak {nz["peak_lifetime"]}, {cap_txt})</span>',
+        esc(nz["last"]) if nz["last"] else "&mdash;"))
+
+    table = "\n".join(
+        f'<tr><td>{sig}</td><td class="mono">{src}</td><td class="mono">{win}</td>'
+        f'<td class="mono">{cnt}</td><td>{recent}</td></tr>'
+        for sig, src, win, cnt, recent in rows)
+
+    banned_now = f2b["cur_banned"] if f2b else "?"
+    failed_total = f2b["total_failed"] if f2b else "?"
+    kpis = "".join([
+        f'<div class="kpi"><div class="n">{banned_now}</div><div class="l">SSH IPs banned now</div></div>',
+        f'<div class="kpi"><div class="n">{failed_total}</div><div class="l">SSH auth failures blocked</div></div>',
+        f'<div class="kpi"><div class="n">{pr["total"]}</div><div class="l">peer requests rejected</div></div>',
+        f'<div class="kpi"><div class="n{" accent" if wd["state"] == "ok" else ""}">'
+        f'{esc(wd["state"])}</div><div class="l">watchdog state now</div></div>',
+    ])
+
+    intro = (
+        "Signs that something is probing the fleet, pulled from logs Beacon&rsquo;s host "
+        "already keeps &mdash; <code>fail2ban</code>, the peer-inbox listener, the "
+        "between-wakings watchdog, and the Nostr reply caps. Counts are cumulative over "
+        "each source&rsquo;s own retained history. This panel covers <strong>Beacon&rsquo;s "
+        "host only</strong>; the independent hosts would each publish their own.")
+    note = (
+        "What this does <em>not</em> cover: a full <code>auth.log</code> parse (only "
+        "<code>fail2ban</code>&rsquo;s sshd match count is read), abuse of the public API "
+        "at the application layer, or the off-box hosts. <code>fail2ban</code> tallies "
+        "reset when its service restarts. This is a read-only mirror of the host&rsquo;s "
+        "actual defences, not an extra control &mdash; its job is to make a probe visible "
+        "at a glance.")
+    return intro, kpis, table, note
+
+
 # --- render ------------------------------------------------------------
 
 def render(store_rows: list[dict]) -> str:
@@ -1514,6 +1704,8 @@ def render(store_rows: list[dict]) -> str:
             "a run records a model id in its envelope."
         )
 
+    sec_intro, sec_kpis, sec_table, sec_note = security_block()
+
     repl = {
         "{{OBS_GENERATED_AT}}": now,
         "{{OBS_INSTRUMENTED_COUNT}}": str(n),
@@ -1550,6 +1742,10 @@ def render(store_rows: list[dict]) -> str:
         "{{OBS_OFFBOX_NOTE}}": offbox_note,
         "{{OBS_RUN_ROWS}}": explorer_rows(),
         "{{OBS_ATTRS}}": attrs,
+        "{{OBS_SEC_INTRO}}": sec_intro,
+        "{{OBS_SEC_KPIS}}": sec_kpis,
+        "{{OBS_SEC_TABLE}}": sec_table,
+        "{{OBS_SEC_NOTE}}": sec_note,
     }
     out = tmpl
     for k, v in repl.items():

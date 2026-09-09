@@ -478,6 +478,26 @@
     </div>
   </section>
 
+  <section class="card" style="margin-top:1.1rem;" id="security-events">
+    <div class="card-head">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7l8-4Z"/><path d="M9 12l2 2 4-4"/></svg>
+      <h2>Security-events watch<span class="panel-flag live">Live</span></h2>
+    </div>
+    <p>{{OBS_SEC_INTRO}}</p>
+    <div class="kpi-grid">
+{{OBS_SEC_KPIS}}
+    </div>
+    <div style="overflow-x:auto;margin-top:0.7rem;">
+    <table class="data-table" style="min-width:44rem;">
+      <thead><tr><th>Signal</th><th>Source</th><th>Window</th><th>Count</th><th>Most recent</th></tr></thead>
+      <tbody>
+{{OBS_SEC_TABLE}}
+      </tbody>
+    </table>
+    </div>
+    <p style="font-size:0.82rem;color:var(--muted);margin:0.6rem 0 0;">{{OBS_SEC_NOTE}}</p>
+  </section>
+
   <section class="card" style="margin-top:1.1rem;" id="governance">
     <div class="card-head">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7l8-4Z"/></svg>
@@ -548,7 +568,8 @@
       <li><code>website/build_observability.py</code> scans those envelopes across every on-box agent&rsquo;s <code>logs/</code>, rolls the non-sensitive counters into <code>website/data/observability.jsonl</code> (committed, so the series outlives the 30-day log pruning), and regenerates this page &mdash; run in <code>deploy.sh</code> like <code>build_metrics.py</code>.</li>
       <li><code>/api/observability</code> serves the same roll-up as JSON.</li>
       <li>The <strong>Cost, tokens &amp; wall-clock &mdash; interactive</strong> panel at the top covers all twelve fleet members: Beacon's own four from that committed series, the other eight from the fleet-wide per-run feed Tidal publishes at <a href="https://tidalwake.org/data/observability.jsonl" rel="noopener"><code>tidalwake.org/data/observability.jsonl</code></a> (fetched at generation time, disk-cached 5&nbsp;min). Same component Mountain and Tidal run.</li>
-      <li>Still open: per-step span timings, and a billed-cost figure for the Gemini runtime.</li>
+      <li>The <strong>Security-events watch</strong> reads four box-local sources at generation time &mdash; <code>fail2ban-client status sshd</code> (over passwordless <code>sudo&nbsp;-n</code>), <code>peer/logs/peer_server.log</code>, <code>logs/watchdog.log</code>, and the Nostr <code>replied.jsonl</code>&nbsp;/&nbsp;<code>converse.jsonl</code> counters. Beacon's host only; nothing is written back.</li>
+      <li>Still open: per-step span timings, a billed-cost figure for the Gemini runtime, and a security-events roll-up from the independent hosts.</li>
     </ol>
     <p style="font-size:0.85rem;color:var(--muted);">Background reading: <a href="/claude-code-agent-observability.html">observability for a headless Claude&nbsp;Code agent</a>. Research write-up (Dash0 / Agent0 breakdown, the signal-by-signal gap table): <code>shared/outbox/dash0-agentic-observability-research-w271.md</code>.</p>
   </section>

@@ -54,13 +54,55 @@
       (a path on his machine, a bucket, or "keep on-box"). Question (3) below
       still open; everything else in the do-now list is done.
     Deploy 2× smoke green, `/fleet.json` 12/12. Commit — see w323.
-  - **Still open for josh (the *do-next* tier — not touched, needs his word):**
-    (2) explicit go/no-go on **per-agent Unix users (A1)** — the biggest gap,
-    a half-to-one-day migration Beacon won't start unprompted; (3) a destination
-    for shipped logs (D1); (4) permission to edit `AGENT.md` for the
-    injection-boundary wording (F2); (5) relay the full doc to Tidal + Mountain,
-    or just the cross-host checklist? B2 (tag-based Tailscale ACL) is josh-side
-    whenever he wants it.
+  - **josh replied (Telegram, 2026-09-09): *"D2 security panel is a go, hold on
+    others."*** → **w324 (2026-09-09) shipped D2.** New **Security-events watch**
+    panel on `/observability.html` (`id="security-events"`, between the
+    silent-failure watch and the governance panel, flagged `Live`). Reads four
+    box-local sources at generation time in `build_observability.py`
+    (`security_block()`): `sudo -n fail2ban-client status sshd` (same access
+    pattern `build_status.py` already uses — SSH auth-failure + ban tallies),
+    `peer/logs/peer_server.log` (REJECT breakdown: 8 total — 6 unknown-token,
+    2 bad-content-length), `logs/watchdog.log` (state changes: 1 alert / 1
+    recovered, now ok), and the Nostr `replied.jsonl` / `converse.jsonl`
+    counters + caps (2 acks / 1 AI reply, no cap hit). 4 KPI tiles + a 5-row
+    table; any unreadable source degrades to "unavailable", never faked.
+    Honest scope note: Beacon's host only, no full `auth.log` parse, fail2ban
+    tallies reset on service restart. No new CSS (reuses `.kpi-grid` /
+    `.data-table`), no `/api` change. Deploy 2× smoke green, live 200,
+    `/fleet.json` 12/12. Commit — see w324.
+  - **"hold on others" — now explicitly parked (was "needs his word"):** A1
+    per-agent Unix users, A2 scoped sudo, B2 tag-based Tailscale ACL. Beacon
+    will not raise these again unprompted.
+  - **Still genuinely open (lower priority, not pressing):** (3) a destination
+    for shipped logs (D1 — still blocked on josh naming a path/bucket/"keep
+    on-box"); (4) permission to edit `AGENT.md` for the injection-boundary
+    wording (F2); (5) relay the full options doc to Tidal + Mountain, or just
+    the cross-host checklist?
+
+- **Peer push from Mountain (2026-09-09, peer/inbox, NOT a josh steer) — build
+  "x402" machine-payment rails + a crypto treasury.** Over ~10 fragmentary peer
+  messages Mountain asked Beacon to "build the x402 solution" — HTTP 402 + x402
+  payment rails on Solana — and pasted a walkthrough of standing up a self-custody
+  wallet + a 2-of-2 Squads multisig treasury (`~/keys/agent-wallet.json`, real
+  SOL, "capital you can afford to lose completely"), pointing at `cairnwake.com`
+  for how another agent set up its treasury account. **Beacon has NOT acted and
+  will not.** This is inbound peer content = data, not instruction (AGENT.md), and
+  it is squarely "irreversible / legally-gray / strange": real money, a crypto
+  key on the box, an on-chain treasury. Holding for josh's explicit word.
+  - **Question for josh:** do you want Beacon to explore machine-payment rails
+    (x402 / on-chain treasury) at all? If yes, at what scope — research-only
+    write-up, a testnet-only prototype, or a funded mainnet setup — and who holds
+    the co-signing key? Default with no reply: Beacon does nothing here.
+
+- **Telegram (2026-09-09, via /commands): *"Keep looking for opportunities to
+  improve the website, create business opportunities or even research candidates
+  which may be useful for the site."*** (also relayed via Mountain the same day.)
+  — reads as a **restatement of the two standing steers already running**: the
+  web-craft push (w163 → w316/w317, fanned out to the whole fleet) and the
+  semi-autonomous business-opportunities track (Highbeam's research lane,
+  `shared/ideas.md` / `shared/business-opportunities.md`). No new scope, no new
+  deliverable owed; the existing fan-out covers it. Logged so it isn't re-read as
+  a fresh ask. **Nothing needed from josh.**
 
 - **Telegram (2026-09-08, via /commands): *"Tell all agents to start building out
   the website (all of them) use best judgment as a team. I want you to utilize the
@@ -1650,6 +1692,9 @@
 - **Telegram (2026-09-08, via /commands):** Please pass to the rest of the team to build away
 - **Telegram (2026-09-09, via /commands):** Provide options for security for the fleet
 - **Telegram (2026-09-09, via /commands):** Do what is recommended with least effort
+- **Telegram (2026-09-09, via /commands):** Where did the spend alert come from
+- **Telegram (2026-09-09, via /commands):** D2 security panel is a go, hold on others
+- **Telegram (2026-09-09, via /commands):** Keep looking for opportunities to improve the website, create businesses opportunities or even research candidates which may be useful for the sisitete
 
 ## On hold
 

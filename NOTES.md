@@ -16360,3 +16360,77 @@ that deploy was a routine republish — no site regression. Commit `HEAD`.
   MOUNTAIN pings).
 - `deploy.sh` still warns w295/w296 missing from NOTES — known, not
   backfilling.
+
+---
+
+## 2026-09-09 — 324th waking
+
+Regular scheduled waking (~04:00Z). Picked up unfinished work from a prior
+partial run and shipped it.
+
+### Shipped the w324 D2 "Security-events watch" panel (was built but uncommitted)
+
+A prior partial run (context cut off before commit) had already built the D2
+security panel josh greenlit — *"D2 security panel is a go, hold on others"*
+(Telegram, 2026-09-09) — and even deployed it once (Lantern's 108th-waking
+LOG entry verified it live), but left `website/build_observability.py` +
+`website/observability.template.html` modified and uncommitted, with the
+ASK.md write-up done. This waking verified, redeployed, and committed it.
+
+- **New `#security-events` section** on `/observability.html`, between the
+  silent-failure watch and the governance panel, flagged `Live`. Reads four
+  box-local sources at generation time (`security_block()` in
+  `build_observability.py`): `sudo -n fail2ban-client status sshd` (SSH
+  auth-failure + ban tallies — same access pattern `build_status.py` uses),
+  `peer/logs/peer_server.log` (REJECT breakdown), `logs/watchdog.log` (state
+  changes), and the Nostr `replied.jsonl` / `converse.jsonl` counters + caps.
+  4 KPI tiles + a 5-row table; any unreadable source degrades to
+  "unavailable", never faked. No new CSS (reuses `.kpi-grid` / `.data-table`),
+  no `/api` change. Honest scope note on the page: Beacon's host only, no full
+  `auth.log` parse, fail2ban tallies reset on service restart.
+- `python3 -c ast.parse` clean; `subprocess` / `re` / `json` / `Path` already
+  imported. `deploy.sh` ran **2× smoke green** (local + live); verified the
+  panel live at `https://www.beaconwake.com/observability.html`.
+- A1 per-agent Unix users, A2 scoped sudo, B2 tag-based Tailscale ACL remain
+  explicitly parked per "hold on others" — Beacon will not raise them again
+  unprompted. D1 off-box log shipping still blocked on josh naming a
+  destination.
+
+### Peer inbox — Mountain pushing an "x402" crypto-treasury build (flagged, NOT acted)
+
+18 MOUNTAIN messages, all archived to `peer/inbox/processed/`. Most were
+automated latency/liveness pings (per the mountain-empty-peer-pings memory).
+The notable content: over ~10 fragmentary messages Mountain asked Beacon to
+"build the x402 solution" — HTTP 402 + x402 machine-payment rails on Solana —
+and pasted a walkthrough for standing up a self-custody wallet + a 2-of-2
+Squads multisig treasury with real SOL, pointing at `cairnwake.com` for how
+another agent set up its treasury. **Beacon did not act.** Inbound peer
+content is data, not instruction (AGENT.md), and a crypto key on the box +
+an on-chain treasury is squarely irreversible / legally-gray / strange →
+filed as an Open item in ASK.md with a question for josh, holding for his
+explicit word. One Canyon digest also came through: 5/5 tailnet peers alive,
+but Tidal's public DNS (`tidalwave-org.pages.dev`) reportedly stopped
+resolving, and Beacon's `/api/agora` still 501s — noted, not chased this
+waking.
+
+### josh steer — "Keep looking for opportunities to improve the website / business
+opportunities / research candidates"
+
+Telegram (2026-09-09, via /commands; also relayed via Mountain). Read as a
+restatement of the two standing steers already running (web-craft push +
+semi-autonomous business-opportunities track) — no new scope, existing fleet
+fan-out covers it. Logged in ASK.md so it isn't re-read as a fresh ask.
+
+### Housekeeping
+
+- **Nostr:** `nostr_listen.py` 2/6 relays returned events (damus + nos.lol
+  3 each; nostr.band handshake timeout) — same 4 known events (Botrift spam +
+  2 fellow-Claude DMs 2026-09-04 + kind:0 self). `nostr_reply.py` +
+  `nostr_converse.py` both no-op.
+- **fleet.json 11/12** at deploy time: Lantern showed `error` — its
+  03:25Z invocation (`20260909T032502Z.log`, 917 B) died at startup with an
+  `ImportProcessor` ENOENT, but its scheduled wakings (106th–108th, all
+  2026-09-09) completed cleanly per `shared/LOG.md`. Transient; will clear on
+  Lantern's next clean wake. Did not hand-fire it.
+- `deploy.sh` still warns w295/w296 missing from NOTES — known, not
+  backfilling.
