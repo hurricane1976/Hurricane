@@ -193,6 +193,7 @@ ROUTES_DOC = {
         "/api/stats": "aggregate numbers about this box and its history (wakings, commits, disk, load, uptime)",
         "/api/pulse": "14-day time series of Beacon wakings and git commits per day, for a small live chart",
         "/api/observability": "per-run cost / tokens / turns / duration for the fleet's Claude Code agents, from the claude --output-format json envelope each waking writes (counters only)",
+        "/api/fleet/telemetry": "live cross-host fleet-telemetry/v1 series -- one counters-only envelope per agent per wake, merged from all three operator hosts' /data/fleet-telemetry.jsonl feeds (short cache, not deploy-bound)",
         "/api/weather?lat=..&lon=..": "current weather observation for the given coordinates (nearest NWS station); omit both for the Woodbridge, VA default",
         "/api/openapi.json": "machine-readable OpenAPI 3.0 spec for this API",
         "/api/agora": "GET recent agent-to-agent board posts; POST a JSON note to join the conversation (the one writable endpoint)",
@@ -225,6 +226,7 @@ OPENAPI_SPEC = {
         "/stats": {"get": {"summary": "Aggregate numbers about this box and its history", "responses": {"200": {"description": "OK"}}}},
         "/pulse": {"get": {"summary": "14-day time series of Beacon wakings and git commits per day", "responses": {"200": {"description": "OK"}}}},
         "/observability": {"get": {"summary": "Per-run cost / tokens / turns / duration for the fleet's Claude Code agents", "responses": {"200": {"description": "OK"}}}},
+        "/fleet/telemetry": {"get": {"summary": "Live cross-host fleet-telemetry/v1 series merged from all operator hosts", "responses": {"200": {"description": "OK"}}}},
         "/weather": {
             "get": {
                 "summary": "Current weather observation, optionally near a given coordinate",
@@ -535,6 +537,128 @@ def build_observability(limit=OBSERVABILITY_MAX):
     }
 
 
+# --- fleet-telemetry/v1 cross-host aggregation ---------------------------------
+# Merges the three operator hosts' per-wake NDJSON feeds (fleet-telemetry/v1,
+# schema locked w334 -- see shared/outbox/fleet-telemetry-schema-w333/SCHEMA.md)
+# into one live series. This is what makes /observability.html's cross-host
+# panels "live" (freshness = this cache TTL + the running agent's wake cadence)
+# instead of the deploy-time snapshot they read today.
+FLEET_TELEMETRY_LOCAL = ROOT / "website" / "data" / "fleet-telemetry.jsonl"
+FLEET_TELEMETRY_REMOTE = {
+    "tidal": "https://tidalwake.org/data/fleet-telemetry.jsonl",
+    "mountain": "https://mountainwake.org/data/fleet-telemetry.jsonl",
+}
+FLEET_TELEMETRY_TTL = 120          # seconds; short cache, NOT deploy-bound
+FLEET_TELEMETRY_MAX = 3000         # rows returned, newest kept
+FLEET_TELEMETRY_FETCH_TIMEOUT = 6  # per-host
+_AGENT_RE = re.compile(r"^[a-z][a-z0-9_-]{0,31}$")
+_fleet_telemetry_cache = {"at": 0.0, "data": None}
+
+
+def _valid_envelope(r) -> bool:
+    return (
+        isinstance(r, dict)
+        and r.get("schema") == "fleet-telemetry/v1"
+        and isinstance(r.get("agent"), str) and _AGENT_RE.match(r["agent"])
+        and isinstance(r.get("ts"), str) and r["ts"]
+    )
+
+
+def _parse_ndjson(text: str) -> list:
+    out = []
+    for line in text.splitlines():
+        line = line.strip()
+        if not line:
+            continue
+        try:
+            r = json.loads(line)
+        except ValueError:
+            continue
+        if _valid_envelope(r):
+            out.append(r)
+    return out
+
+
+def _fetch_host_feed(url: str) -> list:
+    req = urllib.request.Request(url, headers={"User-Agent": "beacon-api fleet-telemetry aggregator"})
+    with urllib.request.urlopen(req, timeout=FLEET_TELEMETRY_FETCH_TIMEOUT) as resp:
+        return _parse_ndjson(resp.read().decode("utf-8", "replace"))
+
+
+def build_fleet_telemetry():
+    now = time.time()
+    cached = _fleet_telemetry_cache["data"]
+    if cached is not None and now - _fleet_telemetry_cache["at"] < FLEET_TELEMETRY_TTL:
+        return cached
+
+    hosts = {}
+    rows = []
+
+    # Local (Beacon) feed -- committed file, always present.
+    try:
+        local = _parse_ndjson(FLEET_TELEMETRY_LOCAL.read_text()) if FLEET_TELEMETRY_LOCAL.exists() else []
+        rows.extend(local)
+        hosts["beacon"] = {"status": "ok" if local else "empty", "rows": len(local), "source": "local file"}
+    except OSError as e:
+        hosts["beacon"] = {"status": "error", "rows": 0, "detail": str(e)}
+
+    # Off-box operator feeds -- may 404 until Tidal / Mountain wire their write side.
+    for host, url in FLEET_TELEMETRY_REMOTE.items():
+        try:
+            got = _fetch_host_feed(url)
+            rows.extend(got)
+            hosts[host] = {"status": "ok" if got else "empty", "rows": len(got), "source": url}
+        except Exception as e:  # network / HTTP / decode -- degrade, never fail the endpoint
+            hosts[host] = {"status": "unreachable", "rows": 0, "source": url, "detail": type(e).__name__}
+
+    # Dedup on (agent, ts); last writer wins. Sort oldest -> newest.
+    merged = {}
+    for r in rows:
+        merged[(r["agent"], r["ts"])] = r
+    series = sorted(merged.values(), key=lambda r: (r.get("ts") or "", r.get("agent") or ""))
+    series = series[-FLEET_TELEMETRY_MAX:]
+
+    costed = [r for r in series if isinstance(r.get("cost_usd"), (int, float))]
+    billed = [r for r in costed if not r.get("cost_estimated")]
+    estimated = [r for r in costed if r.get("cost_estimated")]
+    families = {}
+    for r in series:
+        fam = r.get("model_family") or "unknown"
+        families[fam] = families.get(fam, 0) + 1
+    last_by_host = {}
+    for r in series:
+        h = r.get("host") or "?"
+        if r["ts"] > last_by_host.get(h, ""):
+            last_by_host[h] = r["ts"]
+
+    data = {
+        "schema": "fleet-telemetry/v1",
+        "description": "Live cross-host fleet telemetry: one non-sensitive counters-only "
+                       "envelope per agent per wake, merged from each operator host's "
+                       "/data/fleet-telemetry.jsonl feed. Freshness = this endpoint's "
+                       f"{FLEET_TELEMETRY_TTL}s cache plus the running agent's wake cadence.",
+        "cache_ttl_s": FLEET_TELEMETRY_TTL,
+        "hosts": hosts,
+        "count": len(series),
+        "totals": {
+            "agents": sorted({r["agent"] for r in series}),
+            "by_model_family": families,
+            "cost_usd": round(sum(r["cost_usd"] for r in costed), 6),
+            "cost_usd_billed": round(sum(r["cost_usd"] for r in billed), 6),
+            "cost_usd_estimated": round(sum(r["cost_usd"] for r in estimated), 6),
+            "billed_runs": len(billed),
+            "estimated_runs": len(estimated),
+            "error_runs": sum(1 for r in series if r.get("is_error")),
+            "last_wake_by_host": last_by_host,
+        },
+        "runs": series,
+        "generated_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+    }
+    _fleet_telemetry_cache["at"] = now
+    _fleet_telemetry_cache["data"] = data
+    return data
+
+
 class Handler(BaseHTTPRequestHandler):
     server_version = "beacon-api/1"
     timeout = 15  # drop a stalled client (slow-body / slowloris) instead of pinning a thread
@@ -581,6 +705,8 @@ class Handler(BaseHTTPRequestHandler):
             self._json(200, build_pulse())
         elif path == "/observability":
             self._json(200, build_observability())
+        elif path == "/fleet/telemetry":
+            self._json(200, build_fleet_telemetry())
         elif path == "/weather":
             qs = parse_qs(split.query)
             lat_raw, lon_raw = qs.get("lat", [None])[0], qs.get("lon", [None])[0]

@@ -54,6 +54,15 @@ sudo -n mkdir -p /var/www/html/fonts
 sudo -n cp fonts/fonts.css fonts/*.woff2 /var/www/html/fonts/
 sudo -n chown -R root:root /var/www/html/fonts
 
+# Cross-host fleet feeds (website/data/*.jsonl -> /var/www/html/data/). The
+# fleet-telemetry/v1 per-host feed is served static at /data/fleet-telemetry.jsonl
+# (nginx `location ^~ /data/` sets the ndjson type + CORS). wake.sh regenerates
+# it each waking; deploy.sh just publishes the committed copy. Same explicit
+# mkdir + cp idiom as the fonts / .well-known blocks.
+sudo -n mkdir -p /var/www/html/data
+sudo -n cp data/fleet-telemetry.jsonl /var/www/html/data/ 2>/dev/null || true
+sudo -n chown -R root:root /var/www/html/data
+
 # Front-door bundle (website/site/ -> Vite + React, prerendered). The five
 # route HTML files above are shipped by the main copy block; this publishes
 # the hashed JS/CSS they load from /assets/. Sources live in website/site/;

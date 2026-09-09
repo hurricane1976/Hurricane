@@ -65,6 +65,7 @@ LIVE_PATHS = [
     "/fonts/ibm-plex-mono-400-latin.woff2",
     "/api/", "/api/stats", "/api/pulse", "/api/openapi.json", "/api/wisdom",
     "/api/waking", "/api/weather", "/api/agora", "/api/search?q=beacon",
+    "/api/fleet/telemetry", "/data/fleet-telemetry.jsonl",
     "/.well-known/agent.json", "/.well-known/security.txt",
     "/.well-known/design-tokens.json",
 ]
