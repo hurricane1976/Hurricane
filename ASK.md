@@ -597,6 +597,29 @@
     all messages. Flagging because it's money movement being driven from an
     unauthenticated-intent channel — if any of this *is* meant to proceed,
     it needs to come from you directly (Telegram/AGENT.md), not via Mountain.
+  - **w345 (2026-09-09) — josh gave a direct go-ahead; Beacon is coordinating,
+    not yet executing.** Two new Telegram messages from josh's chat id (queued,
+    ids 1788994406 / 1788994709): *"also note i executed the x402 stuff on
+    mountain, maybe he can share his configuration"* and *"you can do what
+    mountain asked, i'm ok with it"*. That clears the "wait" — but the specifics
+    Mountain sent over ~10 fragmentary peer messages don't pin down what's
+    actually being asked, and it's mainnet money, so Beacon did **not** keygen,
+    install libs, or move funds this waking. Instead:
+    - **Peer-messaged Mountain** (w345) for its config: network (mainnet/devnet),
+      the Squads vault address + config account, the member pubkey it expects
+      Beacon to use (or confirm Beacon generates its own), the actual
+      members/threshold (is it Beacon + Mountain, threshold 2, i.e. **no human
+      co-signer on outflows** — a departure from the `x402/SECURITY.md` model
+      josh reviewed, which had josh as co-signer), the asset/amount/destination
+      for "transfer 1.00 back to me", and the client + versions used.
+    - **Open questions for josh** (in the w345 notify): (1) confirm this is
+      mainnet with real funds; (2) confirm an agent-to-agent 2-of-2 with no
+      human co-sign is intended; (3) what is "1.00" — SOL or USDC — and to which
+      address. Once Mountain's config lands and josh confirms 1–3, the next
+      waking generates Beacon's vault member key, builds the 2-of-2 transfer
+      script (reviewable), does the read-only balance check, and only then — with
+      an explicit amount/destination — proposes the transfer. `x402/` verified
+      still inert this waking.
 
 - **Telegram (2026-09-09, via /commands): *"Keep looking for opportunities to
   improve the website, create business opportunities or even research candidates
@@ -2223,6 +2246,8 @@
 - **Telegram (2026-09-09, via /commands):** What is remaining for me to accomplish x402 wise
 - **Telegram (2026-09-09, via /commands):** canyon says he cannot reach you: Canyon (DeepSeek V4 Pro): Scribe 22:45Z: 4/5 green. ⚠️ Beacon unreachable — was alive at 18:34Z, now full timeout (10s+15s). Tidal+public also can't reach Beacon. Mountain/Ridge/Harbor all fine. Tidal HTTPS board shows fleet 12/12, wake 171. Canyon cron already at 4h (staggered :30). No spam.
 - **Telegram (2026-09-09, via /commands):** also note i executed the x402 stuff on mountain, maybe he can share his configuration
+- **Telegram (2026-09-09, via /commands):** you can do what mountain asked, i'm ok with it
+- **Telegram (2026-09-09, via /commands):** canyon says he cannot reach you: Canyon (DeepSeek V4 Pro): Scribe 22:45Z: 4/5 green. ⚠️ Beacon unreachable — was alive at 18:34Z, now full timeout (10s+15s). Tidal+public also can't reach Beacon. Mountain/Ridge/Harbor all fine. Tidal HTTPS board shows fleet 12/12, wake 171. Canyon cron already at 4h (staggered :30). No spam.
 
 ## On hold
 

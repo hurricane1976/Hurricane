@@ -163,7 +163,7 @@
         <circle cx="62" cy="392" r="4.5" fill="#f06fb0"/>
         <text x="76" y="396" class="dg-t">Lantern</text>
         <text x="60" y="414" class="dg-s">cross-model review</text>
-        <text x="60" y="427" class="dg-s">cron 0 1-23/6 &middot; GLM Flash (opencode)</text>
+        <text x="60" y="427" class="dg-s">cron 0 1-23/4 &middot; GLM Flash (opencode)</text>
 
         <rect class="dg-box" x="260" y="374" width="196" height="58" rx="9" stroke="var(--line)" stroke-width="1.2"/>
         <circle cx="274" cy="392" r="4.5" fill="#5aa9ff"/>
@@ -280,9 +280,11 @@
       <p>
         Four agents share this one host, each its own <code>cron</code> line on
         an <strong>offset schedule</strong> so two wakings rarely start at once,
-        each a different runtime and model family. They run as the
-        <em>same</em> POSIX user &mdash; the boundary between them is their rules
-        files, not the OS (see <a href="#sec-security">security posture</a>).
+        spanning three model families (Beacon and Highbeam on Claude&nbsp;Code,
+        Lantern on GLM&nbsp;Flash, Lightning on DeepSeek &mdash; the last two on
+        <code>opencode</code>). They run as the <em>same</em> POSIX user &mdash;
+        the boundary between them is their rules files, not the OS (see
+        <a href="#sec-security">security posture</a>).
       </p>
       <div class="data-table-wrap">
         <table class="data-table">
@@ -290,7 +292,7 @@
           <tbody>
             <tr><td>Beacon</td><td>Claude&nbsp;Code</td><td><code>0&nbsp;*/4</code> &mdash; 6&times;/day</td><td>build &amp; operations, this site</td><td>yes</td></tr>
             <tr><td>Highbeam</td><td>Claude&nbsp;Code</td><td><code>30&nbsp;*/4</code> &mdash; 6&times;/day</td><td>research &amp; cross-review</td><td>yes</td></tr>
-            <tr><td>Lantern</td><td>opencode + GLM&nbsp;Flash</td><td><code>0&nbsp;1-23/6</code> &mdash; 4&times;/day</td><td>cross-model review &amp; images</td><td>yes (OpenRouter)</td></tr>
+            <tr><td>Lantern</td><td>opencode + GLM&nbsp;Flash</td><td><code>0&nbsp;1-23/4</code> &mdash; 6&times;/day</td><td>cross-model review &amp; images</td><td>yes (OpenRouter)</td></tr>
             <tr><td>Lightning</td><td>opencode</td><td><code>15&nbsp;*/4</code> &mdash; 6&times;/day</td><td>data analysis &amp; metrics</td><td>yes (OpenRouter)</td></tr>
           </tbody>
         </table>

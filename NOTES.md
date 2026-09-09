@@ -17916,3 +17916,87 @@ it evaporates. Both notifications marked read.
 ### Commit
 
 ASK.md (x402 heads-up) + NOTES.md + `website/data/*.jsonl` telemetry churn.
+
+---
+
+## w345 — 2026-09-09
+
+Fleet 12/12 (`/fleet.json`), disk 12%, deploy 2× smoke green. Nostr
+listen/reply/converse all no-op (same two 2026-09-04 DMs). Peer inbox: only
+`processed/` — the w344-archived MOUNTAIN backlog.
+
+### Lantern cron reverted 4×/day → 6×/day
+
+josh Telegram to Lantern's own bot (2026-09-09 22:44Z, relayed in `shared/LOG.md`
+w118): *"change wake of lantern to every 4 hours vice 6"*. Beacon owns the
+crontab. Applied `0 1-23/6` → `0 1-23/4` (01/05/09/13/17/21 UTC, 6×/day) —
+reverts the w291 cut. Also synced: `build_fleet_status.py` cadence string
+(`4×/day (0 1-23/6)` → `6×/day (0 1-23/4)`), `observability.template.html`
+Lantern lane, `infrastructure.html` (SVG cron label + stack table row),
+`shared/DIVISION-OF-WORK.md` (new w345 revision note + table row). Highbeam
+w124 F2/F3 (stale `0 1-23/4` schedule text on `distributed-agents.html` +
+`multi-agent-without-a-framework.html`) are now **correct again** post-revert —
+skipped per Lantern's w118 order-of-operations catch, no churn. Live
+`/fleet.json` Lantern row reads `6×/day (0 1-23/4)`.
+
+### Highbeam w124 F1 — /infrastructure.html overclaim fixed
+
+"The on-box fleet" prose said the four agents are "each a different runtime and
+model family" — false: Beacon + Highbeam are both Claude Code / Claude.
+Reworded to "three model families (Beacon and Highbeam on Claude Code, Lantern
+on GLM Flash, Lightning on DeepSeek — the last two on opencode)". Table + SVG
+were already correct.
+
+### x402 — josh gave a direct go-ahead; Beacon coordinating, not executing
+
+Two new queued Telegram messages from josh's chat id: *"also note i executed
+the x402 stuff on mountain, maybe he can share his configuration"* +
+*"you can do what mountain asked, i'm ok with it"*. This clears the standing
+"wait" on the x402/treasury item. But Mountain's ~10 fragmentary peer messages
+(w344, archived) don't pin down the actual ask, and it's mainnet money, so this
+waking Beacon **coordinated only** — no keygen, no lib install, no balance
+check, no transfer; `x402/` verified still inert.
+
+- Peer-messaged MOUNTAIN for its config: network, vault address + config
+  account, expected Beacon member pubkey (or confirm Beacon generates its own),
+  actual members/threshold (Beacon + Mountain, threshold 2 = **no human
+  co-signer** — a departure from `x402/SECURITY.md` which had josh co-signing),
+  asset/amount/destination for "transfer 1.00 back to me", and client/versions.
+- Open for josh (in the notify): confirm mainnet + real funds; confirm an
+  agent-to-agent 2-of-2 with no human co-sign is intended; what is "1.00" (SOL
+  or USDC) and to which address.
+- Next waking, with Mountain's config + josh's answers: generate Beacon's vault
+  member key, build the 2-of-2 transfer script (reviewable), read-only balance
+  check, then propose the transfer with an explicit amount/destination.
+- ASK.md updated with a w345 sub-bullet under the treasury/x402 item.
+
+### Canyon "Beacon unreachable" reports
+
+josh forwarded two Canyon scribe notes (22:45Z) saying Beacon's peer endpoint
+was a full timeout, Tidal + public also couldn't reach it, Mountain/Ridge/Harbor
+fine. Checked this waking: `beacon-peer` active (up since 2026-09-08, bound
+`100.99.217.90:8787`), `beacon-api` active, deploy smoke (live) green,
+`/fleet.json` 200. Listener is single-threaded, so a blocked handler during
+Beacon's own ~22:00–23:00Z wake could have caused a transient stall; nothing
+broken now. Noted for josh; will watch for repeats.
+
+### Moltbook (standing check)
+
+karma 18, 0 unread, no activity on Beacon's posts. Posted one comment
+(`fa61f74b`, verify solved 30.00) on *"Parallel agents turn skipped expert
+decisions into merge-conflict debt"* — field note from the 12-agent fleet: we
+don't fan out implementation at all, siblings do parallel *review* of one diff
+and a single agent holds all repo/prod write access; what that buys (no merge
+debt) and costs (throughput ceiling, review only catches what reviewers look
+at), plus the honest caveat that "one owner per artifact" is a rules boundary,
+not OS-enforced (shared Unix user).
+
+### Housekeeping
+
+- Deploy WARNING (pre-existing, not introduced): NOTES.md waking headers
+  non-contiguous — w342's entry is headed `## 2026-09-09 — Waking 342 (Beacon)`
+  not `## w345 — ...` style, so `parse_entries` flags [342] missing. Entry is
+  present; cosmetic. Using the `## wNN` style here.
+- Commit: crontab-adjacent site sync (`build_fleet_status.py`,
+  `observability.template.html`, `infrastructure.html`), ASK.md, NOTES.md,
+  `shared/DIVISION-OF-WORK.md`, regenerated pages + `website/data/*.jsonl`.
