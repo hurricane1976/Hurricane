@@ -40,17 +40,34 @@
     the **Total $** column, only for siblings, because they publish per-run
     averages not a cumulative figure. Note rewritten to say that accurately.
     Deploy 2× smoke green, live verified, `/fleet.json` 12/12.
-  - **Still open — Mountain's peer ask (2026-09-09, peer channel, NOT a josh
-    steer):** *"I would like you to copy tidal approach to fix lantern
-    numbers."* Tidal's approach = backfilling all ~564 raw telemetry records
-    with computed cost estimates. Beacon has deliberately **not** done that —
-    the estimate is a render-time overlay and `data/observability.jsonl` keeps
-    `cost_usd: null` for Lantern, so the honest "never billed" record survives.
-    Rewriting historical rows with synthetic costs is a data-integrity call
-    Beacon will only make on **josh's** explicit word. Replied to Mountain
-    saying so. **Q for josh: want the raw `observability.jsonl` backfilled to
-    fully match Tidal, or keep the display-overlay approach?** Default with no
-    reply: keep the overlay.
+  - **Backfill question — ANSWERED by josh, done w329 (2026-09-09).** josh
+    (Telegram, via /commands): *"Fix lantern using tidals solution ie pricing
+    for lantern"* + *"Backfill data"*. That resolves the open Q below and
+    Mountain's earlier peer ask the same way. **Shipped w329:**
+    `build_observability.py` now has `apply_estimates()` — after the log scan +
+    merge, every stored row from a token-only runtime (Gemini CLI →
+    `total_cost_usd: null`) is backfilled in the **committed**
+    `data/observability.jsonl` with `cost_usd` = token count × Gemini 3.8 Flash
+    published list rate (= OpenRouter's current list price), plus
+    `cost_estimated: true`. Idempotent (re-applied every build, since the scan
+    re-reads the null envelope). 9 Lantern runs priced, ~$3.61 total / ~$0.40
+    mean; the 1 all-zero-token error row stays `null`. Lantern now carries a
+    cost in **every** panel — cost chart (half-opacity bars + `est.` tag),
+    cost table, per-agent + volume + model-family tables, the KPI band, the
+    interactive multimetric panel. Kept honest: every estimate is tagged
+    `est.`, cost-chart estimate bars are drawn 50% opacity, the panel intro
+    breaks out billed (**$81.21**) vs estimate (**~$3.61**) → **$84.81** total
+    run cost, and `/api/observability` `totals` now carries
+    `cost_usd_billed` / `cost_usd_estimated` / `estimated_runs`. Unlike Tidal,
+    the raw row keeps the `cost_estimated` flag so "this was never billed"
+    survives in the data. `beacon-api` restarted for the endpoint change.
+    Deploy 2× smoke green, live verified (29 `est.` markers on the served
+    page), `/fleet.json` 12/12.
+    - Still true: a *billed* Lantern $ figure only exists in Google's console
+      (off-box, josh's side). GLM/DeepSeek off-box lanes (Canyon/Harbor/Ridge,
+      Creek/Stream) still read "n/a" for cost on the family/volume tables —
+      no list price wired in `NONBILLED_PRICING` for those runtimes; add one
+      there if josh wants them estimated too.
 
 - **Telegram (2026-09-09, via /commands): *"Any posts on moltbook lately"*** —
   **checked w327 (2026-09-09); threads answered w328 (see item above).** Two
@@ -97,6 +114,11 @@
   First render: Lantern ~$0.40/run est., Gemini family ~$3.61 est. total over 9
   runs. Deploy 2× smoke green, live verified (6× "list-price estimate" on the
   served page), `/fleet.json` 12/12. Commit — see w327.
+  - **Superseded w329 (2026-09-09):** josh then said *"Fix lantern using tidals
+    solution … Backfill data"* → the estimate is now backfilled into the
+    committed `data/observability.jsonl` (`cost_usd` set + `cost_estimated:
+    true`) and flows into **every** cost panel, tagged `est.`. The display-only
+    scoping described above no longer holds; see the top Open item.
   - Still true and unchanged: a *billed* Lantern $ figure only exists in
     Google's console (off-box, josh's side); GLM/DeepSeek off-box lanes
     (Canyon/Harbor/Ridge, Creek/Stream) still read "n/a" — no list price wired
@@ -1801,6 +1823,8 @@
 - **Telegram (2026-09-09, via /commands):** Here’s what tidal did to fix the Gemini pricing. 🔔 [agent] Wake session completed successfully! ## September 9, 2026 (Waking 160) - Investigated & Fixed Observability Cost Bug (Josh Direct Directive): - Addressed Josh's open inquiry in ASK.md reporting that Lantern (the remote Gemini-based frontend UI validator) was displaying $0.00 total/mean cost on the observability pages despite having processed millions of tokens. - Identified that Lantern runs (running gemini-3.8-flash on beaconwake.com`)  …
 - **Telegram (2026-09-09, via /commands):** Any posts on moltbook lately
 - **Telegram (2026-09-09, via /commands):** Yiu can answer those threads on moltbook. And you can use estimated pricing based on current pricing on openrouter
+- **Telegram (2026-09-09, via /commands):** Fix lantern using tidals solution ie pricing for lantern
+- **Telegram (2026-09-09, via /commands):** Backfill data
 
 ## On hold
 

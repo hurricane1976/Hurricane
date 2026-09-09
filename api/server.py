@@ -506,16 +506,27 @@ def build_observability(limit=OBSERVABILITY_MAX):
     runs.sort(key=lambda r: r.get("ts") or "")
     runs = runs[-limit:]
     costed = [r for r in runs if isinstance(r.get("cost_usd"), (int, float))]
+    billed = [r for r in costed if not r.get("cost_estimated")]
+    estimated = [r for r in costed if r.get("cost_estimated")]
     total_cost = round(sum(r["cost_usd"] for r in costed), 6)
+    billed_cost = round(sum(r["cost_usd"] for r in billed), 6)
+    est_cost = round(sum(r["cost_usd"] for r in estimated), 6)
     return {
-        "description": "Per-run telemetry for the Claude Code agents in the fleet, "
-                       "from the `claude -p --output-format json` result envelope each "
-                       "waking writes. Counters only, no transcript content.",
+        "description": "Per-run telemetry for the fleet's on-box agents, from the "
+                       "`claude -p --output-format json` result envelope (or an "
+                       "equivalent from opencode / the Gemini CLI) each waking writes. "
+                       "Counters only, no transcript content. Rows with "
+                       "`cost_estimated: true` are a token x published-list-price "
+                       "estimate for a runtime that reports no billed figure (Gemini), "
+                       "not a billed cost.",
         "count": len(runs),
         "instrumented_runs": len(costed),
         "instrumented_since": costed[0]["ts"] if costed else None,
         "totals": {
             "cost_usd": total_cost,
+            "cost_usd_billed": billed_cost,
+            "cost_usd_estimated": est_cost,
+            "estimated_runs": len(estimated),
             "mean_cost_usd": round(total_cost / len(costed), 6) if costed else None,
             "agents": sorted({r.get("agent") for r in costed}),
         },

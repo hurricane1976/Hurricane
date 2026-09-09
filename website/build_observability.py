@@ -355,11 +355,10 @@ NONBILLED_PRICING = {
 }
 
 
-def est_cost(r: dict):
-    """USD list-price estimate for a run that reports tokens but no billed
-    cost, or None when the run is billed / the model is unpriced / no tokens."""
-    if isinstance(r.get("cost_usd"), (int, float)):
-        return None
+def _raw_est_cost(r: dict):
+    """Token count x published list price for the row's model, or None when the
+    model is unpriced or the row carries no token counts. Ignores any existing
+    cost_usd -- callers decide whether to apply it."""
     p = NONBILLED_PRICING.get(str(r.get("model") or "").lower())
     if not p:
         return None
@@ -371,6 +370,39 @@ def est_cost(r: dict):
         return None
     return (it * p["in"] + ot * p["out"]
             + cr * p["cache_read"] + cw * p["cache_write"]) / 1_000_000
+
+
+def apply_estimates(store: dict) -> int:
+    """Backfill a list-price cost estimate into every stored row from a
+    token-only runtime (Gemini CLI -> total_cost_usd: null). Tidal's approach:
+    the number lands in the committed series so Lantern carries a cost in every
+    panel, not just a render-time overlay. Each backfilled row keeps
+    ``cost_estimated: true`` so the page footnotes it as a token x
+    published-rate estimate, never a billed figure. Idempotent -- re-run every
+    build because scan_json_logs re-reads the null-cost envelope each time, and
+    re-priced in case NONBILLED_PRICING changes. Returns the count touched."""
+    n = 0
+    for r in store.values():
+        billed = isinstance(r.get("cost_usd"), (int, float)) and not r.get("cost_estimated")
+        if billed:
+            continue
+        e = _raw_est_cost(r)
+        if e is None:
+            continue
+        r["cost_usd"] = e
+        r["cost_estimated"] = True
+        n += 1
+    return n
+
+
+def est_cost(r: dict):
+    """USD list-price estimate for a run that reports tokens but no billed
+    cost, or None when the run is billed / the model is unpriced / no tokens.
+    After apply_estimates() has run, such rows already carry cost_usd +
+    cost_estimated, so this returns None for them (they are counted directly)."""
+    if isinstance(r.get("cost_usd"), (int, float)):
+        return None
+    return _raw_est_cost(r)
 
 
 def _est_tag(html: str) -> str:
@@ -417,17 +449,26 @@ def cost_chart(runs: list[dict], keep: int = 28) -> str:
     bw = min(slot * 0.66, 24)
     grid, ylab = _grid_y(ml, mr, mt, ph, axis_top, lambda v: f"${v:.2f}")
     bars = []
+    any_est = any(r.get("cost_estimated") for r in rs)
     for i, r in enumerate(rs):
         h = r["cost_usd"] / axis_top * ph
         x = ml + i * slot + (slot - bw) / 2
         y = mt + ph - h
         col = AGENT_COLOR.get(r["agent"], AMBER)
-        tip = (f'{r["agent"]} · {_label(r)} · {fmt_cost(r["cost_usd"])} · '
+        est = r.get("cost_estimated")
+        cost_s = f'~{fmt_cost(r["cost_usd"])} est.' if est else fmt_cost(r["cost_usd"])
+        tip = (f'{r["agent"]} · {_label(r)} · {cost_s} · '
                f'{fmt_int(r.get("turns"))} turns · {fmt_dur(r.get("duration_ms"))} wall')
+        # Estimated bars (token-only Gemini runs, priced at list rate) are drawn
+        # half-opacity so a billed bar and an estimate never read alike.
+        op = ' fill-opacity="0.5"' if est else ''
         bars.append(f'<rect x="{x:.1f}" y="{y:.1f}" width="{bw:.1f}" height="{h:.1f}" rx="3" '
-                    f'fill="{col}" data-tip="{esc(tip)}"><title>{esc(tip)}</title></rect>')
+                    f'fill="{col}"{op} data-tip="{esc(tip)}"><title>{esc(tip)}</title></rect>')
+    lbl = (f"US-dollar cost per instrumented run, {n} most recent runs"
+           + ("; half-opacity bars are token-only Gemini runs priced at list rate, not billed"
+              if any_est else ""))
     return (f'<svg viewBox="0 0 {CHART_W} {H}" class="chart chart-in" role="img" '
-            f'aria-label="US-dollar cost per instrumented run, {n} most recent runs">'
+            f'aria-label="{esc(lbl)}">'
             f'{grid}{ylab}{"".join(bars)}{_x_labels(rs, ml, slot, H - 8)}</svg>')
 
 
@@ -735,14 +776,17 @@ def agent_summary(instrumented: list[dict]) -> str:
         rs = [r for r in instrumented if r["agent"] == a]
         k = len(rs)
         tc = sum(r["cost_usd"] for r in rs)
+        estd = any(r.get("cost_estimated") for r in rs)
+        tc_s = _est_tag(fmt_cost2(tc)) if estd else fmt_cost2(tc)
+        mc_s = _est_tag(fmt_cost(tc / k)) if estd else fmt_cost(tc / k)
         mt_ = sum((r.get("duration_ms") or 0) for r in rs) / k
         tt = sum((r.get("turns") or 0) for r in rs) / k
         tok = sum(_tok_total(r) for r in rs) / k
         err = sum(1 for r in rs if r.get("is_error"))
         out.append(
             f'<tr><td>{esc(a)}</td><td class="mono">{k}</td>'
-            f'<td class="mono">{fmt_cost2(tc)}</td>'
-            f'<td class="mono">{fmt_cost(tc / k)}</td>'
+            f'<td class="mono">{tc_s}</td>'
+            f'<td class="mono">{mc_s}</td>'
             f'<td class="mono">{tt:.0f}</td>'
             f'<td class="mono">{fmt_dur(mt_)}</td>'
             f'<td class="mono">{kfmt(tok)}</td>'
@@ -769,12 +813,12 @@ def all_agent_summary(rows: list[dict]) -> str:
         k = len(rs)
         model = next((r.get("model") for r in reversed(rs) if r.get("model")), None)
         costs = [r["cost_usd"] for r in rs if isinstance(r.get("cost_usd"), (int, float))]
+        estd = any(r.get("cost_estimated") for r in rs)
         if costs:
-            mc = fmt_cost(sum(costs) / len(costs))
+            mean = fmt_cost(sum(costs) / len(costs))
+            mc = _est_tag(mean) if estd else mean
         else:
-            ests = [e for e in (est_cost(r) for r in rs) if e is not None]
-            mc = _est_tag(fmt_cost(sum(ests) / len(ests))) if ests else \
-                '<span style="color:var(--muted);">n/a</span>'
+            mc = '<span style="color:var(--muted);">n/a</span>'
         durs = [r["duration_ms"] for r in rs if isinstance(r.get("duration_ms"), (int, float))]
         mw = fmt_dur(sum(durs) / len(durs)) if durs else "&mdash;"
         tt = sum((r.get("turns") or 0) for r in rs) / k
@@ -837,20 +881,16 @@ def model_family_table(rows: list[dict]) -> str:
         k = len(rs)
         agents = ", ".join(sorted({r["agent"] for r in rs}))
         costs = [r["cost_usd"] for r in rs if isinstance(r.get("cost_usd"), (int, float))]
+        estd = any(r.get("cost_estimated") for r in rs)
         # Mean $/run divides by every run in the family (k), not just the billed
         # ones, so this column stays "Total $ / Runs" -- consistent with the two
-        # neighbouring means. A family with no billed run falls back to a
-        # list-price estimate (marked "est."); n/a only if it can't be priced.
+        # neighbouring means. A family whose figure includes a token-only run
+        # priced at list rate is tagged "est."; n/a only if it can't be priced.
         if costs:
-            tc = fmt_cost2(sum(costs))
-            mc = fmt_cost(sum(costs) / k)
+            tc = _est_tag(fmt_cost2(sum(costs))) if estd else fmt_cost2(sum(costs))
+            mc = _est_tag(fmt_cost(sum(costs) / k)) if estd else fmt_cost(sum(costs) / k)
         else:
-            ests = [e for e in (est_cost(r) for r in rs) if e is not None]
-            if ests:
-                tc = _est_tag(fmt_cost2(sum(ests)))
-                mc = _est_tag(fmt_cost(sum(ests) / k))
-            else:
-                tc = mc = muted
+            tc = mc = muted
         tok = sum(_tok_total(r) for r in rs) / k
         tt = sum((r.get("turns") or 0) for r in rs) / k
         err = sum(1 for r in rs if r.get("is_error"))
@@ -1183,7 +1223,10 @@ def multimetric_block(store_rows: list[dict]) -> str:
         "from Mountain's host. The fetch is cached "
         f"{FLEET_RUN_FEED_TTL // 60}&nbsp;min so a burst of manual rebuilds "
         "doesn't hammer the site. Numbers are each agent's own measured envelope, "
-        "never re-derived from an aggregate.")
+        "never re-derived from an aggregate &mdash; except the cost lane for "
+        "token-only Gemini runtimes (Lantern here, and the off-box Gemini/GLM "
+        "lanes), which is a token&nbsp;&times;&nbsp;published-list-price estimate, "
+        "not a billed figure.")
     if missing:
         src_note += (" <strong>No per-run feed was reachable for "
                      + ", ".join(esc(a) for a in missing)
@@ -1393,7 +1436,9 @@ def cost_table(instrumented: list[dict], keep: int = 14) -> str:
         '<td class="mono">{turns}</td><td class="mono">{dur}</td>'
         '<td class="mono">{it} / {ot}</td><td class="mono">{cr}</td>'
         '<td><span class="outcome {oc}">{ol}</span></td></tr>'.format(
-            a=esc(r["agent"]), t=esc(_label(r)), c=fmt_cost(r["cost_usd"]),
+            a=esc(r["agent"]), t=esc(_label(r)),
+            c=(_est_tag(fmt_cost(r["cost_usd"])) if r.get("cost_estimated")
+               else fmt_cost(r["cost_usd"])),
             turns=fmt_int(r.get("turns")), dur=fmt_dur(r.get("duration_ms")),
             it=fmt_int(r.get("input_tokens")), ot=fmt_int(r.get("output_tokens")),
             cr=kfmt(r.get("cache_read_tokens")),
@@ -1615,11 +1660,15 @@ def render(store_rows: list[dict]) -> str:
     now = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
     now_dt = datetime.now(timezone.utc)
 
+    # Every row that carries a dollar figure -- billed, or a token-only Gemini
+    # run backfilled with a list-price estimate by apply_estimates() (flagged
+    # cost_estimated). The cost chart / table / KPIs / family roll-up all carry
+    # both, and every aggregate that includes an estimate is tagged "est.".
     instrumented = [r for r in store_rows if isinstance(r.get("cost_usd"), (int, float))]
     n = len(instrumented)
-    # The token and wall-clock panels are not about cost, so they also carry the
-    # runtimes that emit usage/timing but no billed dollar figure (Lantern /
-    # Gemini). Only the cost chart, cost KPIs and cost table stay cost-gated.
+    est_rows = [r for r in instrumented if r.get("cost_estimated")]
+    est_n = len(est_rows)
+    est_cost_total = sum(r["cost_usd"] for r in est_rows)
     tok_rows = [r for r in store_rows if _tok_total(r) > 0]
     # The wall-clock waterfall promises "both spans measured", so it only carries
     # runs whose envelope reports duration_api_ms as well as total wall time.
@@ -1648,14 +1697,24 @@ def render(store_rows: list[dict]) -> str:
     cost_24h = sum(r["cost_usd"] for r in last24)
 
     if n:
+        billed_total = total_cost - est_cost_total
         cost_intro = (
             f"<strong>{n}</strong> instrumented run{'s' if n != 1 else ''} since "
             f"<strong>{since}</strong> ({', '.join(by_agent)}) &mdash; "
-            f"<strong>{fmt_cost2(total_cost)}</strong> total API spend, "
+            f"<strong>{fmt_cost2(total_cost)}</strong> total run cost, "
             f"<strong>{fmt_cost(mean_cost)}</strong> mean per run, "
-            f"<strong>{kfmt(total_tok)}</strong> tokens billed of which "
+            f"<strong>{kfmt(total_tok)}</strong> tokens of which "
             f"<strong>{cache_share:.0f}%</strong> served from the prompt cache."
         )
+        if est_n:
+            cost_intro += (
+                f" Of that, <strong>{fmt_cost2(billed_total)}</strong> is billed "
+                f"(Claude&nbsp;Code + Lightning via OpenRouter); the token-only "
+                f"Gemini runtime (Lantern, {est_n} run{'s' if est_n != 1 else ''}) "
+                f"is priced at published list rates for "
+                f"<strong>~{fmt_cost2(est_cost_total)}</strong> &mdash; an estimate, "
+                f"not a billed figure, tagged <em>est.</em> wherever it appears."
+            )
     else:
         cost_intro = (
             "Instrumentation is live (<code>wake.sh</code> runs "
@@ -1666,7 +1725,12 @@ def render(store_rows: list[dict]) -> str:
 
     offbox_body, offbox_note = offbox_obs(fetch_sibling_obs())
 
-    latest = instrumented[-1] if instrumented else {}
+    # The attribute block is an Anthropic OTel-shape illustration (gen_ai.system
+    # = "anthropic"), so anchor it to the most recent Claude run, not whatever
+    # runtime happened to finish last (Lantern's Gemini rows are now instrumented).
+    latest = next((r for r in reversed(instrumented)
+                   if str(r.get("model") or "").startswith("claude")),
+                  instrumented[-1] if instrumented else {})
     attrs = (
         '<span class="k">gen_ai.system</span>            = "anthropic"<br>'
         f'<span class="k">gen_ai.request.model</span>     = "{esc(latest.get("model") or "claude-sonnet-5")}"<br>'
@@ -1733,27 +1797,35 @@ def render(store_rows: list[dict]) -> str:
             f"panel fills the first time a run reports an error."
         )
 
-    fam_spend = {}
+    fam_billed, fam_est = {}, {}
     for r in store_rows:
         fam = _family_of(r.get("model"))
-        if fam and isinstance(r.get("cost_usd"), (int, float)):
-            fam_spend[fam] = fam_spend.get(fam, 0.0) + r["cost_usd"]
+        if not (fam and isinstance(r.get("cost_usd"), (int, float))):
+            continue
+        bucket = fam_est if r.get("cost_estimated") else fam_billed
+        bucket[fam] = bucket.get(fam, 0.0) + r["cost_usd"]
     fam_named = sum(1 for r in store_rows if _family_of(r.get("model")))
     fam_unnamed = len(store_rows) - fam_named
     fam_unnamed_err = sum(1 for r in store_rows
                           if not _family_of(r.get("model")) and r.get("is_error"))
-    if fam_named and fam_spend:
-        top_fam = max(fam_spend, key=fam_spend.get)
-        top_share = fam_spend[top_fam] / sum(fam_spend.values()) * 100
+    if fam_named and fam_billed:
+        top_fam = max(fam_billed, key=fam_billed.get)
+        top_share = fam_billed[top_fam] / sum(fam_billed.values()) * 100
+        est_clause = ""
+        if fam_est:
+            est_clause = (
+                f" The token-only Gemini runtime (Lantern) carries a "
+                f"<em>~list-price estimate</em> of "
+                f"<strong>~{fmt_cost2(sum(fam_est.values()))}</strong> tagged "
+                f"<em>est.</em> &mdash; token count &times; Gemini&nbsp;3.8&nbsp;Flash "
+                f"published rates (which match OpenRouter&rsquo;s current list "
+                f"price), not a billed figure.")
         fam_intro = (
             f"Every result envelope that names a model, rolled up by provider "
-            f"family. <strong>{len(fam_spend)}</strong> "
-            f"famil{'y' if len(fam_spend) == 1 else 'ies'} carry a billed dollar "
+            f"family. <strong>{len(fam_billed)}</strong> "
+            f"famil{'y' if len(fam_billed) == 1 else 'ies'} carry a billed dollar "
             f"figure and <strong>{top_fam}</strong> is <strong>{top_share:.0f}%</strong> "
-            f"of that measured spend; non-billed runtimes (Gemini) carry a "
-            f"<em>~list-price estimate</em> tagged <em>est.</em> &mdash; token "
-            f"count &times; Gemini&nbsp;3.8&nbsp;Flash published rates (which match "
-            f"OpenRouter&rsquo;s current list price), not a billed figure."
+            f"of that measured spend." + est_clause
             + (f" {fam_unnamed} envelope{'s' if fam_unnamed != 1 else ''} named no "
                f"model &mdash; a provider non-start &mdash; and "
                f"{'is' if fam_unnamed == 1 else 'are'} not counted here"
@@ -1761,6 +1833,15 @@ def render(store_rows: list[dict]) -> str:
                   f"(those still show in the failure-reason panel above)."
                   if fam_unnamed_err else ".")
                if fam_unnamed else "")
+        )
+    elif fam_named and fam_est:
+        fam_intro = (
+            f"Every result envelope that names a model, rolled up by provider "
+            f"family. No family carries a billed cost yet; the Gemini runtime "
+            f"shows a <em>~list-price estimate</em> tagged <em>est.</em> "
+            f"(<strong>~{fmt_cost2(sum(fam_est.values()))}</strong> &mdash; token "
+            f"count &times; published rates, not billed). Token and turn means "
+            f"fill from every runtime."
         )
     elif fam_named:
         fam_intro = (
@@ -1828,10 +1909,12 @@ def main() -> None:
     store = load_store()
     for r in scanned:
         store[f"{r['agent']}:{r['ts']}"] = r
+    est_n = apply_estimates(store)
     ordered = save_store(store)
     OUT.write_text(render(ordered))
     inst = len([r for r in ordered if isinstance(r.get("cost_usd"), (int, float))])
-    print(f"wrote {OUT.name} ({len(ordered)} rows in store, {inst} instrumented)")
+    print(f"wrote {OUT.name} ({len(ordered)} rows in store, {inst} instrumented, "
+          f"{est_n} list-price estimate)")
 
 
 if __name__ == "__main__":

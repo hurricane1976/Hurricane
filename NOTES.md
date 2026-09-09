@@ -16691,3 +16691,77 @@ the served page), `/fleet.json` 12/12.
   DMs 2026-09-04). `nostr_reply.py` + `nostr_converse.py` both no-op.
 - `deploy.sh` still warns w295/w296 missing from NOTES — known, not
   backfilling.
+
+---
+
+## 2026-09-09 — 329th waking
+
+Regular scheduled waking (~06:40Z). Two fresh Telegram steers via the command
+poller: *"Fix lantern using tidals solution ie pricing for lantern"* +
+*"Backfill data"*. That answers the open ASK.md question (and Mountain's earlier
+peer ask) — josh wants the Lantern cost estimate written into the committed
+telemetry, Tidal-style, not kept as a render-time overlay.
+
+### Backfilled the Lantern cost estimate into `data/observability.jsonl`
+
+`build_observability.py`:
+
+- New **`apply_estimates(store)`** — runs in `main()` after the log scan +
+  merge, before `save_store`. For every stored row from a token-only runtime
+  (Gemini CLI → `total_cost_usd: null`) it sets `cost_usd` = token count ×
+  Gemini 3.8 Flash published list rate ($0.75 / $3.75 / $0.075 per 1M
+  in/out/cache-read — = OpenRouter's current list price) and marks the row
+  `cost_estimated: true`. **Idempotent** — re-applied every build because the
+  scan re-reads the null-cost envelope each run, and re-priced if
+  `NONBILLED_PRICING` ever changes. `est_cost()` refactored: `_raw_est_cost()`
+  does the math with no guards; `est_cost()` keeps the old "None if billed"
+  contract for any leftover callers.
+- Result: **9 Lantern runs priced** (~$3.61 total, ~$0.40 mean); the 1
+  all-zero-token error row correctly stays `cost_usd: null`. Same per-run
+  numbers the w327 overlay computed — no drift, just now persisted.
+
+Lantern now carries a cost in **every** panel, not just two tables:
+
+- **Cost-per-run chart** — Lantern bars drawn at 50% `fill-opacity` with a
+  `~$X est.` tooltip + an "(est.)" legend swatch; aria-label notes the
+  half-opacity bars aren't billed.
+- **Cost table / per-agent summary / volume table / model-family table** —
+  every aggregate that includes an estimated row is wrapped in the existing
+  `_est_tag` (`~ … est.` with a "list-price estimate, not a billed figure"
+  title).
+- **KPI band + panel intro** — the intro now breaks out **$81.21 billed**
+  (Claude Code + Lightning via OpenRouter) vs **~$3.61 estimate** (Lantern) →
+  **$84.81** total run cost. KPI tile labels softened: "total API spend" →
+  "total run cost", "tokens billed" → "tokens".
+- **Interactive multimetric panel** — Lantern's cost lane fills in; source
+  note gains a clause that the Gemini cost lane is a list-price estimate.
+- **Attribute-shape block** — now anchors to the latest *Claude* run (was
+  `instrumented[-1]`, which could now be a Gemini row under a hardcoded
+  `gen_ai.system = "anthropic"`).
+
+`api/server.py` `build_observability()` — `totals` now carries
+`cost_usd_billed`, `cost_usd_estimated`, `estimated_runs` alongside the
+combined `cost_usd`; description documents the `cost_estimated` flag.
+`beacon-api` restarted to pick it up (verified: split shows on the live
+endpoint).
+
+**Kept honest vs a plain Tidal-style backfill:** the raw row keeps
+`cost_estimated: true`, so "this figure was never billed" survives in the
+data and every consumer (page + API) can distinguish it. Deliberate departure
+from Tidal, which writes an unmarked `cost_usd`.
+
+`ast.parse` clean on both files; `build_observability.py` ran (104 rows / 103
+instrumented / 9 estimate); `deploy.sh` **2× smoke green** (local + live);
+served page carries 29 `est.` markers; `/fleet.json` 12/12; `/api/observability`
+200 with the new split. Commit — see below. ASK.md open item + the w327 item
+updated (w327's "raw file untouched / display-only" scoping is superseded).
+
+### Housekeeping
+
+- **Nostr:** `nostr_listen.py` 3 events from nos.lol (relay.nostr.band
+  handshake timeout again) — same known set (kind:0 self + 2 fellow-Claude
+  DMs 2026-09-04). `nostr_reply.py` + `nostr_converse.py` both no-op.
+- **Peer inbox:** empty (all archived to `peer/inbox/processed/`). No new
+  MOUNTAIN / TIDAL messages this waking.
+- `deploy.sh` still warns w295/w296 missing from NOTES — known, not
+  backfilling.

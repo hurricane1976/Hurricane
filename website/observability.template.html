@@ -196,10 +196,10 @@
     <p style="margin:0 0 0.4rem;">{{OBS_COST_INTRO}}</p>
     <div class="kpi-grid">
       <div class="kpi"><div class="n accent">{{OBS_KPI_RUNS}}</div><div class="l">instrumented runs</div></div>
-      <div class="kpi"><div class="n">{{OBS_KPI_COST}}</div><div class="l">total API spend</div></div>
+      <div class="kpi"><div class="n">{{OBS_KPI_COST}}</div><div class="l">total run cost</div></div>
       <div class="kpi"><div class="n">{{OBS_KPI_MEAN}}</div><div class="l">mean cost / run</div></div>
-      <div class="kpi"><div class="n">{{OBS_KPI_COST24}}</div><div class="l">spend, last 24&nbsp;h</div></div>
-      <div class="kpi"><div class="n">{{OBS_KPI_TOKENS}}</div><div class="l">tokens billed</div></div>
+      <div class="kpi"><div class="n">{{OBS_KPI_COST24}}</div><div class="l">cost, last 24&nbsp;h</div></div>
+      <div class="kpi"><div class="n">{{OBS_KPI_TOKENS}}</div><div class="l">tokens</div></div>
       <div class="kpi"><div class="n">{{OBS_KPI_CACHE}}</div><div class="l">served from cache</div></div>
       <div class="kpi"><div class="n">{{OBS_KPI_WALL}}</div><div class="l">mean wall / run</div></div>
       <div class="kpi"><div class="n">{{OBS_KPI_TURNS}}</div><div class="l">mean turns / run</div></div>
@@ -229,11 +229,12 @@
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M6 6v16M18 10v12M3 22h18"/></svg>
       <h2>Cost per run<span class="panel-flag live">Live</span></h2>
     </div>
-    <p>Each waking's dollar cost, from the envelope's <code>total_cost_usd</code>. The two Claude&nbsp;Code agents plus Lightning (opencode, billed through OpenRouter) emit it, newest run on the right.</p>
+    <p>Each waking's dollar cost, newest run on the right. Beacon and Highbeam (Claude&nbsp;Code) and Lightning (opencode via OpenRouter) report a billed <code>total_cost_usd</code>. Lantern (Gemini&nbsp;CLI) reports tokens but no billed figure, so its bars are a <em>~list-price estimate</em> &mdash; token count &times; Gemini&nbsp;3.8&nbsp;Flash published rates &mdash; drawn half-opacity and tagged <em>est.</em>, never counted as billed.</p>
     <div class="legend">
       <span><i style="background:#ff8a3d"></i>Beacon</span>
       <span><i style="background:#ffab5e"></i>Highbeam</span>
       <span><i style="background:#5aa9ff"></i>Lightning</span>
+      <span><i style="background:#4fd1c5;opacity:0.5"></i>Lantern (est.)</span>
     </div>
     {{OBS_COST_CHART}}
     <details class="data-details">
@@ -249,11 +250,14 @@
     </details>
     <p style="font-size:0.78rem;color:var(--muted);margin:0.7rem 0 0;">
       <strong>Lantern</strong> (Gemini CLI) emits a result envelope with tokens
-      and timing but no billed dollar figure, so it appears in the token-throughput
-      and wall-clock panels below (and the volume table), but carries no bar in
-      this measured cost chart. Its spend is shown lower down as a
-      <em>~list-price estimate</em> (tagged <em>est.</em>) in the per-runtime and
-      model-family tables &mdash; never mixed into the billed totals here.
+      and timing but no billed dollar figure. Its runs are backfilled into the
+      committed series with a token&nbsp;&times;&nbsp;list-price estimate (Gemini&nbsp;3.8&nbsp;Flash
+      published rates, which match OpenRouter&rsquo;s current list price) so it
+      carries a bar here and a cost in every roll-up &mdash; the same approach
+      Tidal takes for its Gemini lanes. Every estimated figure is drawn
+      half-opacity and tagged <em>est.</em>; the intro above breaks out the
+      billed total from the estimate, and the raw
+      <code>data/observability.jsonl</code> row keeps <code>cost_estimated:&nbsp;true</code>.
     </p>
   </section>
 
@@ -288,7 +292,7 @@
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="4" rx="1"/><rect x="3" y="10" width="18" height="4" rx="1"/><rect x="3" y="16" width="18" height="4" rx="1"/></svg>
       <h2>Per-agent summary<span class="panel-flag live">Live</span></h2>
     </div>
-    <p>The instrumented runs rolled up by agent &mdash; totals and per-run means over the whole committed series.</p>
+    <p>The instrumented runs rolled up by agent &mdash; totals and per-run means over the whole committed series. <strong>Lantern</strong>&rsquo;s dollar figures are a token&nbsp;&times;&nbsp;list-price estimate (Gemini, tagged <em>est.</em>), not billed.</p>
     <div style="overflow-x:auto;">
     <table class="data-table" style="min-width:40rem;">
       <thead><tr><th>Agent</th><th>Runs</th><th>Total $</th><th>Mean $</th><th>Mean turns</th><th>Mean wall</th><th>Mean tokens</th><th>Errors</th></tr></thead>
@@ -304,7 +308,7 @@
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10M10 20V4M16 20v-6M22 20H2"/></svg>
       <h2>Every runtime &mdash; volume &amp; cadence<span class="panel-flag live">Live</span></h2>
     </div>
-    <p>Every agent that writes a <code>logs/&lt;ts&gt;.json</code> result envelope, cost-bearing or not. The Gemini runtime (Lantern) reports token counts and timing but no billed dollar figure, so its mean&nbsp;$ is shown as a <em>~list-price estimate</em> tagged <em>est.</em> &mdash; its token counts &times; Gemini&nbsp;3.8&nbsp;Flash published rates ($0.75&thinsp;/&thinsp;$3.75&thinsp;/&thinsp;$0.075 per&nbsp;1M input&thinsp;/&thinsp;output&thinsp;/&thinsp;cache-read), not a billed number. Every other runtime here &mdash; the two Claude&nbsp;Code agents and Lightning via OpenRouter &mdash; carries a real cost and also appears in the panels above.</p>
+    <p>Every agent that writes a <code>logs/&lt;ts&gt;.json</code> result envelope, cost-bearing or not. The Gemini runtime (Lantern) reports token counts and timing but no billed dollar figure, so its mean&nbsp;$ is shown as a <em>~list-price estimate</em> tagged <em>est.</em> &mdash; its token counts &times; Gemini&nbsp;3.8&nbsp;Flash published rates ($0.75&thinsp;/&thinsp;$3.75&thinsp;/&thinsp;$0.075 per&nbsp;1M input&thinsp;/&thinsp;output&thinsp;/&thinsp;cache-read), not a billed number. Lantern&rsquo;s estimate is backfilled into the committed series, so it now also appears in the cost panels above (tagged <em>est.</em>); the two Claude&nbsp;Code agents and Lightning via OpenRouter carry a real billed cost.</p>
     <div style="overflow-x:auto;">
     <table class="data-table" style="min-width:42rem;">
       <thead><tr><th>Agent</th><th>Model</th><th>Runs</th><th>Mean turns</th><th>Mean wall</th><th>Mean tokens</th><th>Mean&nbsp;$</th><th>Errors</th></tr></thead>
