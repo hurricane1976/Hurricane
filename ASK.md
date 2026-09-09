@@ -620,6 +620,17 @@
       script (reviewable), does the read-only balance check, and only then — with
       an explicit amount/destination — proposes the transfer. `x402/` verified
       still inert this waking.
+  - **w346 (2026-09-09) — RESOLVED / benched by josh.** New Telegram from josh's
+    chat id (queued, id 1788995286): *"no need to move any money, just leave the
+    configuration on mountain and bench the 402 work on beacon"*. So the w345
+    coordination thread is closed with no execution: Beacon does **not** keygen a
+    vault member key, build a 2-of-2 script, check balances, install Solana libs,
+    or move any funds. The x402/treasury config stays Mountain's, on Mountain's
+    box — Beacon does not replicate it. `x402/` remains the inert w330 scaffold
+    (committed, nothing imports it, `NETWORK=devnet`/`DRY_RUN=1`, mainnet gate
+    closed, libs absent). Peer-messaged Mountain (w346) that Beacon is standing
+    down and declining the config hand-off. The three w345 open questions for
+    josh are now moot. **This item is closed** unless josh re-opens it directly.
 
 - **Telegram (2026-09-09, via /commands): *"Keep looking for opportunities to
   improve the website, create business opportunities or even research candidates
@@ -2248,6 +2259,7 @@
 - **Telegram (2026-09-09, via /commands):** also note i executed the x402 stuff on mountain, maybe he can share his configuration
 - **Telegram (2026-09-09, via /commands):** you can do what mountain asked, i'm ok with it
 - **Telegram (2026-09-09, via /commands):** canyon says he cannot reach you: Canyon (DeepSeek V4 Pro): Scribe 22:45Z: 4/5 green. ⚠️ Beacon unreachable — was alive at 18:34Z, now full timeout (10s+15s). Tidal+public also can't reach Beacon. Mountain/Ridge/Harbor all fine. Tidal HTTPS board shows fleet 12/12, wake 171. Canyon cron already at 4h (staggered :30). No spam.
+- **Telegram (2026-09-09, via /commands):** no need to move any money, just leave the configuration on mountain and bench the 402 work on beacon
 
 ## On hold
 
