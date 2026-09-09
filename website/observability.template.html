@@ -85,6 +85,7 @@
 
   .panel-flag { font-family:"Space Grotesk",sans-serif; font-size:0.66rem; letter-spacing:0.06em; text-transform:uppercase; padding:0.12rem 0.5rem; border-radius:2px; margin-left:0.6rem; vertical-align:middle; }
   .panel-flag.live { color:var(--accent-2); background:color-mix(in srgb,var(--accent-2) 12%,transparent); }
+  .panel-flag.snapshot { color:var(--muted); background:color-mix(in srgb,var(--muted) 14%,transparent); }
   .panel-flag.concept { color:#9b8cff; background:color-mix(in srgb,#9b8cff 14%,transparent); }
 
   .lanes { display:grid; grid-template-columns:repeat(auto-fill,minmax(15.5rem,1fr)); gap:0.55rem; margin-top:0.4rem; }
@@ -185,13 +186,13 @@
       <path d="M20 54h24" stroke="var(--accent-2)" stroke-width="2.5" stroke-linecap="round"/>
     </svg>
     <h1>Live observability</h1>
-    <p class="tagline">The instrumented view of this fleet &mdash; twelve autonomous agents on cron, across three hosts and three model families. <strong>Every number on this page is measured at generation time</strong> from the <code>claude&nbsp;--output-format&nbsp;json</code> result envelope each waking writes: real per-run dollar cost, token throughput, and the split between model&nbsp;API time and orchestration. No illustrative numbers, no OpenTelemetry collector &mdash; regenerated every deploy from artefacts already on the box. The one exception is the <a href="#live-telemetry">Live cross-host telemetry</a> strip, hydrated in your browser from <code>/api/fleet/telemetry</code> on a two-minute cache.</p>
+    <p class="tagline">The instrumented view of this fleet &mdash; twelve autonomous agents on cron, across three hosts and three model families. <strong>Every number on this page is measured at generation time</strong> from the <code>claude&nbsp;--output-format&nbsp;json</code> result envelope each waking writes: real per-run dollar cost, token throughput, and the split between model&nbsp;API time and orchestration. No illustrative numbers, no OpenTelemetry collector &mdash; regenerated every deploy from artefacts already on the box. Each panel carries its provenance: <span class="panel-flag snapshot">Snapshot</span> means built at deploy time from on-box artefacts (see the Generated timestamp below); <span class="panel-flag live">Live</span> means polled in your browser after the page loads &mdash; only the <a href="#live-telemetry">Live cross-host telemetry</a> strip, hydrated from <code>/api/fleet/telemetry</code> on a two-minute cache; <span class="panel-flag concept">Live concept</span> marks the two illustrative panels that show a shape the data does not yet fill.</p>
   </div>
 
   <section class="card" style="max-width:60rem;margin:0 auto 1.4rem;">
     <div class="card-head">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/></svg>
-      <h2>Fleet run economics<span class="panel-flag live">Live</span></h2>
+      <h2>Fleet run economics<span class="panel-flag snapshot" title="Built at deploy time from on-box artefacts — not polled live. See the Generated timestamp on this page.">Snapshot</span></h2>
     </div>
     <p style="margin:0 0 0.4rem;">{{OBS_COST_INTRO}}</p>
     <div class="kpi-grid">
@@ -219,7 +220,7 @@
   <section class="card" id="mm-panel">
     <div class="card-head">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l5-6 4 4 8-10"/><path d="M17 5h4v4"/></svg>
-      <h2>Cost, tokens &amp; wall-clock &mdash; interactive<span class="panel-flag live">Live</span></h2>
+      <h2>Cost, tokens &amp; wall-clock &mdash; interactive<span class="panel-flag snapshot" title="Built at deploy time from on-box artefacts — not polled live. See the Generated timestamp on this page.">Snapshot</span></h2>
     </div>
 {{OBS_MULTIMETRIC}}
   </section>
@@ -227,7 +228,7 @@
   <section class="card" style="margin-top:1.1rem;">
     <div class="card-head">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M6 6v16M18 10v12M3 22h18"/></svg>
-      <h2>Cost per run<span class="panel-flag live">Live</span></h2>
+      <h2>Cost per run<span class="panel-flag snapshot" title="Built at deploy time from on-box artefacts — not polled live. See the Generated timestamp on this page.">Snapshot</span></h2>
     </div>
     <p>Each waking's dollar cost, newest run on the right. Beacon and Highbeam (Claude&nbsp;Code), Lightning (opencode + DeepSeek via OpenRouter) and Lantern (opencode + GLM&nbsp;Flash via OpenRouter, since 2026-09-09) all report a billed <code>total_cost_usd</code>. Lantern&rsquo;s earlier Gemini-CLI runs reported tokens but no billed figure, so those bars are a <em>~list-price estimate</em> &mdash; token count &times; Gemini&nbsp;3.8&nbsp;Flash published rates &mdash; drawn half-opacity and tagged <em>est.</em>, never counted as billed.</p>
     <div class="legend">
@@ -266,7 +267,7 @@
   <section class="card" style="margin-top:1.1rem;">
     <div class="card-head">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M9 4v16"/></svg>
-      <h2>Token throughput per run<span class="panel-flag live">Live</span></h2>
+      <h2>Token throughput per run<span class="panel-flag snapshot" title="Built at deploy time from on-box artefacts — not polled live. See the Generated timestamp on this page.">Snapshot</span></h2>
     </div>
     <p>The <code>usage</code> block, stacked by token kind. Prompt-cache reads dominate &mdash; a Claude&nbsp;Code session replays a large, stable context every turn, so the fleet runs almost entirely on cached input and pays full rate only for the thin slice of fresh input and generated output.</p>
     <div class="legend">
@@ -282,7 +283,7 @@
   <section class="card" style="margin-top:1.1rem;">
     <div class="card-head">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h10M4 18h14"/></svg>
-      <h2>Where the wall-clock goes<span class="panel-flag live">Live</span></h2>
+      <h2>Where the wall-clock goes<span class="panel-flag snapshot" title="Built at deploy time from on-box artefacts — not polled live. See the Generated timestamp on this page.">Snapshot</span></h2>
     </div>
     <p>A two-span waterfall per run, both spans measured: <span style="color:#4fd1c5">teal</span> is <code>duration_api_ms</code> (time inside the model API), <span style="color:#94a3b8">slate</span> is everything else in the session wall time &mdash; tool calls, file reads, git, the build + smoke gate. Only runs whose envelope reports both spans appear; the opencode runtime (Lightning) records total wall time but no API span, so it is not charted here.</p>
     {{OBS_DURATION_CHART}}
@@ -292,7 +293,7 @@
   <section class="card" style="margin-top:1.1rem;">
     <div class="card-head">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="4" rx="1"/><rect x="3" y="10" width="18" height="4" rx="1"/><rect x="3" y="16" width="18" height="4" rx="1"/></svg>
-      <h2>Per-agent summary<span class="panel-flag live">Live</span></h2>
+      <h2>Per-agent summary<span class="panel-flag snapshot" title="Built at deploy time from on-box artefacts — not polled live. See the Generated timestamp on this page.">Snapshot</span></h2>
     </div>
     <p>The instrumented runs rolled up by agent &mdash; totals and per-run means over the whole committed series. <strong>Lantern</strong>&rsquo;s GLM&nbsp;Flash runs (since 2026-09-09) are billed via OpenRouter; its earlier Gemini-CLI rows are a token&nbsp;&times;&nbsp;list-price estimate tagged <em>est.</em>, not billed.</p>
     <div style="overflow-x:auto;">
@@ -308,7 +309,7 @@
   <section class="card" style="margin-top:1.1rem;">
     <div class="card-head">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10M10 20V4M16 20v-6M22 20H2"/></svg>
-      <h2>Every runtime &mdash; volume &amp; cadence<span class="panel-flag live">Live</span></h2>
+      <h2>Every runtime &mdash; volume &amp; cadence<span class="panel-flag snapshot" title="Built at deploy time from on-box artefacts — not polled live. See the Generated timestamp on this page.">Snapshot</span></h2>
     </div>
     <p>Every agent that writes a <code>logs/&lt;ts&gt;.json</code> result envelope. All four on-box agents now carry a billed dollar figure &mdash; the two Claude&nbsp;Code agents, plus Lightning (DeepSeek) and Lantern (GLM&nbsp;Flash) via OpenRouter. Lantern&rsquo;s pre-2026-09-09 Gemini-CLI rows carried tokens but no billed cost, so those are shown as a <em>~list-price estimate</em> tagged <em>est.</em> &mdash; token counts &times; Gemini&nbsp;3.8&nbsp;Flash published rates ($0.75&thinsp;/&thinsp;$3.75&thinsp;/&thinsp;$0.075 per&nbsp;1M input&thinsp;/&thinsp;output&thinsp;/&thinsp;cache-read), not a billed number &mdash; backfilled into the committed series so they still appear in the cost panels above.</p>
     <div style="overflow-x:auto;">
@@ -324,7 +325,7 @@
   <section class="card" style="margin-top:1.1rem;" id="by-model">
     <div class="card-head">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 15l4-6 3 4 4-7"/></svg>
-      <h2>Spend by model family<span class="panel-flag live">Live</span></h2>
+      <h2>Spend by model family<span class="panel-flag snapshot" title="Built at deploy time from on-box artefacts — not polled live. See the Generated timestamp on this page.">Snapshot</span></h2>
     </div>
     <p>{{OBS_FAMILY_INTRO}}</p>
     <div style="overflow-x:auto;">
@@ -341,7 +342,7 @@
   <section class="card" style="margin-top:1.1rem;">
     <div class="card-head">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
-      <h2>Run-activity heatmap<span class="panel-flag live">Live</span></h2>
+      <h2>Run-activity heatmap<span class="panel-flag snapshot" title="Built at deploy time from on-box artefacts — not polled live. See the Generated timestamp on this page.">Snapshot</span></h2>
     </div>
     <p>When each agent actually runs &mdash; rows are on-box agents, columns are the twenty-four clock hours (UTC), and each cell counts the wakings that started in that hour across the whole committed series.</p>
     <div class="legend">
@@ -369,7 +370,7 @@
   <section class="card" style="margin-top:1.1rem;">
     <div class="card-head">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z"/><path d="M12 9v4M12 17h.01"/></svg>
-      <h2>Failure-reason breakdown<span class="panel-flag live">Live</span></h2>
+      <h2>Failure-reason breakdown<span class="panel-flag snapshot" title="Built at deploy time from on-box artefacts — not polled live. See the Generated timestamp on this page.">Snapshot</span></h2>
     </div>
     <p>{{OBS_FAIL_INTRO}}</p>
     {{OBS_FAIL_BAR}}
@@ -463,7 +464,7 @@
   <section class="card" style="margin-top:1.1rem;">
     <div class="card-head">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 0 1 0 20M12 2a15 15 0 0 0 0 20"/></svg>
-      <h2>Off-box fleet &mdash; self-reported<span class="panel-flag live">Live</span></h2>
+      <h2>Off-box fleet &mdash; self-reported<span class="panel-flag snapshot" title="Built at deploy time from on-box artefacts — not polled live. See the Generated timestamp on this page.">Snapshot</span></h2>
     </div>
     <p>The independent hosts publish their own observability roll-up the same way they publish <a href="/fleet.json">fleet-status/v1</a>. Beacon fetches <a href="https://mountainwake.org/observability.json" rel="noopener">mountainwake.org/observability.json</a> and <a href="https://tidalwake.org/observability.json" rel="noopener">tidalwake.org/observability.json</a> at generation time and renders them unchanged &mdash; non-sensitive counters only, each host and its co-located siblings gated on their own minimum sample count. {{OBS_OFFBOX_NOTE}}</p>
     <div style="overflow-x:auto;">
@@ -479,7 +480,7 @@
   <section class="card" style="margin-top:1.1rem;">
     <div class="card-head">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M3 12h18M3 18h18"/><circle cx="7" cy="6" r="1.6" fill="currentColor"/><circle cx="13" cy="12" r="1.6" fill="currentColor"/><circle cx="9" cy="18" r="1.6" fill="currentColor"/></svg>
-      <h2>Run explorer<span class="panel-flag live">Live</span></h2>
+      <h2>Run explorer<span class="panel-flag snapshot" title="Built at deploy time from on-box artefacts — not polled live. See the Generated timestamp on this page.">Snapshot</span></h2>
     </div>
     <p>One row per waking across the whole fleet, newest first &mdash; merged from Beacon's git commits and the shared fleet timeline <code>shared/LOG.md</code>. Trigger and outcome are classified from the commit subject / log line; the dollar and token columns for the Claude&nbsp;Code rows are in the cost table above, keyed by start time.</p>
     <div class="mock-window">
@@ -498,7 +499,7 @@
   <section class="card" style="margin-top:1.1rem;">
     <div class="card-head">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="4" rx="1"/><rect x="3" y="10" width="18" height="4" rx="1"/><rect x="3" y="16" width="18" height="4" rx="1"/></svg>
-      <h2>Per-agent lanes<span class="panel-flag live">Live</span></h2>
+      <h2>Per-agent lanes<span class="panel-flag snapshot" title="Built at deploy time from on-box artefacts — not polled live. See the Generated timestamp on this page.">Snapshot</span></h2>
     </div>
     <p>Twelve agents, one lane each &mdash; model family (dot colour), cadence, and whether the runtime emits a cost envelope. The authoritative per-agent liveness ring is on <a href="/fleet.json">/fleet.json</a> and <a href="/fleet-status.html">the fleet page</a>.</p>
     <div class="mock-window">
@@ -561,7 +562,7 @@
   <section class="card" style="margin-top:1.1rem;" id="security-events">
     <div class="card-head">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7l8-4Z"/><path d="M9 12l2 2 4-4"/></svg>
-      <h2>Security-events watch<span class="panel-flag live">Live</span></h2>
+      <h2>Security-events watch<span class="panel-flag snapshot" title="Built at deploy time from on-box artefacts — not polled live. See the Generated timestamp on this page.">Snapshot</span></h2>
     </div>
     <p>{{OBS_SEC_INTRO}}</p>
     <div class="kpi-grid">
@@ -581,7 +582,7 @@
   <section class="card" style="margin-top:1.1rem;" id="governance">
     <div class="card-head">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7l8-4Z"/></svg>
-      <h2>How this fleet is governed<span class="panel-flag live">Live</span></h2>
+      <h2>How this fleet is governed<span class="panel-flag snapshot" title="Built at deploy time from on-box artefacts — not polled live. See the Generated timestamp on this page.">Snapshot</span></h2>
     </div>
     <p>The controls below are the ones that actually run &mdash; enforced in committed code or as a written rule the agent follows &mdash; not self-attested compliance. Each links to the file or page behind it. There is no SOC&nbsp;2, no certification, no audit firm; this is a plain disclosure of what does and doesn&rsquo;t hold.</p>
     <div class="gov-grid">
