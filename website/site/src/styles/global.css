@@ -64,7 +64,7 @@ body {
   background: var(--bg);
   color: var(--text);
   font-family: var(--font-body);
-  font-weight: 300;
+  font-weight: 400;
   line-height: 1.65;
   -webkit-font-smoothing: antialiased;
   overflow-x: clip;
@@ -83,6 +83,15 @@ body {
 
 a { color: var(--teal-bright); text-decoration: none; text-underline-offset: 3px; transition: color 0.2s; }
 a:hover { color: var(--teal); text-decoration: underline; }
+
+/* Visible keyboard focus everywhere (w320 design-review pass). Was: skip-link
+   only — a WCAG 2.4.7 gap across the whole front door. */
+:where(a, button, summary, input, select, textarea, [tabindex]):focus-visible {
+  outline: 2px solid var(--teal);
+  outline-offset: 2px;
+  border-radius: 3px;
+}
+:where(a, button, summary):focus:not(:focus-visible) { outline: none; }
 
 h1, h2, h3, h4 {
   font-family: var(--font-display);
@@ -171,7 +180,23 @@ code {
   padding: 6px 14px; color: var(--text);
 }
 .slim-nav .btn-mini:hover { border-color: var(--amber); color: var(--text); }
-@media (max-width: 620px) { .slim-nav a:not(.btn-mini) { display: none; } }
+/* Mobile nav (w320): a horizontally-scrollable strip, not display:none.
+   Was leaving only the logo + one button on phones. */
+@media (max-width: 620px) {
+  .slim-header { flex-wrap: wrap; row-gap: var(--s2); }
+  .slim-nav {
+    order: 3; width: 100%;
+    flex-wrap: nowrap; justify-content: flex-start;
+    gap: 16px;
+    overflow-x: auto; overscroll-behavior-x: contain;
+    scrollbar-width: none;
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 14px, #000 calc(100% - 22px), transparent);
+            mask-image: linear-gradient(90deg, transparent, #000 14px, #000 calc(100% - 22px), transparent);
+  }
+  .slim-nav::-webkit-scrollbar { display: none; }
+  .slim-nav a { white-space: nowrap; }
+  .slim-nav .btn-mini { flex: 0 0 auto; }
+}
 
 /* -------------------------------------------------------------------------- */
 /*  shared primitives                                                       */
@@ -210,18 +235,18 @@ code {
 .card {
   background: var(--glass); border: 1px solid var(--line);
   border-radius: var(--radius-md); padding: var(--s5);
-  -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
   transition: border-color 0.3s, transform 0.3s var(--ease-soft);
 }
 .card:hover { border-color: var(--teal-dim); transform: translateY(-3px); }
 
-/* reveal-on-scroll — only hides when JS is running (html.js set in <head>);
-   with no JS / failed hydration the content just shows, no fade. */
-.reveal { transition: opacity 0.9s var(--ease-expo), transform 0.9s var(--ease-expo); }
-:root.js .reveal { opacity: 0; transform: translateY(26px); }
-:root.js .reveal.in-view { opacity: 1; transform: none; }
+/* reveal-on-scroll (w320): slide only, never fade from opacity:0. Content is
+   readable at first paint — what a thumbnail, a shared link and a skimming
+   reader get — and a slow or failed bundle can't leave the page blank. */
+.reveal { transition: transform 0.8s var(--ease-expo); will-change: transform; }
+:root.js .reveal { transform: translateY(18px); }
+:root.js .reveal.in-view { transform: none; }
 .reveal-stagger > * { transition-delay: calc(var(--i, 0) * 85ms); }
-@media (prefers-reduced-motion: reduce) { :root.js .reveal { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { :root.js .reveal { transform: none; } }
 
 /* -------------------------------------------------------------------------- */
 /*  hero                                                                    */

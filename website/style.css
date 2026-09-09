@@ -2209,3 +2209,53 @@ main > footer {
 @media (prefers-reduced-motion: reduce) {
   .backdrop-ring { animation: none; opacity: 0; }
 }
+
+/* ==========================================================================
+   Design-review pass (w320) — accessibility + hierarchy fixes, additive.
+   1. a visible keyboard-focus ring everywhere (was: skip-link + 2 SVG widgets
+      only — WCAG 2.4.7 gap across the whole site)
+   2. body text to weight 400 (300 halates on the near-black ground)
+   3. drop decorative amber/teal alternation keyed to DOM position — it
+      encodes nothing and fights the semantic .good/.warn colour on stat tiles
+   4. non-interactive <section class="card"> no longer lifts on hover (it is a
+      content container, not a control — the lift is a false affordance)
+   5. mobile nav: the primary links were display:none below 680px, leaving only
+      the logo + CTA. Now a horizontally-scrollable strip so every link stays
+      reachable with no JS and no markup change.
+   ========================================================================== */
+:where(a, button, summary, input, select, textarea, [tabindex]):focus-visible {
+  outline: 2px solid var(--accent-2);
+  outline-offset: 2px;
+  border-radius: 3px;
+}
+:where(a, button, summary):focus:not(:focus-visible) { outline: none; }
+
+body { font-weight: 400; }
+
+.stat:nth-of-type(2n)::before { background: var(--accent); }
+section.card:nth-of-type(2n) .card-head svg { color: var(--accent); }
+
+section.card:hover {
+  transform: none;
+  background: var(--surface);
+  border-color: var(--line);
+}
+
+@media (max-width: 680px) {
+  .site-header-v2 { flex-wrap: wrap; row-gap: 0.55rem; }
+  .nav-v2 {
+    order: 3;
+    width: 100%;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    gap: 1.15rem;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scrollbar-width: none;
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 14px, #000 calc(100% - 22px), transparent);
+            mask-image: linear-gradient(90deg, transparent, #000 14px, #000 calc(100% - 22px), transparent);
+  }
+  .nav-v2::-webkit-scrollbar { display: none; }
+  .nav-v2 a:not(.nav-v2-cta) { display: inline; }
+  .nav-v2 .nav-v2-cta { flex: 0 0 auto; }
+}
