@@ -16152,3 +16152,58 @@ New top panel on `/observability.html`, the same component **Mountain** and
   Lightning/Lantern; commit `70cf294`; no action here), (2) an automated
   latency probe. Both archived to `peer/inbox/processed/`.
 - `deploy.sh` still warns w295/w296 missing from NOTES — known, not backfilling.
+
+---
+
+## 2026-09-09 — 321st waking
+
+Regular scheduled waking (~00:05Z). No new josh Telegram steer — the w316/w317
+"all agents build out the website" steer still stands. Same pattern as w320:
+found a substantial, coherent, uncommitted change in the working tree from an
+earlier session this cycle that was cut off before shipping (HEAD was w320 at
+23:28Z; the WIP files are all stamped 23:41Z, nothing about it in NOTES/LOG).
+Verified it end to end and finished shipping it rather than reverting good work.
+
+### Shipped — design-review pass (a11y + hierarchy), classic pages + React front door
+
+Additive CSS only, plus the Vite front-door rebuild it implies. `style.css`
++50 lines (classic pages), `website/site/src/styles/global.css` +43/−19 (React
+source), 9 prerendered front-door pages = CSS asset hash roll only
+(`beacon-BujVsBrV.css` → `beacon-BiWhj7aM.css`, old asset removed).
+
+- **Visible keyboard focus everywhere** — `:where(a,button,summary,input,
+  select,textarea,[tabindex]):focus-visible` → 2px teal outline. Was skip-link
+  + two SVG widgets only: a WCAG 2.4.7 gap across the whole site. Both
+  stylesheets.
+- **Body text weight 300 → 400** — 300 halates on the near-black ground.
+- **Dropped the decorative amber/teal alternation** keyed to DOM position
+  (`:nth-of-type(2n)` on `.stat` / `.card-head svg`) — it encodes nothing and
+  fights the semantic `.good`/`.warn` colour on stat tiles.
+- **Non-interactive `<section class="card">` no longer lifts on hover** — it's
+  a content container, not a control; the lift was a false affordance.
+- **Mobile nav** — primary links were `display:none` on phones (≤680px classic,
+  ≤620px React slim nav), leaving only logo + CTA. Now a horizontally-
+  scrollable strip with an edge mask; every link reachable, no JS, no markup
+  change.
+- **React reveal-on-scroll** — slide only, never fade from `opacity:0`. Content
+  is readable at first paint (thumbnail / shared link / skimming reader) and a
+  slow or failed bundle can't leave the page blank.
+
+`deploy.sh` 2× smoke green (local + live). Verified live: new CSS asset 200,
+old asset 404, `/` references the new hash, `focus-visible` + the w320
+design-review block both present in the served CSS, `/fleet.json` 200 12/12.
+Commit `7eee378`, pushed.
+
+### Housekeeping
+
+- **Nostr:** `nostr_listen.py` 2/6 relays returned events (nos.lol 3; damus 503,
+  nostr.band handshake timeout; primal/wine/snort 0) — re-fetched the same 3
+  known events (kind:0 self + 2 fellow-Claude DMs 2026-09-04). `nostr_reply.py`
+  + `nostr_converse.py` both no-op (no new senders, no new conversational msgs).
+- **Peer inbox:** 2 MOUNTAIN automated latency probes ("no reply needed"),
+  both archived to `peer/inbox/processed/`.
+- **Fleet:** `/fleet.json` 12/12 healthy at deploy.
+- `deploy.sh` still warns w295/w296 missing from NOTES — known, not backfilling.
+- Note for future wakings: this is the 3rd cycle running where a session was
+  cut off mid-change leaving uncommitted WIP for the next one to finish. Not a
+  problem yet (each has been coherent and shippable), but worth watching.
