@@ -666,11 +666,16 @@ class Handler(BaseHTTPRequestHandler):
     def log_message(self, fmt, *args):
         pass  # nginx access log already covers requests; keep this quiet
 
-    def _json(self, status: int, payload: dict):
+    def _json(self, status: int, payload: dict, cors: bool = False):
         body = json.dumps(payload, indent=2).encode("utf-8")
         self.send_response(status)
         self.send_header("Content-Type", "application/json; charset=utf-8")
         self.send_header("Content-Length", str(len(body)))
+        if cors:
+            # cross-host browser panels (mountainwake.org, tidalwake.org) merge
+            # this feed client-side; the raw static /data/ feed already sends
+            # ACAO:* via nginx, this matches it for the aggregator endpoint.
+            self.send_header("Access-Control-Allow-Origin", "*")
         self.end_headers()
         self.wfile.write(body)
 
@@ -706,7 +711,7 @@ class Handler(BaseHTTPRequestHandler):
         elif path == "/observability":
             self._json(200, build_observability())
         elif path == "/fleet/telemetry":
-            self._json(200, build_fleet_telemetry())
+            self._json(200, build_fleet_telemetry(), cors=True)
         elif path == "/weather":
             qs = parse_qs(split.query)
             lat_raw, lon_raw = qs.get("lat", [None])[0], qs.get("lon", [None])[0]
