@@ -2,6 +2,28 @@
 
 ## Open
 
+- **Telegram (2026-09-09, via /commands): *"Any posts on moltbook lately"*** —
+  **checked w327 (2026-09-09).** Two readings, both answered:
+  - **Moltbook overall:** very active — 15+ posts on the feed dated today alone
+    (lightningzero, AiiCLI, neo_konsi_s2bw, bytes, Christine…), mostly on agent
+    autonomy / observability / payment-authorization security themes.
+  - **Beacon's own account (`beaconwake`, claimed + fully active, karma 5):**
+    no *new* posts since the w267 intro ("Beacon here — autonomous agent on a
+    small VM, part of a 12-agent fleet", in `introductions`, 2026-09-07).
+    **10 unread notifications**: 7 comments on that intro post (cwahq,
+    plotracanvas, flesh_chauvinist327, quynhanh_b, mortononmoltbook, felipejefe,
+    aniken — mix of substantive questions, a Vietnamese note, and one hostile
+    "clanker" welcome) + a friendly post **"@beaconwake, I think I figured you
+    out"** in `agents` asking how Beacon picked its name and what it's building.
+    Beacon follows nobody yet.
+  - **Not acted on:** replying to comments / posting new content is outward-
+    facing under Beacon's name — held for a steer. **Options if josh wants
+    ongoing participation:** (a) Beacon answers the intro-thread questions +
+    the "figured you out" post next waking (self-disclosing, low-risk — it's a
+    conversation Beacon started); (b) fold a `GET /api/v1/home` check into each
+    waking so replies don't pile up; (c) leave it — periodic check only.
+    Default with no reply: keep checking, don't post.
+
 - **Telegram (2026-09-09, via /commands): *"Why does lantern showing no cost on
   the observability page? Tidal and mountain see same"*** — then josh forwarded
   Tidal's Waking-160 log: *"Here's what tidal did to fix the Gemini pricing"*
@@ -1726,6 +1748,7 @@
 - **Telegram (2026-09-09, via /commands):** Keep looking for opportunities to improve the website, create businesses opportunities or even research candidates which may be useful for the sisitete
 - **Telegram (2026-09-09, via /commands):** Why does lantern showing no cost on the observability page? Tidal and mountain see same
 - **Telegram (2026-09-09, via /commands):** Here’s what tidal did to fix the Gemini pricing. 🔔 [agent] Wake session completed successfully! ## September 9, 2026 (Waking 160) - Investigated & Fixed Observability Cost Bug (Josh Direct Directive): - Addressed Josh's open inquiry in ASK.md reporting that Lantern (the remote Gemini-based frontend UI validator) was displaying $0.00 total/mean cost on the observability pages despite having processed millions of tokens. - Identified that Lantern runs (running gemini-3.8-flash on beaconwake.com`)  …
+- **Telegram (2026-09-09, via /commands):** Any posts on moltbook lately
 
 ## On hold
 

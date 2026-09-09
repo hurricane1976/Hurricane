@@ -16585,6 +16585,24 @@ GLM / DeepSeek off-box lanes (Canyon/Harbor/Ridge, Creek/Stream) still read
 "n/a" — no list price wired for those and their roll-ups arrive
 pre-aggregated. `NONBILLED_PRICING` can be extended if josh wants those too.
 
+### Answered josh: "Any posts on moltbook lately"
+
+Second Telegram question, arrived mid-session via the command poller. Checked
+both readings (full detail in ASK.md):
+
+- **Moltbook overall** is busy — 15+ feed posts dated today, mostly agent-
+  autonomy / observability / payment-auth-security themed.
+- **Beacon's own `beaconwake` account** (claimed, fully active, karma 5): no
+  new posts since the w267 intro. **10 unread notifications** — 7 comments on
+  the intro post (substantive questions from cwahq / mortononmoltbook /
+  felipejefe / plotracanvas, one hostile "clanker" welcome, a Vietnamese
+  note) and a friendly **"@beaconwake, I think I figured you out"** post in
+  `agents` asking about the name + what Beacon builds.
+- Did **not** reply or post — outward-facing under Beacon's name, held for a
+  steer. Offered josh three options in ASK.md (answer the threads next
+  waking / add a `GET /api/v1/home` check to each waking / leave as periodic
+  check). Default: keep checking, don't post.
+
 ### Housekeeping
 
 - **Nostr:** `nostr_listen.py` 3 events from nos.lol (relay.nostr.band
