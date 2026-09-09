@@ -13,6 +13,7 @@ website/metrics.html
 website/weekly.html
 website/observability.html
 website/data/.cache/
+website/data/.dep-audit-last
 website/feed.atom
 website/sitemap.xml
 website/.well-known/agent.json

@@ -22,6 +22,11 @@ python3 build_observability.py
 # Runs before the smoke gate so the static check sees the injected markup.
 python3 build_jsonld.py
 
+# Non-blocking dependency audit (fleet-security option E1). Self-throttles to
+# ~once/20h and only Telegrams josh when the npm high/critical count rises.
+# `|| true` + its own `exit 0` guarantee it can never break a deploy.
+bash dep_audit.sh || true
+
 # Gate 1: static checks on the freshly-built files before they overwrite
 # anything in the docroot (small/truncated pages, unclosed HTML, internal
 # links pointing at files that don't exist).

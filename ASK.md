@@ -27,11 +27,40 @@
     ⭐ — cross-model read + the security-events panel visual). Cross-host
     checklist queued for Tidal + Mountain over the peer channel once josh says
     relay-all or checklist-only.
-  - **What Beacon needs from josh:** (1) pick a tier — "do the do-now list" is a
-    safe yes; (2) explicit go/no-go on per-agent Unix users (A1); (3) a
-    destination for shipped logs (D1); (4) permission to edit `AGENT.md` for the
+  - **josh replied (Telegram, 2026-09-09): *"Do what is recommended with least
+    effort."*** → read as: do the *do-now* package, minimal form, no
+    gold-plating. **w323 (2026-09-09) shipped the unblocked box-local items:**
+    - **C1 — wall-clock timeout on `wake.sh`.** The `claude` call is now wrapped
+      in `timeout --kill-after=60 45m` (45m is ~2× the observed p95). A timeout
+      exits 124/137 → falls through the existing non-zero-exit branch that
+      Telegrams josh with the log tail. `bash -n` clean.
+    - **C2 — per-run spend alert + rolling daily total.** New `spend_check.py`
+      (repo root), called from `wake.sh` after the envelope parse. Appends
+      `total_cost_usd` to `logs/spend-daily.jsonl` and Telegrams josh if one run
+      is > $5 or the run that pushes the UTC-day total past $15 (crossing run
+      only — no repeat nagging). Alert-only, always exits 0. Tested against real
+      envelopes; **note:** a >$5 threshold test fired one real "spend alert"
+      Telegram — not a real overspend, flagged in the w323 notify.
+    - **E1 — dependency audit in the deploy gate.** New `website/dep_audit.sh`,
+      wired into `deploy.sh` before the smoke gate with `|| true`. Self-throttles
+      to ~once/20h; runs `npm audit` on the React front door and Telegrams josh
+      only when the high/critical count *rises*. Baseline seeded at 1 (the known
+      esbuild/vite dev-server high — build-time only, not shipped). Python side
+      is stdlib-only / no audit tool, so npm is the real third-party surface.
+    - **B3 — inbox listener hardening: already done.** `peer_server.py` already
+      hard-rejects > 32 KB bodies (413), rate-limits 30/peer/hr, and structured-
+      logs every REJECT/WARN. Nothing to do.
+    - **D1 — off-box log shipping: still blocked** on josh naming a destination
+      (a path on his machine, a bucket, or "keep on-box"). Question (3) below
+      still open; everything else in the do-now list is done.
+    Deploy 2× smoke green, `/fleet.json` 12/12. Commit — see w323.
+  - **Still open for josh (the *do-next* tier — not touched, needs his word):**
+    (2) explicit go/no-go on **per-agent Unix users (A1)** — the biggest gap,
+    a half-to-one-day migration Beacon won't start unprompted; (3) a destination
+    for shipped logs (D1); (4) permission to edit `AGENT.md` for the
     injection-boundary wording (F2); (5) relay the full doc to Tidal + Mountain,
-    or just the cross-host checklist?
+    or just the cross-host checklist? B2 (tag-based Tailscale ACL) is josh-side
+    whenever he wants it.
 
 - **Telegram (2026-09-08, via /commands): *"Tell all agents to start building out
   the website (all of them) use best judgment as a team. I want you to utilize the
@@ -1620,6 +1649,7 @@
 - **Telegram (2026-09-08, via /commands):** Tell all agents to start building out the website (all of them) use best judgment as a team. I want you to utilize the skills of expert web developers, but also experts in AI and infrastructure. To include network and other IT infrastructure. Use forward looking and advanced modernizations techniques
 - **Telegram (2026-09-08, via /commands):** Please pass to the rest of the team to build away
 - **Telegram (2026-09-09, via /commands):** Provide options for security for the fleet
+- **Telegram (2026-09-09, via /commands):** Do what is recommended with least effort
 
 ## On hold
 

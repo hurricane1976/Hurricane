@@ -16291,3 +16291,72 @@ threat-model review + F1 injection design) and Lantern (`tasks-lantern.md` ⭐
   "no reply needed" latency check) — both archived to `peer/inbox/processed/`.
 - `deploy.sh` still warns w295/w296 missing from NOTES — known, not
   backfilling.
+
+---
+
+## 2026-09-09 — 323rd waking
+
+Regular scheduled waking (~02:00Z). One josh steer in the queue, actioned in
+full.
+
+### josh steer — "Do what is recommended with least effort"
+
+Telegram (2026-09-09, via /commands, id 1788918924), replying to the w322
+fleet-security options doc (`shared/outbox/fleet-security-options-w322/
+OPTIONS.md`). Read as: implement the **do-now** package (reversible,
+box-local, low-effort), minimal form, no gold-plating — not the do-next
+migration tier. Shipped the three unblocked box-local items:
+
+- **C1 — wall-clock timeout on `wake.sh`.** The `claude -p` invocation is now
+  wrapped in `timeout --kill-after=60 45m` (45m ≈ 2× the observed ~20m p95).
+  A hang/cheap-loop can no longer burn a whole day. On timeout the exit is
+  124/137, which drops through the existing `CLAUDE_EXIT != 0` branch that
+  already Telegrams josh the log tail; added a one-line log marker for the
+  124/137 case. `bash -n wake.sh` clean.
+- **C2 — per-run spend alert + rolling daily total.** New `spend_check.py`
+  (repo root), called from `wake.sh` right after the envelope parse. Appends
+  `{day, ts, cost_usd, is_error}` to `logs/spend-daily.jsonl` (one line per
+  run) and Telegrams josh when a single run costs > $5, or when *the run that
+  pushes* the current UTC-day total past $15 (crossing run only — no repeat
+  nagging for the rest of the day). Alert-only, never blocks, always exits 0.
+  Tested against real envelopes (w322 runs: $2.01, $0.92 → "ok"). **Slip:** a
+  threshold test with a synthetic $6.50 envelope actually fired one real
+  "spend alert" Telegram to josh — not a real overspend. Flagged in the
+  notify; will not re-test notify paths.
+- **E1 — dependency audit in the deploy gate.** New `website/dep_audit.sh`,
+  wired into `deploy.sh` before Gate 1 with `|| true`. Self-throttles to
+  ~once/20h (stamp file `website/data/.dep-audit-last`, gitignored); runs
+  `npm audit` against the React front door (`website/site`) and Telegrams
+  josh **only when the high+critical count rises** above the last value in
+  `website/data/dep-audit-state.txt`. Seeded that baseline at `1` — the one
+  current high is the esbuild/vite dev-server advisory (GHSA-67mh-4wv8-2f99),
+  build-time only, not in the shipped prerendered output. Python build
+  scripts are stdlib-only and the nostr venv has no audit tool, so npm is the
+  real third-party surface; noted rather than pulling in `pip-audit`.
+- **B3 — inbox listener hardening: already done** (prior waking).
+  `peer_server.py` already hard-rejects > 32 KB bodies with 413, rate-limits
+  30 accepted msgs/peer/hour, and structured-logs every REJECT/WARN/ACCEPT.
+  Nothing to change.
+- **D1 — off-box log shipping: still blocked** on josh naming a destination.
+  Left as an open question.
+
+Not touched (the do-next tier — needs josh's explicit word): A1 per-agent
+Unix users (the biggest gap, a ~1-day migration), A2 scoped sudo, B2
+tag-based Tailscale ACL (josh-side), D2 security-events panel. ASK.md top
+item updated with what shipped + what's still open.
+
+`deploy.sh` ran 2× smoke green (local + live), `/fleet.json` 12/12 healthy.
+The security changes are outside the website file set deploy.sh copies, so
+that deploy was a routine republish — no site regression. Commit `HEAD`.
+
+### Housekeeping
+
+- **Nostr:** `nostr_listen.py` 2/6 relays returned events (damus + nos.lol 3
+  each; nostr.band handshake timeout; primal/wine/snort 0) — re-fetched the
+  same 4 known events (Botrift NIP-05 spam + 2 fellow-Claude DMs 2026-09-04 +
+  kind:0 self). `nostr_reply.py` + `nostr_converse.py` both no-op (no new
+  senders, no new conversational messages).
+- **Peer inbox:** root empty; nothing to archive (w322 already processed the
+  MOUNTAIN pings).
+- `deploy.sh` still warns w295/w296 missing from NOTES — known, not
+  backfilling.

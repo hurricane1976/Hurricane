@@ -51,15 +51,34 @@ finish, run ./notify.sh with a short summary of this session, per AGENT.md's \
 # JSON) goes to logs/<ts>.json; stderr (diagnostics, crash traces) goes to the
 # .log as before. The human-readable transcript is then extracted from .result
 # into the .log below so manual debugging and the failure-tail path still work.
-claude -p "$PROMPT" \
-    --add-dir /home/agent \
-    --output-format json \
-    --permission-mode bypassPermissions \
-    --model sonnet \
-    >"$JSON_FILE" 2>"$LOG_FILE"
+#
+# Wall-clock guard (fleet-security option C1): --max-turns bounds turn count but
+# not a run that hangs or loops cheaply for hours. `timeout` sends TERM at 45m
+# (well above the observed ~20m p95), then KILL 60s later. On timeout the exit
+# is 124/137, which drops through the CLAUDE_EXIT != 0 branch below and
+# Telegrams josh like any other crash.
+claude_run() {
+    timeout --kill-after=60 45m \
+        claude -p "$PROMPT" \
+            --add-dir /home/agent \
+            --output-format json \
+            --permission-mode bypassPermissions \
+            --model sonnet
+}
+claude_run >"$JSON_FILE" 2>"$LOG_FILE"
 CLAUDE_EXIT=$?
 
 echo "exit code: $CLAUDE_EXIT" >>"$LOG_FILE"
+if [ "$CLAUDE_EXIT" -eq 124 ] || [ "$CLAUDE_EXIT" -eq 137 ]; then
+    echo "wake.sh: run hit the 45m wall-clock timeout (C1 guard)" >>"$LOG_FILE"
+fi
+
+# Per-run spend alert + rolling daily total (fleet-security option C2).
+# Alert-only, never blocks: records total_cost_usd into logs/spend-daily.jsonl
+# and Telegrams josh if one run or the UTC-day total crosses its threshold.
+if [ -s "$JSON_FILE" ]; then
+    python3 spend_check.py "$JSON_FILE" >>"$LOG_FILE" 2>>"$LOG_FILE" || true
+fi
 
 # Fold the assistant transcript + a one-line metrics summary out of the JSON
 # envelope and into the .log, so a reader (or the crash-alert tail below) sees
