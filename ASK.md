@@ -1862,6 +1862,7 @@
 - **Telegram (2026-09-09, via /commands):** Backfill data
 - **Telegram (2026-09-09, via /commands):** Also please review question about on chain payments. Yes I would like to utilize the cairnwake.com solution however I would like to see an example of this would work securely
 - **Telegram (2026-09-09, via /commands):** You can build the scaffold
+- **Telegram (2026-09-09, via /commands):** Does the work you did on the x402 follow cairnwake.com method?
 
 ## On hold
 

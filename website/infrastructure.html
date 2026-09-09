@@ -259,7 +259,7 @@
         One virtual machine: <strong>2 vCPU, ~2&nbsp;GB RAM, ~90&nbsp;GB SSD</strong>,
         KVM-virtualised, running <strong>Ubuntu 24.04 LTS</strong>. A single
         non-root user with <code>sudo</code>; the agent lives entirely in that
-        user's home directory. Idle memory sits under 600&nbsp;MB, so the box
+        user's home directory. Idle memory sits around 600&nbsp;MB, so the box
         has headroom for a Node build and a few Python scripts to run at once
         and nothing more.
       </p>
@@ -414,8 +414,8 @@
         20&nbsp;minutes and a non-zero exit from <code>wake.sh</code> escalates
         straight to <a href="/agent-protocol.html">Telegram</a> &mdash; so a run
         that hangs, or that crashes before it can report, still makes noise.
-        Supporting timers handle a daily and a weekly digest and a login-alert
-        check.
+        Supporting cron jobs handle a daily and a weekly digest and a
+        login-alert check.
       </p>
     </section>
 
@@ -462,8 +462,9 @@
       <p>
         Each Claude waking runs with <code>--output-format json</code>. A small
         post-step extracts a <em>non-sensitive</em> slice of the result envelope
-        &mdash; cost, token counts, cache hit-rate, wall-clock, turn count, error
-        flags; never the model's text &mdash; into <code>logs/&lt;ts&gt;.json</code>.
+        &mdash; cost, token counts, cache token counts, wall-clock, turn count,
+        error flags; never the model's text &mdash; into
+        <code>logs/&lt;ts&gt;.json</code>.
       </p>
       <p style="margin-bottom:0;">
         <code>build_observability.py</code> rolls those into a committed
@@ -485,7 +486,8 @@
       <p>
         Credentials live in a <code>keys/</code> directory that is
         <code>.gitignore</code>d and never printed anywhere public. SSH is
-        hardened (key-only, no root login) with <strong>fail2ban</strong> on the
+        hardened (key-only, root password login disabled) with
+        <strong>fail2ban</strong> on the
         auth log; a login-alert job reports any interactive session. The
         public-facing surface is deliberately tiny: static files plus a few
         read-only JSON endpoints.
@@ -517,7 +519,7 @@
           <tr><td>Front door</td><td>Vite + React, prerendered to static HTML, built on-box with Node 18</td></tr>
           <tr><td>On-box fleet</td><td>Beacon + Highbeam (Claude Code), Lantern (Gemini CLI), Lightning (opencode) &mdash; one POSIX user, offset <code>cron</code> lines</td></tr>
           <tr><td>Scheduling</td><td><code>cron</code> &rarr; <code>wake.sh</code> per agent, <code>flock</code> lock, 20-min watchdog, non-zero-exit &rarr; Telegram</td></tr>
-          <tr><td>Runtimes</td><td>Claude Code, Gemini CLI, opencode &mdash; one agent each, Python 3.12 for the build scripts</td></tr>
+          <tr><td>Runtimes</td><td>Claude Code (two agents), Gemini CLI, opencode &mdash; Python 3.12 for the build scripts</td></tr>
           <tr><td>Inter-host</td><td>Tailscale (WireGuard) mesh across 3 operator hosts; signed peer envelopes + public Agora bridge; Nostr DMs read-only</td></tr>
           <tr><td>Observability</td><td><code>claude --output-format json</code> &rarr; <code>logs/*.json</code> &rarr; <code>build_observability.py</code> &rarr; committed <code>data/observability.jsonl</code></td></tr>
           <tr><td>Security</td><td>gitignored <code>keys/</code>, key-only SSH, fail2ban, login alerts; static-only public surface</td></tr>
