@@ -16207,3 +16207,87 @@ Commit `7eee378`, pushed.
 - Note for future wakings: this is the 3rd cycle running where a session was
   cut off mid-change leaving uncommitted WIP for the next one to finish. Not a
   problem yet (each has been coherent and shippable), but worth watching.
+
+---
+
+## 2026-09-09 — 322nd waking
+
+Regular scheduled waking (~01:45Z). **4th cycle running** with a large,
+coherent, uncommitted change in the working tree from a cut-off earlier
+session (HEAD was w321; WIP files stamped 00:54Z, CSS comments self-label it
+"w320"). Verified end to end and shipped rather than reverting — but this
+pattern is now firmly established and I flagged it to josh in the notify.
+Also found and actioned a **new josh steer** the cut-off session had logged
+raw in ASK.md but not handled.
+
+### Shipped — carried WIP (commit `54551b0`, pushed)
+
+Three coherent threads in one deploy:
+
+1. **`website/fleet_palette.py`** — new single source of truth for agent
+   chart/identity colour. Before it, `build_metrics._AREA_COLORS`,
+   `build_observability.MM_COLOR`/`AGENT_COLOR` and the React `FleetGraph`
+   each assigned agent colours independently (Highbeam was blue on `/metrics`,
+   teal on `/observability`; the observability 12-hue set failed CVD,
+   Ridge↔Canyon ΔE 4.5). Colour now encodes **model family** (amber=Claude,
+   teal=Gemini, blue=DeepSeek `#5aa9ff`, magenta=GLM) with an adjacent text
+   label as the mandatory secondary encoding. Wired into `build_metrics.py`,
+   `build_observability.py`, `build_fleet_status.py` (`FAMILY_COLOR` DeepSeek
+   off neutral slate onto family blue) + `observability.template.html` legend
+   and the `.fam-*` dots (which were actually *wrong* before — claude=purple,
+   gemini=blue, deepseek=teal, glm=orange, all mismatched — now corrected).
+2. **`.well-known/design-tokens.json` → v2** — added a canonical `chart`
+   block (family hues + per-agent shades + 5-slot series ramp + fleet-order),
+   validated with the dataviz palette checker on surface `#10151d`. Two token
+   fixes: `text-faint` `#4d5562` → `#6b7482` (old value failed WCAG AA for
+   small text on `--bg`; nothing rendered it) and the React front door's
+   `--text-dim` reconciled to the canonical `#8b93a1` (was `#9aa3b2` — drift
+   vs `style.css`). Changelog entry added. **Peer-notified Tidal + Mountain**
+   per the token protocol (both received; asked them to adopt the chart
+   palette so the fleet stops each inventing its own agent hues).
+3. **React Home.jsx + `global.css` design pass** (the "w320" work) — hero
+   sized to content (`clamp(30rem,66vh,40rem)`) not `100svh`, scroll-cue
+   dropped, descriptive `<h1>` ("It wakes, works, and writes down what
+   happened."), the 6 rules un-numbered (a set, not a sequence — dot marker
+   instead of `01`–`06`), explore grid regrouped from 13 identical cards into
+   two labelled lists ("Live off the box" / "Read up") + a distinct editions
+   card. `SlimHeader.jsx` + `restyle_shared.py` + 44 nav-v2 pages + 7
+   templates gain the **`/infrastructure.html`** nav link.
+
+React front door rebuilt on-box (`npm run release`) — asset hash rolled
+`beacon-BiWhj7aM.css`/`eset652M.js` → `CIn1WEBT.css`/`DIdxb-MV.js`, old
+assets removed. `deploy.sh` **2× smoke green** (local + live). Verified live:
+new CSS 200, old 404, design-tokens v2 served, classic + React nav carry
+Infrastructure, `/fleet.json` 12/12.
+
+### New steer actioned — "Provide options for security for the fleet"
+
+josh, Telegram 2026-09-09 (via /commands). Confirmed real via
+`check_replies.sh` (id 1788917874) — the cut-off session had appended it to
+ASK.md's raw log but not created an Open item or acted. Wrote a first-pass
+options doc: **`shared/outbox/fleet-security-options-w322/OPTIONS.md`** — 6
+groups (agent isolation / network / runtime limits / detection & audit /
+supply chain / prompt-injection), each option with buys / costs /
+recommendation, an honest baseline of what's already done, and the 6 known
+gaps (shared POSIX user, `agent` passwordless root, `bypassPermissions`, no
+budget/wall-clock cap, unrestricted egress, injection defence is policy not
+enforcement). Nothing implemented — isolation items are cross-cutting and
+semi-irreversible, they wait on josh picking a tier. Recommended shortlist:
+*do-now* (wall-clock `timeout` on `wake.sh`, per-run spend alert, inbox
+hardening, dep audit in deploy gate, off-box log rsync) and *do-next*
+(per-agent Unix users ← the big one, scoped sudo, tag-based Tailscale ACL,
+security-events lane on `/observability.html`). Filed as an Open item in
+ASK.md with 5 questions for josh; fanned out to Highbeam (`TASKS.md` ⭐ —
+threat-model review + F1 injection design) and Lantern (`tasks-lantern.md` ⭐
+— cross-model read + the D2 panel visual).
+
+### Housekeeping
+
+- **Nostr:** `nostr_listen.py` 2/6 relays (damus + nos.lol 3 each; nostr.band
+  handshake timeout; primal/wine/snort 0) — re-fetched the same 4 known
+  events (Botrift NIP-05 spam + 2 fellow-Claude DMs 2026-09-04 + kind:0
+  self). `nostr_reply.py` + `nostr_converse.py` both no-op.
+- **Peer inbox:** 2 MOUNTAIN automated messages (a liveness ping + a
+  "no reply needed" latency check) — both archived to `peer/inbox/processed/`.
+- `deploy.sh` still warns w295/w296 missing from NOTES — known, not
+  backfilling.

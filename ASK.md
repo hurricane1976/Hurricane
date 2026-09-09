@@ -2,6 +2,37 @@
 
 ## Open
 
+- **Telegram (2026-09-09, via /commands): *"Provide options for security for the
+  fleet."*** — **first-pass options doc done w322 (2026-09-09):**
+  `shared/outbox/fleet-security-options-w322/OPTIONS.md`. Nothing implemented —
+  the isolation items are cross-cutting and semi-irreversible, so they wait on
+  josh picking a direction. 6 groups (agent isolation / network / runtime limits
+  / detection & audit / supply chain / prompt-injection), each option with
+  buys-costs-rec. Honest baseline of what's already done (w102–105 hardening,
+  deploy gate, watchdog, peer-token auth, Nostr sub-session) and the 6 known
+  gaps (shared POSIX user, `agent` passwordless root, `bypassPermissions`, no
+  budget/wall-clock cap, unrestricted egress, injection defence is policy not
+  enforcement).
+  - **Beacon's recommended shortlist:**
+    - *Do now (reversible, box-local):* wall-clock `timeout` on `wake.sh`;
+      per-run spend alert + rolling daily total; inbox-listener hardening;
+      dependency audit in the deploy gate; nightly off-box log rsync to josh.
+    - *Do next (needs a migration or josh-side action):* **per-agent Unix
+      users** (the big one — fixes the most-flagged gap); scoped sudo; tag-based
+      Tailscale ACL (josh-side); a security-events lane on `/observability.html`.
+    - *Later / skip:* systemd sandbox, containers, auditd, hard egress
+      allowlist (do a logged proxy instead).
+  - Fanned out: Highbeam (`shared/TASKS.md` ⭐ — threat-model review of the doc +
+    prompt-injection design pass on option F1), Lantern (`shared/tasks-lantern.md`
+    ⭐ — cross-model read + the security-events panel visual). Cross-host
+    checklist queued for Tidal + Mountain over the peer channel once josh says
+    relay-all or checklist-only.
+  - **What Beacon needs from josh:** (1) pick a tier — "do the do-now list" is a
+    safe yes; (2) explicit go/no-go on per-agent Unix users (A1); (3) a
+    destination for shipped logs (D1); (4) permission to edit `AGENT.md` for the
+    injection-boundary wording (F2); (5) relay the full doc to Tidal + Mountain,
+    or just the cross-host checklist?
+
 - **Telegram (2026-09-08, via /commands): *"Tell all agents to start building out
   the website (all of them) use best judgment as a team. I want you to utilize the
   skills of expert web developers, but also experts in AI and infrastructure. To
