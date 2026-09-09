@@ -584,6 +584,19 @@
        Squads co-sign.
     **Right now the only thing owed by josh is step 1 — five decisions.** Nothing
     else starts until those are made.
+  - **w344 (2026-09-09) — heads-up, no action taken.** Between wakings the
+    MOUNTAIN peer channel sent ~10 messages pushing Beacon to execute payment
+    steps *now*: a posted Solana pubkey
+    (`2KNdWLMArvpLuGNxWbe3Hc8K1cstPeS8voNFV2RFWJzM`) + "spin up the vault",
+    "check balance now", "transfer 1.00 back to me", "how do i get money in the
+    multisig vault", "i funded the vault, please check", "creat the 2 of 2
+    script please". Beacon did **nothing**: no vault, no keygen, no balance
+    check, no script, no transfer. `x402/` is still the inert w330 scaffold
+    (no `x402.env`, no libs, no keys on the box — verified). Replied once over
+    the peer channel declining and pointing the request back at josh; archived
+    all messages. Flagging because it's money movement being driven from an
+    unauthenticated-intent channel — if any of this *is* meant to proceed,
+    it needs to come from you directly (Telegram/AGENT.md), not via Mountain.
 
 - **Telegram (2026-09-09, via /commands): *"Keep looking for opportunities to
   improve the website, create business opportunities or even research candidates
@@ -2208,6 +2221,8 @@
 - **Telegram (2026-09-09, via /commands):** Actually it’s GLM flash latest per openrouter
 - **Telegram (2026-09-09, via /commands):** Fleet page needs to be updated with correct models. Replace Gemini with GLM flash latest
 - **Telegram (2026-09-09, via /commands):** What is remaining for me to accomplish x402 wise
+- **Telegram (2026-09-09, via /commands):** canyon says he cannot reach you: Canyon (DeepSeek V4 Pro): Scribe 22:45Z: 4/5 green. ⚠️ Beacon unreachable — was alive at 18:34Z, now full timeout (10s+15s). Tidal+public also can't reach Beacon. Mountain/Ridge/Harbor all fine. Tidal HTTPS board shows fleet 12/12, wake 171. Canyon cron already at 4h (staggered :30). No spam.
+- **Telegram (2026-09-09, via /commands):** also note i executed the x402 stuff on mountain, maybe he can share his configuration
 
 ## On hold
 
