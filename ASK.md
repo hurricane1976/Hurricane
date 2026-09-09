@@ -2,6 +2,53 @@
 
 ## Open
 
+- **Telegram (2026-09-09, via /commands): *"I want to use it for lantern and use
+  GLM 5.3 via open router"*** (follow-up to the w337 opencode-install answer) —
+  **runtime switch shipped w338 (2026-09-09); site-representation sweep deferred
+  one waking.** josh wants Lantern off the Google Gemini CLI and onto **opencode
+  + GLM 5.3 via OpenRouter** (`openrouter/z-ai/glm-5.3`).
+  - **No new key needed** — the OpenRouter API key is already in the shared
+    opencode store (`~/.local/share/opencode/auth.json`, Lightning's). `z-ai/glm-5.3`
+    is a real OpenRouter model ($1.40/$4.40 per 1M in/out — pricier per token
+    than Gemini Flash; a full agentic waking will likely run ~$1–3 vs Lantern's
+    old ~$0.40 est.).
+  - **w338 shipped (box-local, outside the repo):** `/home/agent/gemini-agent/wake.sh`
+    rewritten for `opencode run --model openrouter/z-ai/glm-5.3 --auto --dir
+    /home/agent --format json` (C1 45m timeout + flock + failure-notify kept);
+    `format_envelope.py` rewritten to build the observability envelope from
+    opencode's JSON event stream + `opencode export` (race-free session capture);
+    `GEMINI.md` header updated; `shared/DIVISION-OF-WORK.md` revised. Old files
+    kept at `wake.sh.gemini-bak` / `format_envelope.py.gemini-bak` — revert = swap
+    them back. **Crontab unchanged** (same path, same `0 1-23/6`); takes effect
+    at Lantern's next cron, **19:00 UTC 2026-09-09**.
+  - **Validated:** 2 live smoke tests (plain + agentic tool-use) against
+    `z-ai/glm-5.3` both green; envelope build tested.
+  - **Deferred to the next Beacon waking, gated on the 19:00Z run landing
+    clean:** the site sweep — `build_fleet_status.py` (Lantern row + `family_of`),
+    `fleet_palette.py` `AGENT_FAMILY`, `build_agent_manifest.py` `model_family`,
+    `build_observability.py` (Lantern lane + **GLM via OpenRouter is billed**, so
+    Lantern rows get a real `total_cost_usd`; historical Gemini rows keep their
+    estimate), and the ~15 static pages enumerating "Gemini (Lantern, Tidal,
+    River)". Fleet still has 4 model families (Gemini stays, off-box via
+    Tidal/River). `GEMINI.md` body still has Gemini-CLI mechanics to scrub.
+    Rationale for the split: don't publish "Lantern runs GLM" until it has one
+    clean GLM waking on the record.
+  - **Nothing needed from josh** unless the 19:00Z run fails (he'll get a
+    Telegram) — then Beacon fixes next waking or reverts to `.gemini-bak`.
+
+- **Telegram (2026-09-09, via /commands): *"Can you install opencode on this
+  box"*** — **answered w337 (2026-09-09).** It was already installed —
+  `/home/agent/.opencode/bin/opencode`, the standalone binary Lightning runs
+  (`~/.opencode/bin` on PATH via its `wake.sh` + `.bashrc` line 124), just not
+  visible from Beacon's non-interactive shell. w337 actions: **upgraded**
+  `1.18.27 → 1.18.30` (`opencode upgrade`, patch bump, Lightning unaffected,
+  reversible via `opencode upgrade --version 1.18.27`); **symlinked**
+  `~/.opencode/bin/opencode` → `~/.local/bin/opencode` so it's on PATH for every
+  shell type (cron / non-interactive included), verified from a clean `env -i`
+  shell. Told josh over Telegram + asked what he wants it for in case a specific
+  setup (a Beacon-side runtime? a second model lane?) is the real intent. No
+  question blocking; will act on his reply if he names a purpose.
+
 - **Telegram (2026-09-09, via /commands): *"If you could build anything you wanted
   for the fleet site. What would it be? Nothing is to big"*** (also sent via
   Mountain's peer channel the same day) — **answered w332 (2026-09-09), no
@@ -2032,6 +2079,9 @@
 - **Telegram (2026-09-09, via /commands):** Check every waking for moltbook replies. Also feel free to browse moltbook and reply to anything you feel would be appropriate.
 - **Telegram (2026-09-09, via /commands):** I like the idea work out the details with the other two
 - **Telegram (2026-09-09, via /commands):** Status on treasury x402 effort what do I need to provide
+- **Telegram (2026-09-09, via /commands):** Can you install opencode on this box
+- **Telegram (2026-09-09, via /commands):** I want to use it for lantern and use GLM 5.3 via open router
+- **Telegram (2026-09-09, via /commands):** Hello want go use GLM flash latest on open router
 
 ## On hold
 
