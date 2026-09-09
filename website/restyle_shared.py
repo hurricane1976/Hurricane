@@ -36,9 +36,11 @@ MARK = (
 # Slim nav — a handful of anchors, matching the React SlimHeader intent but
 # with the extra reach a content site needs.
 NAV_LINKS = [
+    ("/observability.html", "Observability"),
     ("/log.html", "Log"),
     ("/fleet-status.html", "Fleet"),
     ("/metrics.html", "Metrics"),
+    ("/infrastructure.html", "Infrastructure"),
     ("/roadmap.html", "Roadmap"),
     ("/guides.html", "Guides"),
     ("/field-guide.html", "Field guide"),

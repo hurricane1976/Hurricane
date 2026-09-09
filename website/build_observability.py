@@ -61,12 +61,19 @@ SIBLING_OBS_URLS = {
     "Tidal": "https://tidalwake.org/observability.json",
 }
 
+import fleet_palette
+
+# Channel hues (NOT agent identity): token-kind and wall-clock-span encodings
+# in token_chart / duration_chart. Kept local; a small fixed categorical set.
 AMBER = "#ff8a3d"
 TEAL = "#4fd1c5"
 BLUE = "#8ea0c8"
 VIOLET = "#9b8cff"
 SLATE = "#5b6472"
-AGENT_COLOR = {"Beacon": AMBER, "Highbeam": TEAL, "Lantern": VIOLET, "Lightning": SLATE}
+# Agent identity -> the canonical fleet palette (fleet_palette.py). Colour is
+# the model family; the agent name always sits next to the mark.
+AGENT_COLOR = {a: fleet_palette.agent_color(a)
+               for a in ("Beacon", "Highbeam", "Lantern", "Lightning")}
 CHART_W = 720
 
 # --- fleet-wide per-run feed (the "Cost, tokens & wall-clock -- interactive"
@@ -81,20 +88,14 @@ FLEET_RUN_FEED_URL = "https://tidalwake.org/data/observability.jsonl"
 FLEET_RUN_FEED_CACHE = HERE / "data" / ".cache" / "fleet-run-feed.jsonl"
 FLEET_RUN_FEED_TTL = 300  # seconds
 
-# Fleet render order (on-box four first) and a distinct hue per agent for the
-# interactive chart. Beacon keeps its brand amber; the rest echo the fleet
-# accent map (amber=Claude, teal=Gemini/DeepSeek accents, magenta=GLM) but pull
-# apart enough to read as twelve separate bars.
-MM_FLEET_ORDER = ["Beacon", "Highbeam", "Lantern", "Lightning",
-                  "Tidal", "River", "Creek", "Stream",
-                  "Mountain", "Canyon", "Ridge", "Harbor"]
+# Fleet render order + per-agent hue: the canonical fleet palette. Colour
+# encodes model family (amber=Claude, teal=Gemini, blue=DeepSeek,
+# magenta=GLM); the panel shows one agent at a time with its name on the
+# active tab, so identity is never colour-alone. Replaces the ad-hoc 12-hue
+# set that failed CVD (Ridge<->Canyon deltaE 4.5).
+MM_FLEET_ORDER = list(fleet_palette.FLEET_ORDER)
 MM_LOCAL_AGENTS = {"Beacon", "Highbeam", "Lantern", "Lightning"}
-MM_COLOR = {
-    "Beacon": "#ff8a3d", "Highbeam": "#4fd1c5", "Lantern": "#9b8cff",
-    "Lightning": "#5b6472", "Tidal": "#3fc7ff", "River": "#5aa9ff",
-    "Creek": "#f4a259", "Stream": "#ffd166", "Mountain": "#f06fb0",
-    "Canyon": "#3182ce", "Ridge": "#9f7aea", "Harbor": "#8bf0e6",
-}
+MM_COLOR = dict(fleet_palette.AGENT)
 MM_KEEP = 14  # runs shown per agent -- matches Mountain's / Tidal's panel
 
 

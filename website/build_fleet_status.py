@@ -645,8 +645,11 @@ TOPO_LINKS = [
     ("Mountain", "Canyon"), ("Mountain", "Ridge"), ("Mountain", "Harbor"),
     ("Canyon", "Ridge"), ("Canyon", "Harbor"), ("Ridge", "Harbor"),
 ]
+# Canonical fleet family palette (design-tokens.json v2 .chart.family):
+# amber=Claude, teal=Gemini, blue=DeepSeek, magenta=GLM. The var()s resolve to
+# the same hexes; DeepSeek moves off the neutral slate onto the family blue.
 FAMILY_COLOR = {
-    "Claude": "var(--amber)", "Gemini": "var(--teal)", "DeepSeek": "var(--diagram-slate)",
+    "Claude": "var(--amber)", "Gemini": "var(--teal)", "DeepSeek": "#5aa9ff",
     "GLM": "var(--magenta)",
 }
 STATE_RING = {

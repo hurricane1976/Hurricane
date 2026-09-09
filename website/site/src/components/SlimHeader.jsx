@@ -12,6 +12,7 @@ export default function SlimHeader() {
       </a>
       <nav className="slim-nav" aria-label="Primary">
         <a href="/observability.html">Observability</a>
+        <a href="/infrastructure.html">Infrastructure</a>
         <a href="/log.html">Log</a>
         <a href="/fleet-status.html">Fleet</a>
         <a href="/guides.html">Guides</a>

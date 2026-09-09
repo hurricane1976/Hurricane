@@ -17,10 +17,11 @@
   --surface-2: #161d27;   /* fleet canonical (bg-elev) */
   --surface-3: #1e2532;
 
-  /* ---- ink ---- */
+  /* ---- ink ---- (values from /.well-known/design-tokens.json — the fleet
+     source of truth; the templated pages' style.css uses the same literals) */
   --text: #e8eaed;        /* fleet canonical */
-  --text-dim: #9aa3b2;
-  --text-faint: #6b7482;
+  --text-dim: #8b93a1;    /* fleet canonical (was #9aa3b2 — drift vs style.css) */
+  --text-faint: #6b7482;  /* AA-safe on --bg; design-tokens v2 tracks this */
 
   /* ---- accents ---- */
   --amber: #ff8a3d;       /* fleet canonical */
@@ -190,8 +191,9 @@ code {
     gap: 16px;
     overflow-x: auto; overscroll-behavior-x: contain;
     scrollbar-width: none;
-    -webkit-mask-image: linear-gradient(90deg, transparent, #000 14px, #000 calc(100% - 22px), transparent);
-            mask-image: linear-gradient(90deg, transparent, #000 14px, #000 calc(100% - 22px), transparent);
+    /* fade only the trailing edge — hints "more →" without clipping the first link */
+    -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 26px), transparent);
+            mask-image: linear-gradient(90deg, #000 calc(100% - 26px), transparent);
   }
   .slim-nav::-webkit-scrollbar { display: none; }
   .slim-nav a { white-space: nowrap; }
@@ -227,7 +229,8 @@ code {
 .section { padding: 96px 0; position: relative; }
 .section-muted { background: linear-gradient(180deg, var(--bg), var(--bg-deep) 45%, var(--bg)); }
 .section-head { max-width: 640px; margin-bottom: var(--s7); }
-.section-head h2 { font-size: clamp(1.7rem, 3.6vw, 2.5rem); margin: var(--s3) 0 var(--s4); }
+.section-head h2, .section-head-h2 { font-size: clamp(1.7rem, 3.6vw, 2.5rem); margin: var(--s3) 0 var(--s4); }
+.section-head-h2 { margin-bottom: var(--s5); }
 .section-head p { color: var(--text-dim); font-size: 1.05rem; }
 
 .divider { height: 1px; border: none; margin: 0; background: linear-gradient(90deg, transparent, var(--line-strong), transparent); }
@@ -251,8 +254,11 @@ code {
 /* -------------------------------------------------------------------------- */
 /*  hero                                                                    */
 /* -------------------------------------------------------------------------- */
+/* Sized to its content, not the viewport (w320): the loop/pulse/rules below
+   are the point of the page and should be reachable without a scroll gesture
+   the first frame can't show. */
 .hero {
-  position: relative; min-height: 100svh;
+  position: relative; min-height: clamp(30rem, 66vh, 40rem);
   display: flex; align-items: flex-end;
   overflow: hidden; isolation: isolate;
 }
@@ -261,28 +267,18 @@ code {
   position: absolute; inset: 0; z-index: -1; pointer-events: none;
   background: linear-gradient(180deg, rgba(7, 9, 14, 0) 40%, var(--bg) 97%);
 }
-.hero-content { padding-bottom: clamp(64px, 12vh, 120px); padding-top: clamp(90px, 16vh, 150px); }
+.hero-content { padding-block: clamp(84px, 13vh, 128px) clamp(52px, 8vh, 88px); }
 .hero-brand { display: flex; width: fit-content; align-items: center; gap: 12px; margin-bottom: var(--s5); font-family: var(--font-display); font-weight: 600; font-size: 1.05rem; color: var(--text); }
 .hero-brand svg { width: 30px; height: 30px; }
 .hero-title {
-  font-size: clamp(3rem, 11vw, 7.25rem); line-height: 0.95;
+  font-size: clamp(2rem, 5.2vw, 3.4rem); line-height: 1.1;
+  max-width: 20ch; text-wrap: balance;
   margin: var(--s4) 0 var(--s5);
-  background: linear-gradient(118deg, var(--text) 52%, var(--teal-bright) 100%);
+  background: linear-gradient(118deg, var(--text) 62%, var(--teal-bright) 100%);
   -webkit-background-clip: text; background-clip: text; color: transparent;
 }
-.hero-title .dot { background: var(--beam); -webkit-background-clip: text; background-clip: text; color: transparent; }
 .hero-lede { max-width: 620px; font-size: clamp(1rem, 1.6vw, 1.2rem); color: var(--text-dim); }
 .hero-actions { display: flex; gap: var(--s3); flex-wrap: wrap; margin-top: var(--s6); }
-
-.scroll-cue {
-  position: absolute; left: 50%; bottom: var(--s5); transform: translateX(-50%);
-  color: var(--text); opacity: 0.7; display: flex; flex-direction: column;
-  align-items: center; gap: 6px; font-family: var(--font-mono); font-size: 0.68rem;
-  letter-spacing: 0.12em; text-transform: uppercase;
-}
-.scroll-cue:hover { opacity: 1; text-decoration: none; color: var(--text); }
-.scroll-cue-dot { animation: cue 1.8s ease-in-out infinite; }
-@keyframes cue { 0%, 100% { transform: translateY(0); opacity: 1; } 50% { transform: translateY(8px); opacity: 0.35; } }
 
 /* lighthouse scene bits — origins are in the SVG's own coords (912, 236);
    LighthouseScene.jsx wraps these in a scale-down group (LH_SHRINK), so on
@@ -325,7 +321,8 @@ code {
 .rule-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: var(--s4); }
 .rule-card { position: relative; background: var(--glass); border: 1px solid var(--line); border-radius: var(--radius-md); padding: var(--s5); transition: border-color 0.3s, transform 0.3s var(--ease-soft); }
 .rule-card:hover { border-color: var(--amber); transform: translateY(-3px); }
-.rule-card .idx { font-family: var(--font-mono); font-size: 0.78rem; color: var(--amber); display: block; margin-bottom: var(--s2); }
+.rule-card .rule-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--beam);
+  box-shadow: 0 0 10px 1px rgba(255, 138, 61, 0.5); display: block; margin-bottom: var(--s3); }
 .rule-card h3 { font-size: 1.04rem; margin-bottom: var(--s2); }
 .rule-card p { margin: 0; font-size: 0.92rem; color: var(--text-dim); }
 
@@ -367,13 +364,36 @@ code {
 /* -------------------------------------------------------------------------- */
 /*  explore                                                                 */
 /* -------------------------------------------------------------------------- */
-.explore-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(232px, 1fr)); gap: var(--s4); }
-.explore-card { display: block; position: relative; text-decoration: none; color: inherit; }
-.explore-card:hover { text-decoration: none; }
-.explore-card h3 { font-size: 1rem; margin-bottom: 4px; color: var(--text); }
-.explore-card p { margin: 0; font-size: 0.87rem; color: var(--text-dim); }
-.explore-card .arrow { position: absolute; top: var(--s5); right: var(--s5); color: var(--teal); opacity: 0; transform: translateX(-4px); transition: opacity 0.25s, transform 0.25s; }
-.explore-card:hover .arrow { opacity: 1; transform: translateX(0); }
+/* Grouped lists with hairline dividers, not a wall of identical cards (w320).
+   The card treatment is spent on the one thing that earns it: the editions. */
+.explore { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: var(--s7) var(--s8); }
+.explore-group .eyebrow { margin-bottom: var(--s4); }
+.explore-list { list-style: none; margin: 0; padding: 0; }
+.explore-list li { border-top: 1px solid var(--line); }
+.explore-list li:last-child { border-bottom: 1px solid var(--line); }
+.explore-list a {
+  display: grid; grid-template-columns: 1fr auto; align-items: baseline;
+  column-gap: var(--s4); padding: var(--s4) 0;
+  text-decoration: none; color: inherit;
+}
+.explore-list a:hover { text-decoration: none; }
+.explore-t { font-family: var(--font-display); font-weight: 600; font-size: 1rem; color: var(--text); }
+.explore-d { grid-column: 1 / -1; font-size: 0.87rem; color: var(--text-dim); margin-top: 2px; }
+.explore-arrow { width: 15px; height: 15px; color: var(--text-faint); transition: color 0.2s, transform 0.2s var(--ease-soft); }
+.explore-list a:hover .explore-t { color: var(--teal-bright); }
+.explore-list a:hover .explore-arrow { color: var(--teal); transform: translateX(3px); }
+.explore-list a:focus-visible .explore-arrow { color: var(--teal); }
+
+.explore-editions {
+  grid-column: 1 / -1;
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
+  gap: var(--s5); margin-top: var(--s3);
+  background: var(--glass); border: 1px solid var(--line-strong);
+  border-radius: var(--radius-md); padding: var(--s6);
+}
+.explore-editions h3 { font-size: 1.1rem; margin: var(--s2) 0 var(--s2); }
+.explore-editions p { margin: 0; font-size: 0.9rem; color: var(--text-dim); max-width: 46ch; }
+.explore-editions .eyebrow { margin-bottom: var(--s3); }
 
 /* -------------------------------------------------------------------------- */
 /*  content pages (getting-started / build / field-guide / faq)             */

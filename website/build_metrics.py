@@ -23,6 +23,8 @@ from collections import Counter
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
+import fleet_palette
+
 ROOT = Path(__file__).resolve().parent.parent
 HERE = Path(__file__).resolve().parent
 NOTES = ROOT / "NOTES.md"
@@ -367,13 +369,14 @@ def bar_chart(counts: Counter, days, color, unit, height=190):
     )
 
 
-_AREA_COLORS = {
-    "Beacon": AMBER,
-    "Highbeam": TEAL,
-    "Lantern": "#a78bfa",
-    "Lightning": "#e08a6a",
-    "Tidal": "#38bdf8",
-}
+# Multi-series overlay ramp (the one true multi-agent comparison chart on this
+# page). This is SERIES colour, not identity colour -- a fixed 5-slot
+# categorical ramp from the canonical fleet palette, assigned by position, with
+# the legend + per-point labels as the required secondary encoding. If this
+# chart ever needs a 6th line, facet it into small multiples rather than
+# stretching the ramp.
+_AREA_ORDER = ("Beacon", "Highbeam", "Lantern", "Lightning", "Tidal")
+_AREA_COLORS = dict(zip(_AREA_ORDER, fleet_palette.SERIES))
 
 
 def multi_area_chart(series, days, unit="wakings", height=280):

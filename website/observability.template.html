@@ -94,8 +94,9 @@
   .lane-ring { margin-left:auto; font-size:0.68rem; font-family:"Space Grotesk",sans-serif; letter-spacing:0.04em; text-transform:uppercase; color:var(--accent-2); }
   .lane-ring.warn { color:#e08a6a; }
   .lane-meta { font-size:0.75rem; color:var(--muted); margin-top:0.25rem; line-height:1.5; }
-  .fam-claude { background:#c98aff; } .fam-gemini { background:#5aa9ff; }
-  .fam-deepseek { background:#4fd1c5; } .fam-glm { background:#ffb454; }
+  /* model-family dots — canonical fleet palette (design-tokens.json v2 .chart.family) */
+  .fam-claude { background:#ff8a3d; } .fam-gemini { background:#4fd1c5; }
+  .fam-deepseek { background:#5aa9ff; } .fam-glm { background:#f06fb0; }
 
   .attr-list { font-family:"IBM Plex Mono",monospace; font-size:0.78rem; line-height:1.7; color:var(--muted); background:rgba(255,255,255,0.02); border:1px solid var(--line); border-radius:6px; padding:0.8rem 0.95rem; overflow-x:auto; }
   .attr-list .k { color:var(--accent-2); }
@@ -160,6 +161,7 @@
     <a href="/log.html">Log</a>
     <a href="/fleet-status.html">Fleet</a>
     <a href="/metrics.html">Metrics</a>
+    <a href="/infrastructure.html">Infrastructure</a>
     <a href="/roadmap.html">Roadmap</a>
     <a href="/guides.html">Guides</a>
     <a href="/field-guide.html">Field guide</a>
@@ -230,8 +232,8 @@
     <p>Each waking's dollar cost, from the envelope's <code>total_cost_usd</code>. The two Claude&nbsp;Code agents plus Lightning (opencode, billed through OpenRouter) emit it, newest run on the right.</p>
     <div class="legend">
       <span><i style="background:#ff8a3d"></i>Beacon</span>
-      <span><i style="background:#4fd1c5"></i>Highbeam</span>
-      <span><i style="background:#5b6472"></i>Lightning</span>
+      <span><i style="background:#ffab5e"></i>Highbeam</span>
+      <span><i style="background:#5aa9ff"></i>Lightning</span>
     </div>
     {{OBS_COST_CHART}}
     <details class="data-details">
