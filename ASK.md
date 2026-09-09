@@ -60,6 +60,25 @@
     minutes-fresh instead of deploy-fresh. Panels are correct today off the
     deploy-time snapshot; not urgent. Also (phase 2) the `/log.html` → cross-host
     newsroom. Nothing needed from josh.
+  - **w336 (2026-09-09) — first live surface shipped.** New **Live cross-host
+    telemetry** strip on `/observability.html` (`id="live-telemetry"`, above the
+    deploy-time "Off-box fleet" panel), hydrated **in the browser** from
+    `/api/fleet/telemetry` on the 120s server cache: merged run count, agents
+    reporting, billed vs est. cost, error runs, by-model-family, and a per-host
+    feed-status table (status / rows / last wake). Degrades to a static link if
+    fetch fails; page tagline amended to name it as the one non-deploy-time
+    panel. Deploy 2× smoke green, live verified. This is a contained additive
+    step — the *existing* SVG panels (spend trend, throughput, wall-clock,
+    failure-reason, per-agent recency) are still deploy-time and re-pointing
+    those is still the bigger focused pass. Also answered Mountain's peer Qs:
+    (a) its build-time-derived feed is fine — the aggregator only needs
+    content-level append-only, not on-disk; (b) "item 3" is Beacon-side, Mountain
+    doesn't implement it. **Known gap (not a Beacon bug):** the merged feed
+    currently carries only the 3 gateway agents (beacon/tidal/mountain) + Tidal's
+    siblings that Tidal chose to emit — 6 of 12, because each host only
+    instruments some of its agents into `fleet-telemetry/v1`. Highbeam/Lantern/
+    Lightning and Canyon/Ridge/Harbor are absent. Closing that is on the
+    per-host writers, not the schema or the aggregator.
   - **Headline pick: a live cross-host fleet telemetry plane + a newsroom on top.**
     The gap: observability is the site's focal point but the cross-host half is
     *faked* — beaconwake.com aggregates the off-box hosts' `observability.json` /
@@ -367,6 +386,37 @@
     theirs; `SETUP.md` has josh create his own.) Still a scaffold — no wallet,
     no money. Nothing further owed unless josh moves an item in the open list
     above.
+  - **Follow-up — Telegram (2026-09-09, via /commands): *"Status on treasury
+    x402 effort what do I need to provide"*** — **answered w336 (2026-09-09), via
+    Telegram + here.**
+    - **Status:** unchanged since w330/w331 — `x402/` scaffold is committed and
+      fully inert (no wallet, no keys, no money, not wired into `wake.sh` /
+      `deploy.sh` / any service; `NETWORK=devnet` + `DRY_RUN=1` defaults, mainnet
+      gate closed, Solana libs not installed). `SECURITY.md` has the worked
+      secure-spend example. w331 confirmed it matches the cairnwake.com custody
+      model (Squads 2-of-2 Solana vault, SOL/USDC, x402 over HTTP 402). Nothing
+      has advanced past the scaffold because each next step needs josh's explicit
+      separate go-ahead.
+    - **What josh provides — bucket A, just decide/tell Beacon:** (1) rehearse on
+      **devnet** first? (recommended — free, throwaway, zero risk); (2) accepted
+      **asset(s)** — USDC / SOL / both; (3) **initial funding amount** (loss-
+      tolerant experiment stake); (4) **public money record** on beaconwake.com
+      (cairn-style) or keep private; (5) go to **mainnet** eventually, after a
+      clean devnet run.
+    - **What josh provides — bucket B, actions on his own machine (full steps in
+      `x402/SETUP.md`), only when he says proceed:** (1) create a **co-signer
+      wallet** on his laptop/phone (Phantom or `solana-keygen`), seed on paper,
+      never on the box; fund ~0.05 SOL for fees; (2) create a **Squads 2-of-2
+      vault** at squads.so (members = his co-signer pubkey + Beacon's member
+      pubkey, threshold 2); hand Beacon the **vault address**; (3) on his "go",
+      **Beacon** generates its vault member key on the box
+      (`~/keys/agent-wallet.json`) and returns the **member pubkey** for josh to
+      add as the 2nd member; (4) **fund** the vault address + send Beacon's
+      member key ~0.01 SOL gas separately; (5) Beacon wires `x402/x402.env` and
+      runs the **devnet dry run** (`treasury.py balance`, `x402_client.py
+      --demo`) — nothing submits.
+    - **Immediate ask from josh is only bucket A.** Nothing touches money until
+      he has seen the devnet dry-run output.
 
 - **Telegram (2026-09-09, via /commands): *"Keep looking for opportunities to
   improve the website, create business opportunities or even research candidates
@@ -1981,6 +2031,7 @@
 - **Telegram (2026-09-09, via /commands):** If you could build anything you wanted for the fleet site. What would it be? Nothing is to big
 - **Telegram (2026-09-09, via /commands):** Check every waking for moltbook replies. Also feel free to browse moltbook and reply to anything you feel would be appropriate.
 - **Telegram (2026-09-09, via /commands):** I like the idea work out the details with the other two
+- **Telegram (2026-09-09, via /commands):** Status on treasury x402 effort what do I need to provide
 
 ## On hold
 

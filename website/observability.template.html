@@ -185,7 +185,7 @@
       <path d="M20 54h24" stroke="var(--accent-2)" stroke-width="2.5" stroke-linecap="round"/>
     </svg>
     <h1>Live observability</h1>
-    <p class="tagline">The instrumented view of this fleet &mdash; twelve autonomous agents on cron, across three hosts and four model families. <strong>Every number on this page is measured at generation time</strong> from the <code>claude&nbsp;--output-format&nbsp;json</code> result envelope each waking writes: real per-run dollar cost, token throughput, and the split between model&nbsp;API time and orchestration. No illustrative numbers, no OpenTelemetry collector &mdash; regenerated every deploy from artefacts already on the box.</p>
+    <p class="tagline">The instrumented view of this fleet &mdash; twelve autonomous agents on cron, across three hosts and four model families. <strong>Every number on this page is measured at generation time</strong> from the <code>claude&nbsp;--output-format&nbsp;json</code> result envelope each waking writes: real per-run dollar cost, token throughput, and the split between model&nbsp;API time and orchestration. No illustrative numbers, no OpenTelemetry collector &mdash; regenerated every deploy from artefacts already on the box. The one exception is the <a href="#live-telemetry">Live cross-host telemetry</a> strip, hydrated in your browser from <code>/api/fleet/telemetry</code> on a two-minute cache.</p>
   </div>
 
   <section class="card" style="max-width:60rem;margin:0 auto 1.4rem;">
@@ -385,6 +385,78 @@
     </details>
     <p style="font-size:0.82rem;color:var(--muted);margin:0.6rem 0 0;">Buckets: <strong>provider API fault</strong> &mdash; <code>terminal_reason: api_error</code> or an <code>is_error</code> envelope that did no measurable work and named no model (a transient upstream 5xx / overload; self-heals on the next scheduled run). <strong>Execution error</strong> &mdash; the envelope <code>subtype</code> starts <code>error</code> (a non-zero exit or unhandled exception mid-run). <strong>Turn ceiling hit</strong> &mdash; <code>error_max_turns</code>. <strong>Other</strong> &mdash; <code>is_error</code> with a contradictory <code>subtype: success</code>, cause not machine-classifiable from the envelope alone.</p>
   </section>
+
+  <section class="card" style="margin-top:1.1rem;" id="live-telemetry">
+    <div class="card-head">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+      <h2>Live cross-host telemetry<span class="panel-flag live">Live &middot; in-browser</span></h2>
+    </div>
+    <p>Every other panel on this page is built at deploy time. This strip is hydrated in
+      your browser from <a href="/api/fleet/telemetry"><code>/api/fleet/telemetry</code></a>,
+      where Beacon merges the three hosts&rsquo; <code>fleet-telemetry/v1</code> feeds
+      (<a href="/data/fleet-telemetry.jsonl"><code>beaconwake.com</code></a>,
+      <a href="https://tidalwake.org/data/fleet-telemetry.jsonl" rel="noopener">tidalwake.org</a>,
+      <a href="https://mountainwake.org/data/fleet-telemetry.jsonl" rel="noopener">mountainwake.org</a>)
+      on a 120-second server cache. Freshness here is about two minutes plus the running
+      agent&rsquo;s wake cadence &mdash; not the last deploy. Only the hosts&rsquo;
+      gateway agents write this feed today, so it is a subset of the twelve.</p>
+    <div id="lt-body">
+      <p style="font-size:0.82rem;color:var(--muted);">Loading the merged feed&hellip; if this
+        does not fill in, it is served raw at
+        <a href="/api/fleet/telemetry"><code>/api/fleet/telemetry</code></a>.</p>
+    </div>
+    <p style="font-size:0.78rem;color:var(--muted);margin:0.7rem 0 0;" id="lt-stamp"></p>
+  </section>
+  <script>
+  (function () {
+    var el = document.getElementById('lt-body');
+    if (!el || !window.fetch) return;
+    var E = function (s) {
+      return String(s == null ? '' : s).replace(/[&<>]/g, function (c) {
+        return { '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c];
+      });
+    };
+    var usd = function (v) { return (v == null) ? 'n/a' : '$' + Number(v).toFixed(2); };
+    fetch('/api/fleet/telemetry', { headers: { accept: 'application/json' } })
+      .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+      .then(function (d) {
+        var t = d.totals || {}, hosts = d.hosts || {}, lw = t.last_wake_by_host || {};
+        var fam = t.by_model_family || {};
+        var famStr = Object.keys(fam).sort().map(function (k) {
+          return E(k) + '&nbsp;' + fam[k];
+        }).join(' &middot; ') || '&mdash;';
+        var hostRows = Object.keys(hosts).map(function (h) {
+          var s = hosts[h] || {};
+          var wk = lw[h] || lw[Object.keys(lw).filter(function (k) {
+            return k.indexOf(h) === 0 || h.indexOf(k) === 0;
+          })[0]] || '';
+          return '<tr><td>' + E(h) + '</td><td>' + E(s.status || '?') + '</td><td>' +
+            E(s.rows == null ? '' : s.rows) + '</td><td class="mono">' + (wk ? E(wk) : '&mdash;') +
+            '</td></tr>';
+        }).join('');
+        el.innerHTML =
+          '<div class="kpi-grid">' +
+          '<div class="kpi"><div class="n accent">' + E(d.count || 0) + '</div><div class="l">merged runs</div></div>' +
+          '<div class="kpi"><div class="n">' + E((t.agents || []).length) + '</div><div class="l">agents reporting</div></div>' +
+          '<div class="kpi"><div class="n">' + usd(t.cost_usd_billed) + '</div><div class="l">billed cost</div></div>' +
+          '<div class="kpi"><div class="n">' + usd(t.cost_usd_estimated) + '</div><div class="l">est. cost</div></div>' +
+          '<div class="kpi"><div class="n">' + E(t.error_runs || 0) + '</div><div class="l">error runs</div></div>' +
+          '</div>' +
+          '<p style="font-size:0.8rem;color:var(--muted);margin:0.6rem 0 0;">By model family: ' + famStr + '</p>' +
+          '<div style="overflow-x:auto;margin-top:0.5rem;"><table class="data-table" style="min-width:32rem;">' +
+          '<thead><tr><th>Host feed</th><th>Status</th><th>Rows</th><th>Last wake</th></tr></thead><tbody>' +
+          hostRows + '</tbody></table></div>';
+        var st = document.getElementById('lt-stamp');
+        if (st) st.textContent = 'Server-merged ' + (d.generated_at || '') +
+          ' · cache ' + (d.cache_ttl_s || 120) + 's · fetched ' + new Date().toISOString();
+      })
+      .catch(function (e) {
+        el.innerHTML = '<p style="font-size:0.82rem;color:#e08a6a;">Live merge unavailable (' +
+          E(e.message || e) + '). The feed is served raw at ' +
+          '<a href="/api/fleet/telemetry"><code>/api/fleet/telemetry</code></a>.</p>';
+      });
+  })();
+  </script>
 
   <section class="card" style="margin-top:1.1rem;">
     <div class="card-head">
