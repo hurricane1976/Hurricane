@@ -10,7 +10,7 @@ Highbeam was blue on one page and teal on another, and the observability
 TWO jobs, kept separate on purpose (per the dataviz method):
 
 1. IDENTITY  — FAMILY / AGENT below. Colour encodes MODEL FAMILY
-   (amber=Claude, teal=Gemini, blue=DeepSeek, magenta=GLM); the specific
+   (amber=Claude, blue=DeepSeek, magenta=GLM); the specific
    agent is always named by an adjacent text label (tab text, legend text,
    table row, node label). This is composite encoding — the sanctioned
    approach for >8 categories. Used for tab dots, legend swatches, per-agent
@@ -22,9 +22,10 @@ TWO jobs, kept separate on purpose (per the dataviz method):
 
 Validated with the dataviz skill's scripts/validate_palette.js on the dark
 chart surface #10151d:
-  FAMILY (4):  chroma PASS · normal-vision ΔE >=15.8 PASS · contrast PASS ·
-               CVD teal<->magenta ΔE 6.3 (deutan) — the 6-8 "legal with
-               secondary encoding" band; every use site carries a text label.
+  FAMILY (3):  chroma PASS · normal-vision ΔE >=15.8 PASS · contrast PASS ·
+               CVD PASS (Gemini/teal retired from the fleet 2026-09-09 when
+               Lantern/Tidal/River moved to GLM Flash; the teal hue is kept
+               below only so historical Gemini rows still resolve a colour).
   SERIES (5):  chroma PASS · adjacent CVD ΔE 13.6 PASS · normal-vision 24 PASS
                · contrast PASS. If this chart ever needs a 6th series, facet
                it into small multiples instead of extending the ramp.
@@ -36,16 +37,18 @@ consistently, across ~45 pages.
 # ---- model-family hues (identity) ------------------------------------------
 FAMILY = {
     "Claude":   "#ff8a3d",
-    "Gemini":   "#4fd1c5",
     "DeepSeek": "#5aa9ff",
     "GLM":      "#f06fb0",
+    "Gemini":   "#4fd1c5",  # RETIRED 2026-09-09 — no live agent; kept so
+                            # historical Gemini rows in observability.jsonl
+                            # still resolve a colour.
 }
 
 AGENT_FAMILY = {
     "Beacon": "Claude", "Highbeam": "Claude", "Mountain": "Claude",
-    "Tidal": "Gemini", "Lantern": "Gemini", "River": "Gemini",
     "Lightning": "DeepSeek", "Creek": "DeepSeek", "Stream": "DeepSeek",
     "Canyon": "DeepSeek",
+    "Lantern": "GLM", "Tidal": "GLM", "River": "GLM",
     "Ridge": "GLM", "Harbor": "GLM",
 }
 
@@ -54,10 +57,11 @@ AGENT_FAMILY = {
 # use FAMILY[...]; only dots / swatches / row markers use these.
 AGENT = {
     "Beacon": "#ff8a3d", "Highbeam": "#ffab5e", "Mountain": "#d96a2a",
-    "Tidal": "#4fd1c5", "Lantern": "#7ee0d6", "River": "#2f9e93",
     "Lightning": "#5aa9ff", "Creek": "#8cc3ff", "Stream": "#3f7fd6",
     "Canyon": "#6a86e6",
-    "Ridge": "#f06fb0", "Harbor": "#f59ccb",
+    # GLM (magenta), stepped by lightness — five agents share the hue now.
+    "River": "#c94f8c", "Tidal": "#e05fa0", "Ridge": "#f06fb0",
+    "Harbor": "#f59ccb", "Lantern": "#fbc0e0",
 }
 
 # ---- multi-series overlay ramp (series, not identity) --------------------

@@ -8,8 +8,10 @@ Sources, all already on the box:
 * **Per-run cost / tokens / turns / duration** -- the JSON result envelope
   `claude -p --output-format json` writes to `logs/<ts>.json` each waking
   (wired into wake.sh). Beacon and Highbeam (Claude Code) emit it; Lantern
-  (Gemini CLI) and Lightning (opencode) run other runtimes that don't, so they
-  carry a lane but no cost row -- never a fabricated number.
+  (opencode + GLM Flash via OpenRouter since 2026-09-09; the Google Gemini CLI
+  before that) and Lightning (opencode + DeepSeek) emit a compatible envelope
+  with real cost -- Lantern's pre-migration Gemini-CLI rows carry a list-price
+  estimate instead, never a fabricated number.
 * **The rolled-up series** lives in `website/data/observability.jsonl`
   (committed, counters only -- never `.result` transcript text) so it outlives
   the 30-day pruning of `logs/`.
@@ -89,8 +91,9 @@ FLEET_RUN_FEED_CACHE = HERE / "data" / ".cache" / "fleet-run-feed.jsonl"
 FLEET_RUN_FEED_TTL = 300  # seconds
 
 # Fleet render order + per-agent hue: the canonical fleet palette. Colour
-# encodes model family (amber=Claude, teal=Gemini, blue=DeepSeek,
-# magenta=GLM); the panel shows one agent at a time with its name on the
+# encodes model family (amber=Claude, blue=DeepSeek, magenta=GLM; teal=Gemini
+# retired 2026-09-09, kept only for historical rows); the panel shows one agent
+# at a time with its name on the
 # active tab, so identity is never colour-alone. Replaces the ad-hoc 12-hue
 # set that failed CVD (Ridge<->Canyon deltaE 4.5).
 MM_FLEET_ORDER = list(fleet_palette.FLEET_ORDER)
@@ -338,18 +341,17 @@ def _tok_total(r: dict) -> int:
 
 
 # List-price ESTIMATE for runtimes whose result envelope carries token counts
-# but no billed dollar figure (Gemini CLI -> total_cost_usd: null). USD per 1M
-# tokens, from Google AI Studio's published rates (Gemini 3.8 Flash intro
-# pricing, in effect through 2026-12-31; verified 2026-09-09). The in/out rate
-# ($0.75 / $3.75 per 1M) is identical to OpenRouter's current list price for
-# google/gemini-3.8-flash (re-verified 2026-09-09, josh's w328 steer), so the
-# estimate matches current market pricing whichever way the CLI is billed. This
-# yields an ESTIMATE only -- always rendered with a leading ~ and an "est." tag,
-# and never folded into the measured cost chart, the cost KPIs or the cost
-# table, which stay strictly billed. Same discipline Tidal adopted for its
-# Gemini lanes. Add an OpenRouter-priced entry here (e.g. GLM 5.3, DeepSeek V4
-# Pro) if a non-billed lane on one of those models ever lands in the committed
-# first-party store; today none do (Lightning's DeepSeek runs are billed).
+# but no billed dollar figure. The only such rows in the first-party store are
+# Lantern's pre-2026-09-09 Gemini-CLI runs (total_cost_usd: null); since that
+# date Lantern runs GLM Flash on opencode via OpenRouter, which DOES bill, so
+# no new rows land here. USD per 1M tokens, from Google AI Studio's published
+# rates (Gemini 3.8 Flash intro pricing, in effect through 2026-12-31; verified
+# 2026-09-09). This yields an ESTIMATE only -- always rendered with a leading ~
+# and an "est." tag, and never folded into the measured cost chart, the cost
+# KPIs or the cost table, which stay strictly billed. Same discipline Tidal
+# adopted for its historical Gemini lanes. Add an OpenRouter-priced entry here
+# only if a genuinely non-billed lane on another model ever lands in the
+# committed first-party store; today none do.
 NONBILLED_PRICING = {
     "gemini-3.8-flash": {"in": 0.75, "out": 3.75, "cache_read": 0.075, "cache_write": 0.04167},
 }
@@ -459,13 +461,14 @@ def cost_chart(runs: list[dict], keep: int = 28) -> str:
         cost_s = f'~{fmt_cost(r["cost_usd"])} est.' if est else fmt_cost(r["cost_usd"])
         tip = (f'{r["agent"]} · {_label(r)} · {cost_s} · '
                f'{fmt_int(r.get("turns"))} turns · {fmt_dur(r.get("duration_ms"))} wall')
-        # Estimated bars (token-only Gemini runs, priced at list rate) are drawn
-        # half-opacity so a billed bar and an estimate never read alike.
+        # Estimated bars (Lantern's pre-migration Gemini-CLI runs, priced at
+        # list rate) are drawn half-opacity so a billed bar and an estimate
+        # never read alike.
         op = ' fill-opacity="0.5"' if est else ''
         bars.append(f'<rect x="{x:.1f}" y="{y:.1f}" width="{bw:.1f}" height="{h:.1f}" rx="3" '
                     f'fill="{col}"{op} data-tip="{esc(tip)}"><title>{esc(tip)}</title></rect>')
     lbl = (f"US-dollar cost per instrumented run, {n} most recent runs"
-           + ("; half-opacity bars are token-only Gemini runs priced at list rate, not billed"
+           + ("; half-opacity bars are Lantern's pre-migration Gemini-CLI runs priced at list rate, not billed"
               if any_est else ""))
     return (f'<svg viewBox="0 0 {CHART_W} {H}" class="chart chart-in" role="img" '
             f'aria-label="{esc(lbl)}">'
@@ -797,11 +800,11 @@ def agent_summary(instrumented: list[dict]) -> str:
 def all_agent_summary(rows: list[dict]) -> str:
     """Every agent that emits a result envelope, cost-bearing or not.
 
-    The cost panels above filter to runs that carry a dollar figure. Only the
-    Gemini runtime (Lantern) reports tokens and timing but no billed cost, so
-    this table is the only place it surfaces and its mean $ reads `n/a`.
-    Lightning (DeepSeek via OpenRouter) does carry a real cost and appears in
-    the cost panels too.
+    The cost panels above filter to runs that carry a dollar figure. Every
+    live runtime now reports one (Claude Code billed; Lightning and Lantern
+    billed via OpenRouter). Lantern's pre-2026-09-09 Gemini-CLI rows carry a
+    list-price estimate (tagged est.); only a genuine provider non-start
+    leaves a row with no cost at all.
     """
     agents = sorted({r["agent"] for r in rows})
     if not agents:
@@ -864,8 +867,9 @@ def _fam_spend(rs: list[dict]) -> float:
 
 def model_family_table(rows: list[dict]) -> str:
     """The committed series rolled up by model-provider family. Cost columns
-    read n/a for a family with no billed run (Gemini); token / turn means are
-    populated for every runtime that writes an envelope."""
+    read n/a for a family with no billed run; token / turn means are
+    populated for every runtime that writes an envelope. The Gemini row (if
+    present) is historical Lantern Gemini-CLI runs, list-price estimated."""
     fam_rows: dict[str, list[dict]] = {}
     for r in rows:
         fam = _family_of(r.get("model"))
@@ -1001,9 +1005,9 @@ def offbox_obs(fetched: list[tuple[str, dict]]) -> tuple[str, str]:
              "cumulative figure, so the <strong>Total&nbsp;$</strong> column reads "
              "&ldquo;n/a&rdquo; for them; <strong>Mean&nbsp;$/run</strong> shows what "
              "each host reports. Some host figures are themselves list-price estimates "
-             "(Gemini / GLM / DeepSeek billed via OpenRouter), computed off-box the "
-             "same way this page estimates its own Gemini lane &mdash; not a billed "
-             "figure.")
+             "(non-billed off-box lanes), computed off-box the "
+             "same way this page estimates its own historical Gemini-CLI runs &mdash; "
+             "not a billed figure.")
     body = "\n".join(rows) or (
         '<tr><td colspan="9" style="text-align:center;color:var(--muted);">'
         'no host has crossed its sample gate yet</td></tr>')
@@ -1224,8 +1228,9 @@ def multimetric_block(store_rows: list[dict]) -> str:
         f"{FLEET_RUN_FEED_TTL // 60}&nbsp;min so a burst of manual rebuilds "
         "doesn't hammer the site. Numbers are each agent's own measured envelope, "
         "never re-derived from an aggregate &mdash; except the cost lane for "
-        "token-only Gemini runtimes (Lantern here, and the off-box Gemini/GLM "
-        "lanes), which is a token&nbsp;&times;&nbsp;published-list-price estimate, "
+        "Lantern's historical Gemini-CLI runs (through 2026-09-09; its GLM&nbsp;Flash "
+        "runs since are billed via OpenRouter) and the off-box non-billed lanes, "
+        "which is a token&nbsp;&times;&nbsp;published-list-price estimate, "
         "not a billed figure.")
     if missing:
         src_note += (" <strong>No per-run feed was reachable for "
@@ -1709,9 +1714,10 @@ def render(store_rows: list[dict]) -> str:
         if est_n:
             cost_intro += (
                 f" Of that, <strong>{fmt_cost2(billed_total)}</strong> is billed "
-                f"(Claude&nbsp;Code + Lightning via OpenRouter); the token-only "
-                f"Gemini runtime (Lantern, {est_n} run{'s' if est_n != 1 else ''}) "
-                f"is priced at published list rates for "
+                f"(Claude&nbsp;Code, plus Lightning and Lantern&rsquo;s GLM&nbsp;Flash "
+                f"runs via OpenRouter); Lantern&rsquo;s {est_n} historical "
+                f"Gemini-CLI run{'s' if est_n != 1 else ''} (through 2026-09-09) "
+                f"{'are' if est_n != 1 else 'is'} priced at published list rates for "
                 f"<strong>~{fmt_cost2(est_cost_total)}</strong> &mdash; an estimate, "
                 f"not a billed figure, tagged <em>est.</em> wherever it appears."
             )
@@ -1814,12 +1820,12 @@ def render(store_rows: list[dict]) -> str:
         est_clause = ""
         if fam_est:
             est_clause = (
-                f" The token-only Gemini runtime (Lantern) carries a "
+                f" Lantern&rsquo;s historical Gemini-CLI runs (through 2026-09-09, "
+                f"before it moved to GLM&nbsp;Flash) carry a "
                 f"<em>~list-price estimate</em> of "
                 f"<strong>~{fmt_cost2(sum(fam_est.values()))}</strong> tagged "
                 f"<em>est.</em> &mdash; token count &times; Gemini&nbsp;3.8&nbsp;Flash "
-                f"published rates (which match OpenRouter&rsquo;s current list "
-                f"price), not a billed figure.")
+                f"published rates, not a billed figure.")
         fam_intro = (
             f"Every result envelope that names a model, rolled up by provider "
             f"family. <strong>{len(fam_billed)}</strong> "
@@ -1837,8 +1843,8 @@ def render(store_rows: list[dict]) -> str:
     elif fam_named and fam_est:
         fam_intro = (
             f"Every result envelope that names a model, rolled up by provider "
-            f"family. No family carries a billed cost yet; the Gemini runtime "
-            f"shows a <em>~list-price estimate</em> tagged <em>est.</em> "
+            f"family. No family carries a billed cost yet; the historical "
+            f"Gemini-CLI runs show a <em>~list-price estimate</em> tagged <em>est.</em> "
             f"(<strong>~{fmt_cost2(sum(fam_est.values()))}</strong> &mdash; token "
             f"count &times; published rates, not billed). Token and turn means "
             f"fill from every runtime."

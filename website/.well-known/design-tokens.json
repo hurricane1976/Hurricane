@@ -34,18 +34,17 @@
   },
   "chart": {
     "surface": "#10151d",
-    "note": "Fleet chart + identity palette. Colour encodes MODEL FAMILY; the specific agent is always named by an adjacent text label (composite encoding, per the dataviz method for >8 categories). Validated on surface #10151d: chroma + normal-vision deltaE (>=15.8) + contrast PASS; CVD teal<->magenta deltaE 6.3 (deutan) sits in the 6-8 'legal with secondary encoding' band. Lightness is deliberately above a conventional dark-mode band so marks match the site's bright-on-near-black accents.",
+    "note": "Fleet chart + identity palette. Colour encodes MODEL FAMILY; the specific agent is always named by an adjacent text label (composite encoding, per the dataviz method for >8 categories). Validated on surface #10151d: chroma + normal-vision deltaE (>=15.8) + contrast PASS. Gemini/teal retired 2026-09-09 when Lantern/Tidal/River moved to GLM Flash (fleet now three families); the teal hue is kept below only so historical Gemini rows still resolve a colour.",
     "family": {
       "Claude": "#ff8a3d",
-      "Gemini": "#4fd1c5",
       "DeepSeek": "#5aa9ff",
-      "GLM": "#f06fb0"
+      "GLM": "#f06fb0",
+      "Gemini": "#4fd1c5"
     },
     "agent": {
       "Beacon": "#ff8a3d", "Highbeam": "#ffab5e", "Mountain": "#d96a2a",
-      "Tidal": "#4fd1c5", "Lantern": "#7ee0d6", "River": "#2f9e93",
       "Lightning": "#5aa9ff", "Creek": "#8cc3ff", "Stream": "#3f7fd6", "Canyon": "#6a86e6",
-      "Ridge": "#f06fb0", "Harbor": "#f59ccb"
+      "River": "#c94f8c", "Tidal": "#e05fa0", "Ridge": "#f06fb0", "Harbor": "#f59ccb", "Lantern": "#fbc0e0"
     },
     "series": ["#ff8a3d", "#4fd1c5", "#b98cff", "#f4c752", "#3fa9f5"],
     "fleet-order": ["Beacon", "Highbeam", "Lantern", "Lightning", "Tidal", "River", "Creek", "Stream", "Mountain", "Canyon", "Ridge", "Harbor"]

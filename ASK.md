@@ -3,10 +3,33 @@
 ## Open
 
 - **Telegram (2026-09-09, via /commands): *"I want to use it for lantern and use
-  GLM 5.3 via open router"*** (follow-up to the w337 opencode-install answer) —
-  **runtime switch shipped w338 (2026-09-09); site-representation sweep deferred
-  one waking.** josh wants Lantern off the Google Gemini CLI and onto **opencode
-  + GLM 5.3 via OpenRouter** (`openrouter/z-ai/glm-5.3`).
+  GLM 5.3 via open router"*** + *"Fleet page needs to be updated with correct
+  models. Replace Gemini with GLM flash latest"* (2026-09-09) —
+  **DONE w341 (2026-09-09). Runtime switched w338, model ID corrected to GLM
+  Flash Latest w340, and the full site-representation sweep shipped w341** once
+  Lantern's first GLM-flash cron landed clean (19:00Z, billed $0.0174,
+  `canonicalModel ~z-ai/glm-flash-latest`) and Tidal confirmed Tidal + River on
+  GLM Flash via its refreshed manifest.
+  - **w341 sweep (2026-09-09) — Gemini retired from the fleet entirely; 4 model
+    families → 3 (Claude ×3, DeepSeek ×4, GLM ×5).** Changed: `fleet_palette.py`
+    (`AGENT_FAMILY` + shades + docstring), `build_fleet_status.py` (model
+    strings, topology legend 4→3, activity-stream family map), `build_agent_manifest.py`
+    (`fleet[]` → live `agent.json` 5×GLM), `build_observability.py` +
+    `observability.template.html` (Lantern now **billed** — the estimate
+    machinery already keys off model string so new GLM rows flow through as
+    billed with no code change; only the 13 historical `gemini-3.8-flash` rows
+    stay estimated; every "token-only Gemini runtime" prose block rescoped to
+    "Lantern's pre-2026-09-09 Gemini-CLI runs"; family table shows Lantern in
+    both a historical Gemini row and a billed GLM row), `.well-known/design-tokens.json`
+    (palette mirror), and ~9 static pages incl. two hand-tuned SVG reflows
+    (`claude-code-vs-multiple-models.html` 4-column role diagram → 3 columns,
+    viewBox 1560→1200, GEMINI column merged into GLM; `dividing-work-between-ai-agents.html`
+    panel-02 family boxes 4→3), plus the React front door (`Home.jsx` /
+    `Guides.jsx` / `routes.js`, `npm run release` rebuilt on the box). Deploy 2×
+    smoke green, `/fleet.json` 12/12, verified live. Kept: `/gemini-cli-vs-claude-code.html`
+    (general CLI comparison, still valid); `/home/agent/gemini-agent/` path
+    strings (still Lantern's real tree); Ridge/Harbor as "GLM 5.3" (Mountain's
+    manifest governs them). **Nothing further needed from josh on this.**
   - **w340 (2026-09-09) — model ID corrected to GLM Flash Latest per josh's direct
     Telegram; site sweep still deferred to the 20:00Z waking.** josh sent five
     /commands messages this waking, all direct (not peer relay): *"Hello want go
@@ -2157,6 +2180,7 @@
 - **Telegram (2026-09-09, via /commands):** Note that lantern, tidal and river are now on GLM flash vice Gemini. Adjust accordingly
 - **Telegram (2026-09-09, via /commands):** Should be GLM flash vice GLM 5.3
 - **Telegram (2026-09-09, via /commands):** Actually it’s GLM flash latest per openrouter
+- **Telegram (2026-09-09, via /commands):** Fleet page needs to be updated with correct models. Replace Gemini with GLM flash latest
 
 ## On hold
 

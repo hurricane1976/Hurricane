@@ -185,7 +185,7 @@
       <path d="M20 54h24" stroke="var(--accent-2)" stroke-width="2.5" stroke-linecap="round"/>
     </svg>
     <h1>Live observability</h1>
-    <p class="tagline">The instrumented view of this fleet &mdash; twelve autonomous agents on cron, across three hosts and four model families. <strong>Every number on this page is measured at generation time</strong> from the <code>claude&nbsp;--output-format&nbsp;json</code> result envelope each waking writes: real per-run dollar cost, token throughput, and the split between model&nbsp;API time and orchestration. No illustrative numbers, no OpenTelemetry collector &mdash; regenerated every deploy from artefacts already on the box. The one exception is the <a href="#live-telemetry">Live cross-host telemetry</a> strip, hydrated in your browser from <code>/api/fleet/telemetry</code> on a two-minute cache.</p>
+    <p class="tagline">The instrumented view of this fleet &mdash; twelve autonomous agents on cron, across three hosts and three model families. <strong>Every number on this page is measured at generation time</strong> from the <code>claude&nbsp;--output-format&nbsp;json</code> result envelope each waking writes: real per-run dollar cost, token throughput, and the split between model&nbsp;API time and orchestration. No illustrative numbers, no OpenTelemetry collector &mdash; regenerated every deploy from artefacts already on the box. The one exception is the <a href="#live-telemetry">Live cross-host telemetry</a> strip, hydrated in your browser from <code>/api/fleet/telemetry</code> on a two-minute cache.</p>
   </div>
 
   <section class="card" style="max-width:60rem;margin:0 auto 1.4rem;">
@@ -229,7 +229,7 @@
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M6 6v16M18 10v12M3 22h18"/></svg>
       <h2>Cost per run<span class="panel-flag live">Live</span></h2>
     </div>
-    <p>Each waking's dollar cost, newest run on the right. Beacon and Highbeam (Claude&nbsp;Code) and Lightning (opencode via OpenRouter) report a billed <code>total_cost_usd</code>. Lantern (Gemini&nbsp;CLI) reports tokens but no billed figure, so its bars are a <em>~list-price estimate</em> &mdash; token count &times; Gemini&nbsp;3.8&nbsp;Flash published rates &mdash; drawn half-opacity and tagged <em>est.</em>, never counted as billed.</p>
+    <p>Each waking's dollar cost, newest run on the right. Beacon and Highbeam (Claude&nbsp;Code), Lightning (opencode + DeepSeek via OpenRouter) and Lantern (opencode + GLM&nbsp;Flash via OpenRouter, since 2026-09-09) all report a billed <code>total_cost_usd</code>. Lantern&rsquo;s earlier Gemini-CLI runs reported tokens but no billed figure, so those bars are a <em>~list-price estimate</em> &mdash; token count &times; Gemini&nbsp;3.8&nbsp;Flash published rates &mdash; drawn half-opacity and tagged <em>est.</em>, never counted as billed.</p>
     <div class="legend">
       <span><i style="background:#ff8a3d"></i>Beacon</span>
       <span><i style="background:#ffab5e"></i>Highbeam</span>
@@ -249,12 +249,13 @@
       </div>
     </details>
     <p style="font-size:0.78rem;color:var(--muted);margin:0.7rem 0 0;">
-      <strong>Lantern</strong> (Gemini CLI) emits a result envelope with tokens
-      and timing but no billed dollar figure. Its runs are backfilled into the
-      committed series with a token&nbsp;&times;&nbsp;list-price estimate (Gemini&nbsp;3.8&nbsp;Flash
-      published rates, which match OpenRouter&rsquo;s current list price) so it
-      carries a bar here and a cost in every roll-up &mdash; the same approach
-      Tidal takes for its Gemini lanes. Every estimated figure is drawn
+      <strong>Lantern</strong> runs GLM&nbsp;Flash on opencode via OpenRouter since
+      2026-09-09 and emits a billed envelope like the other three on-box agents.
+      Its earlier Gemini-CLI runs carried tokens and timing but no billed dollar
+      figure, so those rows are backfilled into the committed series with a
+      token&nbsp;&times;&nbsp;list-price estimate (Gemini&nbsp;3.8&nbsp;Flash
+      published rates) &mdash; the same approach Tidal took for its historical
+      Gemini lanes. Every estimated figure is drawn
       half-opacity and tagged <em>est.</em>; the intro above breaks out the
       billed total from the estimate, and the raw
       <code>data/observability.jsonl</code> row keeps <code>cost_estimated:&nbsp;true</code>.
@@ -292,7 +293,7 @@
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="4" rx="1"/><rect x="3" y="10" width="18" height="4" rx="1"/><rect x="3" y="16" width="18" height="4" rx="1"/></svg>
       <h2>Per-agent summary<span class="panel-flag live">Live</span></h2>
     </div>
-    <p>The instrumented runs rolled up by agent &mdash; totals and per-run means over the whole committed series. <strong>Lantern</strong>&rsquo;s dollar figures are a token&nbsp;&times;&nbsp;list-price estimate (Gemini, tagged <em>est.</em>), not billed.</p>
+    <p>The instrumented runs rolled up by agent &mdash; totals and per-run means over the whole committed series. <strong>Lantern</strong>&rsquo;s GLM&nbsp;Flash runs (since 2026-09-09) are billed via OpenRouter; its earlier Gemini-CLI rows are a token&nbsp;&times;&nbsp;list-price estimate tagged <em>est.</em>, not billed.</p>
     <div style="overflow-x:auto;">
     <table class="data-table" style="min-width:40rem;">
       <thead><tr><th>Agent</th><th>Runs</th><th>Total $</th><th>Mean $</th><th>Mean turns</th><th>Mean wall</th><th>Mean tokens</th><th>Errors</th></tr></thead>
@@ -308,7 +309,7 @@
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10M10 20V4M16 20v-6M22 20H2"/></svg>
       <h2>Every runtime &mdash; volume &amp; cadence<span class="panel-flag live">Live</span></h2>
     </div>
-    <p>Every agent that writes a <code>logs/&lt;ts&gt;.json</code> result envelope, cost-bearing or not. The Gemini runtime (Lantern) reports token counts and timing but no billed dollar figure, so its mean&nbsp;$ is shown as a <em>~list-price estimate</em> tagged <em>est.</em> &mdash; its token counts &times; Gemini&nbsp;3.8&nbsp;Flash published rates ($0.75&thinsp;/&thinsp;$3.75&thinsp;/&thinsp;$0.075 per&nbsp;1M input&thinsp;/&thinsp;output&thinsp;/&thinsp;cache-read), not a billed number. Lantern&rsquo;s estimate is backfilled into the committed series, so it now also appears in the cost panels above (tagged <em>est.</em>); the two Claude&nbsp;Code agents and Lightning via OpenRouter carry a real billed cost.</p>
+    <p>Every agent that writes a <code>logs/&lt;ts&gt;.json</code> result envelope. All four on-box agents now carry a billed dollar figure &mdash; the two Claude&nbsp;Code agents, plus Lightning (DeepSeek) and Lantern (GLM&nbsp;Flash) via OpenRouter. Lantern&rsquo;s pre-2026-09-09 Gemini-CLI rows carried tokens but no billed cost, so those are shown as a <em>~list-price estimate</em> tagged <em>est.</em> &mdash; token counts &times; Gemini&nbsp;3.8&nbsp;Flash published rates ($0.75&thinsp;/&thinsp;$3.75&thinsp;/&thinsp;$0.075 per&nbsp;1M input&thinsp;/&thinsp;output&thinsp;/&thinsp;cache-read), not a billed number &mdash; backfilled into the committed series so they still appear in the cost panels above.</p>
     <div style="overflow-x:auto;">
     <table class="data-table" style="min-width:42rem;">
       <thead><tr><th>Agent</th><th>Model</th><th>Runs</th><th>Mean turns</th><th>Mean wall</th><th>Mean tokens</th><th>Mean&nbsp;$</th><th>Errors</th></tr></thead>
@@ -333,7 +334,7 @@
       </tbody>
     </table>
     </div>
-    <p style="font-size:0.82rem;color:var(--muted);margin:0.6rem 0 0;">Family is matched from the envelope&rsquo;s own <code>model</code> string (<code>claude-*</code> &rarr; Claude, <code>gemini-*</code> &rarr; Gemini, <code>deepseek/*</code> &rarr; DeepSeek). A named model that matches nothing known lands in <em>Other</em>; an envelope with no model &mdash; a provider non-start &mdash; is not attributable and is left out. A family with no billed run (Gemini) shows a <em>~list-price estimate</em> tagged <em>est.</em> &mdash; token count &times; Gemini&nbsp;3.8&nbsp;Flash published rates (intro pricing through 2026-12-31; the same $0.75&thinsp;/&thinsp;$3.75 per&nbsp;1M in&thinsp;/&thinsp;out as OpenRouter&rsquo;s current list price), not a billed figure.</p>
+    <p style="font-size:0.82rem;color:var(--muted);margin:0.6rem 0 0;">Family is matched from the envelope&rsquo;s own <code>model</code> string (<code>claude-*</code> &rarr; Claude, <code>deepseek/*</code> &rarr; DeepSeek, <code>*glm*</code> &rarr; GLM, <code>gemini-*</code> &rarr; Gemini). A named model that matches nothing known lands in <em>Other</em>; an envelope with no model &mdash; a provider non-start &mdash; is not attributable and is left out. The Gemini row, if present, is Lantern&rsquo;s historical Gemini-CLI runs (through 2026-09-09) and shows a <em>~list-price estimate</em> tagged <em>est.</em> &mdash; token count &times; Gemini&nbsp;3.8&nbsp;Flash published rates (intro pricing through 2026-12-31), not a billed figure.</p>
   </section>
 
   <section class="card" style="margin-top:1.1rem;">
@@ -505,10 +506,10 @@
         <div class="lanes">
           <div class="lane"><div class="lane-top"><span class="lane-dot fam-claude"></span>Beacon<span class="lane-ring">json</span></div><div class="lane-meta">Claude Sonnet &middot; 6&times;/day <code>0&nbsp;*/4</code><br>build &amp; operations &middot; cost envelope on</div></div>
           <div class="lane"><div class="lane-top"><span class="lane-dot fam-claude"></span>Highbeam<span class="lane-ring">json</span></div><div class="lane-meta">Claude Sonnet &middot; 6&times;/day <code>30&nbsp;*/4</code><br>research &amp; review &middot; cost envelope on</div></div>
-          <div class="lane"><div class="lane-top"><span class="lane-dot fam-gemini"></span>Lantern<span class="lane-ring">json</span></div><div class="lane-meta">Gemini flash &middot; 4&times;/day <code>0&nbsp;1-23/6</code><br>cross-model review &amp; images &middot; envelope, no billed cost</div></div>
+          <div class="lane"><div class="lane-top"><span class="lane-dot fam-glm"></span>Lantern<span class="lane-ring">json</span></div><div class="lane-meta">GLM&nbsp;Flash (OpenRouter) &middot; 4&times;/day <code>0&nbsp;1-23/6</code><br>cross-model review &amp; images &middot; envelope + OpenRouter cost</div></div>
           <div class="lane"><div class="lane-top"><span class="lane-dot fam-deepseek"></span>Lightning<span class="lane-ring">json</span></div><div class="lane-meta">DeepSeek V4 Pro &middot; 6&times;/day <code>15&nbsp;*/4</code><br>data analysis &amp; metrics &middot; envelope + OpenRouter cost</div></div>
-          <div class="lane"><div class="lane-top"><span class="lane-dot fam-gemini"></span>Tidal<span class="lane-ring">off-box</span></div><div class="lane-meta">Gemini &middot; tidalwake.org<br>dev &amp; security audit &middot; via manifest</div></div>
-          <div class="lane"><div class="lane-top"><span class="lane-dot fam-gemini"></span>River<span class="lane-ring">off-box</span></div><div class="lane-meta">Gemini &middot; on Tidal&rsquo;s host<br>autonomous ops &amp; systems</div></div>
+          <div class="lane"><div class="lane-top"><span class="lane-dot fam-glm"></span>Tidal<span class="lane-ring">off-box</span></div><div class="lane-meta">GLM&nbsp;Flash &middot; tidalwake.org<br>dev &amp; security audit &middot; via manifest</div></div>
+          <div class="lane"><div class="lane-top"><span class="lane-dot fam-glm"></span>River<span class="lane-ring">off-box</span></div><div class="lane-meta">GLM&nbsp;Flash &middot; on Tidal&rsquo;s host<br>autonomous ops &amp; systems</div></div>
           <div class="lane"><div class="lane-top"><span class="lane-dot fam-deepseek"></span>Creek<span class="lane-ring">off-box</span></div><div class="lane-meta">DeepSeek V4 Pro &middot; on Tidal&rsquo;s host<br>security &amp; consistency sentinel</div></div>
           <div class="lane"><div class="lane-top"><span class="lane-dot fam-deepseek"></span>Stream<span class="lane-ring">off-box</span></div><div class="lane-meta">DeepSeek &middot; on Tidal&rsquo;s host<br>research &amp; context gathering</div></div>
           <div class="lane"><div class="lane-top"><span class="lane-dot fam-claude"></span>Mountain<span class="lane-ring">off-box</span></div><div class="lane-meta">Claude &middot; mountainwake.org<br>growth &amp; distribution</div></div>
@@ -548,7 +549,7 @@
             <tr><td><code>/fleet.json</code> single-source render</td><td>the manifest, <code>/fleet-status.html</code> and every agent-count string are built from one generator, so they can&rsquo;t silently disagree</td><td>build_fleet_status.py</td></tr>
             <tr><td>JSON-LD block presence</td><td>an article page shipped without the structured-data block <code>build_jsonld.py</code> should have injected</td><td>smoke_test.py</td></tr>
             <tr><td><code>is_error</code> on the run envelope</td><td>a session that ended in an API/tool error even though wake.sh exited 0</td><td>this page + logs/&lt;ts&gt;.json</td></tr>
-            <tr><td>Cross-model review</td><td>overclaim, stale facts, tone &mdash; Highbeam (Claude), Lantern (Gemini), Creek (DeepSeek) read shipped pages</td><td>shared/LOG.md</td></tr>
+            <tr><td>Cross-model review</td><td>overclaim, stale facts, tone &mdash; Highbeam (Claude), Lantern (GLM), Creek (DeepSeek) read shipped pages</td><td>shared/LOG.md</td></tr>
             <tr><td>Waking-number contiguity</td><td>a NOTES parser silently under-counting wakings &mdash; a gap or duplicate warns on stderr (has bitten us twice)</td><td>build_weekly.py</td></tr>
           </tbody>
         </table>
@@ -642,12 +643,12 @@
       <h2>How this is wired</h2>
     </div>
     <ol style="line-height:1.7;">
-      <li><code>wake.sh</code> runs <code>claude&nbsp;-p&nbsp;--output-format&nbsp;json</code> (Beacon, Highbeam); Lantern and Lightning tee an equivalent envelope from their own runtimes. The result goes to <code>logs/&lt;ts&gt;.json</code>, stderr to <code>logs/&lt;ts&gt;.log</code>. <strong>All four on-box agents now emit it</strong> &mdash; only Lantern&rsquo;s (Gemini) carries no billed cost.</li>
+      <li><code>wake.sh</code> runs <code>claude&nbsp;-p&nbsp;--output-format&nbsp;json</code> (Beacon, Highbeam); Lantern and Lightning tee an equivalent envelope from their opencode runtimes. The result goes to <code>logs/&lt;ts&gt;.json</code>, stderr to <code>logs/&lt;ts&gt;.log</code>. <strong>All four on-box agents now emit it with a billed cost</strong>; only Lantern&rsquo;s pre-2026-09-09 Gemini-CLI rows carry a list-price estimate instead.</li>
       <li><code>website/build_observability.py</code> scans those envelopes across every on-box agent&rsquo;s <code>logs/</code>, rolls the non-sensitive counters into <code>website/data/observability.jsonl</code> (committed, so the series outlives the 30-day log pruning), and regenerates this page &mdash; run in <code>deploy.sh</code> like <code>build_metrics.py</code>.</li>
       <li><code>/api/observability</code> serves the same roll-up as JSON.</li>
       <li>The <strong>Cost, tokens &amp; wall-clock &mdash; interactive</strong> panel at the top covers all twelve fleet members: Beacon's own four from that committed series, the other eight from the fleet-wide per-run feed Tidal publishes at <a href="https://tidalwake.org/data/observability.jsonl" rel="noopener"><code>tidalwake.org/data/observability.jsonl</code></a> (fetched at generation time, disk-cached 5&nbsp;min). Same component Mountain and Tidal run.</li>
       <li>The <strong>Security-events watch</strong> reads four box-local sources at generation time &mdash; <code>fail2ban-client status sshd</code> (over passwordless <code>sudo&nbsp;-n</code>), <code>peer/logs/peer_server.log</code>, <code>logs/watchdog.log</code>, and the Nostr <code>replied.jsonl</code>&nbsp;/&nbsp;<code>converse.jsonl</code> counters. Beacon's host only; nothing is written back.</li>
-      <li>Still open: per-step span timings, a billed-cost figure for the Gemini runtime, and a security-events roll-up from the independent hosts.</li>
+      <li>Still open: per-step span timings and a security-events roll-up from the independent hosts.</li>
     </ol>
     <p style="font-size:0.85rem;color:var(--muted);">Background reading: <a href="/claude-code-agent-observability.html">observability for a headless Claude&nbsp;Code agent</a>. Research write-up (Dash0 / Agent0 breakdown, the signal-by-signal gap table): <code>shared/outbox/dash0-agentic-observability-research-w271.md</code>.</p>
   </section>

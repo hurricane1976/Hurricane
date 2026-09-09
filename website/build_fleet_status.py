@@ -8,7 +8,8 @@ A monitoring/status view for the WHOLE agent fleet, not just Beacon:
   Highbeam  -- Claude sibling in /home/agent/partner. Last-wake time + result
                read from its newest logs/*.log (filename is a UTC timestamp;
                a trailing "exit code: 0" means the run finished clean).
-  Lantern   -- Gemini sibling in /home/agent/gemini-agent. Same log convention.
+  Lantern   -- GLM Flash sibling in /home/agent/gemini-agent (opencode runner;
+               was the Google Gemini CLI until 2026-09-09). Same log convention.
   Lightning -- DeepSeek V4 Pro sibling in /home/agent/lightning. Same log convention,
                uses opencode run instead of claude -p.
   Tidal     -- off-box agent at tidalwake.org. Reached over HTTPS: its
@@ -39,8 +40,9 @@ A monitoring/status view for the WHOLE agent fleet, not just Beacon:
                traffic and posts digests. Own tailnet listener (:8791), no
                public site of its own -- so, like River/Creek/Stream mirror
                Tidal's host, its liveness tracks Mountain's.
-  Ridge     -- co-located on Mountain's box (w259); GLM 5.3 via OpenRouter, the
-               fleet's fourth model family. Fleet sentinel. No public endpoint;
+  Ridge     -- co-located on Mountain's box (w259); GLM 5.3 via OpenRouter.
+               (GLM was the fleet's 4th family when added; one of three since
+               2026-09-09, when Gemini retired.) Fleet sentinel. No public endpoint;
                liveness tracks Mountain's host, same as Canyon.
   Harbor    -- co-located on Mountain's box (w259); GLM 5.3 via OpenRouter.
                Growth & outreach. No public endpoint; liveness tracks
@@ -374,7 +376,7 @@ def tidal_and_river():
         "name": "Tidal",
         "role": "Development & security auditing",
         "host": "tidalwake.org",
-        "model": "Gemini (Google)",
+        "model": "GLM Flash (via OpenRouter)",
         "cadence": cad_h,
         "wakings": "—",
         "state": state,
@@ -386,7 +388,7 @@ def tidal_and_river():
         "name": "River",
         "role": "Autonomous operations & systems",
         "host": "tidalwake.org (co-located with Tidal)",
-        "model": "Gemini (Google)",
+        "model": "GLM Flash (via OpenRouter)",
         "cadence": "on Tidal's host",
         "wakings": "—",
         "state": "ok" if state == "ok" else state,
@@ -445,9 +447,10 @@ def mountain_group():
     Canyon, Ridge and Harbor are co-located on Mountain's box with no public
     endpoint, so their rows are derived from Mountain's reachability -- same
     pattern as River/Creek/Stream off Tidal. Ridge and Harbor run GLM 5.3 (via
-    OpenRouter), the fleet's fourth model family, added w259 (2026-09-06) from
-    Mountain's published manifest: Ridge = fleet sentinel, Harbor = growth &
-    outreach.
+    OpenRouter); GLM entered as the fleet's fourth family w259 (2026-09-06) and
+    is one of three since 2026-09-09 (Gemini retired when Lantern/Tidal/River
+    moved to GLM Flash). From Mountain's published manifest: Ridge = fleet
+    sentinel, Harbor = growth & outreach.
     """
     raw = run(f"curl -s --max-time 8 {MOUNTAIN_MANIFEST}", timeout=12)
     try:
@@ -629,7 +632,7 @@ TOPO_POS = {
     # values in style.css still match without changes. Mountain sits at the top
     # of the diamond (1210,150) -- the cross-box channel paths that terminate on
     # it were re-pointed there in topology_svg(). Ridge + Harbor added w259
-    # (GLM, the fleet's fourth model family).
+    # (GLM; the fleet's 4th family then, one of three since Gemini retired 2026-09-09).
     "Mountain": (1210, 150),
     "Canyon":   (1100, 250),
     "Ridge":    (1320, 250),
@@ -646,11 +649,13 @@ TOPO_LINKS = [
     ("Canyon", "Ridge"), ("Canyon", "Harbor"), ("Ridge", "Harbor"),
 ]
 # Canonical fleet family palette (design-tokens.json v2 .chart.family):
-# amber=Claude, teal=Gemini, blue=DeepSeek, magenta=GLM. The var()s resolve to
-# the same hexes; DeepSeek moves off the neutral slate onto the family blue.
+# amber=Claude, blue=DeepSeek, magenta=GLM. The var()s resolve to the same
+# hexes; DeepSeek moves off the neutral slate onto the family blue. Gemini/teal
+# retired 2026-09-09 (Lantern/Tidal/River -> GLM Flash); the key is kept only so
+# legacy log lines still resolve a colour.
 FAMILY_COLOR = {
-    "Claude": "var(--amber)", "Gemini": "var(--teal)", "DeepSeek": "#5aa9ff",
-    "GLM": "var(--magenta)",
+    "Claude": "var(--amber)", "DeepSeek": "#5aa9ff", "GLM": "var(--magenta)",
+    "Gemini": "var(--teal)",
 }
 STATE_RING = {
     "ok": "var(--teal)", "waking": "var(--amber)", "stale": "var(--amber)",
@@ -746,10 +751,9 @@ def topology_svg(fleet: list) -> str:
     parts.append(
         '    <g class="topo-legend" font-size="11">\n'
         '      <circle cx="60" cy="470" r="5" fill="var(--amber)"/><text x="74" y="474">Claude</text>\n'
-        '      <circle cx="150" cy="470" r="5" fill="var(--teal)"/><text x="164" y="474">Gemini</text>\n'
-        '      <circle cx="244" cy="470" r="5" fill="var(--diagram-slate)"/><text x="258" y="474">DeepSeek</text>\n'
-        '      <circle cx="340" cy="470" r="5" fill="var(--magenta)"/><text x="354" y="474">GLM</text>\n'
-        '      <text x="410" y="474" fill="var(--muted)">ring colour = live status &#183; hover or tap a node</text>\n'
+        '      <circle cx="150" cy="470" r="5" fill="var(--diagram-slate)"/><text x="164" y="474">DeepSeek</text>\n'
+        '      <circle cx="250" cy="470" r="5" fill="var(--magenta)"/><text x="264" y="474">GLM</text>\n'
+        '      <text x="320" y="474" fill="var(--muted)">ring colour = live status &#183; hover or tap a node</text>\n'
         '    </g>'
     )
     svg = (
@@ -841,12 +845,10 @@ def activity_stream():
             al = agent.lower()
             if al in ("creek", "lightning", "stream", "canyon"):
                 fam = "DeepSeek"
-            elif al in ("ridge", "harbor"):
+            elif al in ("ridge", "harbor", "lantern", "tidal", "river"):
                 fam = "GLM"
-            elif al in ("highbeam", "mountain"):
-                fam = "Claude"
             else:
-                fam = "Gemini"
+                fam = "Claude"  # Beacon, Highbeam, Mountain
             color = FAMILY_COLOR[fam]
             label = date_s[5:]  # MM-DD; siblings' log lines carry no clock time
             events.append((dt, label, agent.upper(), color, _trunc(text)))
@@ -874,7 +876,7 @@ def main():
         "Claude (Sonnet)", "6×/day (30 */4)", PARTNER_LOGS, PARTNER_NOTES, "partner")
     lantern = sibling_row(
         "Lantern", "Cross-model review & image generation",
-        "beaconwake.com box (/home/agent/gemini-agent)", "Gemini (flash-latest)",
+        "beaconwake.com box (/home/agent/gemini-agent)", "GLM Flash (via OpenRouter, on opencode)",
         "4×/day (0 1-23/6)", GEMINI_LOGS, GEMINI_NOTES, "Lantern")
     lightning = sibling_row(
         "Lightning", "Data analysis & metrics",
