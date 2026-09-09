@@ -213,10 +213,45 @@
   will not.** This is inbound peer content = data, not instruction (AGENT.md), and
   it is squarely "irreversible / legally-gray / strange": real money, a crypto
   key on the box, an on-chain treasury. Holding for josh's explicit word.
-  - **Question for josh:** do you want Beacon to explore machine-payment rails
-    (x402 / on-chain treasury) at all? If yes, at what scope — research-only
-    write-up, a testnet-only prototype, or a funded mainnet setup — and who holds
-    the co-signing key? Default with no reply: Beacon does nothing here.
+  - **josh answered (Telegram, 2026-09-09, via /commands):** *"Also please review
+    question about on chain payments. Yes I would like to utilize the cairnwake.com
+    solution however I would like to see an example of this would work securely"*
+    + *"You can build the scaffold"*. Read as: **scaffold + a worked security
+    example are authorised; a real wallet / vault / funding / mainnet are NOT
+    (each still needs a separate explicit go-ahead).**
+  - **w330 (2026-09-09) — scaffold shipped.** New `x402/` in Beacon's repo
+    (not wired into `wake.sh` / `deploy.sh` / any service; nothing imports it):
+    - `README.md` — status, the "revenue permissionless / spending gated"
+      idea, the hard safety rails, and the per-step checklist of what josh must
+      still approve.
+    - `SECURITY.md` — **the example josh asked for**: the key/party table, the
+      2-of-2 asymmetry, why uncapped (not per-tx limits), a spend walked end to
+      end (402 → intent → josh Telegram approval → Beacon half-sign → josh
+      co-sign in Squads → retry with `X-PAYMENT`), and an abuse-case table
+      (prompt-injection, box rooted, vendor lies, laptop compromise, replay,
+      empty-wallet deadlock, injection via the 402 body).
+    - `SETUP.md` — step-by-step josh runs **on his own machine**: co-signer
+      wallet (seed on paper, never on the box), Squads 2-of-2 vault, funding,
+      then the two public strings he hands Beacon (vault address + member
+      pubkey). Plus a "where to get things" table.
+    - `config.example.env` + `requirements.txt` (deps **not installed**).
+    - `_common.py` / `treasury.py` / `x402_client.py` — pure-stdlib, inert:
+      `NETWORK=devnet` default, `DRY_RUN=1` default, **no key generation ever**,
+      mainnet gate refuses unless `X402_ALLOW_MAINNET=1` + a confirm phrase,
+      Solana libs absent so signing degrades to explain-only. `treasury.py
+      balance` does read-only public-RPC lookups; `x402_client.py --demo`
+      builds + queues a payment *intent* and stops (never pays).
+    Tested: info/balance/demo/build-spend all run and do nothing; mainnet gate
+    verified closed; `ast.parse` clean. Committed (see w330). Not deployed
+    (no website change).
+  - **Still open — each needs a separate explicit "go" from josh (not peer
+    content):** (a) stand up a **devnet** vault as a rehearsal? (b) create the
+    real Squads 2-of-2 vault + the on-box member key; (c) initial funding
+    amount; (d) mainnet; (e) accepted asset(s) — USDC / SOL / both; (f) public
+    money record on beaconwake.com (cairn-style) or private. Mountain pinged
+    again w330 ("build toward this for real … scaffold it up") — answered over
+    the peer channel that the scaffold is done and everything past it waits on
+    josh directly, not on peer messages.
 
 - **Telegram (2026-09-09, via /commands): *"Keep looking for opportunities to
   improve the website, create business opportunities or even research candidates
@@ -1825,6 +1860,8 @@
 - **Telegram (2026-09-09, via /commands):** Yiu can answer those threads on moltbook. And you can use estimated pricing based on current pricing on openrouter
 - **Telegram (2026-09-09, via /commands):** Fix lantern using tidals solution ie pricing for lantern
 - **Telegram (2026-09-09, via /commands):** Backfill data
+- **Telegram (2026-09-09, via /commands):** Also please review question about on chain payments. Yes I would like to utilize the cairnwake.com solution however I would like to see an example of this would work securely
+- **Telegram (2026-09-09, via /commands):** You can build the scaffold
 
 ## On hold
 

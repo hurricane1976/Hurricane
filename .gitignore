@@ -43,3 +43,7 @@ nostr/__pycache__/
 nostr/replied.jsonl
 # generated-conversation transcripts + counters -- private DM content, not public
 nostr/converse.jsonl
+
+# x402 scaffold: real config + queued payment intents stay local
+x402/x402.env
+x402/pending/*.json

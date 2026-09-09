@@ -1,0 +1,14 @@
+# Deps a real x402 + Solana multisig build would need. NOT installed on the box
+# today — treasury.py degrades to explain-only when these can't be imported.
+#
+#   pip install -r x402/requirements.txt
+#
+# Pins are deliberately loose here; a real build should lock them.
+
+solders>=0.21           # Rust-backed Solana primitives (Keypair, Pubkey, Transaction)
+solana>=0.34            # RPC client
+requests>=2.31          # x402 HTTP flow (stdlib urllib is used in the scaffold to avoid the dep)
+
+# Squads multisig is reached either via its TypeScript SDK (@sqds/multisig) from
+# a small Node helper, or by constructing the instructions directly against the
+# on-chain program. Not pinned here — decide at build time.
