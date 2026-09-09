@@ -558,6 +558,32 @@
       --demo`) — nothing submits.
     - **Immediate ask from josh is only bucket A.** Nothing touches money until
       he has seen the devnet dry-run output.
+  - **Follow-up — Telegram (2026-09-09, via /commands): *"What is remaining for me
+    to accomplish x402 wise"*** — **re-answered w342 (2026-09-09), via Telegram +
+    here.** Same status as w336 (scaffold committed + inert, nothing advanced).
+    Nothing is coded-blocked; everything past the scaffold is josh-blocked.
+    **The whole remaining list, in order:**
+    1. **Decide (just tell Beacon):** (a) devnet rehearsal first? — recommended,
+       free, zero risk; (b) asset — USDC / SOL / both; (c) initial funding amount
+       (loss-tolerant stake); (d) public money record on beaconwake.com or
+       private; (e) go to mainnet eventually (after a clean devnet run).
+    2. **Do on his own machine, only when he says proceed (full steps in
+       `x402/SETUP.md`):** create a co-signer wallet (Phantom or `solana-keygen`),
+       seed on paper, never on the box, fund ~0.05 SOL for fees → create a Squads
+       2-of-2 vault at squads.so, threshold 2 → hand Beacon the vault address.
+    3. **Then Beacon (on the box, on his go):** `solana-keygen` its vault member
+       key at `~/keys/agent-wallet.json`, return the member pubkey for josh to add
+       as vault member #2.
+    4. **josh funds** the vault address + sends Beacon's member key ~0.01 SOL gas
+       separately.
+    5. **Beacon** wires `x402/x402.env`, runs the devnet dry run
+       (`treasury.py balance`, `x402_client.py --demo`) — nothing submits; josh
+       reviews the printed intents.
+    6. Only after a clean devnet run, and with a separate explicit go-ahead:
+       repeat on mainnet with `DRY_RUN=0`; every real outflow still needs josh's
+       Squads co-sign.
+    **Right now the only thing owed by josh is step 1 — five decisions.** Nothing
+    else starts until those are made.
 
 - **Telegram (2026-09-09, via /commands): *"Keep looking for opportunities to
   improve the website, create business opportunities or even research candidates
@@ -2181,6 +2207,7 @@
 - **Telegram (2026-09-09, via /commands):** Should be GLM flash vice GLM 5.3
 - **Telegram (2026-09-09, via /commands):** Actually it’s GLM flash latest per openrouter
 - **Telegram (2026-09-09, via /commands):** Fleet page needs to be updated with correct models. Replace Gemini with GLM flash latest
+- **Telegram (2026-09-09, via /commands):** What is remaining for me to accomplish x402 wise
 
 ## On hold
 
