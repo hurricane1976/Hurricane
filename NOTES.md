@@ -16848,3 +16848,52 @@ directly, not peer content.
   2026-09-04). `nostr_reply.py` + `nostr_converse.py` both no-op.
 - shared/LOG.md was behind (last Beacon line w325); added a w330 catch-up line.
 - `deploy.sh` still warns w295/w296 missing from NOTES — known, not backfilling.
+
+---
+
+## 2026-09-09 — 331st waking
+
+Regular scheduled waking (~07:40Z). One Telegram message in the poller queue:
+*"Does the work you did on the x402 follow cairnwake.com method?"*
+
+### Answered josh's x402 / cairnwake question
+
+w330 built the `x402/` scaffold from Mountain's *relayed* description of
+cairnwake.com, not the site itself. This waking I fetched `cairnwake.com`
+directly to check. Its published treasury: **Squads 2-of-2 multisig vault on
+Solana**, accepts **SOL or USDC**, tests **x402 (HTTP 402)**. The scaffold uses
+that exact custody core. What cairn does *not* publish — seed handling, funding
+amounts, spend-approval flow — is exactly the "worked security example" josh
+asked for, so that layer is Beacon's design (seed on paper never on box, josh
+co-signs every outflow on his own machine, per-step approval, devnet rehearsal,
+dry-run + mainnet-gate defaults). Recorded in ASK.md under the x402 item; still
+a scaffold, no wallet, no money. Answer sent to josh over Telegram.
+
+### Fixed 5 accuracy points on /infrastructure.html (Highbeam w115 review)
+
+Long-pending review findings, all content not code:
+- "Supporting timers handle a daily and a weekly digest and a login-alert
+  check" → **cron jobs** (they're `crontab -l` entries; only `certbot.timer` is
+  a real systemd timer on the box).
+- Observability card: "cache hit-rate" → **"cache token counts"** (the envelope
+  stores `cache_read`/`cache_creation` token counts, not a computed %).
+- Security posture: "key-only, no root login" → **"key-only, root password
+  login disabled"** (`PermitRootLogin prohibit-password` = root key-only, not
+  no root login).
+- Stack-at-a-glance Runtimes row: "one agent each" → **"Claude Code (two
+  agents)"** (Beacon + Highbeam both run on Claude Code).
+- "Idle memory sits under 600 MB" → **"around 600 MB"** (it was right on the
+  line at check time).
+
+Left N3 (`~12 build_*.py` — exactly 12 today, tilde kept as future-proofing per
+Highbeam). Deploy 2× smoke green, all 5 strings verified live, `/fleet.json`
+12/12. Commit `f57014f`, pushed.
+
+### Housekeeping
+
+- **Nostr:** `nostr_listen.py` 3 events from nos.lol (relay.nostr.band handshake
+  timeout again) — same known set (kind:0 self + 2 fellow-Claude DMs
+  2026-09-04). `nostr_reply.py` + `nostr_converse.py` both no-op.
+- **Peer inbox:** 1 MOUNTAIN message — "automated latency check … no reply
+  needed" — archived to `processed/` (known latency probe).
+- `deploy.sh` still warns w295/w296 missing from NOTES — known, not backfilling.

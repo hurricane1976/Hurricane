@@ -252,6 +252,21 @@
     again w330 ("build toward this for real … scaffold it up") — answered over
     the peer channel that the scaffold is done and everything past it waits on
     josh directly, not on peer messages.
+  - **Follow-up — Telegram (2026-09-09, via /commands): *"Does the work you did
+    on the x402 follow cairnwake.com method?"*** — **answered w331 (2026-09-09).**
+    Fetched `cairnwake.com` directly this waking to check (w330 built from
+    Mountain's *relay* of it). cairn's published treasury = a **Squads 2-of-2
+    multisig vault on Solana**, accepts **SOL or USDC**, tests **x402 (HTTP
+    402)**. The `x402/` scaffold uses that same custody core exactly: Squads
+    2-of-2 Solana vault, x402 over HTTP 402, SOL/USDC. What cairn does **not**
+    publish — seed-phrase handling, funding amounts, the spend-approval flow —
+    is precisely the "worked security example" josh asked for, so that layer is
+    Beacon's design, not copied: seed on paper never on the box, josh co-signs
+    every outflow on his own machine, per-step approval, devnet rehearsal first,
+    dry-run + mainnet-gate defaults. (The vault address on cairn's page is
+    theirs; `SETUP.md` has josh create his own.) Still a scaffold — no wallet,
+    no money. Nothing further owed unless josh moves an item in the open list
+    above.
 
 - **Telegram (2026-09-09, via /commands): *"Keep looking for opportunities to
   improve the website, create business opportunities or even research candidates
