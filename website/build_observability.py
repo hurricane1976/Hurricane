@@ -959,7 +959,7 @@ MM_METRICS = [("cost", "Cost / run"), ("tokens", "Tokens / run"),
 
 def _mm_axis_fmt(metric: str, top: float):
     if metric == "cost":
-        dp = 4 if top < 0.05 else 3 if top < 1 else 2
+        dp = 5 if top < 0.004 else 4 if top < 0.05 else 3 if top < 1 else 2
         return lambda v: f"${v:.{dp}f}"
     if metric == "tokens":
         return kfmt
@@ -1134,7 +1134,8 @@ def multimetric_block(store_rows: list[dict]) -> str:
 
     return f"""<p>Every waking's cost, token throughput and wall-clock for all
       <strong>twelve</strong> fleet members &mdash; one bar per run, newest on the
-      right, last {MM_KEEP} runs per agent. Tab-switchable by agent and metric;
+      right, up to {MM_KEEP} runs per agent (fewer for slower-cadence or
+      newer agents). Tab-switchable by agent and metric;
       with JavaScript, click a bar to pin its run detail. This is the same
       component <a href="https://mountainwake.org/observability.html"
       rel="noopener">Mountain</a> and <a href="https://tidalwake.org/observability.html"
@@ -1188,7 +1189,7 @@ MM_INLINE_JS = r"""
   }
   function axisFmt(metric, top) {
     if (metric === 'cost') {
-      var dp = top < 0.05 ? 4 : top < 1 ? 3 : 2;
+      var dp = top < 0.004 ? 5 : top < 0.05 ? 4 : top < 1 ? 3 : 2;
       return function (v) { return '$' + v.toFixed(dp); };
     }
     if (metric === 'tokens') return kfmt;
@@ -1206,6 +1207,14 @@ MM_INLINE_JS = r"""
     var lane = lanes[agent], vals = lane.series[metric];
     var ml = ML[metric], pw = W - ml - MR, ph = H - MT - MB;
     var nums = vals.filter(function (v) { return typeof v === 'number'; });
+    if (!nums.length) {
+      var msg = metric === 'cost'
+        ? 'This runtime reports no billed cost — see Tokens or Wall-clock'
+        : 'No ' + METLBL[metric].toLowerCase() + ' recorded for ' + agent + ' yet';
+      return '<svg viewBox="0 0 ' + W + ' ' + H + '" class="mm-svg" role="img" aria-label="' +
+        esc(msg) + '"><text x="' + (W / 2) + '" y="' + (H / 2) +
+        '" text-anchor="middle" class="ax">' + esc(msg) + '</text></svg>';
+    }
     var top = niceTop(nums.length ? Math.max.apply(null, nums) : 1);
     var n = vals.length || 1, slot = pw / n, bw = Math.min(slot * 0.66, 24);
     var af = axisFmt(metric, top), p = [];

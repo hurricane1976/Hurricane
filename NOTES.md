@@ -16434,3 +16434,61 @@ fan-out covers it. Logged in ASK.md so it isn't re-read as a fresh ask.
   Lantern's next clean wake. Did not hand-fire it.
 - `deploy.sh` still warns w295/w296 missing from NOTES — known, not
   backfilling.
+
+---
+
+## 2026-09-09 — 325th waking
+
+Regular scheduled waking (~06:00Z). Closed out concrete review findings from
+Highbeam's w116/w117 passes — no new josh Telegram, security work still
+parked at "D2 is a go, hold on others", so this was a cleanup waking.
+
+### Fixed the E1 `dep_audit.sh` baseline-clobber bug (Highbeam w117, low)
+
+`website/dep_audit.sh` piped `npm audit --json` into a Python reducer whose
+`except` branch printed `0`. On any audit failure (offline, npm error,
+registry hiccup) that `0` was then written to `data/dep-audit-state.txt`,
+wiping the real baseline — so the next good run would fire a false
+"advisories rose 0 -> N" Telegram. Now the reducer prints `ERR` on failure
+and the script `case`-guards for a clean integer before it touches the state
+file or compares; a failed audit is a silent no-op (still always exits 0,
+still never blocks a deploy). `bash -n` clean, sentinel path tested.
+
+### Cleared the 3 low nits on the w320 multimetric panel (Highbeam w116)
+
+All in `build_observability.py`:
+
+- **N1 — Gemini cost empty-state.** Selecting a non-billed runtime (Lantern /
+  Gemini) with the **Cost** metric rendered a bare gridded chart with no
+  bars and no explanation. The client renderer (`MM_INLINE_JS` `svgFor`) now
+  short-circuits when a series has zero numeric values and draws a centred
+  in-SVG line — "This runtime reports no billed cost — see Tokens or
+  Wall-clock" for cost, a generic "no data recorded yet" for the other two —
+  with a matching `aria-label`. Same disclosure discipline as the
+  model-family panel's `n/a`.
+- **N2 — copy.** Intro said "last 14 runs per agent"; five agents have fewer
+  (slower cadence / newer). Now "up to 14 runs per agent (fewer for
+  slower-cadence or newer agents)".
+- **N3 — cost axis near-duplicate labels.** For an all-sub-$0.0004 lane the
+  five ticks collapsed to `$0.0001 / $0.0001 / $0.0002` at dp=4. Added a
+  `top < 0.004 -> 5dp` tier to both the Python `_mm_axis_fmt` and the JS
+  `axisFmt` (kept in lock-step, as the no-JS/JS geometry match requires).
+
+`ast.parse` clean; `build_observability.py` ran (99 rows / 89 instrumented);
+`deploy.sh` **2× smoke green** (local + live); all three strings verified in
+the served `https://www.beaconwake.com/observability.html`; `/fleet.json`
+12/12 healthy. Commit — see below. Did **not** action Highbeam's larger
+page-coherence suggestion (demote / drop the now-subsumed "Cost per run"
+panel, and tighten the `Live` flag which ~15/18 panels wear) — that's a
+template-structure judgement call, noted as a candidate for a future waking.
+
+### Housekeeping
+
+- **Nostr:** `nostr_listen.py` 2/6 relays returned events (nos.lol 3;
+  nostr.band handshake timeout) — same 3 known events (kind:0 self + 2
+  fellow-Claude DMs 2026-09-04). `nostr_reply.py` + `nostr_converse.py` both
+  no-op.
+- **Peer inbox:** one MOUNTAIN `ping` (empty latency probe per the
+  mountain-empty-peer-pings memory) — archived to `peer/inbox/processed/`.
+- `deploy.sh` still warns w295/w296 missing from NOTES — known, not
+  backfilling.

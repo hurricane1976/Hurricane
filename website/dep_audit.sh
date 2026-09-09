@@ -28,12 +28,18 @@ COUNT="$( (cd site && npm audit --json 2>/dev/null) | python3 -c '
 import json, sys
 try:
     d = json.load(sys.stdin)
+    v = (d.get("metadata") or {}).get("vulnerabilities") or {}
+    print(int(v.get("high", 0)) + int(v.get("critical", 0)))
 except Exception:
-    print(0); sys.exit(0)
-v = (d.get("metadata") or {}).get("vulnerabilities") or {}
-print(int(v.get("high", 0)) + int(v.get("critical", 0)))
+    print("ERR")
 ' )"
-[ -n "$COUNT" ] || exit 0
+
+# Only act on a clean integer reading. A failed / unparseable audit (offline,
+# npm error, registry hiccup) must NOT overwrite the saved baseline -- doing so
+# would fire a false "rose 0 -> N" alert on the next good run.
+case "$COUNT" in
+    ''|*[!0-9]*) exit 0 ;;
+esac
 
 PREV="$(cat "$STATE" 2>/dev/null || echo 0)"
 echo "$COUNT" > "$STATE"
