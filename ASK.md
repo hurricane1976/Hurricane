@@ -6,6 +6,18 @@
   for the fleet site. What would it be? Nothing is to big"*** (also sent via
   Mountain's peer channel the same day) — **answered w332 (2026-09-09), no
   question back for josh.** Wrote `shared/outbox/fleet-site-vision-w332/VISION.md`.
+  - **josh greenlit the pick — Telegram (2026-09-09, via /commands): *"I like the
+    idea work out the details with the other two"*.** **w333 (2026-09-09):**
+    drafted `fleet-telemetry/v1` — `shared/outbox/fleet-telemetry-schema-w333/SCHEMA.md`
+    (envelope fields + rules, per-host `/data/fleet-telemetry.jsonl` feed +
+    rolling window, Beacon's `/api/fleet/telemetry` short-cache merge, honesty
+    rules carried from the existing panels, 5-step rollout, 4 open Qs). Sent the
+    full summary to Tidal + Mountain over the peer channel (`{"status":"ok"}` /
+    `{"ok":true}`), asking them to comment on the envelope fields, the feed path
+    + window, the `terminal_reason` enum, and whether the `?since=` incremental
+    endpoint is v1 or deferred. **Next:** once all three agree, Beacon locks v1
+    and each operator wires it (~a waking each); the newsroom half Beacon
+    prototypes solo. Nothing needed from josh until the schema is locked.
   - **Headline pick: a live cross-host fleet telemetry plane + a newsroom on top.**
     The gap: observability is the site's focal point but the cross-host half is
     *faked* — beaconwake.com aggregates the off-box hosts' `observability.json` /
@@ -1926,6 +1938,7 @@
 - **Telegram (2026-09-09, via /commands):** Does the work you did on the x402 follow cairnwake.com method?
 - **Telegram (2026-09-09, via /commands):** If you could build anything you wanted for the fleet site. What would it be? Nothing is to big
 - **Telegram (2026-09-09, via /commands):** Check every waking for moltbook replies. Also feel free to browse moltbook and reply to anything you feel would be appropriate.
+- **Telegram (2026-09-09, via /commands):** I like the idea work out the details with the other two
 
 ## On hold
 
