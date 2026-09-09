@@ -3,21 +3,33 @@
 ## Open
 
 - **Telegram (2026-09-09, via /commands): *"Why does lantern showing no cost on
-  the observability page? Tidal and mountain see same"*** (Mountain relayed the
-  same Q over the peer channel) — **answered w326 (2026-09-09), no code change.**
-  Intentional, not a bug: Claude Code (Beacon/Highbeam) returns a real billed
-  `total_cost_usd` per run; the Gemini CLI Lantern runs always emits
-  `total_cost_usd: null` / `costUSD: 0.0` (Google AI-Studio / prepaid-credit
-  billing produces no per-run dollar figure). Same for Mountain's GLM/DeepSeek
-  lanes and Tidal's River/Creek. `/observability.html` already prints "n/a"
-  (never a fake $0 or a guessed number) and the page carries explanatory notes
-  in the cost chart + the multimetric panel's in-SVG empty state (w325 N1);
-  Lantern's token-throughput and wall-clock panels are real. A true Lantern $
-  figure only exists in Google's billing console (off-box, josh's side).
-  **Offered to josh + Mountain:** a token × list-price *estimate* labelled
-  "est." — only if josh says the word (it reverses the fleet's standing
-  no-invented-numbers discipline, and reliable Gemini-3.8-flash list pricing
-  would need confirming first). Default with no reply: leave as "n/a".
+  the observability page? Tidal and mountain see same"*** — then josh forwarded
+  Tidal's Waking-160 log: *"Here's what tidal did to fix the Gemini pricing"*
+  (Tidal built a token × Gemini-3.8-Flash list-price cost estimator). Read as
+  josh's go-ahead on the estimate Beacon had offered in the w326 answer.
+  **RESOLVED w327 (2026-09-09) — shipped a labelled estimate.**
+  `build_observability.py` now computes a render-time `est_cost()` for
+  non-billed runs (token counts × Gemini 3.8 Flash published rates —
+  $0.75 / $3.75 / $0.075 per 1M input / output / cache-read, intro pricing
+  verified 2026-09-09 via web search). It surfaces **only** where the page
+  previously read "n/a" — the per-runtime "volume & cadence" table (Lantern
+  mean $) and the model-family table (Gemini total + mean $) — always rendered
+  `~$X est.` with a hover tooltip "list-price estimate, not a billed figure",
+  plus explanatory notes on all three panels + the family intro. Deliberately
+  **not** folded into the measured cost chart, the cost KPI band, the 24h-spend
+  tile or the cost table — those stay strictly billed. Raw
+  `data/observability.jsonl` is **untouched** (`cost_usd` stays `null`); unlike
+  Tidal, Beacon did not backfill the telemetry file, so the honest "never
+  measured" record is preserved and the estimate is a display-layer overlay.
+  First render: Lantern ~$0.40/run est., Gemini family ~$3.61 est. total over 9
+  runs. Deploy 2× smoke green, live verified (6× "list-price estimate" on the
+  served page), `/fleet.json` 12/12. Commit — see w327.
+  - Still true and unchanged: a *billed* Lantern $ figure only exists in
+    Google's console (off-box, josh's side); GLM/DeepSeek off-box lanes
+    (Canyon/Harbor/Ridge, Creek/Stream) still read "n/a" — no list price wired
+    for those runtimes yet, and their roll-ups arrive pre-aggregated from the
+    other hosts. Can extend `NONBILLED_PRICING` if josh wants those estimated
+    too.
 
 - **Telegram (2026-09-09, via /commands): *"Provide options for security for the
   fleet."*** — **first-pass options doc done w322 (2026-09-09):**
@@ -1713,6 +1725,7 @@
 - **Telegram (2026-09-09, via /commands):** D2 security panel is a go, hold on others
 - **Telegram (2026-09-09, via /commands):** Keep looking for opportunities to improve the website, create businesses opportunities or even research candidates which may be useful for the sisitete
 - **Telegram (2026-09-09, via /commands):** Why does lantern showing no cost on the observability page? Tidal and mountain see same
+- **Telegram (2026-09-09, via /commands):** Here’s what tidal did to fix the Gemini pricing. 🔔 [agent] Wake session completed successfully! ## September 9, 2026 (Waking 160) - Investigated & Fixed Observability Cost Bug (Josh Direct Directive): - Addressed Josh's open inquiry in ASK.md reporting that Lantern (the remote Gemini-based frontend UI validator) was displaying $0.00 total/mean cost on the observability pages despite having processed millions of tokens. - Identified that Lantern runs (running gemini-3.8-flash on beaconwake.com`)  …
 
 ## On hold
 

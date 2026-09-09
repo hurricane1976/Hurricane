@@ -337,6 +337,41 @@ def _tok_total(r: dict) -> int:
             + (r.get("input_tokens") or 0) + (r.get("output_tokens") or 0))
 
 
+# List-price ESTIMATE for runtimes whose result envelope carries token counts
+# but no billed dollar figure (Gemini CLI -> total_cost_usd: null). USD per 1M
+# tokens, from Google AI Studio's published rates (Gemini 3.8 Flash intro
+# pricing, in effect through 2026-12-31; verified 2026-09-09). This yields an
+# ESTIMATE only -- always rendered with a leading ~ and an "est." tag, and never
+# folded into the measured cost chart, the cost KPIs or the cost table, which
+# stay strictly billed. Same discipline Tidal adopted for its Gemini lanes.
+NONBILLED_PRICING = {
+    "gemini-3.8-flash": {"in": 0.75, "out": 3.75, "cache_read": 0.075, "cache_write": 0.04167},
+}
+
+
+def est_cost(r: dict):
+    """USD list-price estimate for a run that reports tokens but no billed
+    cost, or None when the run is billed / the model is unpriced / no tokens."""
+    if isinstance(r.get("cost_usd"), (int, float)):
+        return None
+    p = NONBILLED_PRICING.get(str(r.get("model") or "").lower())
+    if not p:
+        return None
+    it = r.get("input_tokens") or 0
+    ot = r.get("output_tokens") or 0
+    cr = r.get("cache_read_tokens") or 0
+    cw = r.get("cache_creation_tokens") or 0
+    if not (it or ot or cr or cw):
+        return None
+    return (it * p["in"] + ot * p["out"]
+            + cr * p["cache_read"] + cw * p["cache_write"]) / 1_000_000
+
+
+def _est_tag(html: str) -> str:
+    return f'<span title="list-price estimate, not a billed figure">~{html} ' \
+           '<span style="color:var(--muted);font-style:normal;">est.</span></span>'
+
+
 def _label(r: dict) -> str:
     return r["ts"][5:16].replace("T", " ")
 
@@ -728,8 +763,12 @@ def all_agent_summary(rows: list[dict]) -> str:
         k = len(rs)
         model = next((r.get("model") for r in reversed(rs) if r.get("model")), None)
         costs = [r["cost_usd"] for r in rs if isinstance(r.get("cost_usd"), (int, float))]
-        mc = fmt_cost(sum(costs) / len(costs)) if costs else \
-            '<span style="color:var(--muted);">n/a</span>'
+        if costs:
+            mc = fmt_cost(sum(costs) / len(costs))
+        else:
+            ests = [e for e in (est_cost(r) for r in rs) if e is not None]
+            mc = _est_tag(fmt_cost(sum(ests) / len(ests))) if ests else \
+                '<span style="color:var(--muted);">n/a</span>'
         durs = [r["duration_ms"] for r in rs if isinstance(r.get("duration_ms"), (int, float))]
         mw = fmt_dur(sum(durs) / len(durs)) if durs else "&mdash;"
         tt = sum((r.get("turns") or 0) for r in rs) / k
@@ -792,11 +831,20 @@ def model_family_table(rows: list[dict]) -> str:
         k = len(rs)
         agents = ", ".join(sorted({r["agent"] for r in rs}))
         costs = [r["cost_usd"] for r in rs if isinstance(r.get("cost_usd"), (int, float))]
-        tc = fmt_cost2(sum(costs)) if costs else muted
         # Mean $/run divides by every run in the family (k), not just the billed
         # ones, so this column stays "Total $ / Runs" -- consistent with the two
-        # neighbouring means. A family with no billed run at all reads n/a.
-        mc = fmt_cost(sum(costs) / k) if costs else muted
+        # neighbouring means. A family with no billed run falls back to a
+        # list-price estimate (marked "est."); n/a only if it can't be priced.
+        if costs:
+            tc = fmt_cost2(sum(costs))
+            mc = fmt_cost(sum(costs) / k)
+        else:
+            ests = [e for e in (est_cost(r) for r in rs) if e is not None]
+            if ests:
+                tc = _est_tag(fmt_cost2(sum(ests)))
+                mc = _est_tag(fmt_cost(sum(ests) / k))
+            else:
+                tc = mc = muted
         tok = sum(_tok_total(r) for r in rs) / k
         tt = sum((r.get("turns") or 0) for r in rs) / k
         err = sum(1 for r in rs if r.get("is_error"))
@@ -1691,8 +1739,9 @@ def render(store_rows: list[dict]) -> str:
             f"family. <strong>{len(fam_spend)}</strong> "
             f"famil{'y' if len(fam_spend) == 1 else 'ies'} carry a billed dollar "
             f"figure and <strong>{top_fam}</strong> is <strong>{top_share:.0f}%</strong> "
-            f"of that measured spend; non-billed runtimes (Gemini) still show token "
-            f"and turn means but <em>n/a</em> for cost."
+            f"of that measured spend; non-billed runtimes (Gemini) carry a "
+            f"<em>~list-price estimate</em> tagged <em>est.</em> &mdash; token "
+            f"count &times; Gemini&nbsp;3.8&nbsp;Flash published rates, not a billed figure."
             + (f" {fam_unnamed} envelope{'s' if fam_unnamed != 1 else ''} named no "
                f"model &mdash; a provider non-start &mdash; and "
                f"{'is' if fam_unnamed == 1 else 'are'} not counted here"

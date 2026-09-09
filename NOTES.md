@@ -16537,3 +16537,60 @@ peer channel ("Why is lantern showing as no cost in observability page").
   ASK.md raw-log line are the usual automated wake-pipeline appends.
 - `deploy.sh` still warns w295/w296 missing from NOTES — known, not
   backfilling.
+
+---
+
+## 2026-09-09 — 327th waking
+
+Regular scheduled waking (~06:15Z). One steer in the queue via the Telegram
+command poller: josh forwarded **Tidal's Waking-160 log** with the line
+*"Here's what tidal did to fix the Gemini pricing"* — Tidal had built a
+token × Gemini-3.8-Flash list-price cost estimator for its non-billed lanes.
+Read as josh's go-ahead on the estimate Beacon had *offered* (and gated on
+"only if josh says the word") in the w326 answer to his "why does Lantern
+show no cost" question.
+
+### Shipped: labelled cost estimate for non-billed runtimes on /observability.html
+
+`website/build_observability.py`:
+
+- New `NONBILLED_PRICING` table + `est_cost(r)` helper — USD list-price
+  estimate from a run's stored token counts when `cost_usd is null` and the
+  model is priced. Gemini 3.8 Flash rates: **$0.75 / $3.75 / $0.075** per 1M
+  input / output / cache-read (+ $0.04167 cache-write), Google AI Studio's
+  published introductory pricing (in effect through 2026-12-31), verified this
+  waking via web search — matches the numbers Tidal used.
+- New `_est_tag()` — wraps any estimate as `~$X est.` with a hover title
+  "list-price estimate, not a billed figure".
+- Surfaced **only** where the page previously read "n/a": the per-runtime
+  "Every runtime — volume & cadence" table (Lantern's Mean $) and the
+  "Spend by model family" table (Gemini Total $ + Mean $/run). Explanatory
+  copy added to those two panels, the cost-chart note, and the family intro.
+- **Deliberately not** folded into the measured cost chart, the cost KPI band,
+  the 24h-spend tile or the cost table — those stay strictly billed. The KPI
+  math (`total_cost` / `mean_cost` / `cost_24h`) is untouched.
+
+Raw `data/observability.jsonl` is **not** modified — `cost_usd` stays `null`
+for Lantern's rows. Unlike Tidal (which backfilled all 564 of its telemetry
+records with computed costs), Beacon keeps the estimate as a display-layer
+overlay so the honest "this was never billed" record survives in the data.
+
+First render: **Lantern ~$0.40/run est.**, **Gemini family ~$3.61 est.**
+total over 9 committed runs. `ast.parse` clean; `build_observability.py` ran
+(101 rows / 91 instrumented); `deploy.sh` **2× smoke green** (local + live);
+served page carries "list-price estimate" 6×; `/fleet.json` 12/12 healthy.
+Commit — see below. ASK.md open item marked RESOLVED.
+
+GLM / DeepSeek off-box lanes (Canyon/Harbor/Ridge, Creek/Stream) still read
+"n/a" — no list price wired for those and their roll-ups arrive
+pre-aggregated. `NONBILLED_PRICING` can be extended if josh wants those too.
+
+### Housekeeping
+
+- **Nostr:** `nostr_listen.py` 3 events from nos.lol (relay.nostr.band
+  handshake timeout again) — same known set (kind:0 self + 2 fellow-Claude
+  DMs 2026-09-04). `nostr_reply.py` + `nostr_converse.py` both no-op.
+- **Peer inbox:** empty (all prior messages already archived to
+  `peer/inbox/processed/`). No new MOUNTAIN / TIDAL messages this waking.
+- `deploy.sh` still warns w295/w296 missing from NOTES — known, not
+  backfilling.

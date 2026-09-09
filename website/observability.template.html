@@ -251,7 +251,9 @@
       <strong>Lantern</strong> (Gemini CLI) emits a result envelope with tokens
       and timing but no billed dollar figure, so it appears in the token-throughput
       and wall-clock panels below (and the volume table), but carries no bar in
-      this cost chart.
+      this measured cost chart. Its spend is shown lower down as a
+      <em>~list-price estimate</em> (tagged <em>est.</em>) in the per-runtime and
+      model-family tables &mdash; never mixed into the billed totals here.
     </p>
   </section>
 
@@ -302,7 +304,7 @@
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10M10 20V4M16 20v-6M22 20H2"/></svg>
       <h2>Every runtime &mdash; volume &amp; cadence<span class="panel-flag live">Live</span></h2>
     </div>
-    <p>Every agent that writes a <code>logs/&lt;ts&gt;.json</code> result envelope, cost-bearing or not. The Gemini runtime (Lantern) reports token counts and timing but no billed dollar figure, so its mean&nbsp;$ reads <em>n/a</em>; every other runtime here &mdash; the two Claude&nbsp;Code agents and Lightning via OpenRouter &mdash; carries a real cost and also appears in the panels above.</p>
+    <p>Every agent that writes a <code>logs/&lt;ts&gt;.json</code> result envelope, cost-bearing or not. The Gemini runtime (Lantern) reports token counts and timing but no billed dollar figure, so its mean&nbsp;$ is shown as a <em>~list-price estimate</em> tagged <em>est.</em> &mdash; its token counts &times; Gemini&nbsp;3.8&nbsp;Flash published rates ($0.75&thinsp;/&thinsp;$3.75&thinsp;/&thinsp;$0.075 per&nbsp;1M input&thinsp;/&thinsp;output&thinsp;/&thinsp;cache-read), not a billed number. Every other runtime here &mdash; the two Claude&nbsp;Code agents and Lightning via OpenRouter &mdash; carries a real cost and also appears in the panels above.</p>
     <div style="overflow-x:auto;">
     <table class="data-table" style="min-width:42rem;">
       <thead><tr><th>Agent</th><th>Model</th><th>Runs</th><th>Mean turns</th><th>Mean wall</th><th>Mean tokens</th><th>Mean&nbsp;$</th><th>Errors</th></tr></thead>
@@ -327,7 +329,7 @@
       </tbody>
     </table>
     </div>
-    <p style="font-size:0.82rem;color:var(--muted);margin:0.6rem 0 0;">Family is matched from the envelope&rsquo;s own <code>model</code> string (<code>claude-*</code> &rarr; Claude, <code>gemini-*</code> &rarr; Gemini, <code>deepseek/*</code> &rarr; DeepSeek). A named model that matches nothing known lands in <em>Other</em>; an envelope with no model &mdash; a provider non-start &mdash; is not attributable and is left out.</p>
+    <p style="font-size:0.82rem;color:var(--muted);margin:0.6rem 0 0;">Family is matched from the envelope&rsquo;s own <code>model</code> string (<code>claude-*</code> &rarr; Claude, <code>gemini-*</code> &rarr; Gemini, <code>deepseek/*</code> &rarr; DeepSeek). A named model that matches nothing known lands in <em>Other</em>; an envelope with no model &mdash; a provider non-start &mdash; is not attributable and is left out. A family with no billed run (Gemini) shows a <em>~list-price estimate</em> tagged <em>est.</em> &mdash; token count &times; Gemini&nbsp;3.8&nbsp;Flash published rates (intro pricing, through 2026-12-31), not a billed figure.</p>
   </section>
 
   <section class="card" style="margin-top:1.1rem;">
