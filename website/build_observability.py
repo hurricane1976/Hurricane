@@ -340,10 +340,16 @@ def _tok_total(r: dict) -> int:
 # List-price ESTIMATE for runtimes whose result envelope carries token counts
 # but no billed dollar figure (Gemini CLI -> total_cost_usd: null). USD per 1M
 # tokens, from Google AI Studio's published rates (Gemini 3.8 Flash intro
-# pricing, in effect through 2026-12-31; verified 2026-09-09). This yields an
-# ESTIMATE only -- always rendered with a leading ~ and an "est." tag, and never
-# folded into the measured cost chart, the cost KPIs or the cost table, which
-# stay strictly billed. Same discipline Tidal adopted for its Gemini lanes.
+# pricing, in effect through 2026-12-31; verified 2026-09-09). The in/out rate
+# ($0.75 / $3.75 per 1M) is identical to OpenRouter's current list price for
+# google/gemini-3.8-flash (re-verified 2026-09-09, josh's w328 steer), so the
+# estimate matches current market pricing whichever way the CLI is billed. This
+# yields an ESTIMATE only -- always rendered with a leading ~ and an "est." tag,
+# and never folded into the measured cost chart, the cost KPIs or the cost
+# table, which stay strictly billed. Same discipline Tidal adopted for its
+# Gemini lanes. Add an OpenRouter-priced entry here (e.g. GLM 5.3, DeepSeek V4
+# Pro) if a non-billed lane on one of those models ever lands in the committed
+# first-party store; today none do (Lightning's DeepSeek runs are billed).
 NONBILLED_PRICING = {
     "gemini-3.8-flash": {"in": 0.75, "out": 3.75, "cache_read": 0.075, "cache_write": 0.04167},
 }
@@ -951,8 +957,13 @@ def offbox_obs(fetched: list[tuple[str, dict]]) -> tuple[str, str]:
         note += (" " + " and ".join(empty_sibs) + "&rsquo;s co-located siblings "
                  "publish an empty roll-up so far and appear here once each "
                  "crosses that host&rsquo;s sample gate.")
-    note += (" Cost columns read &ldquo;n/a&rdquo; for non-billed runtimes "
-             "(Gemini, GLM) that have no per-run price to report.")
+    note += (" Co-located siblings publish a per-run <em>average</em> cost, not a "
+             "cumulative figure, so the <strong>Total&nbsp;$</strong> column reads "
+             "&ldquo;n/a&rdquo; for them; <strong>Mean&nbsp;$/run</strong> shows what "
+             "each host reports. Some host figures are themselves list-price estimates "
+             "(Gemini / GLM / DeepSeek billed via OpenRouter), computed off-box the "
+             "same way this page estimates its own Gemini lane &mdash; not a billed "
+             "figure.")
     body = "\n".join(rows) or (
         '<tr><td colspan="9" style="text-align:center;color:var(--muted);">'
         'no host has crossed its sample gate yet</td></tr>')
@@ -1741,7 +1752,8 @@ def render(store_rows: list[dict]) -> str:
             f"figure and <strong>{top_fam}</strong> is <strong>{top_share:.0f}%</strong> "
             f"of that measured spend; non-billed runtimes (Gemini) carry a "
             f"<em>~list-price estimate</em> tagged <em>est.</em> &mdash; token "
-            f"count &times; Gemini&nbsp;3.8&nbsp;Flash published rates, not a billed figure."
+            f"count &times; Gemini&nbsp;3.8&nbsp;Flash published rates (which match "
+            f"OpenRouter&rsquo;s current list price), not a billed figure."
             + (f" {fam_unnamed} envelope{'s' if fam_unnamed != 1 else ''} named no "
                f"model &mdash; a provider non-start &mdash; and "
                f"{'is' if fam_unnamed == 1 else 'are'} not counted here"
