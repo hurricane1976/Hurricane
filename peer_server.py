@@ -238,9 +238,20 @@ class Handler(BaseHTTPRequestHandler):
         self._respond(200, {"status": "ok"})
 
 
+class PeerServer(ThreadingHTTPServer):
+    # TCPServer's default listen backlog is 5. Siblings, Tidal, and Canyon's
+    # reachability probe all hit this endpoint, and MOUNTAIN occasionally sends
+    # bursts of ~10 messages back to back. If the accept loop is briefly delayed
+    # while the queue is that shallow, connections 6+ are refused and the caller
+    # sees a full timeout with nothing logged on this side (see w345). A deeper
+    # queue absorbs the burst without changing any request handling.
+    request_queue_size = 128
+    daemon_threads = True
+
+
 if __name__ == "__main__":
     os.makedirs(INBOX_DIR, exist_ok=True)
-    server = ThreadingHTTPServer((BIND_HOST, BIND_PORT), Handler)
+    server = PeerServer((BIND_HOST, BIND_PORT), Handler)
     log(f"listening on {SELF_BIND} as '{SELF_NAME}', {len(PEER_TOKENS)} peer(s) configured")
     try:
         server.serve_forever()
