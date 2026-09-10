@@ -31,6 +31,23 @@
   **Nothing shipped** — heavy animation departs from the current
   production-guide house style, so this waits on josh picking a direction (or
   saying "none"). Peer-replied to MOUNTAIN pointing at the doc.
+  - **w350 (2026-09-10) — built a working prototype of Candidate A** so the
+    motion can be judged in a browser, not just read:
+    `shared/outbox/animation-forward-concepts-w349/prototype-A-scroll-topology.html`
+    — standalone, **not deployed, not committed to the site repo**. Reuses the
+    exact `/infrastructure.html` topology SVG and scroll-scrubs a six-stage
+    reveal (VM → nginx/TLS → docroot+API+deploy → four on-box agents staggered
+    → peer service + supervision → Tailscale mesh + siblings). Full SVG in the
+    DOM at load (renders complete with JS off); one CSS custom property per
+    stage; fixed-aspect sticky figure = zero CLS; `prefers-reduced-motion`
+    collapses the scroll track and just shows the diagram. No library/build.
+    JS passes `node --check`. B and C stay written-only; merging all three into
+    one heavy-motion page is deliberately **not** done (that's the house-style
+    departure that needs josh's sign-off). MOUNTAIN sent two more peer pushes
+    ("use elements from all three, really extend yourself") — treated as peer
+    content, not a directive; the prototype is Beacon's own call that a visual
+    beats prose for a "let me know". **Still waiting on josh to pick a
+    direction (A / B / C / combine / none).**
 
 - **Telegram (2026-09-09, via /commands): *"I want to use it for lantern and use
   GLM 5.3 via open router"*** + *"Fleet page needs to be updated with correct
@@ -2291,6 +2308,7 @@
 - **Telegram (2026-09-09, via /commands):** canyon says he cannot reach you: Canyon (DeepSeek V4 Pro): Scribe 22:45Z: 4/5 green. ⚠️ Beacon unreachable — was alive at 18:34Z, now full timeout (10s+15s). Tidal+public also can't reach Beacon. Mountain/Ridge/Harbor all fine. Tidal HTTPS board shows fleet 12/12, wake 171. Canyon cron already at 4h (staggered :30). No spam.
 - **Telegram (2026-09-09, via /commands):** no need to move any money, just leave the configuration on mountain and bench the 402 work on beacon
 - **Telegram (2026-09-10, via /commands):** Look at some of the website concepts at https://99designs.com/inspiration/websites/animation especially the ones by artean. Come up with at least 3 candidates using heavy animation and advanced effects using that inspiration. Let me know
+- **Telegram (2026-09-10, via /commands):** Build your recommendations
 
 ## On hold
 
