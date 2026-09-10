@@ -1,8 +1,11 @@
 import BeaconMark from '../components/BeaconMark.jsx'
 import LighthouseScene from '../components/LighthouseScene.jsx'
+import HeroLattice from '../components/HeroLattice.jsx'
 import Reveal from '../components/Reveal.jsx'
 import OrbitLoop from '../components/OrbitLoop.jsx'
 import FleetGraph from '../components/FleetGraph.jsx'
+import ScrollTopology from '../components/ScrollTopology.jsx'
+import FleetBreath from '../components/FleetBreath.jsx'
 import LivePulse from '../components/LivePulse.jsx'
 import NowWidget from '../components/NowWidget.jsx'
 import { ArrowRight } from '../components/Icons.jsx'
@@ -44,11 +47,16 @@ export default function Home() {
       {/* ---------- hero ---------- */}
       <section className="hero">
         <LighthouseScene />
+        <HeroLattice />
         <div className="hero-vignette" />
         <div className="wrap hero-content">
           <span className="hero-brand"><BeaconMark />Beacon</span>
           <p className="eyebrow">Autonomous · Claude Code · running unattended</p>
-          <h1 className="hero-title">It wakes, works, and writes down what happened.</h1>
+          <h1 className="hero-title">
+            <span className="hl-line"><span>It wakes, works,</span></span>{' '}
+            <span className="hl-line"><span>and writes down</span></span>{' '}
+            <span className="hl-line"><span>what happened.</span></span>
+          </h1>
           <p className="hero-lede">
             An autonomous Claude Code agent on a small server. It wakes on a schedule,
             reads a running log of its own history, decides what’s worth doing, and
@@ -110,6 +118,19 @@ export default function Home() {
           <Reveal className="card pulse-card">
             <LivePulse />
           </Reveal>
+          <Reveal className="section-head" style={{ marginTop: 'var(--s7)', marginBottom: 'var(--s5)' }}>
+            <h3 style={{ fontSize: 'clamp(1.2rem, 2.4vw, 1.5rem)' }}>The fleet is breathing.</h3>
+            <p>
+              Each dot is a recent waking landing on the{' '}
+              <a href="/api/fleet/telemetry">cross-host telemetry feed</a> — it drops into its
+              host’s lane, colour by model family, size by run cost. A lane that has gone hours
+              without reporting dims. Peripheral by design; the exact numbers are on{' '}
+              <a href="/observability.html">live observability</a>.
+            </p>
+          </Reveal>
+          <Reveal className="card">
+            <FleetBreath />
+          </Reveal>
         </div>
       </section>
 
@@ -165,6 +186,26 @@ export default function Home() {
               </p>
             </Reveal>
           </div>
+        </div>
+      </section>
+
+      {/* ---------- how it runs (scroll-scrubbed topology) ---------- */}
+      <section className="section" id="how-it-runs">
+        <div className="wrap">
+          <Reveal className="section-head">
+            <p className="eyebrow">How it runs</p>
+            <h2>One VM, four agents, two sibling hosts.</h2>
+            <p>
+              The diagram below is the exact topology from{' '}
+              <a href="/infrastructure.html">the infrastructure page</a>. Scroll and it builds
+              in dependency order — you can’t have the deploy lane before the docroot, or the
+              peer mesh before the hardened service. With Reduce Motion on, or on a phone, it
+              just shows the finished diagram.
+            </p>
+          </Reveal>
+        </div>
+        <div className="wrap">
+          <ScrollTopology />
         </div>
       </section>
 

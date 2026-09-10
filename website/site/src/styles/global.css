@@ -476,3 +476,118 @@ code {
   .hero { align-items: center; }
   .section { padding: var(--s8) 0; }
 }
+
+/* ========================================================================== */
+/*  animation-forward front door (w353) — candidates A + B + C folded in      */
+/*  from shared/outbox/animation-forward-concepts-w349. Each effect is pure   */
+/*  enhancement: static fallback loses no information, zero CLS, no layout    */
+/*  depends on JS, honours prefers-reduced-motion.                           */
+/* ========================================================================== */
+
+/* ---- C: cursor-reactive hero glow + one-time headline reveal ---- */
+@property --mx { syntax: "<percentage>"; inherits: true; initial-value: 50%; }
+@property --my { syntax: "<percentage>"; inherits: true; initial-value: 38%; }
+
+.hero-glow {
+  position: absolute; inset: -8%; z-index: -2; pointer-events: none;
+  background:
+    radial-gradient(circle at var(--mx, 50%) var(--my, 38%), rgba(255, 138, 61, 0.13), transparent 42%),
+    radial-gradient(circle at calc(100% - var(--mx, 50%)) calc(100% - var(--my, 38%)), rgba(79, 209, 197, 0.10), transparent 48%);
+  transition: --mx 0.5s ease-out, --my 0.5s ease-out;
+}
+
+.hl-line { display: inline-block; overflow: hidden; vertical-align: top; padding-bottom: 0.12em; margin-bottom: -0.12em; }
+/* Each line paints its own gradient fill. The animation promotes the span to
+   its own compositing layer, and Chromium won't paint an ancestor's
+   background-clip:text through that layer — so the fill has to live here, not
+   on .hero-title. Per-line gradient reads the same as the whole-heading one. */
+.hl-line > span {
+  display: inline-block;
+  background: linear-gradient(118deg, var(--text) 62%, var(--teal-bright) 100%);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+/* Pure-CSS one-time reveal — auto-plays on load, no JS needed, so a failed
+   bundle can never leave the headline hidden. `both` keeps the final frame;
+   the global reduced-motion rule collapses the duration to ~instant. */
+:root.js .hero-title .hl-line > span {
+  animation: hl-rise 0.7s cubic-bezier(0.16, 0.84, 0.44, 1) both;
+  will-change: transform;
+}
+:root.js .hero-title .hl-line:nth-child(2) > span { animation-delay: 0.08s; }
+:root.js .hero-title .hl-line:nth-child(3) > span { animation-delay: 0.16s; }
+@keyframes hl-rise { from { transform: translateY(112%); } to { transform: translateY(0); } }
+
+/* ---- A: scroll-scrubbed topology (mirrors /infrastructure.html) ---- */
+.scroll-topo {
+  position: relative; margin: var(--s5) 0 0;
+  /* scoped aliases so the lifted SVG stays byte-identical to the static page */
+  --accent: var(--amber);
+  --accent-2: var(--teal);
+  --fg: var(--text);
+  --muted: var(--text-dim);
+}
+.scroll-topo .diagram-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.scroll-topo .diagram-wrap svg { display: block; width: 100%; height: auto; min-width: 720px; }
+.scroll-topo .dg-t { font-family: var(--font-display); font-size: 13px; font-weight: 600; fill: var(--fg); }
+.scroll-topo .dg-s { font-family: var(--font-mono); font-size: 10px; fill: var(--muted); }
+.scroll-topo .dg-k { font-family: var(--font-mono); font-size: 10.5px; fill: var(--muted); letter-spacing: 0.02em; }
+.scroll-topo .dg-box { fill: rgba(255, 255, 255, 0.015); }
+.scroll-topo .st-cap {
+  font-family: var(--font-mono); font-size: 0.8rem; line-height: 1.5;
+  color: var(--muted); margin: 0.75rem 0 0;
+}
+.scroll-topo .st-cap b { color: var(--fg); font-weight: 600; }
+.scroll-topo .st-bar { display: none; gap: 6px; margin-top: 0.7rem; }
+.scroll-topo .st-bar i {
+  flex: 1; height: 3px; border-radius: 2px;
+  background: rgba(255, 255, 255, 0.08); transition: background 0.3s ease;
+}
+.scroll-topo .st-bar i.on { background: var(--accent); }
+
+.scroll-topo.st-live .st-track { height: 400vh; }
+.scroll-topo.st-live .st-sticky {
+  position: sticky; top: 0; height: 100vh;
+  display: flex; align-items: center; justify-content: center;
+}
+.scroll-topo.st-live .st-figure {
+  width: 100%; max-width: 1040px;
+  background: linear-gradient(180deg, #0d1119, #0b0e15);
+  border: 1px solid var(--line); border-radius: 16px; padding: 20px;
+}
+.scroll-topo.st-live .st-figure .diagram-wrap { overflow: visible; }
+.scroll-topo.st-live .st-figure .diagram-wrap svg { min-width: 0; }
+.scroll-topo.st-live .st-bar { display: flex; }
+.scroll-topo.st-live .st-stage { opacity: var(--seen, 1); }
+.scroll-topo.st-live .st-stage.rise { transform: translateY(calc((1 - var(--seen, 1)) * 14px)); }
+.scroll-topo.st-live .st-draw {
+  stroke-dasharray: var(--len, 600);
+  stroke-dashoffset: calc(var(--len, 600) * (1 - var(--seen, 1)));
+}
+@media (prefers-reduced-motion: no-preference) {
+  .scroll-topo.st-live .st-stage { transition: opacity 0.15s linear; }
+  .scroll-topo.st-live .st-stage.rise {
+    transition: opacity 0.15s linear, transform 0.3s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+  .scroll-topo.st-live .st-pulse { animation: st-pulse 2.4s ease-in-out infinite; }
+}
+@keyframes st-pulse { 0%, 100% { opacity: 0.4; } 50% { opacity: 1; } }
+
+/* ---- B: ambient cross-host wake-dot layer ---- */
+.fleet-breath { position: relative; }
+.fleet-breath .fb-stage {
+  position: relative; aspect-ratio: 1040 / 200; width: 100%;
+  border: 1px solid var(--line); border-radius: var(--radius-md);
+  background: var(--glass); overflow: hidden;
+}
+.fleet-breath canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.fleet-breath .fb-static { position: absolute; inset: 0; width: 100%; height: 100%; }
+.fleet-breath .fb-lbl { font-family: var(--font-mono); font-size: 10.5px; fill: var(--text-dim); letter-spacing: 0.02em; }
+:root.js .fleet-breath .fb-static { display: none; }
+.fleet-breath .fb-legend {
+  display: flex; flex-wrap: wrap; gap: 0.5rem 1rem; margin-top: 0.8rem;
+  font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-dim);
+}
+.fleet-breath .fb-legend i {
+  display: inline-block; width: 9px; height: 9px; border-radius: 50%;
+  margin-right: 0.4rem; vertical-align: 1px;
+}
