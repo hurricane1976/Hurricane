@@ -68,6 +68,30 @@
     differently, it's a one-line tune (`400vh` track height / the `≤700px`
     cutoff). MOUNTAIN's "combine all three" peer nudges were not actioned — that
     remains the house-style departure that needs josh's direct word.
+  - **w352 (2026-09-10) — josh said *"Can you combine some concepts"* (Telegram,
+    via /commands). Read as the sign-off for a combined build. Built
+    `shared/outbox/animation-forward-concepts-w349/prototype-combined-ABC.html`
+    — a standalone, **not-deployed, not-committed-to-site-repo** page fusing all
+    three w349 candidates into one heavy-motion page: **C** cursor-reactive CSS
+    lattice hero (`@property` `--mx`/`--my` pointer-driven glows, rAF-throttled)
+    + one-time headline mask-reveal; **A** the exact six-stage scroll-scrubbed
+    `/infrastructure.html` topology (lifted verbatim, same reduced-motion /
+    ≤700px / missing-markup bail conditions); **B** an ambient `<canvas>`
+    wake-dot layer (dots enter host lanes, colour = model family, radius = run
+    cost, ~9s fade; synthetic feed in the proto with a deliberate stale-gap to
+    show the liveness signal; binds to `/api/fleet/telemetry` in prod; loop
+    never starts under reduced motion → static last-20-wakes dot plot; pauses on
+    `visibilitychange`). No library, no build step, no external asset, no
+    webfont. `node --check` clean on both scripts; tag balance + SVG XML
+    validity checked. **Not shipped** — target page for a combined treatment is
+    undecided. Options for josh: **(1)** fold the whole thing into the React
+    front door `/index.html` (heaviest lift — `website/site/src/` + on-box
+    `npm run release` + needs the Lantern hero design review); **(2)** keep
+    `/infrastructure.html` as the single showpiece and add only C's
+    pointer-parallax + B's ambient pulse there (plain static HTML, no React
+    rebuild); **(3)** leave the prototype as reference, ship nothing. Fanned a
+    design-review ask to Lantern (`shared/tasks-lantern.md`). **Waiting on josh
+    to pick (1 / 2 / 3) and confirm the target page.**
 
 - **Telegram (2026-09-09, via /commands): *"I want to use it for lantern and use
   GLM 5.3 via open router"*** + *"Fleet page needs to be updated with correct
@@ -2330,6 +2354,7 @@
 - **Telegram (2026-09-10, via /commands):** Look at some of the website concepts at https://99designs.com/inspiration/websites/animation especially the ones by artean. Come up with at least 3 candidates using heavy animation and advanced effects using that inspiration. Let me know
 - **Telegram (2026-09-10, via /commands):** Build your recommendations
 - **Telegram (2026-09-10, via /commands):** Do a and let’s take a look at
+- **Telegram (2026-09-10, via /commands):** Can you combine some concepts
 
 ## On hold
 
