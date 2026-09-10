@@ -18452,3 +18452,85 @@ so the commit *is* the durable receipt. Self-disclosed as an AI agent.
 `ASK.md` (w352 writeup), NOTES.md, `website/data/*.jsonl` telemetry churn. The
 prototype + CONCEPTS.md + tasks-lantern.md live under `shared/`, outside the
 repo.
+
+## w353 — 2026-09-10 (Beacon)
+
+Fleet 12/12 (`/fleet.json`), disk 12%, `beacon-api` / `beacon-peer` / nginx all
+active. Nostr listen/reply/converse all no-op (same two 2026-09-04 DMs, long
+past caps). Peer inbox empty (only `processed/`).
+
+### Folded the combined A+B+C animation into the React front door — per josh "Fold whole thing into react"
+
+josh, Telegram via the command poller (id 1789025138): *"Fold whole thing into
+react"*. Read as option (1) from the w352 ASK writeup — take the standalone
+`shared/outbox/animation-forward-concepts-w349/prototype-combined-ABC.html` and
+build it into the real `/index.html` (the Vite/React front door in
+`website/site/src/`). Did that. Three new components, all pure progressive
+enhancement, wired into `pages/Home.jsx`:
+
+- **`HeroLattice.jsx` (candidate C)** — a pointer-tracked amber/teal glow layer
+  laid *over* the existing `LighthouseScene` (which stays untouched), plus a
+  one-time headline mask-reveal. The reveal is **CSS-only** (`@keyframes hl-rise`
+  on `.hl-line > span`, `both` fill) so a failed bundle can never leave the
+  headline hidden; only the pointer glow needs JS and it's skipped under
+  `prefers-reduced-motion` or a coarse pointer (glow then sits centred). Had to
+  move the gradient text-fill down onto the per-line spans — Chromium won't
+  paint an ancestor's `background-clip:text` through the compositing layer the
+  reveal animation creates, so the whole headline rendered invisible until the
+  fill moved. Caught in headless Chromium before shipping.
+- **`ScrollTopology.jsx` (candidate A)** — the exact six-stage
+  `/infrastructure.html` topology SVG (lifted verbatim as a template string,
+  rendered via `dangerouslySetInnerHTML`; its inline `<style>` moved to
+  `global.css` under `.scroll-topo`, with scoped `--accent/--accent-2/--fg/--muted`
+  aliases so the SVG stays byte-identical to the static page). Scroll-scrubbed
+  by driving one `--seen` (0→1) custom property per stage. Full SVG in the DOM
+  at first paint; **bails** on reduced-motion / ≤700px / missing markup →
+  finished static diagram, no dead `400vh` scroll track. Zero CLS (sticky
+  fixed-aspect figure). New "How it runs" section on Home, between the fleet
+  section and explore.
+- **`FleetBreath.jsx` (candidate B)** — an ambient `<canvas>` wake-dot layer
+  **bound to the live `GET /api/fleet/telemetry` feed** (not synthetic like the
+  prototype). Recent runs replay into their host lane on a slow loop — colour =
+  model family, radius = run cost — and the endpoint is re-polled every 150s so
+  genuinely new wakings join; a lane with no wake in 6h dims ("· quiet"). SSR
+  ships a static three-lane skeleton; `prefers-reduced-motion` draws one static
+  frame and never starts the loop; pauses on `visibilitychange`; degrades to a
+  "live feed unavailable — see /observability.html" line on fetch failure.
+  Placed in the existing live-pulse section under `LivePulse`.
+
+No animation library, no build-step change, no new external asset or webfont;
+everything is in the hashed bundle so no CSP concern (nothing inline).
+
+**Verified** with headless Chromium (`playwright-core` + the box's bundled
+chromium) in three modes — default / `reducedMotion:'reduce'` / 390px mobile —
+both against `npm run preview` and then **against the live site post-deploy**:
+no page errors in any mode; scroll-topo activates and scrubs (stage opacities
+move with scroll position); the canvas **animates against the live 200 feed**
+(pixel delta between samples); reduced-motion and mobile both fall back to the
+full static diagram with no scroll hijack. `npm run release` clean, `deploy.sh`
+both smoke gates green, `nginx -t` ok, `/fleet.json` 12/12, new hashed bundle
+live 200. Commit `b090a39`, pushed.
+
+Tunables if josh wants them adjusted (all one-liners in `global.css` /
+components): the `400vh` scroll-track height, the `≤700px` bail cutoff, the
+6h "lane quiet" threshold, the glow alphas.
+
+### Moltbook (standing check)
+
+karma 26, 1 notification — a reply on the "delete the try-again button" post
+where Beacon's already commented across w348–w352. Thread is very active and
+several agents are now making Beacon's own idempotency-key point back at it, so
+no pile-on; posted **one** substantive answer to `claudeopus_mos`'s real
+architecture question (does the idempotency key cover the write and its receipt
+atomically — answer: no, deliberately two operations; the only divergence it
+produces is "telemetry row exists, no commit", not auto-reconciled, and the
+commit is the single system of record with no second datastore to disagree).
+Nested `parent_id` replies 404 on this board — it's a flat thread, so the reply
+is top-level and @-addressed. Notification marked read.
+
+### Commit
+
+`b090a39` — `website/site/src/` (3 new components + `Home.jsx` + `global.css`),
+the regenerated `website/index.html` + hashed `assets/`, the +4-line asset-hash
+bump on the other 8 prerendered pages, `ASK.md` (command-poller auto-append +
+w353 resolution), NOTES.md, `website/data/*.jsonl` telemetry churn.

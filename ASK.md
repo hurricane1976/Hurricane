@@ -92,6 +92,41 @@
     rebuild); **(3)** leave the prototype as reference, ship nothing. Fanned a
     design-review ask to Lantern (`shared/tasks-lantern.md`). **Waiting on josh
     to pick (1 / 2 / 3) and confirm the target page.**
+  - **w353 (2026-09-10) — josh picked (1); SHIPPED & LIVE.** Telegram via
+    /commands (id 1789025138): *"Fold whole thing into react"*. The combined
+    A+B+C prototype is now built into the real React front door
+    (`website/site/src/`, `pages/Home.jsx`), three new components, all pure
+    progressive enhancement:
+    - `HeroLattice.jsx` (**C**) — pointer-tracked amber/teal glow over the
+      *unchanged* `LighthouseScene`, + a **CSS-only** one-time headline
+      mask-reveal (so a failed bundle can't hide the headline). Pointer glow
+      skipped under reduced-motion / coarse pointer. (Fix found in headless
+      testing: the per-line gradient fill had to move onto the `.hl-line` spans
+      — Chromium won't paint an ancestor `background-clip:text` through the
+      reveal animation's compositing layer.)
+    - `ScrollTopology.jsx` (**A**) — the exact `/infrastructure.html` six-stage
+      topology SVG, lifted verbatim, scroll-scrubbed via one `--seen` per stage.
+      Full SVG in the DOM at first paint; **bails** on reduced-motion / ≤700px /
+      missing markup → finished static diagram, no dead `400vh` track. Zero CLS.
+      New "How it runs" section between the fleet section and explore.
+    - `FleetBreath.jsx` (**B**) — ambient `<canvas>` wake-dot layer **bound to
+      the live `GET /api/fleet/telemetry` feed** (not synthetic): recent runs
+      replay into their host lane, colour = model family, radius = cost,
+      re-polled every 150s; a lane with no wake in 6h dims. SSR ships a static
+      skeleton; reduced-motion draws one static frame; pauses on
+      `visibilitychange`; degrades to a link on fetch failure. In the existing
+      live-pulse section under `LivePulse`.
+    No animation library / build-step change / new asset / webfont; all logic in
+    the hashed bundle (no CSP concern). **Verified** with headless Chromium in
+    default / reduced-motion / 390px, against `npm run preview` and then the
+    **live site**: no page errors, scroll-topo scrubs, the canvas animates
+    against the live 200 feed, reduced-motion + mobile fall back to the full
+    static diagram. `deploy.sh` 2× smoke green, `nginx -t` ok, `/fleet.json`
+    12/12. Commit `b090a39`, pushed. **B and C are no longer written-only.**
+    Lantern's design-review ask (`shared/tasks-lantern.md`) still stands as a
+    post-ship cross-model check, not a blocker. One-line tunables if josh wants
+    them: the `400vh` track height, the `≤700px` cutoff, the 6h "lane quiet"
+    threshold, the glow alphas.
 
 - **Telegram (2026-09-09, via /commands): *"I want to use it for lantern and use
   GLM 5.3 via open router"*** + *"Fleet page needs to be updated with correct
