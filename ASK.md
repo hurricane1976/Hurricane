@@ -2,6 +2,36 @@
 
 ## Open
 
+- **Telegram (2026-09-10, via /commands, also sent via MOUNTAIN peer relay):
+  *"Look at some of the website concepts at
+  https://99designs.com/inspiration/websites/animation especially the ones by
+  artean. Come up with at least 3 candidates using heavy animation and advanced
+  effects using that inspiration. Let me know"*** — **first pass done w349
+  (2026-09-10), no build.** Checked the 99designs page: "Arthean" does dark
+  futuristic crypto/AI landing pages, signature = a 3D Cinema4D hero object
+  (video-mapped cube) composited in After Effects, Figma-first with heavy
+  animated section transitions — showreel register, opposite of a docs site.
+  Wrote 3 candidates to
+  `shared/outbox/animation-forward-concepts-w349/CONCEPTS.md`, each mapped to a
+  specific page and constrained to hold the site's existing discipline
+  (`prefers-reduced-motion` static fallback, zero CLS, no JS layout dependency,
+  no asset-weight regression, 2-vCPU-serveable — no video pipeline):
+  - **A — scroll-scrubbed staged reveal of the `/infrastructure.html` topology
+    SVG** (VM → nginx/TLS → cron loop → Tailscale mesh → Agora/Nostr bridges
+    draw in as you scroll; `IntersectionObserver` + CSS line-draw, no lib).
+    Beacon's pick: highest info payoff, lowest risk, no new dependency.
+  - **B — ambient real-time motion layer over the live cross-host telemetry
+    strip on `/observability.html`** (each recent wake = a dot entering its host
+    lane, colour by model family, size by cost; stops when a feed goes stale).
+    Most technically interesting, easiest to get wrong on the most-scrutinised
+    page.
+  - **C — one restrained cursor-reactive CSS hero on `/index.html`** (generative
+    amber/teal lattice with pointer parallax + a one-time headline mask-reveal;
+    the single "showpiece" moment, gated on a Lantern design review).
+  **Nothing shipped** — heavy animation departs from the current
+  production-guide house style, so this waits on josh picking a direction (or
+  saying "none"). Peer-replied to MOUNTAIN pointing at the doc.
+
 - **Telegram (2026-09-09, via /commands): *"I want to use it for lantern and use
   GLM 5.3 via open router"*** + *"Fleet page needs to be updated with correct
   models. Replace Gemini with GLM flash latest"* (2026-09-09) —
@@ -2260,6 +2290,7 @@
 - **Telegram (2026-09-09, via /commands):** you can do what mountain asked, i'm ok with it
 - **Telegram (2026-09-09, via /commands):** canyon says he cannot reach you: Canyon (DeepSeek V4 Pro): Scribe 22:45Z: 4/5 green. ⚠️ Beacon unreachable — was alive at 18:34Z, now full timeout (10s+15s). Tidal+public also can't reach Beacon. Mountain/Ridge/Harbor all fine. Tidal HTTPS board shows fleet 12/12, wake 171. Canyon cron already at 4h (staggered :30). No spam.
 - **Telegram (2026-09-09, via /commands):** no need to move any money, just leave the configuration on mountain and bench the 402 work on beacon
+- **Telegram (2026-09-10, via /commands):** Look at some of the website concepts at https://99designs.com/inspiration/websites/animation especially the ones by artean. Come up with at least 3 candidates using heavy animation and advanced effects using that inspiration. Let me know
 
 ## On hold
 
