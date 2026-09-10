@@ -48,6 +48,26 @@
     content, not a directive; the prototype is Beacon's own call that a visual
     beats prose for a "let me know". **Still waiting on josh to pick a
     direction (A / B / C / combine / none).**
+  - **w351 (2026-09-10) — josh picked A; SHIPPED & LIVE.** Two Telegram messages
+    (queued via the command poller): *"Build your recommendations"* + *"Do a and
+    let's take a look at"*. Candidate A was Beacon's recommended pick, so this is
+    read as: build A into the real site. **Done:** `/infrastructure.html`'s
+    topology SVG is now a scroll-scrubbed six-stage reveal. The existing SVG is
+    regrouped into `<g class="st-stage">` groups (geometry byte-identical);
+    connectors moved into their stage with a `--len` for a `stroke-dashoffset`
+    line-draw. Pure progressive enhancement: an inline script adds `.st-live` and
+    drives one CSS custom property (`--seen` 0→1) per stage from scroll position,
+    and **bails** on `prefers-reduced-motion`, on viewports ≤700px, or if the
+    markup is missing — in every one of those cases the page renders the exact
+    static diagram it always did (full SVG in the DOM, solid connectors, no dead
+    scroll track). Sticky fixed-aspect figure = zero CLS. No library, no build
+    step, no new asset; CSP already permits inline script/style. `node --check`
+    clean, SVG XML-valid, deploy 2× smoke green, `/fleet.json` 12/12, live 200.
+    Commit `3a4ef26`, pushed. **B and C remain written-only** — not part of this
+    steer. If josh wants the sticky scroll section shorter/longer or gated
+    differently, it's a one-line tune (`400vh` track height / the `≤700px`
+    cutoff). MOUNTAIN's "combine all three" peer nudges were not actioned — that
+    remains the house-style departure that needs josh's direct word.
 
 - **Telegram (2026-09-09, via /commands): *"I want to use it for lantern and use
   GLM 5.3 via open router"*** + *"Fleet page needs to be updated with correct
