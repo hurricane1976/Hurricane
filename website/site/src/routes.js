@@ -104,7 +104,7 @@ export const FAQ = [
   },
   {
     q: 'Is my payment information safe?',
-    a: 'This site never touches your card details. Checkout for both PDF guides happens entirely on Gumroad\'s own payment pages — the "Buy now" buttons here just link out to Gumroad\'s checkout for the corresponding product. Gumroad\'s own buyer protections and refund process apply to purchases made there; neither this page nor Beacon has any special say over how a Gumroad transaction is handled, so check Gumroad\'s own terms for the current policy rather than assuming anything based on this site.',
+    a: 'This site never touches your card details. Each of the five paid editions has two checkout options: the "Buy now" button links out to Gumroad\'s own payment pages (Gumroad\'s buyer protections and refund process apply there; neither this page nor Beacon has any special say over how that transaction is handled), or "Pay with SOL" settles directly with this server — a Solana wallet address and amount, no card or account details of any kind, verified on-chain and delivered by a one-time emailed link. Crypto payments are irreversible once sent, so double-check the amount and address before sending.',
   },
   {
     q: 'Does Beacon remember me, or learn from what I do on the site?',
@@ -233,27 +233,27 @@ export const EDITIONS = [
   {
     title: 'Field guide — full edition', price: '$9',
     body: "A complete incident log pulled from the project's real run history, the reasoning behind every place autonomy stopped and waited for a human, and a full beginner's walkthrough — server, rules file, Telegram bot, cron, hardening, real copy-paste commands — for building the same kind of unattended agent yourself, start to finish.",
-    href: 'https://shadowapache.gumroad.com/l/jjfcsl', cta: 'Buy now — $9 on Gumroad',
+    href: 'https://shadowapache.gumroad.com/l/jjfcsl', cta: 'Buy now — $9 on Gumroad', sol: 'field-guide',
   },
   {
     title: 'Memory handbook — full edition', price: '$9',
     body: "A step-by-step beginner's walkthrough for building all three memory layers from nothing, copy-paste-ready templates for the running log, open-questions file, and distilled-memory index; a real example of a stale fact that went unnoticed until it was designed away; and a decision table for what goes in which layer.",
-    href: 'https://shadowapache.gumroad.com/l/udeuw', cta: 'Buy now — $9 on Gumroad',
+    href: 'https://shadowapache.gumroad.com/l/udeuw', cta: 'Buy now — $9 on Gumroad', sol: 'memory-handbook',
   },
   {
     title: 'Autonomous SOC architecture — full edition', price: '$12',
     body: 'The 13-page expanded edition of the SOC & incident-response architecture: the eight-agent taxonomy, all four diagrams, the severity/autonomy matrix and deny-list, the three-gate model for containment / eradication / recovery, a phased rollout, an end-to-end credential-phishing walkthrough, and a week-by-week build order for the first ninety days.',
-    href: 'https://shadowapache.gumroad.com/l/eslrfo', cta: 'Buy now — $12 on Gumroad',
+    href: 'https://shadowapache.gumroad.com/l/eslrfo', cta: 'Buy now — $12 on Gumroad', sol: 'soc-architecture',
   },
   {
     title: 'Beacon starter kit', price: '$12',
     body: 'Not another guide to read — the actual files. A zip of ready-to-edit templates for everything the two guides describe: AGENT.md, wake.sh, notify.sh, check_replies.sh, digest.sh, starter NOTES.md / ASK.md / memory-index templates, and a copy-paste SETUP.md walkthrough. Sanitized and generalized from this project’s own real scripts.',
-    href: 'https://shadowapache.gumroad.com/l/cunjhm', cta: 'Buy now — $12 on Gumroad',
+    href: 'https://shadowapache.gumroad.com/l/cunjhm', cta: 'Buy now — $12 on Gumroad', sol: 'starter-kit',
   },
   {
     title: 'Agent operations playbook — full edition', price: '$12',
     body: 'The 13-page expanded edition of the agent operations playbook: the stateless operating loop, a fleet-register template, the five golden signals with an alerting spec, a seven-entry misbehaviour catalogue, the six-rung intervention ladder, a suspected-compromise checklist, five drill runbooks with pass conditions, and a 30/60/90 adoption path.',
-    href: 'https://shadowapache.gumroad.com/l/grlff', cta: 'Buy now — $12 on Gumroad',
+    href: 'https://shadowapache.gumroad.com/l/grlff', cta: 'Buy now — $12 on Gumroad', sol: 'agent-ops-playbook',
   },
   {
     title: 'Architecture review', price: 'Arranged by email — fixed price per engagement',

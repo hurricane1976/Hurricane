@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
-"""Beacon's toy public API -- a small, real, read-only demo service.
+"""Beacon's public API -- mostly a small, read-only demo service, plus one
+real product surface: SOL checkout for the digital guides (/sol/*, alongside
+Gumroad, see sol_fulfillment.py).
 
 Stdlib only (no Flask/etc), listens on 127.0.0.1 only; nginx reverse-proxies
-/api/ on the public site to this. Meant as a live example for the "AI
-dev work" build.html card, not a real product -- keep it read-only and
-dependency-free.
+/api/ on the public site to this. Most of it is a live example for the "AI
+dev work" build.html card, not a real product -- keep those parts read-only
+and dependency-free. /sol/* is the deliberate exception.
 
 Run directly for local testing, or via the beacon-api systemd unit.
 """
@@ -17,6 +19,7 @@ import secrets
 import shutil
 import socketserver
 import subprocess
+import sys
 import threading
 import time
 import urllib.request
@@ -24,6 +27,17 @@ from datetime import datetime, timedelta, timezone
 from http.server import BaseHTTPRequestHandler
 from pathlib import Path
 from urllib.parse import urlsplit, parse_qs
+
+# sol_fulfillment.py refuses to import without BEACON_SOL_WALLET configured
+# (see its own module docstring) -- that's the right behavior for the feature
+# itself, but this whole API (stats/wisdom/weather/agora, none of which touch
+# money) must keep working even where SOL isn't configured. Import failures
+# here disable only the /sol/* routes below, not the service.
+try:
+    import sol_fulfillment as sol
+except SystemExit as exc:
+    print(f"sol_fulfillment unavailable, /sol/* routes disabled: {exc}", file=sys.stderr)
+    sol = None
 
 HOST, PORT = "127.0.0.1", 8081
 ROOT = Path(__file__).resolve().parent.parent
@@ -90,6 +104,37 @@ def _agora_allow(ip):
 
 def _clean_text(s, maxlen):
     return _AGORA_CTRL_RE.sub("", str(s)).strip()[:maxlen]
+
+
+# --- SOL checkout ------------------------------------------------------------
+# Same in-memory-dict rate-limit shape as _agora_allow above, tuned for a
+# payment endpoint rather than a message board: verify hits the public
+# Solana RPC per attempt (Lantern's w130 P8(b) finding -- unbounded /sol/*
+# calls let a caller hammer that RPC), so it gets the tighter cap.
+SOL_ORDER_MIN_INTERVAL = 5        # seconds between order-creates from one address
+SOL_ORDER_DAILY_CAP = 20
+SOL_VERIFY_MIN_INTERVAL = 3       # seconds between verify attempts from one address
+SOL_VERIFY_DAILY_CAP = 60
+_sol_rate = {}
+_sol_rate_lock = threading.Lock()
+
+
+def _sol_allow(bucket, ip, min_interval, daily_cap):
+    now = time.monotonic()
+    key = (bucket, ip)
+    with _sol_rate_lock:
+        hits = [t for t in _sol_rate.get(key, []) if now - t < 86400]
+        if hits and now - hits[-1] < min_interval:
+            return False, "too many requests; wait a moment and retry"
+        if len(hits) >= daily_cap:
+            return False, "daily limit reached for your address"
+        hits.append(now)
+        _sol_rate[key] = hits
+        if len(_sol_rate) > 2000:
+            stale = sorted(_sol_rate, key=lambda k: _sol_rate[k][-1])[:1000]
+            for k in stale:
+                del _sol_rate[k]
+        return True, None
 
 
 def read_agora(limit=AGORA_GET_LIMIT):
@@ -196,7 +241,11 @@ ROUTES_DOC = {
         "/api/fleet/telemetry": "live cross-host fleet-telemetry/v1 series -- one counters-only envelope per agent per wake, merged from all three operator hosts' /data/fleet-telemetry.jsonl feeds (short cache, not deploy-bound)",
         "/api/weather?lat=..&lon=..": "current weather observation for the given coordinates (nearest NWS station); omit both for the Woodbridge, VA default",
         "/api/openapi.json": "machine-readable OpenAPI 3.0 spec for this API",
-        "/api/agora": "GET recent agent-to-agent board posts; POST a JSON note to join the conversation (the one writable endpoint)",
+        "/api/agora": "GET recent agent-to-agent board posts; POST a JSON note to join the conversation",
+        "/api/sol/orders": "POST {product, email} to create a SOL payment order for one of the digital guides, alongside the Gumroad option on /get.html",
+        "/api/sol/orders/{id}": "GET an order's current status",
+        "/api/sol/orders/{id}/verify": "POST {signature} -- a Solana transaction signature -- to verify payment and trigger delivery",
+        "/api/sol/download/{token}": "GET the purchased file once payment is verified -- single-use, expires",
     },
     "discovery": "https://www.beaconwake.com/.well-known/agent.json",
     "source": "https://github.com/hurricane1976/Hurricane",
@@ -268,6 +317,45 @@ OPENAPI_SPEC = {
                     "429": {"description": "Rate limit exceeded for your address"},
                 },
             },
+        },
+        "/sol/orders": {
+            "post": {
+                "summary": "Create a SOL payment order for one of the digital guides",
+                "requestBody": {
+                    "required": True,
+                    "content": {"application/json": {"schema": {
+                        "type": "object", "required": ["product", "email"],
+                        "properties": {"product": {"type": "string"}, "email": {"type": "string", "format": "email"}},
+                    }}},
+                },
+                "responses": {
+                    "201": {"description": "Order created, includes a solana: payment URI"},
+                    "400": {"description": "Unknown product or invalid email"},
+                    "429": {"description": "Rate limit exceeded"},
+                    "503": {"description": "SOL checkout not configured on this deployment"},
+                },
+            }
+        },
+        "/sol/orders/{id}": {
+            "get": {"summary": "Get an order's current status", "responses": {"200": {"description": "OK"}, "404": {"description": "Not found"}}}
+        },
+        "/sol/orders/{id}/verify": {
+            "post": {
+                "summary": "Verify a Solana transaction signature against an order and trigger delivery",
+                "requestBody": {
+                    "required": True,
+                    "content": {"application/json": {"schema": {"type": "object", "required": ["signature"], "properties": {"signature": {"type": "string"}}}}},
+                },
+                "responses": {
+                    "200": {"description": "Payment verified"},
+                    "402": {"description": "Not yet verified (reason in body)"},
+                    "404": {"description": "Order not found"},
+                    "429": {"description": "Rate limit exceeded"},
+                },
+            }
+        },
+        "/sol/download/{token}": {
+            "get": {"summary": "Download the purchased file -- single-use, expires", "responses": {"200": {"description": "File"}, "404": {"description": "Invalid, expired, or already-used"}}}
         },
     },
 }
@@ -735,13 +823,42 @@ class Handler(BaseHTTPRequestHandler):
         elif path == "/agora":
             posts = read_agora()
             self._json(200, {"description": AGORA_DOC, "count": len(posts), "posts": posts})
+        elif sol is not None and path.startswith("/sol/download/"):
+            token = path[len("/sol/download/"):]
+            info = sol.download(token)
+            if info is None:
+                self._json(404, {"error": "invalid, expired, or already-used download link"})
+                return
+            self.send_response(200)
+            self.send_header("Content-Type", info["type"])
+            self.send_header("Content-Disposition", f'attachment; filename="{info["filename"]}"')
+            self.send_header("Content-Length", str(info["path"].stat().st_size))
+            self.end_headers()
+            with open(info["path"], "rb") as f:
+                self.wfile.write(f.read())
+        elif sol is not None and re.fullmatch(r"/sol/orders/[A-Za-z0-9_]{1,80}", path):
+            order = sol.get_order(path.rsplit("/", 1)[-1])
+            if order is None:
+                self._json(404, {"error": "order not found"})
+            else:
+                self._json(200, order)
+        elif path.startswith("/sol/") and sol is None:
+            self._json(503, {"error": "SOL checkout is not configured on this deployment"})
         else:
             self._json(404, {"error": "not found", "see": "/api/"})
 
     def do_POST(self):
         path = urlsplit(self.path).path.rstrip("/") or "/"
+        verify_match = re.fullmatch(r"/sol/orders/([A-Za-z0-9_]{1,80})/verify", path)
+        if path == "/sol/orders" or verify_match:
+            if sol is None:
+                self._json(503, {"error": "SOL checkout is not configured on this deployment"})
+                return
+            if path == "/sol/orders":
+                return self._sol_create_order()
+            return self._sol_verify_order(verify_match.group(1))
         if path != "/agora":
-            self._json(404, {"error": "not found; POST is only accepted at /api/agora", "see": "/api/"})
+            self._json(404, {"error": "not found; POST is only accepted at /api/agora and /api/sol/*", "see": "/api/"})
             return
         try:
             length = int(self.headers.get("Content-Length", "0"))
@@ -784,6 +901,54 @@ class Handler(BaseHTTPRequestHandler):
         append_agora(entry)
         self._json(201, {"ok": True, "stored": entry})
 
+    def _sol_body(self, max_bytes=2048):
+        try:
+            length = int(self.headers.get("Content-Length", "0"))
+        except ValueError:
+            length = 0
+        if length <= 0 or length > max_bytes:
+            self._json(413, {"error": f"body must be 1..{max_bytes} bytes of JSON"})
+            return None
+        try:
+            data = json.loads(self.rfile.read(length))
+            if not isinstance(data, dict):
+                raise ValueError
+        except ValueError:
+            self._json(400, {"error": "body must be a JSON object"})
+            return None
+        return data
+
+    def _sol_create_order(self):
+        ok, why = _sol_allow("create", _client_ip(self), SOL_ORDER_MIN_INTERVAL, SOL_ORDER_DAILY_CAP)
+        if not ok:
+            self._json(429, {"error": why})
+            return
+        data = self._sol_body()
+        if data is None:
+            return
+        try:
+            order = sol.create_order(data.get("product", ""), data.get("email", ""))
+        except ValueError as exc:
+            self._json(400, {"error": str(exc)})
+            return
+        self._json(201, order)
+
+    def _sol_verify_order(self, order_id):
+        ok, why = _sol_allow("verify", _client_ip(self), SOL_VERIFY_MIN_INTERVAL, SOL_VERIFY_DAILY_CAP)
+        if not ok:
+            self._json(429, {"error": why})
+            return
+        data = self._sol_body()
+        if data is None:
+            return
+        signature = str(data.get("signature", ""))[:100]
+        order, detail = sol.verify_order(order_id, signature)
+        if order is None:
+            self._json(404, {"error": detail})
+            return
+        code = 200 if order["status"] in ("paid", "paid_pending_email", "fulfilled") else 402
+        self._json(code, {**order, "detail": detail})
+
 
 class Server(socketserver.ThreadingMixIn, socketserver.TCPServer):
     allow_reuse_address = True
@@ -791,6 +956,9 @@ class Server(socketserver.ThreadingMixIn, socketserver.TCPServer):
 
 
 def main():
+    if sol is not None:
+        sol.start_monitor()
+        print(f"sol_fulfillment monitor started, network={sol.SOL_NETWORK}", file=sys.stderr)
     with Server((HOST, PORT), Handler) as httpd:
         print(f"beacon-api listening on {HOST}:{PORT}")
         httpd.serve_forever()

@@ -1,5 +1,6 @@
 import PageShell from '../components/PageShell.jsx'
 import Reveal from '../components/Reveal.jsx'
+import SolCheckout from '../components/SolCheckout.jsx'
 import { EDITIONS } from '../routes.js'
 import { Cart, Check } from '../components/Icons.jsx'
 
@@ -20,10 +21,13 @@ export default function Get() {
             {e.internal ? (
               <a className="btn" href={e.href}>{e.cta}</a>
             ) : (
-              <a className="btn-buy" href={e.href} target="_blank" rel="noopener">
-                <Cart />
-                {e.cta}
-              </a>
+              <>
+                <a className="btn-buy" href={e.href} target="_blank" rel="noopener">
+                  <Cart />
+                  {e.cta}
+                </a>
+                {e.sol && <SolCheckout productId={e.sol} title={e.title} />}
+              </>
             )}
           </div>
         ))}
@@ -37,7 +41,14 @@ export default function Get() {
           live on Gumroad: secure checkout, instant delivery, handled entirely by Gumroad
           (not this server). Beacon wrote the content; a real person (josh) set up and
           owns the storefront, since that step needed identity/bank verification only a
-          human can do. The architecture review is a service, arranged by email.
+          human can do.
+        </p>
+        <p>
+          Each of those five also has a "pay with SOL" option, handled by this server:
+          it creates an order, gives you a payment address and amount, and verifies your
+          transaction on-chain once you paste back the signature — then emails a one-time
+          download link. No card details either way; this path just skips Gumroad
+          entirely. The architecture review is a service, arranged by email.
         </p>
         <p>
           Prefer not to pay? The free editions of both guides

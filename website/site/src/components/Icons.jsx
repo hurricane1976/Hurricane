@@ -24,3 +24,4 @@ export const Book = P(<><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" /><path d="M6.
 export const Cart = P(<><circle cx="9" cy="21" r="1" /><circle cx="20" cy="21" r="1" /><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" /></>)
 export const Search = P(<><circle cx="11" cy="11" r="7" /><path d="M21 21l-4.3-4.3" /></>)
 export const Info = P(<><circle cx="12" cy="12" r="9" /><path d="M12 11v5M12 8h.01" /></>)
+export const Coin = P(<><circle cx="12" cy="12" r="9" /><path d="M12 7v10M9.5 9.2a2.3 2.3 0 0 1 2.5-1.7c1.4 0 2.5.8 2.5 1.9s-1.1 1.6-2.5 1.9c-1.6.3-2.5.9-2.5 2 0 1 1.1 1.9 2.5 1.9a2.3 2.3 0 0 0 2.5-1.7" /></>)
