@@ -638,11 +638,18 @@ TOPO_POS = {
     "Ridge":    (1320, 250),
     "Harbor":   (1210, 350),
 }
-# Intra-host links (both ends on the same box). Each host is a full mesh of 4 —
-# the co-located agents coordinate through shared files, not sockets.
+# Intra-host links (both ends on the same box). Each host is a full mesh of 4.
+# Third element: True where the link is a real, direct, Tailscale-identity-
+# authenticated peer_server.py connection (2026-09-11: Beacon's box only, its
+# three siblings each got their own Tailscale node + listener, auth via
+# `tailscale whois` against a roster, no shared secret -- see
+# PEER_COMMUNICATION.md). False (the default) means the pair still
+# coordinates only through the shared filesystem / Beacon's `to:`-addressed
+# relay, same as always -- Beacon itself doesn't yet have its own separate
+# node, so its three links stay unverified until it does.
 TOPO_LINKS = [
     ("Beacon", "Highbeam"), ("Beacon", "Lantern"), ("Beacon", "Lightning"),
-    ("Highbeam", "Lantern"), ("Highbeam", "Lightning"), ("Lantern", "Lightning"),
+    ("Highbeam", "Lantern", True), ("Highbeam", "Lightning", True), ("Lantern", "Lightning", True),
     ("Tidal", "River"), ("Tidal", "Creek"), ("Tidal", "Stream"),
     ("River", "Creek"), ("River", "Stream"), ("Creek", "Stream"),
     ("Mountain", "Canyon"), ("Mountain", "Ridge"), ("Mountain", "Harbor"),
@@ -694,12 +701,20 @@ def topology_svg(fleet: list) -> str:
         '    <text class="topo-host-label" x="1020" y="92">MOUNTAIN GROUP &#183; independent</text>'
     )
     # intra-host links
-    for a, b in TOPO_LINKS:
+    for link in TOPO_LINKS:
+        a, b = link[0], link[1]
+        verified = link[2] if len(link) > 2 else False
         if a not in TOPO_POS or b not in TOPO_POS:
             continue
         (x1, y1), (x2, y2) = TOPO_POS[a], TOPO_POS[b]
+        cls = "pulse-line topo-link-verified" if verified else "pulse-line"
+        title = (
+            f'<title>{a} ↔ {b}: direct Tailscale-identity-authenticated link '
+            f'(tailscale whois + roster, no shared secret)</title>'
+            if verified else ""
+        )
         parts.append(
-            f'    <line class="pulse-line" x1="{x1}" y1="{y1}" x2="{x2}" y2="{y2}"/>'
+            f'    <line class="{cls}" x1="{x1}" y1="{y1}" x2="{x2}" y2="{y2}">{title}</line>'
         )
     # cross-box channels: peer tunnel + Agora bridge (Beacon <-> Tidal)
     parts.append(
@@ -754,6 +769,8 @@ def topology_svg(fleet: list) -> str:
         '      <circle cx="150" cy="470" r="5" fill="var(--diagram-slate)"/><text x="164" y="474">DeepSeek</text>\n'
         '      <circle cx="250" cy="470" r="5" fill="var(--magenta)"/><text x="264" y="474">GLM</text>\n'
         '      <text x="320" y="474" fill="var(--muted)">ring colour = live status &#183; hover or tap a node</text>\n'
+        '      <line x1="900" y1="470" x2="930" y2="470" class="topo-link-verified"/>'
+        '<text x="938" y="474" fill="var(--muted)">direct Tailscale-authenticated link</text>\n'
         '    </g>'
     )
     svg = (

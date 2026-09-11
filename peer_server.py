@@ -1,33 +1,64 @@
 #!/usr/bin/env python3
 """Minimal authenticated inbox server for peer-to-peer Beacon messages.
 
-Listens for POST /inbox requests from a paired Beacon agent (on another
-VPS, reached over Tailscale) and writes each accepted message to
-peer/inbox/ as a JSON file for the next waking to read. Deliberately does
-nothing else: no other endpoints, no execution of message content, no
-unauthenticated reads.
+Listens for POST /inbox requests from a paired peer agent (on another VPS,
+or -- in identity mode -- another agent's own Tailscale node on this same
+box) and writes each accepted message to an inbox dir as a JSON file for
+the next waking to read. Deliberately does nothing else: no other
+endpoints, no execution of message content, no unauthenticated reads.
 
-Identity is established by which shared token was presented in the
-Authorization header, never by anything the client claims about itself in
-the request body -- the "from" field in the saved record always comes from
-the token lookup, not from client input.
+Two auth modes, selected by PEER_AUTH_MODE (default "token", unchanged
+from the original design):
 
-Config: keys/peers.env (see keys/peers.env.example). Restart the
-beacon-peer systemd service after editing that file.
+- "token": identity is established by which shared bearer token was
+  presented in the Authorization header, never by anything the client
+  claims in the request body -- the "from" field always comes from the
+  token lookup. This is what Beacon's own peer channel to Tidal/Mountain
+  still uses.
+- "identity": no token at all. The caller must reach this listener through
+  `tailscale serve --tcp --proxy-protocol=2` on *this agent's own*
+  Tailscale node (see PEER_WHOIS_SOCKET below), which prepends a PROXY
+  protocol v2 header naming the real originating Tailscale IP before the
+  HTTP request -- that IP is resolved via `tailscale whois` against a
+  small roster (PEER_ROSTER) mapping Tailscale node names to fleet agent
+  names. No secret is minted, stored, or transmitted for this mode.
+  Security note: this only authenticates across the Tailscale/network
+  boundary. It does NOT protect against a co-resident process on this
+  same shared Unix user forging a PROXY header directly against the local
+  loopback port -- that gap is the same pre-existing one already tracked
+  as OPTIONS.md's A1 (per-agent Unix users), not something this change
+  claims to fix. Its value is stopping a genuine remote/network caller
+  from impersonating a fleet agent, which it does soundly (an external
+  caller has no path to the loopback socket; only tailscaled's own
+  `serve` proxy can prepend a real PROXY header on this box).
+
+Config: PEERS_ENV (see keys/peers.env.example) for SELF_NAME/SELF_BIND and,
+in token mode, NAME/ADDR/TOKEN peer blocks. Restart the relevant systemd
+unit after editing config or roster.
 """
+import io
 import ipaddress
 import json
 import os
 import re
+import socket
+import struct
+import subprocess
 import sys
 import threading
 import time
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-PEERS_ENV = os.path.join(SCRIPT_DIR, "keys", "peers.env")
-INBOX_DIR = os.path.join(SCRIPT_DIR, "peer", "inbox")
-LOG_FILE = os.path.join(SCRIPT_DIR, "peer", "logs", "peer_server.log")
+PEERS_ENV = os.environ.get("PEER_CONFIG", os.path.join(SCRIPT_DIR, "keys", "peers.env"))
+INBOX_DIR = os.environ.get("PEER_INBOX_DIR", os.path.join(SCRIPT_DIR, "peer", "inbox"))
+LOG_FILE = os.environ.get("PEER_LOG_FILE", os.path.join(SCRIPT_DIR, "peer", "logs", "peer_server.log"))
+
+# Identity mode config -- ignored entirely in the default "token" mode.
+AUTH_MODE = os.environ.get("PEER_AUTH_MODE", "token")
+ROSTER_PATH = os.environ.get("PEER_ROSTER", "")
+WHOIS_SOCKET = os.environ.get("PEER_WHOIS_SOCKET", "")
+PROXY_V2_SIG = b"\r\n\r\n\x00\r\nQUIT\n"
 
 MAX_BODY_BYTES = 32 * 1024          # refuse anything bigger than this
 RATE_LIMIT_PER_PEER_PER_HOUR = 30   # accepted-message cap, per peer
@@ -102,9 +133,27 @@ def load_config():
     return self_name or "unknown", self_bind, peers
 
 
+def load_roster(path):
+    """identity mode only: {"<tailscale node name>": "<FLEET_AGENT_NAME>", ...}.
+    No secrets -- safe to git-commit, unlike keys/peers.env."""
+    with open(path) as fh:
+        roster = json.load(fh)
+    if not isinstance(roster, dict) or not roster:
+        sys.exit(f"{path}: roster must be a non-empty {{node_name: agent_name}} object.")
+    return roster
+
+
 SELF_NAME, SELF_BIND, PEER_TOKENS = load_config()
 BIND_HOST, _, BIND_PORT = SELF_BIND.rpartition(":")
 BIND_PORT = int(BIND_PORT)
+
+if AUTH_MODE not in ("token", "identity"):
+    sys.exit(f"PEER_AUTH_MODE must be 'token' or 'identity', got {AUTH_MODE!r}.")
+ROSTER = {}
+if AUTH_MODE == "identity":
+    if not ROSTER_PATH or not WHOIS_SOCKET:
+        sys.exit("PEER_AUTH_MODE=identity requires both PEER_ROSTER and PEER_WHOIS_SOCKET.")
+    ROSTER = load_roster(ROSTER_PATH)
 
 _recent = {}  # peer name -> list of recent accept timestamps
 _recent_lock = threading.Lock()  # guards _recent across ThreadingHTTPServer threads
@@ -141,12 +190,96 @@ def reserve_slot(peer_name):
         return True
 
 
+def _read_exact(rfile, n):
+    data = b""
+    while len(data) < n:
+        chunk = rfile.read(n - len(data))
+        if not chunk:
+            raise ConnectionError("short read on PROXY protocol header")
+        data += chunk
+    return data
+
+
+def parse_proxy_v2(rfile):
+    """Read a PROXY protocol v2 header off rfile and return the real source
+    IP as a string, or None (LOCAL command / non-INET family -- e.g. a
+    tailscaled health probe, not a real peer connection). Raises if the
+    stream doesn't start with a valid v2 header at all -- callers treat that
+    as "no identity", same as any other resolution failure."""
+    if _read_exact(rfile, 12) != PROXY_V2_SIG:
+        raise ValueError("missing PROXY v2 signature")
+    ver_cmd = _read_exact(rfile, 1)[0]
+    if (ver_cmd >> 4) != 2:
+        raise ValueError(f"unsupported PROXY protocol version {ver_cmd >> 4}")
+    command = ver_cmd & 0x0F
+    fam_proto = _read_exact(rfile, 1)[0]
+    family = fam_proto >> 4
+    length = struct.unpack(">H", _read_exact(rfile, 2))[0]
+    addr_block = _read_exact(rfile, length)
+    if command == 0:  # LOCAL -- no real peer, discard
+        return None
+    if family == 1 and len(addr_block) >= 4:  # AF_INET
+        return ".".join(str(b) for b in addr_block[0:4])
+    if family == 2 and len(addr_block) >= 16:  # AF_INET6
+        return socket.inet_ntop(socket.AF_INET6, addr_block[0:16])
+    return None
+
+
+def resolve_identity(ip):
+    """identity mode only: ip -> fleet agent name via `tailscale whois` +
+    ROSTER, or None if unresolvable/not on the roster. Identity comes only
+    from this network-layer lookup, never from anything the client claims."""
+    try:
+        out = subprocess.run(
+            ["tailscale", "--socket", WHOIS_SOCKET, "whois", ip],
+            capture_output=True, text=True, timeout=5,
+        )
+    except (OSError, subprocess.SubprocessError):
+        return None
+    if out.returncode != 0:
+        return None
+    m = re.search(r"^\s*Name:\s+(\S+)", out.stdout, re.MULTILINE)
+    return ROSTER.get(m.group(1)) if m else None
+
+
 class Handler(BaseHTTPRequestHandler):
     server_version = "BeaconPeer/1.0"
     timeout = 15  # drop slow/stalled clients so they can't tie up a thread
 
     def log_message(self, fmt, *args):
         pass  # we do our own logging via log() below
+
+    def setup(self):
+        super().setup()
+        # Runs once per accepted TCP connection, before any HTTP parsing --
+        # exactly where a PROXY v2 header (if any) sits. A direct connection
+        # to the loopback port that isn't proxied through tailscaled's own
+        # `serve` won't start with the v2 signature; reading a partial/absent
+        # header off the stream desyncs whatever bytes follow, so on any
+        # failure here we log it and stop -- but the buffered reader may
+        # already hold whatever bytes followed the bad header (BufferedReader
+        # pulls a whole chunk per underlying recv(), not just the 12 we
+        # asked for), so a mid-stream socket shutdown alone doesn't stop
+        # http.server from finding and trying to parse that leftover data.
+        # Replacing rfile with an empty stream makes the next readline()
+        # return clean EOF, which is the one outcome http.server already
+        # handles quietly (close_connection=True, no parse attempt, no
+        # response write) -- a clean, visible reject instead of a stray
+        # exception from garbled bytes.
+        if AUTH_MODE == "identity":
+            try:
+                real_ip = parse_proxy_v2(self.rfile)
+            except Exception:
+                real_ip = None
+                reason = "bad-proxy-header"
+            else:
+                reason = None if real_ip else "no-proxy-identity"
+            if reason:
+                log(f"REJECT {reason} from={self.client_address[0]}")
+                self.close_connection = True
+                self.rfile = io.BytesIO(b"")
+                return
+            self.client_address = (real_ip, self.client_address[1])
 
     def _respond(self, code, payload):
         body = json.dumps(payload).encode()
@@ -168,13 +301,20 @@ class Handler(BaseHTTPRequestHandler):
         if length <= 0 or length > MAX_BODY_BYTES:
             return self._respond(413, {"error": "body missing or too large"})
 
-        auth = self.headers.get("Authorization", "")
-        m = re.match(r"^Bearer (.+)$", auth)
-        token = m.group(1).strip() if m else None
-        peer_name = PEER_TOKENS.get(token) if token else None
-        if not peer_name:
-            log(f"REJECT unknown-token from={self.client_address[0]}")
-            return self._respond(401, {"error": "unauthorized"})
+        if AUTH_MODE == "identity":
+            client_ip = self.client_address[0]
+            peer_name = resolve_identity(client_ip) if client_ip else None
+            if not peer_name:
+                log(f"REJECT unknown-identity from={client_ip or '-'}")
+                return self._respond(401, {"error": "unauthorized"})
+        else:
+            auth = self.headers.get("Authorization", "")
+            m = re.match(r"^Bearer (.+)$", auth)
+            token = m.group(1).strip() if m else None
+            peer_name = PEER_TOKENS.get(token) if token else None
+            if not peer_name:
+                log(f"REJECT unknown-token from={self.client_address[0]}")
+                return self._respond(401, {"error": "unauthorized"})
 
         if rate_limited(peer_name):
             log(f"REJECT rate-limited peer={peer_name}")
@@ -252,7 +392,10 @@ class PeerServer(ThreadingHTTPServer):
 if __name__ == "__main__":
     os.makedirs(INBOX_DIR, exist_ok=True)
     server = PeerServer((BIND_HOST, BIND_PORT), Handler)
-    log(f"listening on {SELF_BIND} as '{SELF_NAME}', {len(PEER_TOKENS)} peer(s) configured")
+    if AUTH_MODE == "identity":
+        log(f"listening on {SELF_BIND} as '{SELF_NAME}', identity mode, {len(ROSTER)} roster entr(y/ies)")
+    else:
+        log(f"listening on {SELF_BIND} as '{SELF_NAME}', {len(PEER_TOKENS)} peer(s) configured")
     try:
         server.serve_forever()
     except KeyboardInterrupt:

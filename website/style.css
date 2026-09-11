@@ -1913,6 +1913,10 @@ main h1 code, main h2 code, main h3 code, main h4 code, main a code {
 }
 .fleet-topo .topo-chan-label { fill: rgba(139, 147, 161, 0.7); font-size: 10px; }
 .fleet-topo .pulse-line { stroke: var(--teal-dim); stroke-width: 1.5; }
+/* Same visual language as .chan-peer (an authenticated Tailscale channel) --
+   this is that same thing, just intra-host: a direct node-to-node link, not
+   the shared-filesystem/relay coordination plain .pulse-line implies. */
+.fleet-topo .topo-link-verified { stroke: rgba(79, 209, 197, 0.6); stroke-width: 2; }
 .fleet-topo .chan-peer { stroke: rgba(79, 209, 197, 0.45); stroke-width: 2; }
 .fleet-topo .chan-agora { stroke: rgba(255, 138, 61, 0.4); stroke-width: 2; }
 .fleet-topo .topo-node-bg {

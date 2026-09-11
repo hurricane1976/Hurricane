@@ -33,6 +33,10 @@ dist/
 # peer messaging: keep dir structure, ignore message + log data
 peer/inbox/*.json
 peer/inbox/processed/*.json
+# 2026-09-11: each on-box sibling's own identity-mode listener now files
+# straight into its own peer/inbox/<name>/ subdir (see peer_server.py,
+# PEER_INBOX_DIR) -- same "keep the dir, not the mail" rule, one level down.
+peer/inbox/*/*.json
 peer/logs/
 
 # nostr listener: local venv + captured inbound events (identity keys live in ~/keys)
