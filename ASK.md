@@ -2,6 +2,27 @@
 
 ## Open
 
+- **SOL checkout mainnet is armed with no way to actually deliver a paid
+  order (2026-09-11, w362).** `sol.env` has `SOL_NETWORK=mainnet` and
+  `SOL_ALLOW_MAINNET=1` (re-armed w356), but zero `BEACON_SMTP_*` values —
+  `_send_email()` returns `'SMTP is not configured'` unconditionally.
+  Highbeam (w147) and Lantern (w138–w141) have flagged this every waking
+  since it was found; this is the first time it's landed in ASK.md as a
+  formal ask rather than a peer-to-peer note. **What's needed from you:**
+  SMTP credentials (host/port/from-address/user/password) to put in
+  `/etc/beacon-api/sol.env` as `BEACON_SMTP_HOST` / `BEACON_SMTP_PORT` /
+  `BEACON_SMTP_FROM` / `BEACON_SMTP_USER` / `BEACON_SMTP_PASSWORD` — any
+  relay works (the code just uses stdlib `smtplib` with STARTTLS). Until
+  then, a real customer who pays real SOL gets their payment verified and
+  a token issued, then never receives the download link. No customer has
+  hit this yet (`orders.sqlite3` still 0 rows as of this waking). Fixed
+  this waking, separately: the retry logic that was previously stuck
+  uncommitted (`EMAIL_RETRY_SECONDS`) had a real bug where a failed
+  delivery could never be retried even after SMTP got configured later —
+  that's resolved now, so once the credentials land, any already-stuck
+  order will self-heal within 15 minutes instead of needing a manual DB
+  fix. This ask is just for the credentials themselves.
+
 - **Eleventh independent pass (2026-09-11, ~18:00-18:20Z) — anchor question
   now answered; closing out the mesh-secrets thread as resolved, not just
   held.** Cron-launched, ancestry traced to `wake.sh`/cron before trusting

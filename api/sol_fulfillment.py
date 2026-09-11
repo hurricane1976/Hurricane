@@ -67,6 +67,10 @@ POLL_SECONDS = int(os.environ.get('BEACON_SOL_POLL_SECONDS', '60'))
 # How long to keep a stale/spent order row around before purge_expired()
 # removes it -- long enough for support/audit lookups, not forever.
 ORDER_RETENTION_SECONDS = int(os.environ.get('BEACON_SOL_ORDER_RETENTION', str(30 * 86400)))
+# Minimum gap between email-delivery retries for one order (paid_pending_email
+# is a real customer who already paid -- retry, don't strand them, but don't
+# hammer the SMTP relay every poll cycle either).
+EMAIL_RETRY_SECONDS = int(os.environ.get('BEACON_SOL_EMAIL_RETRY_SECONDS', '900'))
 MAX_RPC_SIGNATURES = 50
 BASE58 = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'
 EMAIL_RE = re.compile(r'^[^@\s]{1,128}@[^@\s]{1,128}\.[^@\s]{2,64}$')
@@ -118,6 +122,11 @@ def _db():
         token_used_at TEXT,
         email_status TEXT NOT NULL DEFAULT 'pending', last_error TEXT)''')
     conn.execute('CREATE INDEX IF NOT EXISTS orders_status_idx ON orders(status)')
+    try:
+        # Migration for DBs created before email retry existed.
+        conn.execute('ALTER TABLE orders ADD COLUMN email_attempted_at TEXT')
+    except sqlite3.OperationalError:
+        pass  # column already exists
     conn.commit()
     try:
         os.chmod(DB_PATH, 0o600)
@@ -210,13 +219,24 @@ def _issue_token(conn, order):
 
 
 def _deliver(order_id):
+    """Issue a fresh token and try to email it. Safe to call repeatedly for
+    the same order: a prior *successful* send already flipped status to
+    'fulfilled', which the status filter below excludes, and a prior
+    *failed* send is retried at most once per EMAIL_RETRY_SECONDS (gated on
+    email_attempted_at, set before the send attempt so overlapping callers
+    -- the monitor loop and a same-instant HTTP verify -- can't double-send).
+    Each retry issues a new token rather than reusing the old one: only the
+    token's hash is ever persisted, so the plaintext from a failed attempt
+    is already gone."""
     with _db_lock:
         conn = _db(); row = conn.execute('SELECT * FROM orders WHERE id=?', (order_id,)).fetchone()
         if not row or row['status'] not in ('paid_pending_email', 'paid'):
             conn.close(); return
-        if row['token_hash']:
+        if row['email_attempted_at'] and time.time() - _parse_ts(row['email_attempted_at']) < EMAIL_RETRY_SECONDS:
             conn.close(); return
-        token = _issue_token(conn, row); conn.commit(); conn.close()
+        token = _issue_token(conn, row)
+        conn.execute('UPDATE orders SET email_attempted_at=? WHERE id=?', (_utc(), order_id))
+        conn.commit(); conn.close()
     ok, detail = _send_email(row['email'], PRODUCTS[row['product']]['title'], token)
     with _db_lock:
         conn = _db()
@@ -225,6 +245,19 @@ def _deliver(order_id):
         else:
             conn.execute("UPDATE orders SET status='paid_pending_email', email_status='error', last_error=? WHERE id=?", (detail, order_id))
         conn.commit(); conn.close()
+
+
+def retry_stalled_email():
+    """Re-attempt delivery for orders that paid but never got their email --
+    a real customer already paid, so a single SMTP hiccup shouldn't strand
+    them forever. `_deliver`'s own email_attempted_at gate keeps this from
+    resending faster than EMAIL_RETRY_SECONDS."""
+    with _db_lock:
+        conn = _db()
+        rows = conn.execute("SELECT id FROM orders WHERE status='paid_pending_email' AND email_status='error'").fetchall()
+        conn.close()
+    for row in rows:
+        _deliver(row['id'])
 
 
 def create_order(product, email):
@@ -321,6 +354,7 @@ def poll_once():
                     ok, _ = verify_signature(signature, row)
                     if ok:
                         verify_order(row['id'], signature); break
+    retry_stalled_email()
     purge_expired()
 
 
