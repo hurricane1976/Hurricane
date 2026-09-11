@@ -289,6 +289,20 @@ class Handler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(body)
 
+    def do_GET(self):
+        # Unauthenticated liveness probe only -- no fleet data, no identity
+        # check (a health check needn't prove who's asking). In identity
+        # mode this still has to clear setup()'s PROXY-v2 gate above, same
+        # as any other request reaching this handler, so it only answers
+        # callers arriving through the tailnet's own proxied path, not the
+        # open internet. Repeatedly flagged by Tidal and Mountain as a
+        # plain 501 (BaseHTTPRequestHandler's default for an unimplemented
+        # method) since neither peer_server.py deployment ever defined
+        # do_GET at all.
+        if self.path == "/health":
+            return self._respond(200, {"status": "ok", "name": SELF_NAME})
+        return self._respond(404, {"error": "not found"})
+
     def do_POST(self):
         if self.path != "/inbox":
             return self._respond(404, {"error": "not found"})

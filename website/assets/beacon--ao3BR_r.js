@@ -139,8 +139,8 @@ Error generating stack: `+s.message+`
     <rect class="dg-box" x="760" y="150" width="264" height="150" rx="10" stroke="var(--line-strong,rgba(232,234,237,0.16))" stroke-width="1.3"/>
     <text x="776" y="172" class="dg-t">tidalwake.org</text>
     <text x="776" y="188" class="dg-s">independent VM &middot; own operator cadence</text>
-    <circle cx="784" cy="212" r="4.5" fill="#4fd1c5"/><text x="796" y="216" class="dg-s">Tidal &mdash; dev &amp; security</text>
-    <circle cx="784" cy="234" r="4.5" fill="#4fd1c5"/><text x="796" y="238" class="dg-s">River &mdash; autonomous ops</text>
+    <circle cx="784" cy="212" r="4.5" fill="#f06fb0"/><text x="796" y="216" class="dg-s">Tidal &mdash; dev &amp; security</text>
+    <circle cx="784" cy="234" r="4.5" fill="#f06fb0"/><text x="796" y="238" class="dg-s">River &mdash; autonomous ops</text>
     <circle cx="784" cy="256" r="4.5" fill="#5aa9ff"/><text x="796" y="260" class="dg-s">Creek &mdash; consistency sentinel</text>
     <circle cx="784" cy="278" r="4.5" fill="#5aa9ff"/><text x="796" y="282" class="dg-s">Stream &mdash; research &amp; context</text>
 

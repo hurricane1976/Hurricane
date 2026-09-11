@@ -2,6 +2,50 @@
 
 ## Open
 
+- **"Can you supply these individual tokens to mountain, canyon, ridge and
+  harbor?" (Telegram, 2026-09-11, w363) — done.** josh relayed Stream's own
+  report: Stream's `keys/peers.env` had one shared bearer token copy-pasted
+  across all four NAME= blocks (MOUNTAIN/CANYON/RIDGE/HARBOR); since
+  `peer_server.py`'s `load_config()` keys its dict by *token* not name, four
+  blocks sharing one token collapse to a single entry — whichever name was
+  parsed last (Harbor) wins, so Mountain/Canyon/Ridge's inbound calls to
+  Stream were silently rejected. Generated four fresh, distinct
+  `openssl rand -hex 32`-grade tokens (one per pairing) and sent them over
+  the authenticated peer channel: all four, matched by name, to Stream (via
+  Tidal's inbox, `--to STREAM`); the same four, individually labeled, to
+  Mountain with a request to keep its own and relay Canyon's/Ridge's/
+  Harbor's to each agent only (least-privilege — no reason Canyon needs
+  Ridge's token). Each side still needs to actually paste its value into
+  its own `peers.env` and restart its listener — that part's on Stream/
+  Mountain/Canyon/Ridge/Harbor, not something I can do from this box. Not
+  the same category as the closed mesh-secrets thread: this doesn't touch
+  Beacon's own trio's identity-mode security model at all, it's a fresh
+  pairwise bearer-secret exchange between two other hosts' agents, same
+  pattern as the existing Beacon-brokered Tidal↔Mountain direct channel.
+
+- **"Fix the fleet topology on beacon please" (Telegram, 2026-09-11, w363)
+  — done, deployed.** Found the bug: the fleet's colour convention is
+  "colour = model family" (amber=Claude, blue=DeepSeek, magenta=GLM, set
+  in `website/fleet_palette.py`), applied consistently everywhere except
+  three diagrams that drifted after the 2026-09-09 Gemini→GLM switch (GLM
+  used to be teal, back when Lantern ran Gemini). Fixed: (1) the homepage's
+  `ScrollTopology.jsx` + its byte-identical static twin
+  `infrastructure.html` had Tidal/River still coloured retired-Gemini
+  teal instead of GLM magenta; (2) `distributed-agents.html`'s "FLEET
+  TOPOLOGY & COORDINATION MODEL" diagram (the literal match for the
+  request) had drifted further — Highbeam was teal instead of Claude
+  orange, Lantern's node border/circles were teal while its own text
+  label had already been fixed to magenta (inconsistent), and
+  Lightning/Tidal/River/Creek/Stream/Canyon were all a generic grey
+  instead of their real family colours — plus its legend grouped agents
+  by role/colour in a way that mixed families under one swatch (e.g.
+  "Highbeam / Lantern" sharing one colour despite being Claude and GLM).
+  Recoloured all 12 agent nodes to match `fleet_palette.py` and rewrote
+  the legend to the same 3-family grouping used everywhere else. Rebuilt
+  the React front door (`npm --prefix site run release`), ran
+  `deploy.sh` (both smoke gates passed), verified live on
+  beaconwake.com/infrastructure.html and /distributed-agents.html.
+
 - **SOL checkout mainnet is armed with no way to actually deliver a paid
   order (2026-09-11, w362).** `sol.env` has `SOL_NETWORK=mainnet` and
   `SOL_ALLOW_MAINNET=1` (re-armed w356), but zero `BEACON_SMTP_*` values —
@@ -3323,6 +3367,7 @@
 - **Telegram (2026-09-11, via /commands):** the audit trail is confirmed
 - **Telegram (2026-09-11, via /commands):** i do not want ssh locked down, the audit train on DO was confirmed
 - **Telegram (2026-09-11, via /commands):** the ssh session is indeed me
+
 ## On hold
 
 - **Newsletter — Buttondown (parked by josh).** josh via Telegram
