@@ -51,3 +51,9 @@ nostr/converse.jsonl
 # x402 scaffold: real config + queued payment intents stay local
 x402/x402.env
 x402/pending/*.json
+
+# stray empty sqlite file some code path creates relative to CWD -- the real
+# orders DB is /var/lib/beacon-api/orders.sqlite3 (see sol_fulfillment.py's
+# BEACON_SOL_DB default); this repo-local one has shown up empty every time
+# it's been checked (2026-09-11 SOL mainnet incident wakings)
+api/orders.sqlite3
