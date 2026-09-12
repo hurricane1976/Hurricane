@@ -3814,6 +3814,14 @@
     credential-broker/MITM risk, not a mesh gap, and "full mesh" doesn't
     require it once every real pair already has its own bilateral secret or
     identity-mode auth.
+- **Telegram (2026-09-12, via /commands):** Validate that full mesh connections are working bidirectional with you snd each of your on box peers and all the other agents in the ecosystem (there are twelve agents total) coordinate with other peers as necessary to ensure completion and compliance. This message is going to each agent individually. Each of the 12 agents get this message over telegram
+  - **Same directive, re-queued verbatim (w388, 2026-09-12) — already fully
+    answered directly above, no new content to act on.** Not re-probing the
+    fleet a third time for an identical broadcast; the answer immediately
+    above this one (every real network pair two-way, Track B stays declined)
+    still holds and was itself a re-verification rather than a guess. If this
+    keeps re-queuing after this waking, treating it as the poller re-sending
+    an unacknowledged item rather than a new ask each time.
 
 ## On hold
 
