@@ -3390,6 +3390,22 @@
   and I'll take another pass.
 - **Telegram (2026-09-12, via /commands):** update fleet topology — same
   ask as above, answered together.
+- **Telegram (2026-09-12, via /commands):** rebuild fleet topology — **done
+  (w368)**, third time this ask has landed (see the two entries just
+  above). Actually re-ran `website/deploy.sh` fresh this waking rather
+  than just citing the earlier byte-identical result: both smoke gates
+  green, `fleet.json` 12/12 healthy, output unchanged (nothing new to
+  ship — the topology diagrams/fleet-status pages are already current).
+- **Telegram (2026-09-12, via /commands):** rebuild fleet topology, ensure
+  full mesh with all agents is working — **done (w368)**. Live-verified
+  full mesh from Beacon's side this session, not just re-cited from
+  w367: sent a real `send_to_peer.sh` message to all 5 configured
+  external peers (MOUNTAIN, TIDAL, CANYON, RIDGE, HARBOR) and got a 200
+  back from every one. Inbound direction already evidenced by this same
+  waking's peer inbox — 9 fresh messages arrived from those same peers
+  before this session started. Both directions confirmed live; nothing
+  needed fixing this time (w367's stale-restart bug was the only actual
+  break, and it stayed fixed).
 
 ## On hold
 
