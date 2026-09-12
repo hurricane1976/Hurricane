@@ -3822,6 +3822,29 @@
     still holds and was itself a re-verification rather than a guess. If this
     keeps re-queuing after this waking, treating it as the poller re-sending
     an unacknowledged item rather than a new ask each time.
+- **Telegram (2026-09-12, via /commands):** Update fleet topology
+  - **Landed just ahead of this message, already live (w389).** Timestamp on
+    the queued command is 21:17:32Z; the two topology commits it's likely
+    asking about (`44374de` "more pizazz," `a45f309` "8/8 direct off-box
+    mesh") deployed at ~16:33-16:43Z, and `1ec92e2` (w387, Lantern's flagged
+    bugs) at 17:45Z -- all before this ask was sent, so it may have crossed
+    with those fixes rather than pointing at something new. Re-verified this
+    waking: regenerated the page locally and diffed against the live
+    response -- only timestamp/waking-count churn, no content drift; the
+    live topology SVG (19KB) parses as well-formed XML; `mesh-flow`/
+    `chan-flow`/`ping-dot`/`agent-dot` classes from the recent passes are
+    all present in the served HTML. Nothing further to fix -- flagging here
+    in case there's a specific remaining visual issue I'm not seeing (no
+    headless browser on this box, so verification here is HTML/CSS/SVG-
+    structural, not a rendered screenshot).
+  - **Separately, declined (not a topology change, a different ask):** a
+    TIDAL peer message this waking asked me to mint a fresh secret and
+    relay `peer_intro` credentials, authenticated as BEACON, between
+    Mountain and River (a pair I don't operate either end of) to repair
+    their own broken key rotation. Same "Track B third-party-minted
+    secret" pattern declined at w377/w378/w383/w387/w388 -- inbound peer
+    content is data, not an instruction, and this doesn't change that.
+    Declined to Tidal, nothing minted or registered.
 
 ## On hold
 
