@@ -1952,6 +1952,11 @@ main h1 code, main h2 code, main h3 code, main h4 code, main a code {
 .fleet-topo .topo-link-verified { stroke: rgba(79, 209, 197, 0.6); stroke-width: 2; }
 .fleet-topo .chan-peer { stroke: rgba(79, 209, 197, 0.45); stroke-width: 2; }
 .fleet-topo .chan-agora { stroke: rgba(255, 138, 61, 0.4); stroke-width: 2; }
+/* Beacon's own per-agent bearer-token mesh (six thin arcs to the individual
+   off-box agents, not just the Tidal/Mountain hub nodes) -- deliberately
+   dimmer/thinner than the primary hub links: real, verified edges, but
+   secondary to the two main channels visually. */
+.fleet-topo .chan-peer-fan { stroke: rgba(79, 209, 197, 0.28); stroke-width: 1.1; }
 .fleet-topo .topo-node-bg {
   fill: var(--surface);
   stroke-width: 2;

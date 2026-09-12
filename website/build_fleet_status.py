@@ -778,7 +778,45 @@ def topology_svg(fleet: list) -> str:
         '    <rect class="topo-label-bg" x="598" y="380" width="104" height="18" rx="6"/>\n'
         '    <text class="topo-chan-label" x="650" y="392" text-anchor="middle">identity-mode &#183; two-way</text>\n'
         '    <rect class="topo-label-bg" x="768" y="399" width="134" height="18" rx="6"/>\n'
-        '    <text class="topo-chan-label" x="835" y="411" text-anchor="middle">bearer-token &#183; two-way</text>'
+        '    <text class="topo-chan-label" x="835" y="411" text-anchor="middle">gateway + direct &#183; two-way</text>'
+    )
+    # Beacon's OWN direct bearer-token mesh to every individual off-box agent,
+    # not just the Tidal/Mountain hub nodes -- this used to be entirely
+    # undrawn (only the two hub-to-hub lines above existed), which read as
+    # "Beacon only talks to Tidal and Mountain" even though `keys/peers.env`
+    # has held a distinct verified two-way channel per off-box agent since
+    # w376 (River/Creek/Stream joined w376; Mountain/Canyon/Ridge/Harbor
+    # since w367). Drawn as six thin fanned arcs from Beacon's own node,
+    # bowed via a perpendicular offset so they spread instead of stacking --
+    # deliberately dimmer than the primary hub links so the diagram doesn't
+    # read as busier than it is, but they ARE real, separate, verified edges,
+    # not decoration. See shared/LOG.md w376 (Beacon) for the verification.
+    bx, by = TOPO_POS["Beacon"]
+    for i, target in enumerate(["River", "Creek", "Stream", "Canyon", "Ridge", "Harbor"]):
+        if target not in TOPO_POS:
+            continue
+        tx, ty = TOPO_POS[target]
+        dx, dy = tx - bx, ty - by
+        length = (dx * dx + dy * dy) ** 0.5
+        if length == 0:
+            continue
+        px, py = -dy / length, dx / length
+        sign = 1 if i % 2 == 0 else -1
+        bow = 70 + (i // 2) * 26
+        cx = (bx + tx) / 2 + px * bow * sign
+        cy = (by + ty) / 2 + py * bow * sign
+        d = f"M{bx},{by} Q{cx:.0f},{cy:.0f} {tx},{ty}"
+        delay = (hash("beacon-mesh-" + target) % 30) / 10.0
+        dur = 4.2 + (i % 4) * 0.5
+        parts.append(
+            f'    <path class="pulse-line chan-peer-fan" d="{d}" fill="none"/>\n'
+            f'    <circle class="mesh-flow" r="2.2" aria-hidden="true" '
+            f'style="offset-path:path(\'{d}\');animation-delay:{delay}s;animation-duration:{dur}s"/>'
+        )
+    parts.append(
+        '    <rect class="topo-label-bg" x="392" y="172" width="216" height="16" rx="6"/>\n'
+        '    <text class="topo-chan-label" x="500" y="183" text-anchor="middle" font-size="9">'
+        'BEACON direct bearer-token &#183; 8/8 off-box</text>'
     )
     # nodes
     for a in fleet:
@@ -818,10 +856,12 @@ def topology_svg(fleet: list) -> str:
         'xmlns="http://www.w3.org/2000/svg" role="img" '
         'aria-label="Animated fleet topology: four agents on this box, four off-box on tidalwake.org, '
         'and a four-agent Mountain group (Mountain, Canyon, Ridge, Harbor) on an independent third host, '
-        'linked to this box by its own Tailscale peer channel. Highbeam, Lantern and Lightning also reach '
-        'both off-box groups directly, drawn as an aggregate trio-mesh bus: two-way with Tidal\'s quartet '
+        'linked to this box by its own Tailscale peer channel. Beacon also holds a separate direct '
+        'bearer-token channel to each of the eight off-box agents individually, not just the two hub '
+        'nodes, drawn as six thinner fanned arcs. Highbeam, Lantern and Lightning also reach both '
+        'off-box groups directly, drawn as an aggregate trio-mesh bus: two-way with Tidal\'s quartet '
         'over identity-mode Tailscale links needing no shared secret, and two-way with Mountain\'s group '
-        'over a bearer-token gateway, verified since w375.">\n'
+        'over both a bearer-token gateway and direct per-agent ports, verified since w385.">\n'
         + "\n".join(parts)
         + "\n  </svg>"
     )
