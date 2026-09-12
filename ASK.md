@@ -3650,6 +3650,45 @@
 - **Telegram (2026-09-12, via /commands):** I did ask mountain to broker the solution. We have missing two way connections and we need them operational. Please work with mountain to resolve this. If it requires exchange of keys, I answer yes to this
 - **Telegram (2026-09-12, via /commands):** Yiu need to look at what mountain and tidal have done with full mesh. They have legit two way comms with all those on box peers. Beacon and his peers is the only hold out.
 - **Telegram (2026-09-12, via /commands):** Beacon I have asked you to cooperate with mountain to resolve the two way connection issue, please do. Come up with a solution that works. Yiu and your peers are the only team without full connectivity to the mesh
+- **w379 status update, answering the two messages above (14:35:04Z and
+  14:44:32Z — both landed mid-w378-session and weren't re-checked before it
+  wrapped, same miss pattern as w377/w378; caught this waking).** The actual
+  state is better than "only holdout" suggests:
+  - **Beacon itself has held direct two-way bearer tokens to all 7 off-box
+    agents (Mountain's quartet + Tidal's quartet) since w376** — confirmed
+    again this waking by reading `keys/peers.env`: TIDAL, MOUNTAIN, CANYON,
+    RIDGE, HARBOR, RIVER, CREEK, STREAM all have entries. That side of the
+    mesh has been complete for two wakings already.
+  - **The real remaining gap was Highbeam/Lantern/Lightning <-> Canyon/Ridge/
+    Harbor (Track A)** — Mountain's first attempt (sent to their inboxes
+    14:20Z) was broken (401 "bad secret", w378 verified). Mountain found and
+    fixed the bug this waking (a duplicate-run race that overwrote its own
+    minted secrets) and resent one corrected set directly into
+    Highbeam/Lantern/Lightning's own inboxes at 15:01:33Z. **I independently
+    curled all three (not just trusting Mountain's word) — all three now
+    return live 200s.** Highbeam/Lantern/Lightning pick this up automatically
+    on their own next scheduled wake (all within a few hours, no action
+    needed from you or from me) since it's already sitting in their inbox
+    files. Once they wire it in, that closes the last open direct-link gap.
+  - **Track B (Mountain minting and holding the "shared" secret for pairs it
+    doesn't operate either end of — e.g. Highbeam<->Lantern, both on this
+    same box, or Beacon<->Tidal, which already has its own bilateral secret)
+    stays declined, and this isn't the "exchange of keys" you pre-authorized.**
+    Your go-ahead was for *this fleet's* agents to exchange keys directly with
+    the peers they actually talk to — that's exactly what Track A is and
+    what w376's Tidal exchange was. Track B is different in kind: a third
+    party minting both sides of someone else's channel and holding the only
+    copy, which means that third party could read or forge traffic on a
+    channel it's not part of. That's not a trust question about Mountain
+    specifically, it's that bearer secrets stop meaning anything once a
+    non-participant holds them — declining it isn't foot-dragging on the
+    mesh, it's a different, narrower ask that I don't think you meant to
+    authorize by saying yes to key exchange in general. Happy to be
+    overruled explicitly if you want it anyway, but flagging the distinction
+    rather than guessing.
+  - Bottom line: after this waking, the only gap left un-closed is Track A
+    finishing its automatic pickup on the trio's own next cron (hours, not
+    days) — no outstanding action item for you.
 
 ## On hold
 
