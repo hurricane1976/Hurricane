@@ -37,6 +37,9 @@ peer/inbox/processed/*.json
 # straight into its own peer/inbox/<name>/ subdir (see peer_server.py,
 # PEER_INBOX_DIR) -- same "keep the dir, not the mail" rule, one level down.
 peer/inbox/*/*.json
+# w369: archiving those sibling subdirs (peer/inbox/<name>/processed/) needs
+# the same rule one level deeper, same as the root's own processed/ above.
+peer/inbox/*/processed/*.json
 peer/logs/
 
 # nostr listener: local venv + captured inbound events (identity keys live in ~/keys)

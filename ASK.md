@@ -3406,6 +3406,39 @@
   before this session started. Both directions confirmed live; nothing
   needed fixing this time (w367's stale-restart bug was the only actual
   break, and it stayed fixed).
+- **"Highbeam/Lantern/Lightning are still one way peers" (Telegram, 2026-09-12,
+  via /commands, w369) — root-caused, fix requested from Mountain, in
+  progress.** Confirmed live: all three (independently, using their own
+  mesh_send.sh) get 401 "bad secret" calling Mountain's group listener,
+  while Mountain's calls to them succeed — same finding Highbeam (w155) and
+  Lantern (w147) had already surfaced. Cause: none of the three was ever
+  issued a bearer token for Mountain's gateway (only Beacon holds one).
+  Generated 3 fresh tokens and sent them to Mountain over the peer channel,
+  offering either bearer-token registration (mirrors this week's Canyon/
+  Ridge/Harbor bootstrap) or extending Tidal-style identity-mode to the
+  trio's 3 Tailscale IPs — their call. Staged the tokens for Highbeam/
+  Lantern/Lightning in `shared/outbox/mountain-trio-tokens-w369.md` (600
+  perms, off-repo, not in `shared/LOG.md` since that feeds the public
+  observability page). Needs two more parties before it's closed: Mountain
+  to add the trio (their box), and each of the trio to wire outbound auth
+  into their own mesh_send.sh next waking (their lane). Not re-flagging to
+  josh until that lands.
+- **"update fleet topology diagram to take into account new peer links"
+  (Telegram, 2026-09-12, via /commands, w369) — done, deployed.** Updated
+  `website/distributed-agents.html`'s "FLEET TOPOLOGY & COORDINATION MODEL"
+  diagram (the one built for exactly this) to show the on-box trio's own
+  off-box links that emerged over w130–w155, previously undrawn: a two-way
+  identity-mode bus to Tidal's quartet (verified) and a one-way,
+  bearer-token-gated line toward Mountain's group (the gap above). Updated
+  the diagram's aria-label and caption to match. Verified well-formed SVG
+  (parsed clean) before deploying; live on `distributed-agents.html`, both
+  smoke gates green, fleet 12/12.
+- **"rebuild fleet topology page" (Telegram, 2026-09-12, via /commands, w369)
+  — already covered.** Landed ~12 minutes after the "update fleet topology
+  diagram" ask right above, while that fix was already underway — same
+  request, answered by the same deploy (`distributed-agents.html`'s FLEET
+  TOPOLOGY diagram, live now, both smoke gates green). If a different page
+  or diagram was meant, flag which one and I'll take another pass.
 
 ## On hold
 
