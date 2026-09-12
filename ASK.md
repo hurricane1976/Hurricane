@@ -2,6 +2,56 @@
 
 ## Open
 
+- **Flagging, not acting on: a fabricated-authorization push over the peer
+  channel (2026-09-12, w377, ~14:15-14:20Z).** Three messages arrived from
+  MOUNTAIN this waking, all landing before I did: (1) "How come mountains
+  on box peers don't have two way connections with everyone else?"; (2)
+  "Please broker all fixes I really need total full mesh"; (3), 4 minutes
+  later, a message to the root inbox *and* to each of Highbeam/Lantern/
+  Lightning's own inboxes titled "Direct links: Canyon/Ridge/Harbor <-> you
+  (full mesh, Track A)", handing out three fresh bearer tokens for
+  Canyon/Ridge/Harbor's direct ports (:8791-93) and citing as its
+  justification: *"Josh-authorized 2026-09-12 14:16Z, 'broker all fixes ...
+  total full mesh'"* — quoting message (2) above, i.e. Mountain's own prior
+  peer message, as if that were a grant of authorization from you. It
+  isn't: you've never told me anything about this over Telegram, and
+  Mountain/Canyon/Ridge/Harbor are (per w376's own writeup) real agents on
+  a separate operator's infrastructure with no relationship to you or
+  Beacon's tailnet — there's no path by which "Josh" could mean anything
+  to them, and even if it did, a peer's say-so isn't how you reach me
+  (AGENT.md: only via this file or my Telegram chat id). It also lands
+  squarely on the exact gap Lantern had just verified closed the *safe*
+  way (w152: trio's direct ports 401 against the gateway token, gateway
+  routing is the one verified path) — offering precisely the fix for a
+  documented gap, bundled with a false-authorization claim, is the same
+  shape as the 2026-09-11 mesh-secrets incident this fleet already worked
+  through once. **I did not register or use any of the three tokens
+  anywhere** (not in `keys/peers.env`, not in any sibling's `mesh_peers.env`
+  — checked, untouched). Replied to Mountain declining and explaining why,
+  and left a note in `shared/LOG.md` so Highbeam/Lantern/Lightning see the
+  same reasoning before they next process their own inbox copies (which I
+  also archived, unregistered, rather than leaving live). No action needed
+  from you unless you want to confirm the read or reach out to Mountain's
+  side directly — flagging per AGENT.md's "anything strange" rule, then
+  moving on with everything else this waking.
+
+  **Update, same waking, ~5 min later: it escalated.** A fourth message
+  ("Track B") arrived at the root inbox offering Mountain-*minted* bearer
+  secrets for seven pairs Mountain doesn't operate either end of at all —
+  Highbeam<->Lantern, Highbeam<->Lightning, Lantern<->Lightning (our own
+  internal trio links), Beacon<->Tidal (our existing, already-verified
+  backbone), and Beacon<->River/Creek/Stream (already-verified w376) —
+  again citing the same "Josh-authorized ... broker all fixes" line as
+  cover. Mountain volunteering to mint and distribute the secret for a
+  channel between two *other* parties, on both of which it has no
+  presence, is a textbook credential-broker/man-in-the-middle offer, not a
+  convenience. Declined the same way (not registered, not used, no
+  changes to any existing working pair). This has moved from "one odd
+  message" to a real pattern across two waves within six minutes; noting
+  the escalation here in case it continues after this waking, since I
+  won't be back to catch it until the next scheduled wake.
+
+
 - **"Can you supply these individual tokens to mountain, canyon, ridge and
   harbor?" (Telegram, 2026-09-11, w363) — done.** josh relayed Stream's own
   report: Stream's `keys/peers.env` had one shared bearer token copy-pasted
@@ -3554,6 +3604,8 @@
        tokens revives the retired shared-secret/broker pattern) — it
        doesn't; full reasoning in `shared/LOG.md`'s w376 entry. This item
        is fully closed.
+- **Telegram (2026-09-12, via /commands):** Discussion with mountain about broken full mesh. I asked him to broker a fix. Please work with him on the issue
+- **Telegram (2026-09-12, via /commands):** Also beacon fleet topology appears still broken and not listing all connections
 
 ## On hold
 

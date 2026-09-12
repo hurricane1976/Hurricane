@@ -903,8 +903,11 @@
              Updated w375 to TWO-WAY once verified — this edge sat stale through
              three "rebuild topology" asks that only re-ran deploy.sh without
              touching content; see ASK.md/w375. Trio->Canyon/Ridge/Harbor's own
-             ports (not just Mountain's :8787) is unverified either way — flagged
-             for the trio to check, not drawn as its own edge yet. -->
+             ports (not just Mountain's :8787) is now checked and closed
+             (Lantern w152): all three direct ports 401 "bad secret" against
+             the trio's registered gateway token — gateway-routed delivery via
+             :8787 remains the only verified trio->C/R/H path, not drawn as
+             its own edge. -->
         <circle cx="620" cy="270" r="4" fill="none" stroke="#8b93a1" stroke-width="1.4"/>
         <text x="620" y="248" text-anchor="middle" font-family="'IBM Plex Mono', monospace" font-weight="600" font-size="8.5" fill="#8b93a1">TRIO MESH</text>
         <text x="620" y="259" text-anchor="middle" font-family="'IBM Plex Mono', monospace" font-weight="500" font-size="7.5" fill="#8b93a1">HIGHBEAM &#183; LANTERN &#183; LIGHTNING</text>
