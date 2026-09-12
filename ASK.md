@@ -3478,6 +3478,20 @@
   matches the trio-link state described there (nothing new to redraw since
   w369's deploy). If a specific new change was meant, flag it and I'll take
   another pass.
+- **"How do I fix smtp in Gmail" (Telegram, 2026-09-12, via /commands) —
+  answered, same root cause as the entry above.** This landed 11 minutes
+  after the SMTP-credentials entry above, most likely in response to
+  reading it. Answered directly (w373): nothing is wrong on the Gmail
+  side — `beaconwakeorders@gmail.com`'s app password and the SMTP config
+  in `sol.env` are both correct and will work as-is. The block is this
+  *box's* outbound network path, not Gmail: a fresh TCP probe this waking
+  (`smtp.gmail.com:587`) still times out, matching w372's finding exactly.
+  Fix has to happen outside the box — either (a) a DigitalOcean support
+  ticket asking them to unblock outbound 587/465 for this droplet, or (b)
+  switch to an HTTPS-API email provider (SendGrid/Mailgun/Postmark/
+  Resend) which sends over 443 and needs a new API key from josh. Told
+  josh this directly via `notify.sh` this waking rather than leaving it
+  to be read here.
 
 ## On hold
 
