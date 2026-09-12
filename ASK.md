@@ -3563,6 +3563,22 @@
   Gmail credentials and code path stay in place either way and will just
   start working the moment the ports open, no further changes needed on my
   end for path (a).
+  - **DONE (interactive session, 2026-09-12 ~15:45Z): switched to Mailgun,
+    option (b) above.** You supplied `mg.beaconwake.com` + a Mailgun API key
+    + `beacon@mg.beaconwake.com` as the send-from address directly in chat
+    (plus the Mailgun account's own login email, not read by any code).
+    Checked the domain's DNS first (SPF/DKIM/tracking CNAME already present
+    — it was already added in Mailgun's dashboard), then rewired
+    `_send_email()` in `api/sol_fulfillment.py` onto a new `_mailgun_send()`
+    that POSTs to Mailgun's HTTP API over :443 (unaffected by the port
+    block) instead of `smtplib`. You separately asked me to confirm HTML
+    email and attachments both work, not just plain text — `_mailgun_send()`
+    takes optional `html=`/`attachments=` for that; live-tested all three
+    paths (raw API call, HTML+attachment, and the real order-email wrapper)
+    before landing, all HTTP 200. Credential lives only in
+    `/etc/beacon-api/sol.env` (root-owned, mode 600, off-repo), same as the
+    Gmail password it replaces; `beacon-api` restarted clean. Code committed
+    `bc8e714`. Item closed — no DigitalOcean ticket needed.
 - **"rebuild fleet topology" (Telegram, 2026-09-12, via /commands) —
   checked, already current.** Same wording as the w369 ask already answered
   a few entries above; re-checked the live diagram this waking and it still
@@ -3689,6 +3705,52 @@
   - Bottom line: after this waking, the only gap left un-closed is Track A
     finishing its automatic pickup on the trio's own next cron (hours, not
     days) — no outstanding action item for you.
+- **Telegram (2026-09-12, via /commands):** I noticed full mesh isn’t up between tidal and beacons peers please investigate and solution
+  - **Answered by the entry directly below, same investigation.** Beacon's
+    own side of Beacon&harr;Tidal has been direct and two-way since before
+    this fleet existed (the original peer channel), and Beacon&harr;
+    River/Creek/Stream closed at w376 (`keys/peers.env` has all four Tidal-
+    side tokens). The gap this ask was likely pointing at — the on-box trio
+    (Highbeam/Lantern/Lightning) reaching Tidal's quartet — has been
+    two-way, identity-mode, verified since w130-w155; what was actually
+    missing was that fact never being drawn on the live `/fleet-status.html`
+    diagram. Fixed below.
+- **"beacon's fleet topology looks broken... missing many two-way
+  connections... unchanged for many cycles" (interactive session,
+  2026-09-12 ~15:50Z) — a second, different bug from the w367-w375 one
+  above, now fixed.** Went in assuming this was the same saga already
+  covered exhaustively above — it wasn't quite. `distributed-agents.html`
+  really was fixed at w375 and is still accurate today. But there are
+  **two separate topology diagrams** in this repo: that hand-authored one,
+  and `website/build_fleet_status.py`'s `topology_svg()`, which generates
+  the live `/fleet-status.html` "Fleet operations center" page. Checked its
+  git history directly: its cross-box-channel code was last touched
+  2026-09-11T11:38Z (`1902b65`) and never again through the entire w367-w375
+  arc — every one of those fixes landed only in the other file. So this
+  generator had been drawing just the original 3 cross-box lines
+  (Beacon<->Tidal x2, Beacon<->Mountain, Tidal<->Mountain) the whole time,
+  missing Highbeam/Lantern/Lightning's verified reach to both off-box
+  groups entirely — a real gap nobody had flagged, not a duplicate report.
+  **Fixed:** added an aggregate "trio mesh" bus (junction + two curves, same
+  device the other diagram uses) showing trio&harr;Tidal's-quartet
+  (identity-mode, two-way) and trio&harr;Mountain's-gateway (bearer-token,
+  two-way, w375), plus matching CSS and updated aria-label/caption.
+  Verified the generated SVG is well-formed XML, both smoke gates green,
+  and confirmed the new elements are present in the live response —
+  `https://www.beaconwake.com/fleet-status.html` — before calling it done.
+  Committed `7d4846c`.
+
+  Checked Mountain's and Tidal's own pages for reference before touching
+  anything, per your ask. One discrepancy worth flagging rather than
+  importing: **Tidal's `/fleet` page currently claims "66/66 agent pairs
+  verified two-way live, full fleet mesh complete."** My own verified
+  evidence doesn't support that for at least one pair-class — Lantern's
+  w152 pass got a definitive 401 "bad secret" probing Canyon/Ridge/Harbor's
+  own direct ports even with the trio's registered gateway token, so those
+  are gateway-routed, not independent two-way sockets. This is the exact
+  over-broadening Highbeam's own w143 brief warned against. Not mine to
+  edit, so I didn't touch it — flagging here in case you want it corrected
+  or want me to raise it with Tidal directly.
 
 ## On hold
 

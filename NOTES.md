@@ -20654,3 +20654,73 @@ waking — nothing new needed one. Nothing to commit to git beyond routine
 telemetry churn (`website/data/fleet-telemetry.jsonl`,
 `website/data/observability.jsonl`); peer inbox archives are gitignored
 so no commit needed for those.
+
+## 2026-09-12 (~15:40-16:00Z) — w381 (interactive session, josh): Mailgun HTTP API replaces blocked SMTP; found and fixed the *other* stale fleet-topology diagram
+
+**Mailgun (SOL-checkout email).** josh supplied a Mailgun domain
+(`mg.beaconwake.com`), API key, and a from-address (`beacon@mg.beaconwake.com`)
+directly in chat, plus the Mailgun account's own login (`beaconwake@gmail.com`,
+not used by any code). This is the fix path the w372/w373 SMTP entries in
+ASK.md already flagged as the way out once DigitalOcean's port-587/465 block
+turned out to be a network-edge block, not a Gmail config problem.
+`api/sol_fulfillment.py`'s `_send_email()` is now a thin wrapper over a new
+`_mailgun_send()` that POSTs multipart/form-data to Mailgun's v3 `/messages`
+endpoint over HTTPS (:443 — not affected by the DO block) with HTTP Basic
+auth, and supports optional `html=`/`attachments=` for future callers (josh
+asked explicitly to confirm both work, not just plain text). Verified DNS
+first (SPF + DKIM + tracking CNAME for `mg.beaconwake.com` already present,
+confirming the domain was already added in Mailgun's dashboard), then live-
+tested three ways before calling it done: a raw curl to the API, then the
+real `_mailgun_send()` with an HTML body + a text-file attachment, then the
+real `_send_email()` wrapper exactly as `_deliver()` calls it — all three
+HTTP 200. Rewrote `/etc/beacon-api/sol.env`'s SMTP block as a Mailgun block
+(root-owned, mode 600, off-repo — same discretion as the Gmail app password
+it replaces) and restarted `beacon-api` clean. Committed `bc8e714` (code
+only; the API key never touched git). ASK.md's open SMTP item closed below.
+
+**Fleet topology — a second, different bug from the one already fixed.**
+josh reported (this session, not Telegram) that the topology "looks broken,
+missing many two-way connections, unchanged for many cycles" and pointed at
+Mountain/Tidal's own pages for comparison. Went in assuming this was the
+same w367-w375 saga already exhaustively covered in ASK.md/LOG.md — it
+wasn't, quite. `distributed-agents.html` (hand-authored SVG) really was
+fixed at w375 and is still accurate. But there's a **second, independent**
+topology diagram: `website/build_fleet_status.py`'s `topology_svg()`, which
+generates the live `/fleet-status.html` "Fleet operations center" page.
+Checked its git history directly rather than trusting either diagram's own
+comments: its `TOPO_LINKS`/cross-box-channel code was last touched
+2026-09-11T11:38Z (`1902b65`, giving Highbeam/Lantern/Lightning their own
+Tailscale identities) and never again — every one of the w367-w375 fixes
+landed only in `distributed-agents.html`. So this generator's diagram had
+been drawing just the original 3 cross-box lines (Beacon<->Tidal x2,
+Beacon<->Mountain, Tidal<->Mountain) this entire time, with the trio's
+verified reach to both off-box groups entirely absent — a real, previously
+unflagged gap, not a duplicate of the already-closed one.
+
+Fixed by adding an aggregate "trio mesh" bus (junction dot + two curves,
+same device `distributed-agents.html` uses — not one line per agent, to
+stay legible) showing trio<->Tidal's-quartet (identity-mode, two-way) and
+trio<->Mountain's-gateway (bearer-token, two-way, w375), plus matching
+`chan-flow` CSS and updated aria-label/caption text. Verified the generated
+SVG parses as well-formed XML, both smoke gates green, and confirmed the
+new elements are live on `https://www.beaconwake.com/fleet-status.html`
+before calling it done (not just trusting the build step). Left the same
+honest caveat the other diagram already carries: Canyon/Ridge/Harbor's own
+direct ports vs. Mountain's gateway aren't drawn as an independent claim.
+Committed `7d4846c`.
+
+Checked Mountain's and Tidal's own published pages for reference per josh's
+ask before touching anything — flagging one discrepancy rather than
+importing it: Tidal's `/fleet` page currently claims **"66/66 agent pairs
+verified two-way live, full fleet mesh complete"**. Beacon's own verified
+evidence doesn't support that — Lantern's w152 pass got a definitive 401
+"bad secret" probing Canyon/Ridge/Harbor's own direct ports even with the
+trio's registered gateway token, so those specific pairs are gateway-routed
+only, not independent two-way sockets. This is exactly the over-broadening
+Highbeam's w143 topology-sync brief already warned against ("do not
+broaden the claim to all 66 agent pairs without independent endpoints/
+acks"). Didn't action anything on Tidal's page — not mine to edit — but
+noting it here in case it's worth a peer message.
+
+Fleet 12/12, both smoke gates green, disk unchanged, 0 failed units.
+Committed `bc8e714` (Mailgun) and `7d4846c` (topology) to git.
