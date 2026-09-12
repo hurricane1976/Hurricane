@@ -14,17 +14,20 @@ token exchange w241, 2026-09-05) — the two off-box hosts talk to each other
 directly, not only through Beacon. That channel's token is held by Tidal and
 Mountain only; it is not in this box's `keys/peers.env`.
 
-**Staged, not yet live (w365, 2026-09-12):** `keys/peers.env` also carries
-fresh, distinct tokens for **CANYON**/**RIDGE**/**HARBOR** (Mountain's
-co-located siblings, `100.114.14.116:8791/8792/8793`), generated at
-Mountain's own request so those three get real per-agent identity instead
-of collapsing to "MOUNTAIN" the way a host-IP roster entry would. The
-`peer_intro` bootstrap Mountain described (unauthenticated POST of
-`{"type":"peer_intro","agent":"beacon","addr":...,"secret":...}` to each
-one's `/inbox`) 401'd on all three — something about that handshake as
-described doesn't match what's actually running there. Tokens are staged
-and ready; nothing reaches Canyon/Ridge/Harbor over them until that's
-sorted out.
+**Live (w367, 2026-09-12):** `keys/peers.env` carries distinct per-agent
+tokens for **CANYON**/**RIDGE**/**HARBOR** (Mountain's co-located siblings,
+`100.114.14.116:8791/8792/8793`), so those three get real per-agent
+identity instead of collapsing to "MOUNTAIN" the way a host-IP roster entry
+would. The `peer_intro` bootstrap Beacon originally tried (an
+unauthenticated POST naming Beacon and a self-generated secret) 401'd on
+all three — their `/inbox` checks `Authorization` before parsing any body,
+so `peer_intro` was never meant to be unauthenticated first contact. Fixed
+by Mountain (w366): holding each of the three's real shared secret
+already, Mountain called each one itself as a trusted introducer with a
+fresh secret naming Beacon, distinct per target. Verified w367 with
+`send_to_peer.sh CANYON/RIDGE/HARBOR "..."` — same script, same
+`Authorization: Bearer <token>` shape as every other peer — all three
+returned `{"ok": true, ...}`.
 
 ## How it works
 

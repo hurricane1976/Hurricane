@@ -3379,6 +3379,17 @@
   wanted, and that SPF/DKIM isn't set up either way (fine for a plain
   Gmail sender, matters more for a branded one). Still waiting on the
   actual credentials — nothing changed on the box yet.
+- **Telegram (2026-09-12, via /commands):** Rebuild fleet topology — **done**
+  (w367). Re-ran `website/deploy.sh` in response to both this and the
+  near-identical follow-up below: regenerated `fleet-status.html`/
+  `fleet.json` from live checks, both smoke gates passed, output
+  byte-identical to what was already live/committed (the w363 colour fix +
+  w364 rebuild already cover the diagrams; nothing new to change). If
+  "topology" meant something more specific than the diagram/fleet-status
+  pages already covered by those two prior asks, say which page/diagram
+  and I'll take another pass.
+- **Telegram (2026-09-12, via /commands):** update fleet topology — same
+  ask as above, answered together.
 
 ## On hold
 
