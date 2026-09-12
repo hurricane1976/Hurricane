@@ -3492,6 +3492,55 @@
   Resend) which sends over 443 and needs a new API key from josh. Told
   josh this directly via `notify.sh` this waking rather than leaving it
   to be read here.
+- **Telegram (2026-09-12, via /commands):** Investigate why we are still
+  short of a full mesh, with all agents and provide solution. Also the
+  fleet topology looks unchanged as based on existing peer connections it
+  looks as if some are not being represented on the animated diagram —
+  **root cause found, diagram fixed and deployed (w375); one real gap
+  found and a fix requested.**
+  1. **Why the diagram looked unchanged:** it genuinely was. The last
+     three "rebuild/update fleet topology" asks (w367-w369) were each
+     answered by re-running `deploy.sh` — that only regenerates *build*
+     artifacts (fleet-status, sitemap, etc.), it doesn't touch this
+     diagram's hand-authored SVG content at all. w369 *did* do a real
+     content edit — it added the trio's (Highbeam/Lantern/Lightning) new
+     off-box links and correctly labeled the Mountain edge "ONE-WAY ONLY
+     (pending)", accurate at the time. But between w370 and w159 all
+     three of the trio independently retested Mountain post-token-
+     registration and got real 200s (Highbeam w157, Lantern w149,
+     Lightning w86 — all in `shared/LOG.md`), so that edge had actually
+     been two-way for a full day-plus and nobody went back to update the
+     one place that said otherwise. That's the "unchanged" you were
+     seeing: a stale snapshot from w369 quietly surviving three
+     rebuild-but-don't-redraw cycles.
+  2. **Fixed this waking:** updated `distributed-agents.html`'s FLEET
+     TOPOLOGY diagram — the Mountain edge is now drawn identically to the
+     Tidal edge (teal, two-way arrowheads both directions, "BEARER-TOKEN
+     GATED · TWO-WAY (verified w375)"), citing the three retest log lines
+     above instead of re-asserting the old pending state. Updated the
+     diagram's caption and `aria-label` to match, and left one honest gap
+     un-fixed rather than papering over it: whether the trio can reach
+     Canyon/Ridge/Harbor's *own* ports (8791/8792/8793) directly, as
+     opposed to Mountain's main :8787 gateway they just verified, has
+     never actually been tested — flagged in a code comment for
+     Highbeam/Lantern/Lightning to check on their own lanes, not drawn as
+     a claimed edge. Deployed, both smoke gates green, live-verified
+     (`TWO-WAY (verified w375)` present, `ONE-WAY ONLY` gone from the
+     served page).
+  3. **The one real "still short of full mesh" gap found:** Beacon's own
+     `keys/peers.env` has a bearer-token pairing for TIDAL but none for
+     RIVER/CREEK/STREAM — so *Beacon itself* (not the on-box trio, which
+     already reaches all three of Tidal's siblings fine via identity-mode
+     `mesh_send.sh`) has no direct two-way channel to them. Functionally
+     harmless today (the trio covers it), but asymmetric with the
+     Mountain side, where Beacon holds direct tokens for all four
+     (Mountain/Canyon/Ridge/Harbor). Sent Tidal a message this waking
+     over the authenticated peer channel asking them to mint and send
+     back River/Creek/Stream tokens naming Beacon, the same bootstrap
+     pattern Mountain used for Canyon/Ridge/Harbor — their call whether
+     they'd rather keep those three routed only through their own
+     gateway. Waiting on their reply; will wire `keys/peers.env` and
+     verify live once it lands.
 
 ## On hold
 
