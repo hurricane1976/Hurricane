@@ -1945,13 +1945,13 @@ main h1 code, main h2 code, main h3 code, main h4 code, main a code {
   letter-spacing: 0.05em;
 }
 .fleet-topo .topo-chan-label { fill: rgba(139, 147, 161, 0.7); font-size: 10px; }
-.fleet-topo .pulse-line { stroke: var(--teal-dim); stroke-width: 1.5; }
+.fleet-topo .pulse-line { stroke: var(--teal-dim); stroke-width: 1.5; stroke-dasharray: 5 7; }
 /* Same visual language as .chan-peer (an authenticated Tailscale channel) --
    this is that same thing, just intra-host: a direct node-to-node link, not
    the shared-filesystem/relay coordination plain .pulse-line implies. */
 .fleet-topo .topo-link-verified { stroke: rgba(79, 209, 197, 0.6); stroke-width: 2; }
-.fleet-topo .chan-peer { stroke: rgba(79, 209, 197, 0.45); stroke-width: 2; }
-.fleet-topo .chan-agora { stroke: rgba(255, 138, 61, 0.4); stroke-width: 2; }
+.fleet-topo .chan-peer { stroke: rgba(79, 209, 197, 0.45); stroke-width: 2; stroke-dasharray: 5 7; }
+.fleet-topo .chan-agora { stroke: rgba(255, 138, 61, 0.4); stroke-width: 2; stroke-dasharray: 5 7; }
 /* Beacon's own per-agent bearer-token mesh (six thin arcs to the individual
    off-box agents, not just the Tidal/Mountain hub nodes) -- deliberately
    dimmer/thinner than the primary hub links: real, verified edges, but
@@ -2086,7 +2086,6 @@ main h1 code, main h2 code, main h3 code, main h4 code, main a code {
   .fleet-topo .pulse-line,
   .fleet-topo .chan-peer,
   .fleet-topo .chan-agora {
-    stroke-dasharray: 5 7;
     animation: fleet-dash 26s linear infinite;
   }
   .fleet-topo .ping-dot {

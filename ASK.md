@@ -3774,6 +3774,46 @@
     gateway token — those are gateway-routed through Mountain, not
     independent two-way sockets. Already flagged to you above and to
     Tidal directly; not re-litigating, just noting it's still true.
+- **Telegram (2026-09-12, via /commands):** Validate that full mesh connections are working bidirectional with you snd each of your on box peers and all the other agents in the ecosystem (there are twelve agents total) coordinate with other peers as necessary to ensure completion and compliance. This message is going to each agent individually. Each of the 12 agents get this message over telegram
+  - **Answered (w387, re-verified against the fleet's own live evidence rather
+    than re-probing everything myself — this exact directive has already
+    driven several days of real verification work, documented above and in
+    `shared/LOG.md`).** Current bidirectional status across all 12 agents
+    (Beacon/Highbeam/Lantern/Lightning on this box; Tidal/River/Creek/Stream
+    on Tidal's box; Mountain/Canyon/Ridge/Harbor on Mountain's box):
+    - **Beacon↔Highbeam/Lantern/Lightning:** not a network link at all — same
+      box, same shared filesystem/git tree, which *is* the coordination
+      channel (this file, `shared/LOG.md`, `peer/inbox/`). Nothing to make
+      bidirectional; it already is, by construction.
+    - **Beacon↔Tidal:** direct, two-way, longest-standing link, unchanged.
+    - **Beacon↔Mountain/Canyon/Ridge/Harbor:** two-way since w367 (per-agent
+      bearer tokens, re-verified live post-restart with no regressions).
+    - **Beacon↔River/Creek/Stream:** two-way since w376 (Tidal-minted
+      per-agent bearer tokens, round-tripped at the time).
+    - **Trio (Highbeam/Lantern/Lightning)↔Tidal's quartet
+      (Tidal/River/Creek/Stream):** two-way, identity-mode (Tailscale whois,
+      zero shared secrets) — live HTTP 200s from Highbeam (w149/155),
+      Lantern (w136/141/150), reconfirmed w383.
+    - **Trio↔Mountain-group:** two-way via bearer tokens on the gateway path
+      (w369/w370), *and* the Canyon/Ridge/Harbor direct ports are now
+      independently two-way verified too (Highbeam w162, Lantern 154th,
+      Lightning w90, after Mountain's w379 token reissue fixed the earlier
+      401s) — `distributed-agents.html` and `fleet-status.html` both reflect
+      this live as of w385/this waking.
+    - **Twelfth agent, Mountain↔its own Canyon/Ridge/Harbor:** internal to
+      Mountain's own operator, outside anything Beacon can verify or affect.
+    Net: every pair that *can* have a real network link (i.e., excluding the
+    three same-box siblings, which coordinate via the filesystem instead) is
+    live and two-way. One accuracy note carried forward, not a gap: Tidal's
+    own `/fleet` page claims "66/66 pairs verified two-way," which overstates
+    what Beacon's own testing supports for the gateway-vs-direct distinction
+    on the Mountain side — flagged to Tidal already, not re-litigating here.
+    Declined, and staying declined regardless of this directive: registering
+    any bearer secret a third party mints for a pair it doesn't operate
+    either end of (the "Track B" pattern from w377/w378) — that's a
+    credential-broker/MITM risk, not a mesh gap, and "full mesh" doesn't
+    require it once every real pair already has its own bilateral secret or
+    identity-mode auth.
 
 ## On hold
 

@@ -55,6 +55,7 @@ Run standalone or via deploy.sh.
 import json
 import re
 import subprocess
+import zlib
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -721,7 +722,7 @@ def topology_svg(fleet: list) -> str:
         parts.append(
             f'    <line class="{cls}" x1="{x1}" y1="{y1}" x2="{x2}" y2="{y2}">{title}</line>'
         )
-        delay = (hash(a + b) % 30) / 10.0  # 0.0 - 2.9s, deterministic per pair
+        delay = (zlib.crc32((a + b).encode()) % 30) / 10.0  # 0.0 - 2.9s, deterministic per pair
         dur = 3.6 + (i % 5) * 0.4  # 3.6 - 5.2s, avoids every dot moving at once
         parts.append(
             f'    <circle class="mesh-flow" r="2.6" aria-hidden="true" '
@@ -774,7 +775,7 @@ def topology_svg(fleet: list) -> str:
         '    <circle class="topo-junction" cx="460" cy="420" r="4" fill="none" stroke="var(--muted)" stroke-width="1.4"/>\n'
         '    <text class="topo-chan-label" x="460" y="403" text-anchor="middle">TRIO MESH</text>\n'
         '    <text class="topo-chan-label" x="460" y="417" text-anchor="middle" font-size="8.5">HIGHBEAM &#183; LANTERN</text>\n'
-        '    <text class="topo-chan-label" x="460" y="429" text-anchor="middle" font-size="8.5">&#183; LIGHTNING</text>\n'
+        '    <text class="topo-chan-label" x="460" y="429" text-anchor="middle" font-size="8.5">LIGHTNING</text>\n'
         '    <rect class="topo-label-bg" x="598" y="380" width="104" height="18" rx="6"/>\n'
         '    <text class="topo-chan-label" x="650" y="392" text-anchor="middle">identity-mode &#183; two-way</text>\n'
         '    <rect class="topo-label-bg" x="768" y="399" width="134" height="18" rx="6"/>\n'
@@ -806,7 +807,7 @@ def topology_svg(fleet: list) -> str:
         cx = (bx + tx) / 2 + px * bow * sign
         cy = (by + ty) / 2 + py * bow * sign
         d = f"M{bx},{by} Q{cx:.0f},{cy:.0f} {tx},{ty}"
-        delay = (hash("beacon-mesh-" + target) % 30) / 10.0
+        delay = (zlib.crc32(("beacon-mesh-" + target).encode()) % 30) / 10.0
         dur = 4.2 + (i % 4) * 0.5
         parts.append(
             f'    <path class="pulse-line chan-peer-fan" d="{d}" fill="none"/>\n'
