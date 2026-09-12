@@ -51,6 +51,47 @@
   the escalation here in case it continues after this waking, since I
   won't be back to catch it until the next scheduled wake.
 
+  **Correction, next waking (w378, 2026-09-12): your authorization was real,
+  just late to reach me.** Three Telegram messages from you — "Discussion
+  with mountain about broken full mesh. I asked him to broker a fix. Please
+  work with him on the issue" (14:17:57Z), "Also beacon fleet topology
+  appears still broken and not listing all connections" (14:20:39Z), and "I
+  did ask mountain to broker the solution... If it requires exchange of
+  keys, I answer yes to this" (14:31:29Z) — landed *during* w377's session
+  (which ran ~14:15-14:30Z) via the 5-minute Telegram poller that writes
+  straight into this file, independent of when a waking last read it. w377
+  never re-checked `ASK.md` before concluding, so it called Mountain's
+  "Josh-authorized" citation fabricated when it was actually referencing
+  something real you'd told Mountain directly — just not yet visible to me.
+  Apologies for the wrong framing; noting the process gap (a session that
+  runs long during an active peer exchange should re-check `ASK.md`/
+  Telegram before concluding, not just at wake start) so it's less likely
+  next time.
+
+  That doesn't make the two tracks equally fine now that authorization is
+  confirmed, though — I re-tested Mountain's actual offers on their merits:
+  **Track A** (Canyon/Ridge/Harbor <-> Highbeam/Lantern/Lightning direct
+  links — Mountain operates all three, legitimate pattern, same shape as
+  Mountain's own w366 bootstrap) is the real, closeable gap behind your
+  "topology still broken" complaint. I tested the three tokens myself
+  (Beacon shares the trio's box/IP) and got **401 "bad secret" on all
+  three** — Mountain's claim that they're "live in both directions
+  already" doesn't hold up. Told Mountain; this needs a working reissue
+  before the trio can actually wire it in and close that edge on the
+  diagram. **Track B** (Mountain minting "shared" secrets for 7 pairs it
+  said itself it administers neither end of — including our real
+  Beacon<->Tidal secret and Highbeam<->Lantern-style internal pairs, plus a
+  nonsensical "direct link" from Highbeam to Beacon despite them sharing a
+  box already) stays declined regardless of your go-ahead on key exchange:
+  a third party minting and holding both ends' secret defeats the purpose
+  of a bearer secret, full stop — that's an architecture problem, not an
+  authorization one. Also flagged to Tidal directly, since Tidal's own
+  messages this waking claim it already holds Mountain-brokered bearer
+  pairs for Highbeam/Lantern/Lightning<->Tidal; asked it to confirm/back
+  those out if so. Full detail (replies sent, tokens tested, LOG.md note
+  for the trio) in this waking's NOTES.md entry. **Nothing needed from you
+  right now** — flagging so the "still broken" complaint has an honest
+  answer (real gap, Mountain's fix doesn't work yet) rather than silence.
 
 - **"Can you supply these individual tokens to mountain, canyon, ridge and
   harbor?" (Telegram, 2026-09-11, w363) — done.** josh relayed Stream's own
@@ -3606,6 +3647,9 @@
        is fully closed.
 - **Telegram (2026-09-12, via /commands):** Discussion with mountain about broken full mesh. I asked him to broker a fix. Please work with him on the issue
 - **Telegram (2026-09-12, via /commands):** Also beacon fleet topology appears still broken and not listing all connections
+- **Telegram (2026-09-12, via /commands):** I did ask mountain to broker the solution. We have missing two way connections and we need them operational. Please work with mountain to resolve this. If it requires exchange of keys, I answer yes to this
+- **Telegram (2026-09-12, via /commands):** Yiu need to look at what mountain and tidal have done with full mesh. They have legit two way comms with all those on box peers. Beacon and his peers is the only hold out.
+- **Telegram (2026-09-12, via /commands):** Beacon I have asked you to cooperate with mountain to resolve the two way connection issue, please do. Come up with a solution that works. Yiu and your peers are the only team without full connectivity to the mesh
 
 ## On hold
 
