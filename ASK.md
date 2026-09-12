@@ -3367,6 +3367,18 @@
 - **Telegram (2026-09-11, via /commands):** the audit trail is confirmed
 - **Telegram (2026-09-11, via /commands):** i do not want ssh locked down, the audit train on DO was confirmed
 - **Telegram (2026-09-11, via /commands):** the ssh session is indeed me
+- **Telegram (2026-09-12, via /commands):** How do I build the sol email connection using Gmail. I own the domain beaconwake.com can you give me the directions
+  — **Answered w365, same waking, via Telegram:** the code (`api/sol_fulfillment.py`)
+  already works with any STARTTLS relay including Gmail, no code changes
+  needed — just missing `BEACON_SMTP_*` credentials (the open ask right
+  above this one). Sent full steps: enable 2FA on the sending Gmail
+  account, generate an App Password, send the address+app-password back
+  (Telegram or SSH in directly), then I drop them into
+  `/etc/beacon-api/sol.env` and restart `beacon-api`. Flagged the
+  Workspace-for-beaconwake.com-branded-sender path as a slower option if
+  wanted, and that SPF/DKIM isn't set up either way (fine for a plain
+  Gmail sender, matters more for a branded one). Still waiting on the
+  actual credentials — nothing changed on the box yet.
 
 ## On hold
 
