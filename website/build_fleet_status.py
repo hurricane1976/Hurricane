@@ -700,8 +700,13 @@ def topology_svg(fleet: list) -> str:
         '    <rect class="topo-host" x="1000" y="64" width="420" height="336" rx="12"/>\n'
         '    <text class="topo-host-label" x="1020" y="92">MOUNTAIN GROUP &#183; independent</text>'
     )
-    # intra-host links
-    for link in TOPO_LINKS:
+    # intra-host links. Each also gets its own travelling packet dot (offset-path
+    # built from the same M..L endpoints) so the busy 4-node meshes read as
+    # "live traffic" instead of static wireframe -- previously only the 7
+    # cross-box channels had a moving dot and the meshes looked inert next to
+    # them by comparison. Stagger delays via a stable hash of the pair name so
+    # dots don't all launch in lockstep.
+    for i, link in enumerate(TOPO_LINKS):
         a, b = link[0], link[1]
         verified = link[2] if len(link) > 2 else False
         if a not in TOPO_POS or b not in TOPO_POS:
@@ -715,6 +720,13 @@ def topology_svg(fleet: list) -> str:
         )
         parts.append(
             f'    <line class="{cls}" x1="{x1}" y1="{y1}" x2="{x2}" y2="{y2}">{title}</line>'
+        )
+        delay = (hash(a + b) % 30) / 10.0  # 0.0 - 2.9s, deterministic per pair
+        dur = 3.6 + (i % 5) * 0.4  # 3.6 - 5.2s, avoids every dot moving at once
+        parts.append(
+            f'    <circle class="mesh-flow" r="2.6" aria-hidden="true" '
+            f'style="offset-path:path(\'M{x1},{y1} L{x2},{y2}\');'
+            f'animation-delay:{delay}s;animation-duration:{dur}s"/>'
         )
     # cross-box channels: peer tunnel + Agora bridge (Beacon <-> Tidal)
     parts.append(
@@ -754,15 +766,19 @@ def topology_svg(fleet: list) -> str:
     # distributed-agents.html, hand-edited separately, got fixed) -- see
     # shared/LOG.md w367-w375 and shared/outbox/mountain-trio-tokens-w369.md.
     parts.append(
-        '    <circle class="topo-junction" cx="460" cy="420" r="4" fill="none" stroke="var(--muted)" stroke-width="1.4"/>\n'
-        '    <text class="topo-chan-label" x="460" y="402" text-anchor="middle">TRIO MESH</text>\n'
-        '    <text class="topo-chan-label" x="460" y="436" text-anchor="middle" font-size="8.5">HIGHBEAM &#183; LANTERN &#183; LIGHTNING</text>\n'
         '    <path class="pulse-line chan-peer" d="M460,420 Q650,415 750,395" fill="none"/>\n'
         '    <path class="pulse-line chan-peer" d="M460,420 Q835,452 1210,395" fill="none"/>\n'
         '    <circle class="chan-flow chan-flow-trio-tidal" r="3.5" aria-hidden="true"/>\n'
         '    <circle class="chan-flow chan-flow-trio-mountain" r="3.5" aria-hidden="true"/>\n'
-        '    <text class="topo-chan-label" x="650" y="401" text-anchor="middle">identity-mode &#183; two-way</text>\n'
-        '    <text class="topo-chan-label" x="835" y="442" text-anchor="middle">bearer-token &#183; two-way (w375)</text>'
+        '    <rect class="topo-label-bg" x="412" y="391" width="96" height="34" rx="6"/>\n'
+        '    <circle class="topo-junction" cx="460" cy="420" r="4" fill="none" stroke="var(--muted)" stroke-width="1.4"/>\n'
+        '    <text class="topo-chan-label" x="460" y="403" text-anchor="middle">TRIO MESH</text>\n'
+        '    <text class="topo-chan-label" x="460" y="417" text-anchor="middle" font-size="8.5">HIGHBEAM &#183; LANTERN</text>\n'
+        '    <text class="topo-chan-label" x="460" y="429" text-anchor="middle" font-size="8.5">&#183; LIGHTNING</text>\n'
+        '    <rect class="topo-label-bg" x="598" y="380" width="104" height="18" rx="6"/>\n'
+        '    <text class="topo-chan-label" x="650" y="392" text-anchor="middle">identity-mode &#183; two-way</text>\n'
+        '    <rect class="topo-label-bg" x="768" y="399" width="134" height="18" rx="6"/>\n'
+        '    <text class="topo-chan-label" x="835" y="411" text-anchor="middle">bearer-token &#183; two-way</text>'
     )
     # nodes
     for a in fleet:
@@ -776,12 +792,13 @@ def topology_svg(fleet: list) -> str:
         aria = f'{name} — {a["role"]}; {STATE_LABEL.get(a["state"], a["state"])}'
         parts.append(
             f'    <g class="topo-node" tabindex="0" role="button" data-node="{nid}" '
-            f'aria-label="{esc(aria)}" '
+            f'data-fam="{fam}" aria-label="{esc(aria)}" '
             f'onmouseover="fleetTopo(\'{nid}\')" onfocus="fleetTopo(\'{nid}\')" '
             f'onclick="fleetTopo(\'{nid}\')">\n'
+            f'      <circle class="topo-orbit" cx="{x}" cy="{y}" r="19" style="stroke:{FAMILY_COLOR[fam]}" aria-hidden="true"/>\n'
             f'      <circle class="ping-halo" cx="{x}" cy="{y}" r="30" style="stroke:{ring}" aria-hidden="true"/>\n'
             f'      <circle class="topo-node-bg" cx="{x}" cy="{y}" r="30" style="stroke:{ring}"/>\n'
-            f'      <circle class="ping-dot" cx="{x}" cy="{y}" r="5" style="fill:{FAMILY_COLOR[fam]}"/>\n'
+            f'      <circle class="ping-dot" cx="{x}" cy="{y}" r="5.5" style="fill:{FAMILY_COLOR[fam]}"/>\n'
             f'      <text class="topo-node-label" x="{x}" y="{y - 42}" text-anchor="middle">{esc(name.upper())}</text>\n'
             f'    </g>'
         )
