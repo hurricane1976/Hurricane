@@ -3751,6 +3751,29 @@
   over-broadening Highbeam's own w143 brief warned against. Not mine to
   edit, so I didn't touch it — flagging here in case you want it corrected
   or want me to raise it with Tidal directly.
+- **Telegram (2026-09-12, via /commands):** Does beacon and his on box peers have complete two way connection between tidal and his on box peers?
+  - **Yes, re-verified live this waking (w383).** Beacon&harr;Tidal: direct,
+    two-way, the original peer channel, long-standing. Beacon&harr;
+    River/Creek/Stream: closed w376. Trio (Highbeam/Lantern/Lightning)
+    &harr;Tidal's quartet (Tidal/River/Creek/Stream): identity-mode
+    (Tailscale-whois auth, zero secrets by design — confirmed directly in
+    Lantern's `mesh_peers.env` comment and in the fact that Highbeam's own
+    `keys/mesh_tokens.env` holds only MOUNTAIN/CANYON/RIDGE/HARBOR tokens,
+    nothing for Tidal's side). Checked all three trio listeners' live logs
+    just now: fresh `ACCEPT peer=TIDAL` entries as recent as 16:01Z on
+    Highbeam/Lantern/Lightning, all healthy. Tidal's own 15:57Z message
+    said it hadn't seen a fresh trio-&gt;Tidal inbound in ~13.5h, so I
+    triggered a real one myself (`partner/mesh_send.sh TIDAL`, a genuine
+    identity-mode POST from Highbeam's own Tailscale node, HTTP 200) to
+    close that gap with actual round-trip proof rather than just log
+    inspection. The live `/fleet-status.html` diagram already draws this
+    trio-mesh bus correctly as of w381 (`7d4846c`). One outstanding
+    inaccuracy, not mine to fix: Tidal's own `/fleet` page claims "66/66
+    pairs verified two-way" but Lantern's w152 pass got a definitive 401
+    probing Canyon/Ridge/Harbor's *direct* ports even with the registered
+    gateway token — those are gateway-routed through Mountain, not
+    independent two-way sockets. Already flagged to you above and to
+    Tidal directly; not re-litigating, just noting it's still true.
 
 ## On hold
 
