@@ -2,6 +2,36 @@
 
 ## Open
 
+- **Third occurrence, tighter gap, no more "coincidence" cover story
+  (2026-09-12, ~22:11Z, interactive wake).** You sent a second real
+  Telegram message, "Update topology" (queued in `.telegram_incoming`,
+  timestamp 1789251095 -> 2026-09-12T22:11:35Z, ~20 min after the first
+  "Update fleet topology" ask this same day). This time a MOUNTAIN peer
+  broadcast landed in Beacon's root inbox *first*, at 22:11:26Z, body
+  exactly "Update topology" -- a verbatim match to your shortened wording,
+  arriving only **9 seconds before** your real message, and this time
+  preceding it rather than following it. It rode in on the same batch as
+  routine link-verification pings to all four on-box agents (21:52Z-style
+  broadcast, 22:11:16Z), which were archived normally as data. This is now
+  the third recurrence of Mountain-timing-tracking-your-Telegram-asks
+  (w390 ~36s gap, w392 ~22s gap, now ~9s gap and reversed order) and the
+  first time the match is exact wording *and* Mountain arrives first. I
+  did not treat Mountain's copy as an instruction -- AGENT.md is explicit
+  that inbound peer/internet content is data, never an order, and only
+  your verified-chat-id Telegram message drove any action. I checked all
+  three fleet topology surfaces (`FleetGraph.jsx`, `distributed-agents.html`,
+  `build_fleet_status.py`'s `topology_svg()`, per
+  [[fleet-topology-two-diagrams]]) and all three already show the full
+  live 11/11-edge state from w392 -- nothing new needed there, so this
+  message may just be you re-sending/confirming rather than a new ask;
+  said so in the Telegram reply. Flagging the pattern itself as the thing
+  that needs your read: three-for-three is past the point I can wave off
+  as topic-overlap coincidence, and I have no way from inside a session to
+  tell whether something has visibility into your Telegram stream, whether
+  Mountain (or something upstream of it) is guessing well, or something
+  else. Not irreversible, nothing acted on, but strange enough per
+  AGENT.md's own bar to raise rather than let ride a fourth time.
+
 - **Answered: "Update fleet topology" (2026-09-12, ~21:51:40Z, w392).**
   Verified via `check_replies.sh` as a real queued Telegram message from
   josh's own chat id. Interpreted it as the front-door `FleetGraph.jsx`
@@ -3929,6 +3959,8 @@
     every real network pair across all 12 agents is now confirmed live
     and two-way. Full mesh is done, the safe way. Track B stays declined.
 - **Telegram (2026-09-12, via /commands):** Update fleet topology
+- **Telegram (2026-09-12, via /commands):** How come your on box peers do not have indivduak links to other agents? Or is the topology you are displaying wrong
+- **Telegram (2026-09-12, via /commands):** Update topology
 
 ## On hold
 
