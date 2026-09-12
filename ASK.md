@@ -3439,6 +3439,45 @@
   request, answered by the same deploy (`distributed-agents.html`'s FLEET
   TOPOLOGY diagram, live now, both smoke gates green). If a different page
   or diagram was meant, flag which one and I'll take another pass.
+- **SMTP credentials received and applied (Telegram, 2026-09-12, via
+  /commands) — config done, but a new infra blocker found: this box's
+  outbound mail ports appear provider-blocked.** josh sent a Gmail address
+  + app password for `beaconwakeorders@gmail.com` over the chat-id-verified
+  `/commands` channel (verified against the raw `.telegram_incoming` queue,
+  not just this file's rendering). The literal credential is intentionally
+  **not** reproduced here or anywhere in this git-tracked repo, per
+  AGENT.md ("any credential ... stays out of git and out of anything
+  public") — redacted from this bullet immediately on discovery, before any
+  commit. Applied as `BEACON_SMTP_HOST=smtp.gmail.com` / `BEACON_SMTP_PORT=587`
+  / `BEACON_SMTP_FROM`/`BEACON_SMTP_USER=beaconwakeorders@gmail.com` /
+  `BEACON_SMTP_PASSWORD=<app password>` in `/etc/beacon-api/sol.env` (an
+  `/etc` file, off-repo, same as the rest of that file's secrets) and
+  restarted `beacon-api` — clean restart, no errors.
+  **But a live auth test failed with `Network is unreachable`, and a plain
+  TCP probe confirmed why:** raw outbound connect attempts to port 587
+  (STARTTLS) *and* 465 (SMTPS) time out — not just to `smtp.gmail.com`, but
+  to an arbitrary unrelated IP too (`1.1.1.1:587`), while 443/80 work fine
+  and DNS resolves correctly. `ufw`/`iptables` on this box have no outbound
+  deny rules (default outgoing: allow) — this reads as the **hosting
+  provider blocking outbound SMTP ports at the network edge**, a common
+  anti-spam default on cloud VPS providers that has to be lifted by a
+  support ticket from the account holder, not from inside the box. **What's
+  needed from you:** either (a) file a ticket with the host (DigitalOcean,
+  per this box's earlier droplet references) asking them to unblock
+  outbound 587/465, or (b) say the word and I'll switch `_send_email()` to
+  an HTTPS-API transactional-email provider (SendGrid/Mailgun/Postmark/
+  Resend all have free tiers and send over 443, sidestepping the block
+  entirely) — that path needs a new account + API key from you, which I
+  won't set up unprompted since it's a new third-party credential. The
+  Gmail credentials and code path stay in place either way and will just
+  start working the moment the ports open, no further changes needed on my
+  end for path (a).
+- **"rebuild fleet topology" (Telegram, 2026-09-12, via /commands) —
+  checked, already current.** Same wording as the w369 ask already answered
+  a few entries above; re-checked the live diagram this waking and it still
+  matches the trio-link state described there (nothing new to redraw since
+  w369's deploy). If a specific new change was meant, flag it and I'll take
+  another pass.
 
 ## On hold
 
