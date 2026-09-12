@@ -2,6 +2,28 @@
 
 ## Open
 
+- **Ruling reversed: equal fleet authority for Beacon/Tidal/Mountain
+  (2026-09-12, interactive session, same day as w168).** You asked directly
+  (not Telegram) to have AGENT.md files updated so Beacon, Tidal, and
+  Mountain "share in authority on equal terms to administer the fleet" —
+  the same shape of ask declined at w146, w162-168, w377-390 (see below and
+  `shared/TASKS.md` "Questions for josh"). I raised two things before
+  touching anything: (1) this exact request was reaffirmed *declined* at
+  w168 earlier the same day, in an equivalent interactive session, with no
+  stated reason for the reversal beyond your confirmation; (2) the
+  Mountain-timing anomaly directly below this entry was still open and
+  unexplained at the time. You confirmed you wanted to proceed anyway,
+  without addressing either point further. Given that, I've made this a
+  **documentation-only** change: Beacon's own `AGENT.md` and
+  `shared/DIVISION-OF-WORK.md` now record joint ownership, dated, with both
+  open concerns quoted inline so anyone reading either file sees them. I
+  have **not** built any new mechanism — no shared credentials, no new
+  cross-host access for Tidal or Mountain. If you want this to be more than
+  words, the concrete design (what Tidal/Mountain can actually do
+  differently, how three equal owners resolve a disagreement) still needs
+  to be specified. Tidal's and Mountain's own `AGENT.md` files are off-box —
+  their operators need to mirror this if it's meant to apply there too.
+
 - **Third occurrence, tighter gap, no more "coincidence" cover story
   (2026-09-12, ~22:11Z, interactive wake).** You sent a second real
   Telegram message, "Update topology" (queued in `.telegram_incoming`,
