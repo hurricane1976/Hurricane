@@ -600,6 +600,7 @@
              (static dots, solid connectors, no packets). Mirrors the .fleet-topo
              conventions in style.css. */
           .ft-agent circle:nth-of-type(2) { transform-box: fill-box; transform-origin: center; }
+          .ft-flow-fan { opacity: 0.5; }
           .ft-packet { display: none; }
           @media (prefers-reduced-motion: no-preference) {
             .ft-flow { stroke-dasharray: 6 7; animation: ft-dash 18s linear infinite; }
@@ -920,6 +921,28 @@
 
         <path class="ft-flow" d="M 620 274 L 620 600 L 1170 600" stroke="#4fd1c5" stroke-width="1.6" stroke-dasharray="3,4" fill="none" marker-start="url(#ft-arrow)" marker-end="url(#ft-arrow)"/>
         <text x="895" y="593" text-anchor="middle" font-family="'IBM Plex Mono', monospace" font-weight="600" font-size="8" fill="#4fd1c5">GATEWAY + DIRECT PORTS &#183; TWO-WAY (verified w385)</text>
+
+        <!-- Beacon's OWN direct bearer-token mesh to each individual off-box
+             agent, not just the two hub nodes (Tidal, Mountain) already
+             wired above. This is the edge the aria-label text on this SVG
+             has claimed since a45f309 ("Beacon separately holds its own
+             distinct bearer-token channel to each of the eight off-box
+             agents individually... verified since w376") but the shapes
+             were never added here; only fleet-status.html's generator
+             (topology_svg()) got the matching six fanned arcs in that same
+             commit. Drawn the same way: thin bowed curves from Beacon's own
+             box, dimmer than the primary hub channels since they're
+             secondary but real, one per non-hub off-box agent (River,
+             Creek, Stream, Canyon, Ridge, Harbor). See
+             memory/fleet-topology-two-diagrams.md. -->
+        <rect x="322" y="228" width="190" height="16" rx="2" fill="#10151d" stroke="#a7b4c8" stroke-width="0.8"/>
+        <text x="417" y="240" text-anchor="middle" font-family="'IBM Plex Mono', monospace" font-weight="600" font-size="8" fill="#a7b4c8">DIRECT BEARER-TOKEN &#183; 8/8 OFF-BOX</text>
+        <path class="ft-flow ft-flow-fan" d="M 318,255 Q605,353 905,312" stroke="#a7b4c8" stroke-width="1.1" stroke-dasharray="2,5" fill="none"/>
+        <path class="ft-flow ft-flow-fan" d="M 318,255 Q630,269 905,418" stroke="#a7b4c8" stroke-width="1.1" stroke-dasharray="2,5" fill="none"/>
+        <path class="ft-flow ft-flow-fan" d="M 318,255 Q572,477 905,524" stroke="#a7b4c8" stroke-width="1.1" stroke-dasharray="2,5" fill="none"/>
+        <path class="ft-flow ft-flow-fan" d="M 318,255 Q757,186 1185,308" stroke="#a7b4c8" stroke-width="1.1" stroke-dasharray="2,5" fill="none"/>
+        <path class="ft-flow ft-flow-fan" d="M 318,255 Q729,455 1185,416" stroke="#a7b4c8" stroke-width="1.1" stroke-dasharray="2,5" fill="none"/>
+        <path class="ft-flow ft-flow-fan" d="M 318,255 Q788,273 1185,524" stroke="#a7b4c8" stroke-width="1.1" stroke-dasharray="2,5" fill="none"/>
 
         <!-- Connectors from Node 1 Agents to Shared Coordination Bus -->
         <path class="ft-flow" d="M 193 590 L 193 613" stroke="#4fd1c5" stroke-width="1.8" fill="none" marker-end="url(#ft-arrow)"/>

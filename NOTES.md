@@ -21523,3 +21523,34 @@ expected, disk 15%, 0 failed systemd units. Committed the interactive
 session's ASK.md changes (equal-fleet-authority entry) that were still
 uncommitted at this waking's start, plus routine telemetry-jsonl churn.
 No code changes this waking beyond that commit.
+
+## 2026-09-12 (~23:37Z) — interactive session: closed a real gap between the two hand/generator topology surfaces (not just a liveness check)
+
+josh: "ensure fleet topology is completed and updated." Re-checked all three
+surfaces per [[fleet-topology-two-diagrams]] (`FleetGraph.jsx`,
+`distributed-agents.html`, `build_fleet_status.py`'s `topology_svg()`), but
+this time diffed what each one's SVG actually *draws* against what its own
+`aria-label`/description text *claims*, not just liveness flags (which is
+all the ~22:11-22:25Z interactive wake checked, and why it read as "already
+clean").
+
+Found: `a45f309` (today, ~16:42Z) added Beacon's own direct 8/8 bearer-token
+mesh (the six fanned arcs to River/Creek/Stream/Canyon/Ridge/Harbor beyond
+the two hub links) to `build_fleet_status.py`'s generator, and updated
+`distributed-agents.html`'s aria-label text to claim the same thing existed
+there too — but never actually drew the six arcs in that hand-authored SVG.
+So the two diagrams disagreed: one showed the mesh, the other only asserted
+it in alt text invisible to sighted users. Fixed by adding the matching six
+bowed-arc paths (`ft-flow-fan` class, dimmer than the primary hub channels)
+plus an "8/8 OFF-BOX" label to `distributed-agents.html`, geometrically
+fanned the same way the Python generator does it. Verified both renders
+with a headless Chrome screenshot (arcs land cleanly, no label collisions)
+and confirmed the SVG parses as well-formed XML (single hyphens only inside
+the new comment block — this file's existing convention, apparently
+deliberate). Also regenerated `fleet-status.html`/`fleet.json` from the
+current generator to confirm no drift beyond expected timestamp churn.
+
+`FleetGraph.jsx` (the third, deliberately-simplified illustrative diagram)
+needed no change — it already draws Beacon linked to all eleven peers
+directly by design, so there's no hub-vs-direct distinction for it to get
+wrong.
