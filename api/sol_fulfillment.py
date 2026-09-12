@@ -22,22 +22,21 @@ gap that review found:
 Rate limiting on the HTTP endpoints lives in server.py (reusing its
 existing _agora_allow-style limiter), not in here.
 """
+import base64
 import hashlib
 import json
 import os
 import re
 import secrets
-import smtplib
 import sqlite3
-import ssl
 import sys
 import threading
 import time
 import traceback
+import urllib.error
 import urllib.parse
 import urllib.request
 from datetime import datetime, timezone
-from email.message import EmailMessage
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -69,7 +68,7 @@ POLL_SECONDS = int(os.environ.get('BEACON_SOL_POLL_SECONDS', '60'))
 ORDER_RETENTION_SECONDS = int(os.environ.get('BEACON_SOL_ORDER_RETENTION', str(30 * 86400)))
 # Minimum gap between email-delivery retries for one order (paid_pending_email
 # is a real customer who already paid -- retry, don't strand them, but don't
-# hammer the SMTP relay every poll cycle either).
+# hammer the Mailgun API every poll cycle either).
 EMAIL_RETRY_SECONDS = int(os.environ.get('BEACON_SOL_EMAIL_RETRY_SECONDS', '900'))
 MAX_RPC_SIGNATURES = 50
 BASE58 = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz'
@@ -186,28 +185,67 @@ def verify_signature(signature, order):
     return True, 'confirmed'
 
 
-def _send_email(to_addr, title, token):
-    host = os.environ.get('BEACON_SMTP_HOST')
-    sender = os.environ.get('BEACON_SMTP_FROM')
-    if not host or not sender:
-        return False, 'SMTP is not configured'
-    port = int(os.environ.get('BEACON_SMTP_PORT', '587'))
-    user = os.environ.get('BEACON_SMTP_USER')
-    password = os.environ.get('BEACON_SMTP_PASSWORD')
-    url = f'{PUBLIC_BASE}/api/sol/download/{token}'
-    msg = EmailMessage()
-    msg['Subject'] = f'Your Beacon download: {title}'
-    msg['From'] = sender; msg['To'] = to_addr
-    msg.set_content(f'''Your payment was confirmed.\n\nDownload: {url}\n\nThis link works once and expires in {int(os.environ.get('BEACON_SOL_TOKEN_TTL', '172800')) // 3600} hours.\n\nBeacon\n''')
+def _mailgun_send(to_addr, subject, text=None, html=None, attachments=None):
+    """POST to Mailgun's HTTP API (v3 /messages) -- HTTPS on :443, so it isn't
+    subject to DigitalOcean's outbound block on SMTP ports (25/465/587) that
+    made the prior smtplib path undeliverable. Always multipart/form-data
+    (one encoding path for every call, whether or not there's an attachment,
+    is simpler to keep correct than branching between urlencoded and
+    multipart). `attachments` is an optional list of (filename, bytes,
+    content_type) tuples. Returns (ok, detail); ok is False (never raises)
+    on missing config, an HTTP error, or a network failure.
+    """
+    domain = os.environ.get('BEACON_MAILGUN_DOMAIN')
+    api_key = os.environ.get('BEACON_MAILGUN_API_KEY')
+    sender = os.environ.get('BEACON_MAILGUN_FROM')
+    if not domain or not api_key or not sender:
+        return False, 'Mailgun is not configured'
+    base_url = os.environ.get('BEACON_MAILGUN_BASE_URL', 'https://api.mailgun.net/v3')
+    boundary = secrets.token_hex(16)
+    body = bytearray()
+
+    def _field(name, value):
+        body.extend(
+            f'--{boundary}\r\nContent-Disposition: form-data; name="{name}"\r\n\r\n'.encode()
+        )
+        body.extend(str(value).encode('utf-8'))
+        body.extend(b'\r\n')
+
+    _field('from', sender)
+    _field('to', to_addr)
+    _field('subject', subject)
+    if text:
+        _field('text', text)
+    if html:
+        _field('html', html)
+    for filename, data, content_type in (attachments or []):
+        body.extend(
+            f'--{boundary}\r\nContent-Disposition: form-data; name="attachment"; '
+            f'filename="{filename}"\r\nContent-Type: {content_type}\r\n\r\n'.encode()
+        )
+        body.extend(data)
+        body.extend(b'\r\n')
+    body.extend(f'--{boundary}--\r\n'.encode())
+
+    req = urllib.request.Request(
+        f'{base_url}/{domain}/messages', data=bytes(body),
+        headers={'Content-Type': f'multipart/form-data; boundary={boundary}'})
+    req.add_header('Authorization', 'Basic ' + base64.b64encode(f'api:{api_key}'.encode()).decode())
     try:
-        with smtplib.SMTP(host, port, timeout=20) as smtp:
-            smtp.starttls(context=ssl.create_default_context())
-            if user:
-                smtp.login(user, password or '')
-            smtp.send_message(msg)
-        return True, 'sent'
+        with urllib.request.urlopen(req, timeout=20) as resp:
+            return True, f'mailgun http {resp.status}'
+    except urllib.error.HTTPError as exc:
+        detail = exc.read(200).decode('utf-8', errors='replace')
+        return False, f'mailgun http {exc.code}: {detail}'
     except Exception as exc:
         return False, f'email failed: {type(exc).__name__}'
+
+
+def _send_email(to_addr, title, token):
+    url = f'{PUBLIC_BASE}/api/sol/download/{token}'
+    hours = TOKEN_TTL // 3600
+    text = f'Your payment was confirmed.\n\nDownload: {url}\n\nThis link works once and expires in {hours} hours.\n\nBeacon\n'
+    return _mailgun_send(to_addr, f'Your Beacon download: {title}', text=text)
 
 
 def _issue_token(conn, order):
@@ -249,7 +287,7 @@ def _deliver(order_id):
 
 def retry_stalled_email():
     """Re-attempt delivery for orders that paid but never got their email --
-    a real customer already paid, so a single SMTP hiccup shouldn't strand
+    a real customer already paid, so a single email-relay hiccup shouldn't strand
     them forever. `_deliver`'s own email_attempted_at gate keeps this from
     resending faster than EMAIL_RETRY_SECONDS."""
     with _db_lock:
