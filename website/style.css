@@ -2074,6 +2074,22 @@ main h1 code, main h2 code, main h3 code, main h4 code, main a code {
     offset-path: path("M750,150 Q980,44 1210,150");
     animation-delay: 3s;
   }
+  /* On-box trio (Highbeam/Lantern/Lightning) reaching off-box hosts directly
+     -- an aggregate bus from the junction dot below THIS BOX, not one line
+     per agent (see build_fleet_status.py's topology_svg() comment). Keep
+     these two offset-paths in sync with the "chan-peer" path d it emits for
+     the trio ("M460,420 Q650,415 750,395" and "M460,420 Q835,452 1210,395").
+  */
+  .fleet-topo .chan-flow-trio-tidal {
+    fill: rgba(79, 209, 197, 0.9);
+    offset-path: path("M460,420 Q650,415 750,395");
+    animation-delay: 0.5s;
+  }
+  .fleet-topo .chan-flow-trio-mountain {
+    fill: rgba(79, 209, 197, 0.9);
+    offset-path: path("M460,420 Q835,452 1210,395");
+    animation-delay: 2.5s;
+  }
   .fleet-topo .topo-node { transition: transform .25s cubic-bezier(0.16, 1, 0.3, 1); transform-box: fill-box; transform-origin: center; }
   .fleet-topo .topo-node:hover,
   .fleet-topo .topo-node.is-active { transform: scale(1.09); }

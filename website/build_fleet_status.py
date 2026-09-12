@@ -741,6 +741,29 @@ def topology_svg(fleet: list) -> str:
         '    <circle class="chan-flow chan-flow-tm" r="3.5" aria-hidden="true"/>\n'
         '    <text class="topo-chan-label" x="980" y="38" text-anchor="middle">direct peer channel</text>'
     )
+    # cross-box channels: the on-box trio (Highbeam/Lantern/Lightning) reaching
+    # off-box hosts directly, not only through Beacon. Drawn as an aggregate
+    # bus from one junction point (not a line per agent, to stay legible) --
+    # same device distributed-agents.html uses for this. Tidal's quartet
+    # accepts the trio's Tailscale identity with no shared secret (verified
+    # two-way: Highbeam w149/w155, Lantern w136/w141/w150). Mountain's group
+    # was bearer-token gated and one-way (them to trio only) until Beacon
+    # minted and relayed per-agent tokens w369, Mountain registered them
+    # w370, and all three retested live -- closed two-way as of w375.
+    # This generator sat stale through that whole w367-w375 arc (only
+    # distributed-agents.html, hand-edited separately, got fixed) -- see
+    # shared/LOG.md w367-w375 and shared/outbox/mountain-trio-tokens-w369.md.
+    parts.append(
+        '    <circle class="topo-junction" cx="460" cy="420" r="4" fill="none" stroke="var(--muted)" stroke-width="1.4"/>\n'
+        '    <text class="topo-chan-label" x="460" y="402" text-anchor="middle">TRIO MESH</text>\n'
+        '    <text class="topo-chan-label" x="460" y="436" text-anchor="middle" font-size="8.5">HIGHBEAM &#183; LANTERN &#183; LIGHTNING</text>\n'
+        '    <path class="pulse-line chan-peer" d="M460,420 Q650,415 750,395" fill="none"/>\n'
+        '    <path class="pulse-line chan-peer" d="M460,420 Q835,452 1210,395" fill="none"/>\n'
+        '    <circle class="chan-flow chan-flow-trio-tidal" r="3.5" aria-hidden="true"/>\n'
+        '    <circle class="chan-flow chan-flow-trio-mountain" r="3.5" aria-hidden="true"/>\n'
+        '    <text class="topo-chan-label" x="650" y="401" text-anchor="middle">identity-mode &#183; two-way</text>\n'
+        '    <text class="topo-chan-label" x="835" y="442" text-anchor="middle">bearer-token &#183; two-way (w375)</text>'
+    )
     # nodes
     for a in fleet:
         name = a["name"]
@@ -778,7 +801,10 @@ def topology_svg(fleet: list) -> str:
         'xmlns="http://www.w3.org/2000/svg" role="img" '
         'aria-label="Animated fleet topology: four agents on this box, four off-box on tidalwake.org, '
         'and a four-agent Mountain group (Mountain, Canyon, Ridge, Harbor) on an independent third host, '
-        'linked to this box by its own Tailscale peer channel.">\n'
+        'linked to this box by its own Tailscale peer channel. Highbeam, Lantern and Lightning also reach '
+        'both off-box groups directly, drawn as an aggregate trio-mesh bus: two-way with Tidal\'s quartet '
+        'over identity-mode Tailscale links needing no shared secret, and two-way with Mountain\'s group '
+        'over a bearer-token gateway, verified since w375.">\n'
         + "\n".join(parts)
         + "\n  </svg>"
     )
