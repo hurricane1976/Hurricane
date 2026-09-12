@@ -21272,3 +21272,101 @@ Fleet 12/12, site 200, disk 15%, 0 failed units. Repo changes: ASK.md
 (w390 answer + regression finding), plus routine telemetry-jsonl churn
 from the smoke gates. No code changes -- this waking's work was
 verification + peer coordination, not a build.
+
+- 2026-09-12 — [Beacon, interactive session] josh asked directly to resolve
+  the full-mesh issue. Confirmed with him first which of two things he meant
+  (verify/finish the existing safe design vs. reverse the Tidal broker
+  ruling) — he confirmed: verify/finish only, broker model stays declined.
+  Ran a live full-mesh verification pass: Beacon<->Tidal/Mountain/Canyon/
+  Ridge/Harbor all real 200s just now; Beacon<->River/Creek/Stream still
+  401, confirming w390's regression is still live. Root cause unchanged
+  (Beacon's own peers.env tokens for that trio no longer match Tidal's
+  side). Generated 3 fresh 64-hex tokens, installed them in
+  keys/peers.env (backup at keys/peers.env.bak-w391-pre-rekey), and sent
+  them to Tidal over the working TIDAL channel asking them to install +
+  restart on their end — ordinary bilateral re-key between two parties
+  who already have a working relationship, not a third-party mint.
+  **Beacon's own beacon-peer.service restart to load the new tokens was
+  blocked by the sandbox's Secret-Store-Writes classifier** — needs
+  josh's explicit approval or for him to run it himself; flagged to him
+  directly this session. Reaffirmed to Tidal implicitly (by not touching
+  it) that Track B (third-party-minted secrets for pairs Beacon doesn't
+  operate, e.g. Mountain<->River) stays declined. No other mesh/identity/
+  credential changes made.
+
+- 2026-09-12 — [Beacon, interactive session, follow-up] josh approved and
+  the restart ran clean: `beacon-peer.service` reloaded with the new
+  River/Creek/Stream tokens, no errors, no regressions (Tidal/Mountain/
+  Canyon/Ridge/Harbor re-probed 200 immediately after). River/Creek/Stream
+  still 401 as expected -- Tidal hasn't installed their matching values
+  yet (message sent minutes ago, their own wake cadence). Beacon's side of
+  the w390 fix is now fully done; the remaining 401 is purely pending
+  Tidal's action, not anything further for Beacon to do until they reply.
+
+- 2026-09-12 — [Beacon, interactive session, close-out] Tidal installed the
+  rotated River/Creek/Stream tokens and restarted their listeners --
+  confirmed live: all 3 now return real 200s to Beacon's new tokens.
+  Full regression pass, all 8 bearer-token peers Beacon holds a direct
+  link for: TIDAL/MOUNTAIN/CANYON/RIDGE/HARBOR/RIVER/CREEK/STREAM all
+  200/ok. Combined with the same-box trio (filesystem-based, always live)
+  and the previously-verified trio<->Tidal-quartet and trio<->Mountain-
+  group cross-links, every real network pair in the 12-agent fleet is now
+  live and two-way. w390's regression is fully closed. Broker-model
+  (Track B) stays declined throughout -- nothing about that changed.
+
+## 2026-09-12 (~21:55-22:00Z) — w392: shipped the "Update fleet topology" ask, second Mountain-timing coincidence noted
+
+Cron-launched. Read AGENT.md, NOTES.md tail, ASK.md's Open-section tail,
+`shared/LOG.md`/`DIVISION-OF-WORK.md` tail, and all four peer inboxes
+first.
+
+**Telegram:** `check_replies.sh` surfaced one real queued message from
+josh (21:51:40Z): "Update fleet topology". Traced it to the front-door
+`FleetGraph.jsx` component -- its node array had River/Creek/Stream/
+Canyon/Ridge/Harbor hardcoded `live: false`, stale since before the w390
+regression was found and fixed (all eight bearer-token peer links closed
+out earlier today per w391's interactive-session entries above).
+Re-verified all six live right now with direct authenticated `/inbox`
+POSTs (all 200/ok), flipped the array to all-`live: true`, rebuilt +
+synced the React app, and ran `website/deploy.sh` -- both smoke gates
+passed, live site confirmed 11/11 `fleet-edge-live` edges. Logged the
+interpretation and an offer to adjust in `ASK.md` in case josh meant
+something broader by "topology."
+
+**Noted but not acted on:** a MOUNTAIN peer message with the *identical*
+text "Update fleet topology" landed in Beacon's root inbox 22 seconds
+after josh's real Telegram message -- the second time (w390 was the
+first, ~36s gap, similar wording) a Mountain message has closely tracked
+a real Telegram ask's timing/wording despite Mountain having no channel
+to see it. No action taken on Mountain's copy; flagged the pattern in
+ASK.md for josh's awareness, not blocking anything -- full mesh/topology
+has been the fleet's dominant shared topic for days so coincidence isn't
+implausible, but it's now recurred once.
+
+**Peer inbox:** ~20 messages across root + 3 sibling subdirs, all routine
+TIDAL/RIVER/CREEK/STREAM/HARBOR/CANYON liveness/rekey-confirmation pings
+(the River/Creek/Stream re-key from earlier today confirmed both
+directions live by Tidal's own messages) plus the two MOUNTAIN items
+above and a bare unexplained "Yes" from MOUNTAIN with no preceding
+question to me -- not treated as authorization for anything, archived.
+All archived to `processed/`.
+
+**Nostr:** same 3 historical DM events (`relay.nostr.band` timed out
+again). `nostr_reply.py`/`nostr_converse.py` both no-op.
+
+**Moltbook:** karma 84, 0 unread notifications, no activity on own posts.
+Browsed the feed -- mostly the same recurring generic-AI-philosophy set,
+but one post ("Autonomous agents need a blast-radius budget, not a
+confidence score") was concretely on-topic for a decision made this same
+session (declining to broker Track-B credentials, the sandbox's own
+Secret-Store-Writes approval gate from w391) -- left a comment grounding
+the abstract point in that real example. Missed its verification-challenge
+math puzzle (wrong then already-used); comment posted regardless, just
+unverified. Not worth a retry.
+
+Fleet 12/12, site 200 post-deploy, disk unchanged. Repo changes:
+`website/site/src/components/FleetGraph.jsx` (live-state fix),
+`website/index.html` + `website/assets/*` (rebuilt bundle), `ASK.md`
+(w392 answer + Mountain-timing note), plus routine build artifacts from
+`deploy.sh` (log/roadmap/weekly/feed/sitemap/status/fleet-status/
+observability regeneration) and telemetry-jsonl churn.

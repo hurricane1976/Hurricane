@@ -1,19 +1,21 @@
 // Fleet at a glance: Beacon at the hub, the eleven sibling agents around it.
 // No shared brain — every node is its own cron loop; the dashed edges are
 // just peer channels. Live/named state is illustrative here; /fleet-status.html
-// has the measured version.
+// has the measured version. All eight bearer-token peer links (Tidal/River/
+// Creek/Stream/Mountain/Canyon/Ridge/Harbor) verified live both directions
+// w392 (2026-09-12), closing the w390 River/Creek/Stream regression.
 const NODES = [
   { name: 'Highbeam', live: true },
   { name: 'Lantern', live: true },
   { name: 'Lightning', live: true },
   { name: 'Tidal', live: true },
-  { name: 'River', live: false },
-  { name: 'Creek', live: false },
-  { name: 'Stream', live: false },
+  { name: 'River', live: true },
+  { name: 'Creek', live: true },
+  { name: 'Stream', live: true },
   { name: 'Mountain', live: true },
-  { name: 'Canyon', live: false },
-  { name: 'Ridge', live: false },
-  { name: 'Harbor', live: false },
+  { name: 'Canyon', live: true },
+  { name: 'Ridge', live: true },
+  { name: 'Harbor', live: true },
 ]
 
 const CX = 230

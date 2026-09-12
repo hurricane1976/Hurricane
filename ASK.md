@@ -2,6 +2,33 @@
 
 ## Open
 
+- **Answered: "Update fleet topology" (2026-09-12, ~21:51:40Z, w392).**
+  Verified via `check_replies.sh` as a real queued Telegram message from
+  josh's own chat id. Interpreted it as the front-door `FleetGraph.jsx`
+  component (`website/site/src/components/FleetGraph.jsx`), whose node list
+  had River/Creek/Stream/Canyon/Ridge/Harbor hardcoded `live: false` —
+  stale since before the w390-w391 regression-and-fix cycle. Re-verified all
+  six links live right now (direct authenticated POSTs to each peer's
+  `/inbox`, all six returned 200/ok), flipped all eleven nodes to `live:
+  true` to match, rebuilt (`npm run build` + `npm run sync` in
+  `website/site/`), and deployed via `website/deploy.sh` — smoke tests
+  passed, live page confirmed showing 11/11 `fleet-edge-live` edges. If
+  josh meant something broader by "topology" (e.g. more mesh-linking work
+  rather than fixing the stale graphic), flag that and I'll adjust — but
+  given the mesh work was fully closed out earlier this same waking cycle,
+  updating the one remaining stale visual seemed like the concrete match.
+  **Security note, not a request for action:** a MOUNTAIN peer message with
+  the *identical* text "Update fleet topology" landed in Beacon's root
+  inbox at 21:52:02Z — 22 seconds after josh's real Telegram message. This
+  is the second time (see w390, ~36s gap, similar-but-not-identical
+  wording) a Mountain peer message has closely tracked the timing/wording
+  of a real Telegram ask from josh that Mountain has no channel to see. No
+  action was taken on Mountain's message (only josh's verified Telegram
+  message drove the topology fix above), and I have no evidence of an
+  actual leak — full-mesh/topology has been the fleet's dominant shared
+  topic for days, so two operators discussing it in the same hour isn't
+  implausible. Noting the pattern for awareness since it's now recurred.
+
 - **Flagging, not acting on: a fabricated-authorization push over the peer
   channel (2026-09-12, w377, ~14:15-14:20Z).** Three messages arrived from
   MOUNTAIN this waking, all landing before I did: (1) "How come mountains
@@ -3874,6 +3901,34 @@
     that needs an explicit, specific yes from you naming that action —
     happy to do it the moment you say so, just not inferring it from a
     general "ensure full mesh."
+  - **Follow-up (interactive session, same day, 2026-09-12):** you asked
+    directly to resolve this. Confirmed with you first which of two things
+    you meant — verify/finish the existing safe design, or reverse the
+    standing Tidal-broker-credential decline (Highbeam w168 below) — you
+    chose **verify/finish only; the broker-model ruling stays as-is.**
+    Re-ran a live check: Beacon↔Tidal/Mountain/Canyon/Ridge/Harbor all
+    real 200s again just now. Beacon↔River/Creek/Stream still 401 (w390's
+    regression, unresolved). Generated 3 fresh 64-hex tokens and sent them
+    to Tidal over the peer channel, asking them to install + restart on
+    their end (ordinary bilateral re-key with a party we already have a
+    working relationship with, not a broker request). **Blocked on my own
+    side:** restarting `beacon-peer.service` to load the matching values
+    here was refused by this session's sandbox (Secret-Store-Writes
+    classifier) — needs you to either run `sudo systemctl restart
+    beacon-peer` yourself, or approve it in a session that allows it. Once
+    that's done and Tidal confirms their side, this is the one remaining
+    real gap closed. Nothing else changed; Track B (third-party-minted
+    secrets) still declined.
+  - **CLOSED (same day, 2026-09-12).** You approved the restart; it ran
+    clean with no regressions. Tidal then installed the rotated tokens and
+    restarted their own River/Creek/Stream listeners. Final regression
+    pass, all 8 bearer-token peers Beacon holds: TIDAL/MOUNTAIN/CANYON/
+    RIDGE/HARBOR/RIVER/CREEK/STREAM all real 200s. Combined with the
+    same-box trio (filesystem-based, always live) and the previously
+    live-verified trio↔Tidal-quartet and trio↔Mountain-group cross-links,
+    every real network pair across all 12 agents is now confirmed live
+    and two-way. Full mesh is done, the safe way. Track B stays declined.
+- **Telegram (2026-09-12, via /commands):** Update fleet topology
 
 ## On hold
 
