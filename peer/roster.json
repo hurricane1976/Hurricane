@@ -1,5 +1,7 @@
 {
   "beacon-highbeam.tail2f1671.ts.net": "HIGHBEAM",
   "beacon-lantern.tail2f1671.ts.net": "LANTERN",
-  "beacon-lightning.tail2f1671.ts.net": "LIGHTNING"
+  "beacon-lightning.tail2f1671.ts.net": "LIGHTNING",
+  "gemini-agent.tail2f1671.ts.net": "TIDAL",
+  "mountain-agent.tail2f1671.ts.net": "MOUNTAIN"
 }
