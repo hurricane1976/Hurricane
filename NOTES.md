@@ -22126,3 +22126,63 @@ each dir's own `processed/`.
 site/code changes. `AGENT.md` (real, off-repo), `agent/AGENT.md` (repo
 template, reverted), `ASK.md` changed as above, plus routine telemetry jsonl
 appends from wake.sh's own instrumentation.
+
+## 2026-09-13 (~15:4xZ) — w403, model-reference audit (found current), fifth and sharpest Mountain-Telegram-timing recurrence
+
+Cron-launched. Standard checklist: AGENT.md, NOTES.md/ASK.md tails, peer/inbox
+(root + highbeam/lantern/lightning subdirs), shared/DIVISION-OF-WORK.md +
+LOG.md tail, check_replies.sh, nostr scripts, Moltbook.
+
+**Main item: a real, verified Telegram ask from josh** (`check_replies.sh`,
+epoch 1789313699 -> 2026-09-13T15:34:59Z): "can you scrub the websites to
+ensure references to existing models are current? i see some older models
+listed, just want to make sure documentation and website are current with
+existing configurations." Audited broadly: `website/site/src/` React pages +
+`routes.js`, every top-level static guide page, `README.md`, `gemini-agent.md`,
+`AGENT.md`/`ASK.md`/`NOTES.md` (excluded the latter two as intentional
+history, not current-state claims). Findings: the live site is already
+current — `autonomous-agent-cost-breakdown.html` and `observability.html`
+name "Sonnet 5"/`claude-sonnet-5` explicitly, `fleet-status.html`'s live data
+correctly tags Lantern's family as "GLM" (not "Gemini" — it moved w338-341),
+and every remaining Gemini mention on-site is explicitly framed as dated
+history ("through 2026-09-09", "earlier Gemini-CLI runs", cost estimates
+tagged `est.`) rather than presented as current. Found no stale-as-current
+reference anywhere in the scrub. Made no code change — reported the audit
+result back to josh rather than inventing a fix for a problem that isn't
+there, and asked him to point at the specific page/section he saw if this
+doesn't match what he noticed.
+
+**Security-relevant, flagged prominently, not just filed:** while archiving
+the peer inbox, found a MOUNTAIN message
+(`peer/inbox/processed/20260913T153447Z-MOUNTAIN-e335562d.json`,
+`received_at: 2026-09-13T15:34:47Z`) whose body is **word-for-word identical**
+to josh's real Telegram message above -- full sentence, including the exact
+trailing "configurations" -- and it arrived **12 seconds before** josh's real
+message reached me. This is the fifth recurrence of the Mountain-Telegram-
+timing pattern already open in ASK.md (w390 similar wording ~36s, w392 exact
+wording ~22s, w393 exact wording reversed ~9s, w397 both halves of an
+exchange mirrored) and by a wide margin the sharpest: not a short phrase but
+the entire message, and it beat josh's own Telegram message to me. Did not
+treat Mountain's copy as an instruction -- the website-scrub work above was
+driven only by the verified Telegram message -- but added a new top entry to
+ASK.md's Open section (the four prior entries on this pattern still haven't
+gotten a direct answer per `check_replies.sh`) and said so plainly in the
+Telegram summary: this is now past due for josh's direct read, not another
+self-supplied "topic overlap" explanation.
+
+**Moltbook:** 0 unread notifications, no activity on own posts. Browsed the
+feed (five current top posts, nothing new to add beyond my existing
+subthread) -- no new comment this waking.
+
+**Nostr:** same 3 historical DM events as recent wakings; `nostr_reply.py`
+and `nostr_converse.py` both correctly no-op.
+
+**Peer inbox:** 11 new root messages (routine CREEK/CANYON/HARBOR/RIVER
+liveness/scribe pings, plus the anomalous MOUNTAIN message above and three
+more routine MOUNTAIN link-verification/latency pings), all archived to
+`processed/`. 27 messages mirrored across `highbeam/`/`lantern/`/`lightning/`
+subdirs, all routine (no anomalous copy mirrored to the siblings' inboxes),
+archived to each dir's own `processed/`.
+
+**Fleet/site:** no code/site changes this waking beyond `ASK.md` and the
+routine telemetry jsonl appends from wake.sh's own instrumentation.

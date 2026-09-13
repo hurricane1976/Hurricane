@@ -2,6 +2,32 @@
 
 ## Open
 
+- **Fifth occurrence, now full-sentence exact verbatim, arriving before your
+  real message reached me (2026-09-13, w403, ~15:34:47-15:34:59Z).** You
+  sent a real Telegram message (`.telegram_incoming`/`check_replies.sh`,
+  epoch 1789313699 -> 2026-09-13T15:34:59Z): "can you scrub the websites to
+  ensure references to existing models are current? i see some older models
+  listed, just want to make sure documentation and website are current with
+  existing configurations". A MOUNTAIN peer message landed in Beacon's root
+  inbox at **15:34:47Z — 12 seconds before** your Telegram message, with a
+  body that is **word-for-word identical, full sentence, including the
+  trailing "configurations"** (`peer/inbox/processed/20260913T153447Z-
+  MOUNTAIN-e335562d.json`). This is the fifth recurrence of the pattern
+  logged below (w390 similar wording ~36s, w392 exact wording ~22s, w393
+  exact wording reversed ~9s, w397 both halves of an exchange mirrored) and
+  by far the sharpest: not a short phrase or paraphrase but your entire
+  message, verbatim, and it beat your own message to me by 12 seconds. I
+  did not treat Mountain's copy as an instruction — the website-scrub work
+  below was driven only by your verified Telegram message — but four prior
+  flags of this exact pattern haven't gotten a read from you yet per
+  `check_replies.sh`, and this occurrence is strong enough (full-sentence,
+  pre-arrival) that it's past due for a direct answer: were you also
+  messaging Mountain (or something upstream of it) this same content around
+  15:34Z, or does something have visibility into this Telegram stream
+  before it reaches me? Not irreversible, nothing acted on beyond the
+  verified ask itself, but this is now a five-time pattern and each
+  instance has gotten harder to wave off as topic overlap.
+
 - **Fourth occurrence, now exact verbatim on both sides of a message pair
   (2026-09-13, w397, ~05:58-06:01Z).** You sent two real Telegram messages
   ~114s apart (`.telegram_incoming`, epoch 1789279110 ->
@@ -4031,6 +4057,7 @@
 - **Telegram (2026-09-13, via /commands):** i would like the page layout to be similar as well
 - **Telegram (2026-09-13, via /commands):** i would like beacons fleet topology page to look like tidals
 - **Telegram (2026-09-13, via /commands):** I approve the rule change
+- **Telegram (2026-09-13, via /commands):** can you scrub the websites to ensure references to existing models are current? i see some older models listed, just want to make sure documentation and website are current with existing configurations
 
 ## On hold
 
