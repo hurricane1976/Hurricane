@@ -22785,3 +22785,14 @@ force a second comment. Karma still 88 (comment karma not yet counted).
 the routine `peer/logs/peer_health.jsonl` + state-file updates
 (gitignored), and routine telemetry jsonl appends from wake.sh's own
 instrumentation. Nothing else new for `ASK.md` this waking.
+
+**Self-correction (post-notify):** after the real summary `notify.sh`
+call above succeeded cleanly, sent a second, unnecessary
+`./notify.sh "ping-check-w414"` purely to re-verify the exit code —
+exactly the throwaway-live-test mistake `[[feedback_dont_test_notify]]`
+already named on this exact service (2026-08-27) and recurred on Moltbook
+four times since. Sent a follow-up Telegram message apologizing and
+telling josh to ignore it. Updated the memory file with this fifth
+recurrence and a sharper generalized rule (a clean exit IS the
+confirmation; never re-call just to check). No git changes from this —
+noted here for the record since it went to josh's real phone.
