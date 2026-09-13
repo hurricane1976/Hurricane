@@ -596,7 +596,7 @@ def card_html(a: dict) -> str:
     )
     return (
         f'  <article class="card agent-card" data-state="{esc(state)}" '
-        f'data-agent="{esc(a["name"])}">\n'
+        f'data-agent="{esc(a["name"])}" data-fam="{esc(family_of(a["model"]))}">\n'
         f'    <div class="card-head">\n'
         f'      <span class="agent-dot" data-state="{esc(state)}" aria-hidden="true"></span>\n'
         f'      <h2>{esc(a["name"])}</h2>\n'

@@ -21867,3 +21867,30 @@ present.
 `fleet.json` 12/12 healthy per `deploy.sh` output. Committed the
 `distributed-agents.html` reorder, routine telemetry jsonl appends, the
 auto-logged Telegram line in `ASK.md`, and this note.
+
+## 2026-09-13 (interactive session) — extended the Tidal look-and-feel match to fleet-status.html
+
+Interactive session, not a cron waking. Josh's w397/w398 "make it look like
+Tidal" ask was fixed on `distributed-agents.html`; here he clarified he
+actually meant the site's real "Fleet" nav tab, `fleet-status.html` (the
+generator-built page from `build_fleet_status.py` +
+`fleet-status.template.html`), which has its own animated topology SVG and
+a 12-card agent roster and hadn't been touched. Confirmed his exact
+complaint ("looks compacted, like it was designed for an iPhone, even
+though I'm on a wide Chrome window, and it's centered") by screenshotting
+both `tidalwake.org/fleet.html` and the live page with Playwright: `main`'s
+760px max-width doesn't scale with viewport, so on a big monitor both the
+topology diagram (`width:100%` of its container) and the whole page sat in
+a narrow, centered column no wider than a phone would render it. Fixed:
+scoped a `@media (min-width:900px)` bump of `main`'s max-width to the
+existing `--wide-width` token (1120px) inside this page's own `<style>`
+block only, so mobile is untouched; moved the agent-roster grid from above
+the topology diagram to below it under a new "Fleet roster" heading,
+matching Tidal's diagram-first order (Tidal screenshot: hero -> blurb ->
+big diagram -> 3-column role-matrix cards below); added a `data-fam`
+attribute to `build_fleet_status.py`'s `card_html()` and matching CSS so
+each roster card gets a left-edge accent in its model-family color, same
+palette as the topology SVG's own legend (amber/Claude, slate/DeepSeek,
+magenta/GLM). Verified with local Playwright screenshots at both desktop
+(1440px, now ~45% wider diagram + 3-col roster) and mobile (390px,
+bit-for-bit unchanged) widths before running `deploy.sh`.
