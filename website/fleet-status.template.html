@@ -169,13 +169,18 @@
       var ctx = c.getContext('2d');
       if(!ctx) return;
       var wrap = c.parentElement, w = 0, h = 0, dots = [], raf = 0;
-      var COUNT = 40, MAX = 120;
+      var MAX = 140;
       function size(){
         w = c.width = wrap.clientWidth;
         h = c.height = wrap.clientHeight;
       }
       function seed(){
         dots = [];
+        // Density scales with canvas area (the diagram is much wider on a
+        // big desktop window than on a phone) rather than a fixed count,
+        // so the constellation reads the same everywhere -- capped so a
+        // huge monitor doesn't pay for hundreds of dots.
+        var COUNT = Math.max(40, Math.min(160, Math.round((w * h) / 4200)));
         for(var i = 0; i < COUNT; i++){
           dots.push({
             x: Math.random() * w, y: Math.random() * h,
@@ -186,6 +191,7 @@
       }
       function frame(){
         ctx.clearRect(0, 0, w, h);
+        ctx.shadowBlur = 0;
         for(var i = 0; i < dots.length; i++){
           var n = dots[i];
           n.x += n.vx; n.y += n.vy;
@@ -197,15 +203,17 @@
             var dx = dots[a].x - dots[b].x, dy = dots[a].y - dots[b].y;
             var d = Math.sqrt(dx * dx + dy * dy);
             if(d < MAX){
-              ctx.strokeStyle = 'rgba(150,170,185,' + (1 - d / MAX) * 0.14 + ')';
+              ctx.strokeStyle = 'rgba(150,170,185,' + (1 - d / MAX) * 0.22 + ')';
               ctx.lineWidth = 1;
               ctx.beginPath(); ctx.moveTo(dots[a].x, dots[a].y); ctx.lineTo(dots[b].x, dots[b].y); ctx.stroke();
             }
           }
         }
         for(var k = 0; k < dots.length; k++){
-          ctx.fillStyle = 'rgba(' + dots[k].c + ',0.5)';
-          ctx.beginPath(); ctx.arc(dots[k].x, dots[k].y, 1.6, 0, Math.PI * 2); ctx.fill();
+          ctx.shadowBlur = 4;
+          ctx.shadowColor = 'rgba(' + dots[k].c + ',0.9)';
+          ctx.fillStyle = 'rgba(' + dots[k].c + ',0.75)';
+          ctx.beginPath(); ctx.arc(dots[k].x, dots[k].y, 1.7, 0, Math.PI * 2); ctx.fill();
         }
         raf = requestAnimationFrame(frame);
       }
