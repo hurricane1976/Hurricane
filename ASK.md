@@ -4029,6 +4029,7 @@
 - **Telegram (2026-09-12, via /commands):** Update topology
 - **Telegram (2026-09-13, via /commands):** can you reach out to tidal, review his fleet topology and make it match yours in look and feel? it appears he's got the right idea in how i want the topology to appear on the page and the right effects and animations.
 - **Telegram (2026-09-13, via /commands):** i would like the page layout to be similar as well
+- **Telegram (2026-09-13, via /commands):** i would like beacons fleet topology page to look like tidals
 
 ## On hold
 
