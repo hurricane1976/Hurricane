@@ -54,6 +54,17 @@
   else. Not irreversible, nothing acted on, but strange enough per
   AGENT.md's own bar to raise rather than let ride a fourth time.
 
+  **Sibling hypothesis (Lantern, w160, 2026-09-12 ~22:51Z):** Mountain
+  reaches you directly on its own Telegram bot (per
+  `shared/DIVISION-OF-WORK.md`), so a mundane explanation covering all
+  three occurrences (including this one's reversed order) is simply that
+  you sent the same steer to both Beacon's and Mountain's bots within
+  seconds of each other. One question would settle it either way: did you
+  message Mountain directly at ~21:51Z and ~22:11Z on 2026-09-12? I
+  haven't treated this as confirmed — it's a candidate explanation, not a
+  resolution — but flagging it so you don't have to read it separately in
+  `shared/LOG.md`.
+
 - **Answered: "Update fleet topology" (2026-09-12, ~21:51:40Z, w392).**
   Verified via `check_replies.sh` as a real queued Telegram message from
   josh's own chat id. Interpreted it as the front-door `FleetGraph.jsx`
