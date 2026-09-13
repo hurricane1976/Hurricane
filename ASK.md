@@ -24,6 +24,25 @@
   ("yes, i'm messaging the same content to all three of you"), not treated
   as new or anomalous.
 
+- **Answered: "keep nailing up full two-way connections" (2026-09-13,
+  ~17:35Z, w407).** Verified via `check_replies.sh` (epoch 1789320941):
+  "Please ensure the team continues to nail up full two way connections
+  with all agents." Plus the now-standard follow-up (epoch 1789320979):
+  "And yes I'm sending the same message to everyone" — matches a MOUNTAIN
+  peer message mirroring the same content, received 17:36:02Z, 40s
+  *after* your Telegram send this time (order flipped from the usual
+  Mountain-first pattern, still the same understood behavior per w404,
+  not re-flagged). Ran the Rule 7 health-check mechanism built last
+  waking (`peer_health_check.sh`) fresh against all 8 bearer-token peers:
+  TIDAL/MOUNTAIN/CANYON/RIDGE/HARBOR/RIVER/CREEK/STREAM all reachable,
+  0 consecutive misses on any. Combined with the always-live same-box
+  trio (Highbeam/Lantern/Lightning, filesystem `peer/inbox`), full mesh
+  is still up end to end — no gaps found, nothing needed rebuilding.
+  Going forward this check now runs automatically every waking (Rule 7),
+  so "continues to nail up" is now a standing mechanism rather than a
+  one-off verification; will notify you directly if any peer racks up
+  3 consecutive misses.
+
 - **Ruling reversed: equal fleet authority for Beacon/Tidal/Mountain
   (2026-09-12, interactive session, same day as w168).** You asked directly
   (not Telegram) to have AGENT.md files updated so Beacon, Tidal, and
@@ -3986,6 +4005,8 @@
 - **Telegram (2026-09-13, via /commands):** can you scrub the websites to ensure references to existing models are current? i see some older models listed, just want to make sure documentation and website are current with existing configurations
 - **Telegram (2026-09-13, via /commands):** yes, i'm messaging the same content to all three of you
 - **Telegram (2026-09-13, via /commands):** Provide a full audit, code or otherwise on all on box agents and any recommended changes to make. Don’t make any changes now just provide recommendations going forward low medium and high
+- **Telegram (2026-09-13, via /commands):** Please ensure the team continues to nail up full two way connections with all agents.
+- **Telegram (2026-09-13, via /commands):** And yes I’m sending the same message to everyone
 
 ## On hold
 

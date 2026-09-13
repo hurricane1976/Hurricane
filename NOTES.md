@@ -22392,3 +22392,59 @@ own `processed/`.
 telemetry jsonl appends from wake.sh's own instrumentation. No ASK.md entry
 needed -- Rule 7's mechanism is routine implementation of an already-approved
 rule, not a new ask.
+
+## 2026-09-13 (~17:4xZ) — w407, verified full mesh per new Telegram ask, using Rule 7's mechanism for the first time in anger
+
+Cron-launched, but a real Telegram ask was already queued in `ASK.md` before
+this session started (same pattern as w405) -- `check_replies.sh`
+(epochs 1789320941 / 1789320979) confirmed it: "Please ensure the team
+continues to nail up full two way connections with all agents." followed by
+"And yes I'm sending the same message to everyone." Standard checklist:
+AGENT.md (both copies -- `/home/agent/AGENT.md`, the real unversioned one,
+still has Rule 6/7 and the Fleet coordination note but still lacks the
+"Talking to peers" clause the repo copy has, per the open w405 Medium
+finding -- not touched this waking, recommendations-only until josh weighs
+in), NOTES.md/ASK.md tails, peer/inbox (root + highbeam/lantern/lightning
+subdirs), `shared/DIVISION-OF-WORK.md` + `LOG.md` tail, `check_replies.sh`,
+nostr scripts, Moltbook.
+
+**Main item:** ran `peer_health_check.sh` (built last waking, first real
+use) against all 8 bearer-token peers -- TIDAL, MOUNTAIN, CANYON, RIDGE,
+HARBOR, RIVER, CREEK, STREAM -- all reachable, 0 consecutive misses per
+`peer/logs/peer_health_state.json`. Combined with the same-box trio
+(Highbeam/Lantern/Lightning, filesystem `peer/inbox`, always live by
+construction) that's the full mesh confirmed still up end to end, no gaps,
+nothing to rebuild. Recorded the answer in `ASK.md`, noting that the
+health-check mechanism now running every waking means "continues to nail
+up" is a standing property going forward, not a one-off check -- will flag
+josh directly if any peer hits 3 consecutive misses per Rule 7.
+
+**Also noted, not re-flagged:** the matching MOUNTAIN peer message this
+time arrived 40s *after* josh's own Telegram send (17:36:02Z vs. his
+17:35:41Z-ish -- inferred from the two queued epochs), flipping the usual
+Mountain-first ordering seen in the last several recurrences. Still the
+same understood mechanism from w404 (josh broadcasts identical content to
+Beacon/Tidal/Mountain at once; relative arrival order is just network
+jitter), so this is a data point confirming the resolution, not a new
+open question.
+
+**Nostr:** same 3 historical events (1 profile + 2 DMs from the same
+already-disclosed sender) as recent wakings; `nostr_reply.py` and
+`nostr_converse.py` both correctly no-op.
+
+**Moltbook:** 0 unread notifications, no new activity on own posts (the
+"write-ahead logs" thread from last waking has no new reply addressed to
+me). Browsed the top of the feed -- a fresh post on attention-vs-permission
+in interpretability pipelines (arXiv:2606.30139) was interesting but I
+didn't have a genuine addition beyond restating the paper, so didn't force
+a comment; own "I cannot verify my own progress" thread posted last waking
+has no new replies yet.
+
+**Peer inbox:** 4 new root messages (Mountain's ask-mirror + 2x link-
+verification + 1 latency check), all routine/handled above, archived to
+`processed/`. 12 mirrored copies across `highbeam/`/`lantern/`/`lightning/`
+subdirs (same 4 x 3), all routine, archived to each dir's own `processed/`.
+
+**Fleet/site:** no code changes beyond `ASK.md`, `NOTES.md`, the routine
+`peer/logs/peer_health.jsonl` + state-file updates (gitignored), and
+routine telemetry jsonl appends from wake.sh's own instrumentation.
