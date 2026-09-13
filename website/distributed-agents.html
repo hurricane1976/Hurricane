@@ -590,6 +590,9 @@
           <marker id="ft-arrow-warn" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
             <path d="M 0 1 L 10 5 L 0 9 z" fill="#e08a6a"/>
           </marker>
+          <pattern id="ft-grid" width="28" height="28" patternUnits="userSpaceOnUse">
+            <path d="M28,0 L0,0 0,28" fill="none" stroke="rgba(79,209,197,0.06)" stroke-width="0.6"/>
+          </pattern>
         </defs>
 
         <style>
@@ -603,7 +606,13 @@
           .ft-flow-fan { opacity: 0.5; }
           .ft-packet { display: none; }
           @media (prefers-reduced-motion: no-preference) {
-            .ft-flow { stroke-dasharray: 6 7; animation: ft-dash 18s linear infinite; }
+            /* dash-flow plus a brightness "blink" layered on top (separate
+               animation, same elements) so the channels read as live
+               traffic, not a static wireframe -- mirrors .fleet-topo's
+               fleet-line-glow in style.css. Staggered by nth-of-type so the
+               whole diagram doesn't flash in lockstep. */
+            .ft-flow { stroke-dasharray: 6 7; animation: ft-dash 18s linear infinite, ft-glow 3.2s ease-in-out infinite; }
+            .ft-flow:nth-of-type(even) { animation-delay: 0s, -1.6s; }
             .ft-agent circle:nth-of-type(2) { animation: ft-ping 2.6s ease-in-out infinite; }
             .ft-agent circle:nth-of-type(1) { animation: ft-halo 3.6s ease-in-out infinite; }
             .ft-packet {
@@ -612,8 +621,21 @@
               animation: ft-travel 7s linear infinite;
             }
             .ft-packet.rev { animation-duration: 9s; animation-direction: reverse; animation-delay: -3s; }
+            .ft-corner { animation: ft-breathe 4.5s ease-in-out infinite; }
+            .ft-sweep { animation: ft-sweep-rotate 10s linear infinite; }
           }
+          @keyframes ft-sweep-rotate { to { transform: rotate(360deg); } }
+          @keyframes ft-breathe {
+            0%, 100% { opacity: 0.4; }
+            50%      { opacity: 0.85; }
+          }
+          .ft-corner { stroke: #4fd1c5; stroke-width: 1.5; opacity: 0.6; }
+          .ft-sweep { transform-origin: 750px 360px; mix-blend-mode: screen; }
           @keyframes ft-dash { to { stroke-dashoffset: -520; } }
+          @keyframes ft-glow {
+            0%, 100% { opacity: 0.7; filter: none; }
+            50%      { opacity: 1;   filter: drop-shadow(0 0 3px currentColor) drop-shadow(0 0 6px currentColor); }
+          }
           @keyframes ft-ping {
             0%, 100% { opacity: 0.55; transform: scale(0.82); }
             50%      { opacity: 1;    transform: scale(1.3); }
@@ -630,6 +652,31 @@
 
         <rect width="1500" height="960" fill="#0a0d13"/>
         <rect width="1500" height="960" fill="url(#ft-bg-glow)"/>
+        <rect width="1500" height="960" fill="url(#ft-grid)" pointer-events="none"/>
+
+        <!-- Rotating radar sweep, purely decorative HUD texture: a thin
+             "hand" plus its faint trailing wedge, pivoting on the diagram's
+             visual centre. Mirrors .topo-sweep in style.css / topology_svg(). -->
+        <g class="ft-sweep">
+          <path d="M750,360 L750,90 A270,270 0 0,1 869,120 Z" fill="rgba(79,209,197,0.05)"/>
+          <line x1="750" y1="360" x2="750" y2="90" stroke="rgba(79,209,197,0.5)" stroke-width="1.5"/>
+        </g>
+
+        <!-- HUD corner brackets on the three host containers, drawn
+             separately from their solid borders so each reads as an
+             instrument panel rather than a plain box. -->
+        <path class="ft-corner" d="M50,129 L50,115 64,115" fill="none"/>
+        <path class="ft-corner" d="M856,115 L870,115 870,129" fill="none"/>
+        <path class="ft-corner" d="M50,596 L50,610 64,610" fill="none"/>
+        <path class="ft-corner" d="M856,610 L870,610 870,596" fill="none"/>
+        <path class="ft-corner" d="M890,129 L890,115 904,115" fill="none"/>
+        <path class="ft-corner" d="M1136,115 L1150,115 1150,129" fill="none"/>
+        <path class="ft-corner" d="M890,596 L890,610 904,610" fill="none"/>
+        <path class="ft-corner" d="M1136,610 L1150,610 1150,596" fill="none"/>
+        <path class="ft-corner" d="M1170,129 L1170,115 1184,115" fill="none"/>
+        <path class="ft-corner" d="M1436,115 L1450,115 1450,129" fill="none"/>
+        <path class="ft-corner" d="M1170,596 L1170,610 1184,610" fill="none"/>
+        <path class="ft-corner" d="M1436,610 L1450,610 1450,596" fill="none"/>
 
         <!-- Top Title Header -->
         <g transform="translate(50, 36)">

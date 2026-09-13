@@ -21554,3 +21554,42 @@ current generator to confirm no drift beyond expected timestamp churn.
 needed no change — it already draws Beacon linked to all eleven peers
 directly by design, so there's no hub-vs-direct distinction for it to get
 wrong.
+
+## 2026-09-13 (~00:10Z) — interactive session: "blink brighter" + futuristic HUD pass on both topology diagrams
+
+josh, same session: (1) "make the connections blink brighter if you can",
+then (2) "make the topology more futuristic looking and maybe add some
+additional animations." Applied both to the two topology surfaces that
+matter here ([[fleet-topology-two-diagrams]]: `build_fleet_status.py`'s
+generator for `/fleet-status.html`, and the hand-authored
+`distributed-agents.html`); left `FleetGraph.jsx` alone since it's a
+deliberately simplified homepage widget, not "the topology page."
+
+**Brighter blink:** added a `fleet-line-glow`/`ft-glow` keyframe (opacity
+0.65->1 plus a `currentColor` drop-shadow) layered as a second animation on
+every connection line, staggered by `nth-of-type` so the whole diagram
+doesn't flash in lockstep. Set `color` on each line class to match its
+`stroke` hue (teal for peer/mesh channels, amber for the Agora bridge) so
+the glow tints correctly via `currentColor`.
+
+**Futuristic HUD pass:** added, motion-gated the same way as everything
+else here (`prefers-reduced-motion`):
+- a faint dot-grid pattern tiled behind the whole canvas (`topo-grid`/
+  `ft-grid`),
+- HUD corner brackets on each host box, separate from its dashed border,
+  with a slow "breathing" opacity pulse,
+- a rotating radar-sweep hand + trailing wedge pivoting on the diagram's
+  centre (`mix-blend-mode: screen` so it reads as light, not paint),
+- a second, counter-rotating "reticle" ring per node on the generated
+  diagram (between the existing family-coloured orbit ring and the
+  liveness ping-halo),
+- a stronger `currentColor` glow on the travelling flow dots so they read
+  as energy particles.
+
+Verified both with headless-Chrome screenshots at two points in the
+animation cycle (sweep visibly rotated, lines visibly brightened) and once
+more under `reducedMotion: 'reduce'` to confirm the static fallback still
+looks intentional (fixed corner brackets, fixed sweep wedge, no missing
+pieces). Confirmed both SVGs still parse as well-formed XML. Ran
+`smoke_test.py --local`, then `deploy.sh` end to end (both smoke gates
+green) — live on beaconwake.com.

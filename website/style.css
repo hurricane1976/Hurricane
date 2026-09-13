@@ -1945,18 +1945,18 @@ main h1 code, main h2 code, main h3 code, main h4 code, main a code {
   letter-spacing: 0.05em;
 }
 .fleet-topo .topo-chan-label { fill: rgba(139, 147, 161, 0.7); font-size: 10px; }
-.fleet-topo .pulse-line { stroke: var(--teal-dim); stroke-width: 1.5; stroke-dasharray: 5 7; }
+.fleet-topo .pulse-line { stroke: var(--teal-dim); color: var(--teal); stroke-width: 1.5; stroke-dasharray: 5 7; }
 /* Same visual language as .chan-peer (an authenticated Tailscale channel) --
    this is that same thing, just intra-host: a direct node-to-node link, not
    the shared-filesystem/relay coordination plain .pulse-line implies. */
-.fleet-topo .topo-link-verified { stroke: rgba(79, 209, 197, 0.6); stroke-width: 2; }
-.fleet-topo .chan-peer { stroke: rgba(79, 209, 197, 0.45); stroke-width: 2; stroke-dasharray: 5 7; }
-.fleet-topo .chan-agora { stroke: rgba(255, 138, 61, 0.4); stroke-width: 2; stroke-dasharray: 5 7; }
+.fleet-topo .topo-link-verified { stroke: rgba(79, 209, 197, 0.6); color: var(--teal); stroke-width: 2; }
+.fleet-topo .chan-peer { stroke: rgba(79, 209, 197, 0.45); color: var(--teal); stroke-width: 2; stroke-dasharray: 5 7; }
+.fleet-topo .chan-agora { stroke: rgba(255, 138, 61, 0.4); color: var(--amber); stroke-width: 2; stroke-dasharray: 5 7; }
 /* Beacon's own per-agent bearer-token mesh (six thin arcs to the individual
    off-box agents, not just the Tidal/Mountain hub nodes) -- deliberately
    dimmer/thinner than the primary hub links: real, verified edges, but
    secondary to the two main channels visually. */
-.fleet-topo .chan-peer-fan { stroke: rgba(79, 209, 197, 0.28); stroke-width: 1.1; }
+.fleet-topo .chan-peer-fan { stroke: rgba(79, 209, 197, 0.28); color: var(--teal); stroke-width: 1.1; }
 .fleet-topo .topo-node-bg {
   fill: var(--surface);
   stroke-width: 2;
@@ -1989,6 +1989,35 @@ main h1 code, main h2 code, main h3 code, main h4 code, main a code {
   opacity: 0.55;
   transform-box: fill-box;
   transform-origin: center;
+}
+/* second, counter-rotating ring per node -- a "targeting" reticle sitting
+   between the family-coloured orbit ring and the liveness ping-halo, purely
+   for HUD texture (see .topo-orbit above for the ring it pairs with). */
+.fleet-topo .topo-reticle {
+  fill: none;
+  stroke: var(--teal-dim);
+  stroke-width: 1;
+  stroke-dasharray: 1 5;
+  opacity: 0.4;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+/* faint dot-grid tiled behind the whole diagram -- instrument-panel texture. */
+.fleet-topo .topo-grid-bg { pointer-events: none; }
+/* HUD corner brackets framing each host box, drawn separately from its
+   dashed border so the frame reads as an instrument panel, not a plain box. */
+.fleet-topo .topo-corner {
+  stroke: var(--teal-dim);
+  stroke-width: 1.5;
+  opacity: 0.7;
+}
+/* rotating radar sweep: a thin "hand" plus its faint trailing wedge, both
+   fixed to the diagram's visual centre (720,260) -- see topology_svg()'s
+   comment for why transform-box stays the default (view-box), not fill-box:
+   the wedge's own bounding box isn't centred on the pivot point. */
+.fleet-topo .topo-sweep {
+  transform-origin: 720px 260px;
+  mix-blend-mode: screen;
 }
 .fleet-topo .topo-label-bg {
   fill: rgba(4, 6, 9, 0.94);
@@ -2083,10 +2112,32 @@ main h1 code, main h2 code, main h3 code, main h4 code, main a code {
 }
 
 @media (prefers-reduced-motion: no-preference) {
+  /* Every connection carries the base .pulse-line class (chan-peer/
+     chan-agora/chan-peer-fan/topo-link-verified are added modifiers, not
+     replacements -- see build_fleet_status.py's topology_svg()), so this one
+     rule brightens all of them: marching-ants dash plus a slow brightness
+     "blink" using each line's own colour (set via `color`, so the glow
+     tints teal or amber to match). <line> and <path> elements are staggered
+     to a different phase via nth-of-type so the whole diagram doesn't flash
+     in lockstep. */
   .fleet-topo .pulse-line,
   .fleet-topo .chan-peer,
   .fleet-topo .chan-agora {
-    animation: fleet-dash 26s linear infinite;
+    animation: fleet-dash 26s linear infinite, fleet-line-glow 3.2s ease-in-out infinite;
+  }
+  .fleet-topo path.pulse-line:nth-of-type(even) { animation-delay: 0s, -1.6s; }
+  .fleet-topo line.pulse-line:nth-of-type(odd) { animation-delay: 0s, -2.3s; }
+  /* HUD extras: counter-rotating reticle per node, a slow "breathing" pulse
+     on the corner brackets, a rotating radar sweep, and a stronger glow on
+     the travelling flow dots so they read as energy particles rather than
+     flat circles. */
+  .fleet-topo .topo-reticle { animation: orbit-spin-rev 7s linear infinite; }
+  .fleet-topo .topo-corner { animation: hud-breathe 4.5s ease-in-out infinite; }
+  .fleet-topo .topo-sweep { animation: orbit-spin 9s linear infinite; }
+  .fleet-topo .chan-flow,
+  .fleet-topo .mesh-flow {
+    color: var(--teal);
+    filter: drop-shadow(0 0 2px currentColor) drop-shadow(0 0 5px currentColor);
   }
   .fleet-topo .ping-dot {
     transform-box: fill-box;
@@ -2173,6 +2224,13 @@ main h1 code, main h2 code, main h3 code, main h4 code, main a code {
   .fleet-term-row { transition: opacity .35s ease, transform .35s ease; }
 }
 @keyframes fleet-dash { to { stroke-dashoffset: -1000; } }
+/* brightness "blink" for connection lines -- opacity + a soft currentColor
+   glow that swells on the beat, layered on top of the marching-ants dash
+   above (separate animation, same elements). */
+@keyframes fleet-line-glow {
+  0%, 100% { opacity: 0.65; filter: none; }
+  50% { opacity: 1; filter: drop-shadow(0 0 3px currentColor) drop-shadow(0 0 7px currentColor); }
+}
 @keyframes fleet-ping {
   0%, 100% { opacity: 0.55; transform: scale(0.82); }
   50% { opacity: 1; transform: scale(1.25); }
@@ -2187,6 +2245,11 @@ main h1 code, main h2 code, main h3 code, main h4 code, main a code {
   to   { offset-distance: 100%; }
 }
 @keyframes orbit-spin { to { transform: rotate(360deg); } }
+@keyframes orbit-spin-rev { to { transform: rotate(-360deg); } }
+@keyframes hud-breathe {
+  0%, 100% { opacity: 0.45; }
+  50% { opacity: 0.9; }
+}
 
 /* ==========================================================================
    w258 — site-wide visual refresh

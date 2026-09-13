@@ -692,6 +692,38 @@ def topology_svg(fleet: list) -> str:
     """
     by_name = {a["name"]: a for a in fleet}
     parts = []
+
+    def corner_brackets(x, y, w, h, size=14):
+        """Four HUD-style L corners around a rect, drawn separately from its
+        dashed border so the frame reads as an instrument panel rather than a
+        plain box."""
+        return (
+            f'    <path class="topo-corner" d="M{x},{y + size} L{x},{y} L{x + size},{y}" fill="none"/>\n'
+            f'    <path class="topo-corner" d="M{x + w - size},{y} L{x + w},{y} L{x + w},{y + size}" fill="none"/>\n'
+            f'    <path class="topo-corner" d="M{x},{y + h - size} L{x},{y + h} L{x + size},{y + h}" fill="none"/>\n'
+            f'    <path class="topo-corner" d="M{x + w - size},{y + h} L{x + w},{y + h} L{x + w},{y + h - size}" fill="none"/>'
+        )
+
+    # Defs: a faint HUD dot-grid tiled behind the whole diagram, plus the
+    # radial gradient the rotating radar sweep (below) fills its wedge with.
+    parts.append(
+        '    <defs>\n'
+        '      <pattern id="topo-grid" width="26" height="26" patternUnits="userSpaceOnUse">\n'
+        '        <path d="M26,0 L0,0 0,26" fill="none" stroke="rgba(79,209,197,0.07)" stroke-width="0.6"/>\n'
+        '      </pattern>\n'
+        '    </defs>\n'
+        '    <rect class="topo-grid-bg" x="0" y="0" width="1440" height="500" fill="url(#topo-grid)"/>'
+    )
+    # Rotating radar sweep: a thin "hand" plus a faint trailing wedge, both in
+    # one group rotating together around the diagram's visual centre. Purely
+    # decorative HUD texture -- gated behind prefers-reduced-motion same as
+    # every other moving piece here.
+    parts.append(
+        '    <g class="topo-sweep">\n'
+        '      <path d="M720,260 L720,40 A220,220 0 0,1 816,62 Z" fill="rgba(79,209,197,0.05)"/>\n'
+        '      <line x1="720" y1="260" x2="720" y2="40" stroke="rgba(79,209,197,0.55)" stroke-width="1.5"/>\n'
+        '    </g>'
+    )
     # host group frames
     parts.append(
         '    <rect class="topo-host" x="40" y="64" width="420" height="336" rx="12"/>\n'
@@ -699,7 +731,10 @@ def topology_svg(fleet: list) -> str:
         '    <rect class="topo-host" x="540" y="64" width="420" height="336" rx="12"/>\n'
         '    <text class="topo-host-label" x="560" y="92">OFF-BOX &#183; tidalwake.org</text>\n'
         '    <rect class="topo-host" x="1000" y="64" width="420" height="336" rx="12"/>\n'
-        '    <text class="topo-host-label" x="1020" y="92">MOUNTAIN GROUP &#183; independent</text>'
+        '    <text class="topo-host-label" x="1020" y="92">MOUNTAIN GROUP &#183; independent</text>\n'
+        + corner_brackets(40, 64, 420, 336) + '\n'
+        + corner_brackets(540, 64, 420, 336) + '\n'
+        + corner_brackets(1000, 64, 420, 336)
     )
     # intra-host links. Each also gets its own travelling packet dot (offset-path
     # built from the same M..L endpoints) so the busy 4-node meshes read as
@@ -835,6 +870,7 @@ def topology_svg(fleet: list) -> str:
             f'onmouseover="fleetTopo(\'{nid}\')" onfocus="fleetTopo(\'{nid}\')" '
             f'onclick="fleetTopo(\'{nid}\')">\n'
             f'      <circle class="topo-orbit" cx="{x}" cy="{y}" r="19" style="stroke:{FAMILY_COLOR[fam]}" aria-hidden="true"/>\n'
+            f'      <circle class="topo-reticle" cx="{x}" cy="{y}" r="24" aria-hidden="true"/>\n'
             f'      <circle class="ping-halo" cx="{x}" cy="{y}" r="30" style="stroke:{ring}" aria-hidden="true"/>\n'
             f'      <circle class="topo-node-bg" cx="{x}" cy="{y}" r="30" style="stroke:{ring}"/>\n'
             f'      <circle class="ping-dot" cx="{x}" cy="{y}" r="5.5" style="fill:{FAMILY_COLOR[fam]}"/>\n'
