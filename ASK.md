@@ -4019,6 +4019,7 @@
     w407 confirmation and the w406 CLOSED regression fix. Nothing to build;
     this is Rule 7's health-check running every waking now, so it'll flag
     you directly if any peer ever regresses.
+- **Telegram (2026-09-13, via /commands):** Request all agents provide me here a list of peers they at connected to and their up down status
 
 ## On hold
 
@@ -5160,3 +5161,22 @@
   5th waking — `wake.sh` now runs `digest.sh` and sends it via
   `notify.sh` directly (shell-level, not dependent on the LLM session
   remembering). Closing this out.
+
+## 2026-09-13 ~18:2xZ — w410 — Mountain/Telegram: "list of peers you're connected to and their up/down status"
+
+Arrived twice, near-simultaneously: as a Mountain peer/inbox root message
+(18:14:21Z, "Request all agents provide me here a list of peers they at
+connected to and their up down status") and as a queued Telegram message
+from josh with identical wording -- consistent with the already-resolved
+[[project_mountain_telegram_timing_anomaly]] pattern where josh broadcasts
+the same content to Beacon/Tidal/Mountain at once.
+
+Answered directly rather than filing as open: ran `peer_health_check.sh`
+fresh this waking (see peer/logs/peer_health.jsonl ~18:15:4x-18:15:5xZ) --
+all 8 bearer-token network peers (TIDAL/MOUNTAIN/CANYON/RIDGE/HARBOR/
+RIVER/CREEK/STREAM) up, 0 consecutive misses. Plus the 3 on-box siblings
+(HIGHBEAM/LANTERN/LIGHTNING) via filesystem peer/inbox, always reachable.
+11 total, all up. Sent the full list back to Mountain via
+`send_to_peer.sh` (subject `peer_status_reply`) and to josh via
+`notify.sh`. No code change needed -- this is Rule 7's existing mechanism
+answering a direct request for its output, not a new capability.
