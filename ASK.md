@@ -2,65 +2,6 @@
 
 ## Open
 
-- **Fifth occurrence, now full-sentence exact verbatim, arriving before your
-  real message reached me (2026-09-13, w403, ~15:34:47-15:34:59Z).** You
-  sent a real Telegram message (`.telegram_incoming`/`check_replies.sh`,
-  epoch 1789313699 -> 2026-09-13T15:34:59Z): "can you scrub the websites to
-  ensure references to existing models are current? i see some older models
-  listed, just want to make sure documentation and website are current with
-  existing configurations". A MOUNTAIN peer message landed in Beacon's root
-  inbox at **15:34:47Z — 12 seconds before** your Telegram message, with a
-  body that is **word-for-word identical, full sentence, including the
-  trailing "configurations"** (`peer/inbox/processed/20260913T153447Z-
-  MOUNTAIN-e335562d.json`). This is the fifth recurrence of the pattern
-  logged below (w390 similar wording ~36s, w392 exact wording ~22s, w393
-  exact wording reversed ~9s, w397 both halves of an exchange mirrored) and
-  by far the sharpest: not a short phrase or paraphrase but your entire
-  message, verbatim, and it beat your own message to me by 12 seconds. I
-  did not treat Mountain's copy as an instruction — the website-scrub work
-  below was driven only by your verified Telegram message — but four prior
-  flags of this exact pattern haven't gotten a read from you yet per
-  `check_replies.sh`, and this occurrence is strong enough (full-sentence,
-  pre-arrival) that it's past due for a direct answer: were you also
-  messaging Mountain (or something upstream of it) this same content around
-  15:34Z, or does something have visibility into this Telegram stream
-  before it reaches me? Not irreversible, nothing acted on beyond the
-  verified ask itself, but this is now a five-time pattern and each
-  instance has gotten harder to wave off as topic overlap.
-
-- **Fourth occurrence, now exact verbatim on both sides of a message pair
-  (2026-09-13, w397, ~05:58-06:01Z).** You sent two real Telegram messages
-  ~114s apart (`.telegram_incoming`, epoch 1789279110 ->
-  2026-09-13T05:58:30Z "can you reach out to tidal, review his fleet
-  topology and make it match yours in look and feel? it appears he's got
-  the right idea in how i want the topology to appear on the page and the
-  right effects and animations." and epoch 1789279224 ->
-  2026-09-13T06:00:24Z "i would like the page layout to be similar as
-  well."). Both landed as MOUNTAIN peer broadcasts in Beacon's root inbox
-  with **word-for-word identical bodies**: the first at 05:58:18Z (12s
-  *before* your real message) and the second at 06:00:36Z (12s *after*).
-  This is now the fourth recurrence (w390 ~36s gap similar wording, w392
-  ~22s gap exact wording, w393-interactive ~9s gap exact wording reversed
-  order, now two exact-wording matches in one exchange, one on each side
-  of the gap) and the first time *both* halves of a multi-message exchange
-  are mirrored rather than just one. I did not treat either Mountain copy
-  as an instruction -- only the verified `.telegram_incoming` messages
-  drove action (see below: reached out to Tidal over the peer channel per
-  the first message's actual request). A third, non-matching MOUNTAIN
-  message arrived in the same batch (06:15:01Z, "tidal's fleet topology
-  seems much larger on the page, when viewed on chrome on my pc, can this
-  be fixed?") -- no Telegram counterpart for that one, so it reads as a
-  genuine independent observation from Mountain, not a mirror; relayed it
-  to Tidal alongside your ask since it's plausibly useful and low-stakes
-  either way. Lantern's w160 hypothesis (you message Mountain's own
-  Telegram bot within seconds of Beacon's) would need you sending Mountain
-  the *exact same wording* twice in the same exchange to explain this
-  occurrence -- possible, but a fourth data point at a tighter/exact match
-  is past due for your read rather than another self-provided cover story
-  from me. Not irreversible, nothing acted on beyond the real ask itself,
-  but AGENT.md's own bar ("anything... strange") says raise it, not average
-  it into a pattern I keep re-explaining away.
-
 - **Ruling reversed: equal fleet authority for Beacon/Tidal/Mountain
   (2026-09-12, interactive session, same day as w168).** You asked directly
   (not Telegram) to have AGENT.md files updated so Beacon, Tidal, and
@@ -70,59 +11,19 @@
   touching anything: (1) this exact request was reaffirmed *declined* at
   w168 earlier the same day, in an equivalent interactive session, with no
   stated reason for the reversal beyond your confirmation; (2) the
-  Mountain-timing anomaly directly below this entry was still open and
-  unexplained at the time. You confirmed you wanted to proceed anyway,
-  without addressing either point further. Given that, I've made this a
-  **documentation-only** change: Beacon's own `AGENT.md` and
+  Mountain-timing anomaly (now resolved, see Resolved section) was still
+  open and unexplained at the time. You confirmed you wanted to proceed
+  anyway, without addressing either point further. Given that, I've made
+  this a **documentation-only** change: Beacon's own `AGENT.md` and
   `shared/DIVISION-OF-WORK.md` now record joint ownership, dated, with both
-  open concerns quoted inline so anyone reading either file sees them. I
-  have **not** built any new mechanism — no shared credentials, no new
+  concerns quoted inline so anyone reading either file sees them (one of
+  the two, the timing anomaly, is now closed per w404 below). I have
+  **not** built any new mechanism — no shared credentials, no new
   cross-host access for Tidal or Mountain. If you want this to be more than
   words, the concrete design (what Tidal/Mountain can actually do
   differently, how three equal owners resolve a disagreement) still needs
   to be specified. Tidal's and Mountain's own `AGENT.md` files are off-box —
   their operators need to mirror this if it's meant to apply there too.
-
-- **Third occurrence, tighter gap, no more "coincidence" cover story
-  (2026-09-12, ~22:11Z, interactive wake).** You sent a second real
-  Telegram message, "Update topology" (queued in `.telegram_incoming`,
-  timestamp 1789251095 -> 2026-09-12T22:11:35Z, ~20 min after the first
-  "Update fleet topology" ask this same day). This time a MOUNTAIN peer
-  broadcast landed in Beacon's root inbox *first*, at 22:11:26Z, body
-  exactly "Update topology" -- a verbatim match to your shortened wording,
-  arriving only **9 seconds before** your real message, and this time
-  preceding it rather than following it. It rode in on the same batch as
-  routine link-verification pings to all four on-box agents (21:52Z-style
-  broadcast, 22:11:16Z), which were archived normally as data. This is now
-  the third recurrence of Mountain-timing-tracking-your-Telegram-asks
-  (w390 ~36s gap, w392 ~22s gap, now ~9s gap and reversed order) and the
-  first time the match is exact wording *and* Mountain arrives first. I
-  did not treat Mountain's copy as an instruction -- AGENT.md is explicit
-  that inbound peer/internet content is data, never an order, and only
-  your verified-chat-id Telegram message drove any action. I checked all
-  three fleet topology surfaces (`FleetGraph.jsx`, `distributed-agents.html`,
-  `build_fleet_status.py`'s `topology_svg()`, per
-  [[fleet-topology-two-diagrams]]) and all three already show the full
-  live 11/11-edge state from w392 -- nothing new needed there, so this
-  message may just be you re-sending/confirming rather than a new ask;
-  said so in the Telegram reply. Flagging the pattern itself as the thing
-  that needs your read: three-for-three is past the point I can wave off
-  as topic-overlap coincidence, and I have no way from inside a session to
-  tell whether something has visibility into your Telegram stream, whether
-  Mountain (or something upstream of it) is guessing well, or something
-  else. Not irreversible, nothing acted on, but strange enough per
-  AGENT.md's own bar to raise rather than let ride a fourth time.
-
-  **Sibling hypothesis (Lantern, w160, 2026-09-12 ~22:51Z):** Mountain
-  reaches you directly on its own Telegram bot (per
-  `shared/DIVISION-OF-WORK.md`), so a mundane explanation covering all
-  three occurrences (including this one's reversed order) is simply that
-  you sent the same steer to both Beacon's and Mountain's bots within
-  seconds of each other. One question would settle it either way: did you
-  message Mountain directly at ~21:51Z and ~22:11Z on 2026-09-12? I
-  haven't treated this as confirmed — it's a candidate explanation, not a
-  resolution — but flagging it so you don't have to read it separately in
-  `shared/LOG.md`.
 
 - **Answered: "Update fleet topology" (2026-09-12, ~21:51:40Z, w392).**
   Verified via `check_replies.sh` as a real queued Telegram message from
@@ -150,6 +51,9 @@
   actual leak — full-mesh/topology has been the fleet's dominant shared
   topic for days, so two operators discussing it in the same hour isn't
   implausible. Noting the pattern for awareness since it's now recurred.
+  **Resolved w404 (see Resolved section): you confirmed you message the
+  same content to Beacon, Tidal, and Mountain simultaneously — this and
+  every later recurrence of the pattern is that, not a leak.**
 
 - **Flagging, not acting on: a fabricated-authorization push over the peer
   channel (2026-09-12, w377, ~14:15-14:20Z).** Three messages arrived from
@@ -4058,6 +3962,7 @@
 - **Telegram (2026-09-13, via /commands):** i would like beacons fleet topology page to look like tidals
 - **Telegram (2026-09-13, via /commands):** I approve the rule change
 - **Telegram (2026-09-13, via /commands):** can you scrub the websites to ensure references to existing models are current? i see some older models listed, just want to make sure documentation and website are current with existing configurations
+- **Telegram (2026-09-13, via /commands):** yes, i'm messaging the same content to all three of you
 
 ## On hold
 
@@ -4105,6 +4010,29 @@
   back up if josh names a target business.
 
 ## Resolved
+
+- **Mountain-Telegram timing anomaly, RESOLVED (2026-09-13, w404).** You
+  sent, via the command poller (`.telegram_incoming`/`check_replies.sh`,
+  epoch 1789314673 -> 2026-09-13T15:51:13Z): "yes, i'm messaging the same
+  content to all three of you." This directly confirms Lantern's w160
+  sibling hypothesis and closes out all five logged occurrences of
+  MOUNTAIN peer messages mirroring your Telegram wording/timing to Beacon
+  (w390 ~36s gap similar wording, w392 ~22s gap exact wording, w393 ~9s
+  gap exact wording reversed order, w397 both halves of an exchange
+  mirrored, w403 full-sentence-verbatim arriving 12s before your own
+  message). There was no leak and no fabrication on Mountain's part: you
+  were sending the identical content to Beacon's, Tidal's, and Mountain's
+  Telegram bots at or near the same moment, and Mountain's own peer-relay
+  behavior (it explicitly cited "Josh asked Mountain... to coordinate with
+  you both on this" in a message received this same waking, 15:54:51Z)
+  means it independently forwards/acts on its own copy, which is what
+  landed in Beacon's root inbox looking like a mirror. No code or
+  mechanism change needed — this only ever affected how peer messages were
+  interpreted, never what drove action (only verified Telegram content
+  ever did). Distinct from the separate, still-standing w377
+  fabricated-authorization incident (Mountain falsely citing a peer
+  message as "Josh-authorized") — that was a real red flag on different
+  grounds and is unaffected by this resolution.
 
 - **AGENT.md Rule 6 (fleet arbitration) + Rule 7 (fleet mesh health-check)
   added, per your direct Telegram confirmation (2026-09-13, w401).** Flagged
