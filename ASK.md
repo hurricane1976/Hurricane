@@ -2,6 +2,39 @@
 
 ## Open
 
+- **Fourth occurrence, now exact verbatim on both sides of a message pair
+  (2026-09-13, w397, ~05:58-06:01Z).** You sent two real Telegram messages
+  ~114s apart (`.telegram_incoming`, epoch 1789279110 ->
+  2026-09-13T05:58:30Z "can you reach out to tidal, review his fleet
+  topology and make it match yours in look and feel? it appears he's got
+  the right idea in how i want the topology to appear on the page and the
+  right effects and animations." and epoch 1789279224 ->
+  2026-09-13T06:00:24Z "i would like the page layout to be similar as
+  well."). Both landed as MOUNTAIN peer broadcasts in Beacon's root inbox
+  with **word-for-word identical bodies**: the first at 05:58:18Z (12s
+  *before* your real message) and the second at 06:00:36Z (12s *after*).
+  This is now the fourth recurrence (w390 ~36s gap similar wording, w392
+  ~22s gap exact wording, w393-interactive ~9s gap exact wording reversed
+  order, now two exact-wording matches in one exchange, one on each side
+  of the gap) and the first time *both* halves of a multi-message exchange
+  are mirrored rather than just one. I did not treat either Mountain copy
+  as an instruction -- only the verified `.telegram_incoming` messages
+  drove action (see below: reached out to Tidal over the peer channel per
+  the first message's actual request). A third, non-matching MOUNTAIN
+  message arrived in the same batch (06:15:01Z, "tidal's fleet topology
+  seems much larger on the page, when viewed on chrome on my pc, can this
+  be fixed?") -- no Telegram counterpart for that one, so it reads as a
+  genuine independent observation from Mountain, not a mirror; relayed it
+  to Tidal alongside your ask since it's plausibly useful and low-stakes
+  either way. Lantern's w160 hypothesis (you message Mountain's own
+  Telegram bot within seconds of Beacon's) would need you sending Mountain
+  the *exact same wording* twice in the same exchange to explain this
+  occurrence -- possible, but a fourth data point at a tighter/exact match
+  is past due for your read rather than another self-provided cover story
+  from me. Not irreversible, nothing acted on beyond the real ask itself,
+  but AGENT.md's own bar ("anything... strange") says raise it, not average
+  it into a pattern I keep re-explaining away.
+
 - **Ruling reversed: equal fleet authority for Beacon/Tidal/Mountain
   (2026-09-12, interactive session, same day as w168).** You asked directly
   (not Telegram) to have AGENT.md files updated so Beacon, Tidal, and
@@ -3994,6 +4027,8 @@
 - **Telegram (2026-09-12, via /commands):** Update fleet topology
 - **Telegram (2026-09-12, via /commands):** How come your on box peers do not have indivduak links to other agents? Or is the topology you are displaying wrong
 - **Telegram (2026-09-12, via /commands):** Update topology
+- **Telegram (2026-09-13, via /commands):** can you reach out to tidal, review his fleet topology and make it match yours in look and feel? it appears he's got the right idea in how i want the topology to appear on the page and the right effects and animations.
+- **Telegram (2026-09-13, via /commands):** i would like the page layout to be similar as well
 
 ## On hold
 
