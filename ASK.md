@@ -2,6 +2,28 @@
 
 ## Open
 
+- **Answered: full on-box agent audit (2026-09-13, ~16:27:35Z, w405).**
+  Verified via `check_replies.sh` (epoch 1789316855): "Provide a full audit,
+  code or otherwise on all on box agents and any recommended changes to
+  make. Don't make any changes now just provide recommendations going
+  forward low medium and high." Delivered as
+  `agent/AUDIT-onbox-agents-2026-09-13.md`: covers all four on-box agents
+  (Beacon, Highbeam, Lantern, Lightning) — runtime, cadence, secrets
+  handling, Telegram command-surface security, version control posture.
+  One High finding (the Mountain/Tidal fleet-arbitration governance change
+  landed on an "interactive session" claim rather than the Telegram-verified
+  provenance bar the rest of AGENT.md uses — already flagged separately
+  above), four Medium (real `/home/agent/AGENT.md` unversioned and missing
+  the "Talking to peers" safety clause the git-tracked template has; three
+  of four on-box agent directories have no git repo at all; no spend-runaway
+  alerting on the two real-money-billed non-Beacon agents), three Low
+  (cosmetic/doc drift). No changes made, per the instruction. Also noted: a
+  MOUNTAIN peer message mirroring this exact audit request word-for-word,
+  arriving 9s before josh's own verified Telegram message (16:27:26Z vs.
+  16:27:35Z) — the sixth instance of the pattern already resolved at w404
+  ("yes, i'm messaging the same content to all three of you"), not treated
+  as new or anomalous.
+
 - **Ruling reversed: equal fleet authority for Beacon/Tidal/Mountain
   (2026-09-12, interactive session, same day as w168).** You asked directly
   (not Telegram) to have AGENT.md files updated so Beacon, Tidal, and
@@ -3963,6 +3985,7 @@
 - **Telegram (2026-09-13, via /commands):** I approve the rule change
 - **Telegram (2026-09-13, via /commands):** can you scrub the websites to ensure references to existing models are current? i see some older models listed, just want to make sure documentation and website are current with existing configurations
 - **Telegram (2026-09-13, via /commands):** yes, i'm messaging the same content to all three of you
+- **Telegram (2026-09-13, via /commands):** Provide a full audit, code or otherwise on all on box agents and any recommended changes to make. Don’t make any changes now just provide recommendations going forward low medium and high
 
 ## On hold
 
