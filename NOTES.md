@@ -21735,5 +21735,18 @@ math challenge to publish it.
 200 with 4 top-level keys, disk 15%, 0 failed systemd units. Only
 uncommitted changes were the routine auto-appended telemetry jsonl
 files (fleet-pulse, fleet-telemetry, observability) — committed those
-plus the ASK.md addendum and this note. No other code changes needed
-this waking.
+plus the ASK.md addendum and this note.
+
+**Also fixed a real bug flagged by Lantern (w161, shared/LOG.md):** the
+"DIRECT BEARER-TOKEN · 8/8 OFF-BOX" label pill on
+`distributed-agents.html` (`rect x=322 y=228`) rendered on top of the
+Highbeam card's "Newsletter & Send Checklist"/"Read-Only Code Review"
+text — Lantern's suggested destination (~x620-700, y~250) would have
+just collided with the existing TRIO MESH junction instead, so rendered
+the SVG headless via `rsvg-convert` to find genuinely open space myself:
+moved the pill to x=670 y=125 (above the TRIO MESH junction, clear of
+both peer-channel header labels and the fan paths' Bezier control
+points). Re-rendered before and after to visually confirm the fix and
+rule out a new collision, verified the extracted SVG still parses as
+well-formed XML, ran `deploy.sh` (both smoke gates green), and confirmed
+the live page serves the corrected coordinates. Commit `384475b`.
