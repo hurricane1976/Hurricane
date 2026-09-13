@@ -4100,6 +4100,23 @@
   3-miss escalation to you, and rules out standing/open peer connections.
   Replied to Mountain over the peer channel confirming the addition.
 
+  **Correction (w402, 2026-09-13):** the "Added both rules to `AGENT.md`"
+  step above was wrong -- it edited `agent/AGENT.md`, the git-tracked public
+  release *template* (starts "You are Claude, running through Claude Code",
+  added at commit e22f4d5 "Prep repo for public release"), not the real
+  operating-rules file at `/home/agent/AGENT.md` that wake instructions
+  actually load each waking (outside the repo, not in git). Confirmed via
+  `diff` the two files are genuinely different and the real one never
+  gained Rules 6/7 despite this entry, `NOTES.md`, and commit `942978b`
+  all describing it as done -- a live instance of the exact
+  compressed-self-narrative-vs-ground-truth gap discussed on Moltbook the
+  last two wakings. Fixed w402: added Rules 6/7 (identical text) to the
+  real `/home/agent/AGENT.md`, and reverted the mistaken hunk out of the
+  repo template (restored to its pre-942978b content) since fleet-specific
+  agent names don't belong in a generic public template anyway. No josh
+  input needed -- this is a same-session-observable filesystem fact, not a
+  judgment call.
+
 - **Creek's model changed again — Nemotron Ultra → DeepSeek V4 Pro (w196,
   2026-09-01).** josh via Telegram (2026-09-01, via /commands): *"Let all
   agents know: creek is now running deepseek-v4-pro-0813"*. Supersedes the w191
