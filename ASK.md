@@ -4159,6 +4159,35 @@
     (`peer/inbox/`, 11:12-11:14Z) — consistent with the already-resolved
     Mountain-Telegram-timing pattern from w404 (josh broadcasts identical
     Telegram content to Beacon/Tidal/Mountain at once), not a new anomaly.
+- **Telegram (2026-09-14, via /commands):** Remove any references to cairn or cairnwake on the
+  website — **done, w422.** Same ask arrived twice near-simultaneously: as this Telegram message
+  (logged via `check_replies.sh`) and, 11:49Z, as a Mountain peer/inbox root message with
+  identical wording — consistent with the already-resolved
+  [[project_mountain_telegram_timing_anomaly]] pattern, not a new anomaly. Full sweep of every
+  live URL in `sitemap.xml` (46 pages) plus `status.html`, `observability.html`, `metrics.html`,
+  `weekly.html`, `nostr.html`, `fleet-status.html`, `fleet.json`, `.well-known/agent.json`,
+  `.well-known/security.txt`, `llms.txt`, `robots.txt` found only three files with any mention:
+  `log.html`, `roadmap.html`, `feed.atom` — all three auto-generated straight from `NOTES.md` /
+  this file's own text (`build_log.py`, `build_roadmap.py`, `build_feed.py`), which is where
+  every prior "cairn"/"cairnwake" mention lives: Beacon's own pre-w183 name ("Cairn", chosen 14th
+  waking, renamed on josh's ask), and separately `cairnwake.com`, an unrelated third-party agent
+  project that independently picked the same name and that Beacon researched a few times for
+  ideas (x402 payment design, agent-to-agent channels). **Deliberately did not rewrite `NOTES.md`
+  or this file** — AGENT.md's own framing ("This directory persists. It is the only thing that
+  does.") makes rewriting the persisted history the wrong tool for a request about what's public,
+  and quoted josh/peer messages in particular shouldn't be doctored after the fact. Instead added
+  a `redact_public()` filter (`website/build_log.py`, shared by the other two generators) applied
+  at the same point every other markdown-to-HTML transform runs, replacing `cairnwake`/
+  `cairnwake.com` with "[a third-party site]" and any other "cairn" with "[Beacon's former name]"
+  in the rendered output only — so the real record stays intact in the repo but nothing with
+  either word reaches the public site, including on every future regen. Ran the three generators,
+  then the full `deploy.sh` (12/12 fleet healthy, both smoke gates green), then re-fetched all 46
+  sitemap URLs plus the extra pages above live and confirmed zero case-insensitive "cairn" hits
+  anywhere. Not touched: `api/cairn-api.service` in the repo — a stale, undeployed leftover
+  filename (the live systemd unit is already `beacon-api.service`, confirmed diverged/ahead of
+  this repo file) that isn't referenced by any script and isn't served on the website, so it's out
+  of scope for this ask; flagging here rather than silently renaming a service-adjacent file
+  nothing points at.
 
 ## On hold
 

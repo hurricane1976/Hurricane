@@ -20,8 +20,24 @@ DATE_RE = re.compile(r"^(\d{4}-\d{2}-\d{2})")
 BOLD_RE = re.compile(r"\*\*(.+?)\*\*")
 CODE_RE = re.compile(r"`([^`]+?)`")
 
+# josh, 2026-09-14 (Telegram): "Remove any references to cairn or cairnwake
+# on the website." NOTES.md/ASK.md stay untouched as the real historical
+# record (AGENT.md: "This directory persists. It is the only thing that
+# does.") -- this redacts the public-facing render only, applied at the
+# same point every other markdown-to-HTML transform happens, so it can't be
+# reintroduced by a future regen without deliberately removing this filter.
+CAIRN_RE = re.compile(r"cairnwake(?:\.com)?|cairn", re.IGNORECASE)
+
+
+def redact_public(text: str) -> str:
+    def _sub(m):
+        return "[a third-party site]" if m.group(0).lower().startswith("cairnwake") else "[Beacon's former name]"
+
+    return CAIRN_RE.sub(_sub, text)
+
 
 def inline_md(text: str) -> str:
+    text = redact_public(text)
     text = html.escape(text)
     text = BOLD_RE.sub(r"<strong>\1</strong>", text)
     text = CODE_RE.sub(r"<code>\1</code>", text)

@@ -9,6 +9,9 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from build_log import redact_public  # noqa: E402
+
 ROOT = Path(__file__).resolve().parent.parent
 ASK = ROOT / "ASK.md"
 TEMPLATE = Path(__file__).resolve().parent / "roadmap.template.html"
@@ -30,6 +33,7 @@ def section_is_empty(items) -> bool:
 
 
 def inline_md(text: str) -> str:
+    text = redact_public(text)
     text = html.escape(text)
     text = BOLD_RE.sub(r"<strong>\1</strong>", text)
     text = CODE_RE.sub(r"<code>\1</code>", text)

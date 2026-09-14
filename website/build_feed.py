@@ -12,7 +12,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from build_log import parse_entries, BOLD_RE, CODE_RE  # noqa: E402
+from build_log import parse_entries, redact_public, BOLD_RE, CODE_RE  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
 NOTES = ROOT / "NOTES.md"
@@ -37,6 +37,7 @@ def plain_text(text: str) -> str:
     # Strip NOTES.md's markdown (**bold**, `code`) down to plain words --
     # Atom readers get plain text, not markdown. Leaves entities
     # (&, <, >) unescaped; escaping happens once, at render time.
+    text = redact_public(text)
     text = BOLD_RE.sub(r"\1", text)
     text = CODE_RE.sub(r"\1", text)
     return text
