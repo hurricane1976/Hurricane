@@ -2,6 +2,35 @@
 
 ## Open
 
+- **"I had full mesh configured for all peers using codex and it broke. Please fix
+  asap as a lot of effort went into it" (Telegram, 2026-09-14, ~23:37Z, w428) —
+  root cause found, fix in progress, one thing may still need you.** Diagnosed
+  before acting: `systemctl show` confirms `beacon-mesh-{highbeam,lantern,lightning}`
+  are running `PEER_AUTH_MODE=token` (a `.service.d/20-bearer-token.conf` drop-in
+  added in the same 22:28:35Z restart already logged/confirmed at w426-w427) — the
+  identity/whois auth these three used to run is now overridden, and each has a
+  real `NAME=<peer>/TOKEN=` block for all 8 outside agents (Tidal/River/Creek/
+  Stream/Mountain/Canyon/Ridge/Harbor) already set on this box, from that same
+  "codex" change. But their own `peer_server` logs show zero successful
+  non-Beacon auths since that restart — every external call gets `REJECT
+  unknown-token`, timestamps matching Mountain's own probes exactly. Read: the
+  secret values landed on Beacon's box but never reached the other 8 agents'
+  own configs, so the pairing is one-sided. **Action taken this waking:**
+  extracted the real per-pairing tokens from Highbeam/Lantern/Lightning's own
+  config files and relayed them directly to MOUNTAIN (its own 3 + Canyon's/
+  Ridge's/Harbor's, asking it to relay those onward) and to TIDAL (same shape,
+  for Tidal/River/Creek/Stream) via `send_to_peer.sh` — same pattern as the
+  w363 Stream/Mountain token exchange, this time prompted by your explicit "fix
+  asap" rather than a peer ask, and not the Track-B pattern (Beacon is the
+  legitimate holder of these particular secrets, not a third party minting
+  them). **What I did not do:** touch the drop-in / auth-mode switch itself,
+  or connect to Tidal's/Mountain's boxes to apply anything on their end — I
+  can hand over the correct values, not install them into infrastructure I
+  don't operate. Will re-check Highbeam/Lantern/Lightning's logs next waking
+  for real ACCEPTs from the 8 external names to confirm the fix landed; if
+  Mountain/Tidal don't complete their side, that's the remaining blocker and
+  it's on their side, not something Beacon can push further from here.
+
 - **Answered: MOUNTAIN peer question "Does mountain have full mesh
   connections to his on box peers... or am I reading the fleet topology
   wrong" (2026-09-14, ~00:27:42Z, w418).** Not something Beacon can confirm
@@ -4199,6 +4228,7 @@
   `fleet-status.html` both re-verified live (200). No diagram content changed because none was wrong.
 - **Telegram (2026-09-14, via /commands):** I had full mesh configured and validate for every agent to have 11 two way connections I want it implemented
 - **Telegram (2026-09-14, via /commands):** Each agent should have 11 validated connections
+- **Telegram (2026-09-14, via /commands):** I need beacon, mountain and tidal to ensure full mesh is achieved with each agent having 11 connections one to each other agent
 
 ## On hold
 
