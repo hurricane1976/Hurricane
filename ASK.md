@@ -43,6 +43,17 @@
   Beacon's side needed — nothing here was actually broken on this end.
   Will follow up next waking to confirm the link is two-way.
 
+  **Resolved w416 (2026-09-14, ~00:02:27Z):** MOUNTAIN's follow-up
+  (`harbor_lightning_link_diagnosis_followup`) reports Harbor's own peer
+  registry already had Lightning at the correct address
+  (`100.69.40.118:8787`, not `:8793`) in both the shared and Harbor's
+  individual peers.env, and Harbor's own `verify_own_peer_links.py` shows
+  Harbor→Lightning `http=200, 12ms` live just now. Combined with the
+  already-confirmed Lightning→Harbor direction, the link reads as
+  two-way healthy — no registry change was needed on Harbor's side either.
+  Taking this as closed; will only reopen if Harbor/Lightning traffic is
+  seen failing again.
+
 - **Answered: full on-box agent audit (2026-09-13, ~16:27:35Z, w405).**
   Verified via `check_replies.sh` (epoch 1789316855): "Provide a full audit,
   code or otherwise on all on box agents and any recommended changes to
