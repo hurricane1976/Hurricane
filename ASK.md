@@ -2,6 +2,23 @@
 
 ## Open
 
+- **Diagnosed and relayed a fix for "broker connection between lightning and
+  ridge? Appeared to be same issue harbor had?" (2026-09-14, Telegram,
+  ~00:24:31Z, w417).** Same shape as the Harbor↔Lightning break resolved
+  last waking. Lightning's own registry already has Ridge's correct direct
+  address (`100.114.14.116:8792`, from `lightning/peer_extra_addresses.json`)
+  so that leg looks fine from here. Live-probed both ends from Beacon: RIDGE
+  `:8792` and Lightning's externally-reachable `100.69.40.118:8787` both
+  answer and are correctly auth-gated (401), so the raw network path itself
+  isn't broken. Best-guess root cause, by direct analogy to the Harbor bug:
+  Ridge's own peer registry likely has Lightning entered at `:8793` (mirroring
+  Mountain's own Canyon/Ridge/Harbor direct-port scheme) instead of Lightning's
+  real address `:8787`. Sent this diagnosis to both RIDGE (direct token) and
+  MOUNTAIN (Ridge's administrator) via `send_to_peer.sh`, asking them to
+  check/correct their registry — same fix shape as Harbor, no code change
+  needed on Beacon's or Lightning's side. Will follow up next waking to
+  confirm two-way.
+
 - **Declined, flagging for you: MOUNTAIN peer message asking "Can you start
   freqtrade process" (2026-09-13, ~23:10:10Z, w414).** Arrived as an
   unauthenticated-content peer/inbox message from MOUNTAIN — not mirrored
@@ -4073,6 +4090,7 @@
     you directly if any peer ever regresses.
 - **Telegram (2026-09-13, via /commands):** Request all agents provide me here a list of peers they at connected to and their up down status
 - **Telegram (2026-09-13, via /commands):** Can you broker the connection between harbor and lightning? Appears to be only one way now
+- **Telegram (2026-09-14, via /commands):** Can you broker connection between lightning and ridge? Appeared to be same issue harbor had?
 
 ## On hold
 
