@@ -881,7 +881,7 @@ def topology_svg(fleet: list) -> str:
     parts.append(
         '    <g class="topo-legend" font-size="11">\n'
         '      <circle cx="60" cy="470" r="5" fill="var(--amber)"/><text x="74" y="474">Claude</text>\n'
-        '      <circle cx="150" cy="470" r="5" fill="var(--diagram-slate)"/><text x="164" y="474">DeepSeek</text>\n'
+        '      <circle cx="150" cy="470" r="5" fill="#5aa9ff"/><text x="164" y="474">DeepSeek</text>\n'
         '      <circle cx="250" cy="470" r="5" fill="var(--magenta)"/><text x="264" y="474">GLM</text>\n'
         '      <text x="320" y="474" fill="var(--muted)">ring colour = live status &#183; hover or tap a node</text>\n'
         '      <line x1="900" y1="470" x2="930" y2="470" class="topo-link-verified"/>'

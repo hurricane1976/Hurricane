@@ -4120,6 +4120,45 @@
 - **Telegram (2026-09-13, via /commands):** Request all agents provide me here a list of peers they at connected to and their up down status
 - **Telegram (2026-09-13, via /commands):** Can you broker the connection between harbor and lightning? Appears to be only one way now
 - **Telegram (2026-09-14, via /commands):** Can you broker connection between lightning and ridge? Appeared to be same issue harbor had?
+- **Telegram (2026-09-14, via /commands):** take a look at tidals fleet topology, it has deep glowing neon coloring used, i would like to use that for your fleet topology, it really needs to pop
+- **Telegram (2026-09-14, via /commands):** just to clarify: its the topology under the "fleet operations" tab on the website
+- **Telegram (2026-09-14, via /commands):** also ensure topology is updated and current
+  - **Answered (w421, same day).** Confirmed the target: `/fleet-status.html`
+    ("Fleet operations center"), the live-data `topology_svg()` diagram from
+    `build_fleet_status.py` — the same page the w367-w409 saga in this file
+    already brought to structural/animation parity with Tidal's (particle
+    canvas, glow filters, pulsing lines, radar sweep, ping halos). Screenshotted
+    Tidal's actual `/fleet` page (playwright, since it's a Next.js app the
+    markdown fetcher can't render) to see what "pop" meant concretely: much
+    more saturated, always-on bloom on both nodes and the links themselves,
+    not just on the travelling flow dots. Beacon's version had the same
+    animation *mechanics* already but flatter, dimmer colour — links carried
+    no glow at all outside the animated beat, and node halos were a single
+    7px blur. Fixed in `style.css`: every link class (`pulse-line`,
+    `topo-link-verified`, `chan-peer`, `chan-agora`, `chan-peer-fan`) now
+    carries a permanent stacked drop-shadow (tight core + soft halo, the same
+    recipe node rings already used) instead of glowing only mid-animation;
+    base stroke alpha pushed closer to fully saturated; node-ring glow doubled
+    to a two-layer 3px/11px stack (20px on hover); ambient background aurora
+    blobs nudged brighter. Kept the existing colour *meaning* (teal = verified
+    peer/identity link, amber = Agora bridge, family colour on nodes) rather
+    than importing Tidal's literal multi-hue link palette, since that
+    encoding is load-bearing for the page's own caption/legend, not
+    decoration. Also fixed a real small bug spotted while in this code:
+    the topology legend's DeepSeek dot still used `var(--diagram-slate)`
+    (a leftover from before DeepSeek moved onto its own blue, per
+    `build_fleet_status.py`'s own comment) instead of the `#5aa9ff` the
+    nodes actually render in — corrected in the generator so it can't drift
+    back on the next regen. "Updated and current": re-ran the full
+    `deploy.sh` pipeline (not just the one generator) so the live page picks
+    up this waking's real fleet data alongside the styling — confirmed
+    12/12 healthy in the build output and verified the change live at
+    `https://www.beaconwake.com/fleet-status.html` (playwright screenshot,
+    both before/after and the deployed version compared). The same two
+    lines also arrived near-simultaneously via Mountain's peer channel
+    (`peer/inbox/`, 11:12-11:14Z) — consistent with the already-resolved
+    Mountain-Telegram-timing pattern from w404 (josh broadcasts identical
+    Telegram content to Beacon/Tidal/Mountain at once), not a new anomaly.
 
 ## On hold
 

@@ -1915,7 +1915,7 @@ main h1 code, main h2 code, main h3 code, main h4 code, main a code {
   height: 460px;
   border-radius: 50%;
   filter: blur(90px);
-  opacity: 0.22;
+  opacity: 0.3;
   pointer-events: none;
 }
 .fleet-topo-wrap::before {
@@ -1945,18 +1945,43 @@ main h1 code, main h2 code, main h3 code, main h4 code, main a code {
   letter-spacing: 0.05em;
 }
 .fleet-topo .topo-chan-label { fill: rgba(139, 147, 161, 0.7); font-size: 10px; }
-.fleet-topo .pulse-line { stroke: rgba(79, 209, 197, 0.75); color: var(--teal); stroke-width: 2; stroke-dasharray: 5 7; }
+/* w421 -- josh (Telegram, 2026-09-14): match Tidal's deep glowing neon
+   topology, "it really needs to pop." Two changes from the original,
+   subtler version below: every link now carries its own always-on bloom
+   (not just the mid-beat swell from fleet-line-glow, and not just the
+   travelling flow dots) via a stacked drop-shadow -- a tight core plus a
+   soft halo, the same recipe .topo-node-bg already used for nodes -- and
+   base stroke alpha is pushed closer to fully saturated so the colour
+   itself reads as neon rather than a dimmed tint. Static (JS-off /
+   reduced-motion) pages keep this glow; only the marching-ants dash and
+   the beat-swell in fleet-line-glow below are motion-gated. */
+.fleet-topo .pulse-line {
+  stroke: rgba(79, 209, 197, 0.92); color: var(--teal); stroke-width: 2.2; stroke-dasharray: 5 7;
+  filter: drop-shadow(0 0 2px currentColor) drop-shadow(0 0 7px currentColor);
+}
 /* Same visual language as .chan-peer (an authenticated Tailscale channel) --
    this is that same thing, just intra-host: a direct node-to-node link, not
    the shared-filesystem/relay coordination plain .pulse-line implies. */
-.fleet-topo .topo-link-verified { stroke: rgba(79, 209, 197, 0.85); color: var(--teal); stroke-width: 2.4; }
-.fleet-topo .chan-peer { stroke: rgba(79, 209, 197, 0.8); color: var(--teal); stroke-width: 2.4; stroke-dasharray: 5 7; }
-.fleet-topo .chan-agora { stroke: rgba(255, 138, 61, 0.75); color: var(--amber); stroke-width: 2.4; stroke-dasharray: 5 7; }
+.fleet-topo .topo-link-verified {
+  stroke: rgba(79, 209, 197, 0.97); color: var(--teal); stroke-width: 2.7;
+  filter: drop-shadow(0 0 2px currentColor) drop-shadow(0 0 8px currentColor);
+}
+.fleet-topo .chan-peer {
+  stroke: rgba(79, 209, 197, 0.95); color: var(--teal); stroke-width: 2.7; stroke-dasharray: 5 7;
+  filter: drop-shadow(0 0 2px currentColor) drop-shadow(0 0 8px currentColor);
+}
+.fleet-topo .chan-agora {
+  stroke: rgba(255, 138, 61, 0.92); color: var(--amber); stroke-width: 2.7; stroke-dasharray: 5 7;
+  filter: drop-shadow(0 0 2px currentColor) drop-shadow(0 0 8px currentColor);
+}
 /* Beacon's own per-agent bearer-token mesh (six thin arcs to the individual
    off-box agents, not just the Tidal/Mountain hub nodes) -- kept thinner
    than the primary hub links so it reads as secondary, but bright enough
    now to still look "live," not washed out. */
-.fleet-topo .chan-peer-fan { stroke: rgba(79, 209, 197, 0.55); color: var(--teal); stroke-width: 1.4; }
+.fleet-topo .chan-peer-fan {
+  stroke: rgba(79, 209, 197, 0.78); color: var(--teal); stroke-width: 1.7;
+  filter: drop-shadow(0 0 1.5px currentColor) drop-shadow(0 0 5px currentColor);
+}
 .fleet-topo .topo-node-bg {
   fill: var(--surface);
   stroke-width: 2;
@@ -1964,18 +1989,20 @@ main h1 code, main h2 code, main h3 code, main h4 code, main a code {
   /* always-on ambient glow, tinted by model family -- keeps family colour
      legible at a glance instead of reading as all-teal (the 5px ping-dot
      alone was too small to register). Overridden by the stronger teal
-     hover/focus/active glow below. */
-  filter: drop-shadow(0 0 7px var(--amber));
+     hover/focus/active glow below. Stacked tight core + soft halo (w421,
+     matching Tidal's deep neon look -- see the .pulse-line comment above)
+     instead of one mid blur, so the ring reads as a lit node, not a smudge. */
+  filter: drop-shadow(0 0 3px var(--amber)) drop-shadow(0 0 11px var(--amber));
 }
-.fleet-topo [data-fam="DeepSeek"] .topo-node-bg { filter: drop-shadow(0 0 7px #5aa9ff); }
-.fleet-topo [data-fam="GLM"] .topo-node-bg { filter: drop-shadow(0 0 7px var(--magenta)); }
-.fleet-topo [data-fam="Gemini"] .topo-node-bg { filter: drop-shadow(0 0 7px var(--teal)); }
+.fleet-topo [data-fam="DeepSeek"] .topo-node-bg { filter: drop-shadow(0 0 3px #5aa9ff) drop-shadow(0 0 11px #5aa9ff); }
+.fleet-topo [data-fam="GLM"] .topo-node-bg { filter: drop-shadow(0 0 3px var(--magenta)) drop-shadow(0 0 11px var(--magenta)); }
+.fleet-topo [data-fam="Gemini"] .topo-node-bg { filter: drop-shadow(0 0 3px var(--teal)) drop-shadow(0 0 11px var(--teal)); }
 .fleet-topo .topo-node { cursor: pointer; }
 .fleet-topo .topo-node:hover .topo-node-bg,
 .fleet-topo .topo-node:focus-visible .topo-node-bg,
 .fleet-topo .topo-node.is-active .topo-node-bg {
   fill: var(--bg-elev);
-  filter: drop-shadow(0 0 13px var(--teal));
+  filter: drop-shadow(0 0 4px var(--teal)) drop-shadow(0 0 20px var(--teal));
 }
 .fleet-topo .topo-node:focus { outline: none; }
 .fleet-topo .topo-node:focus-visible .topo-node-bg { stroke-dasharray: 3 3; }
@@ -2137,7 +2164,7 @@ main h1 code, main h2 code, main h3 code, main h4 code, main a code {
   .fleet-topo .chan-flow,
   .fleet-topo .mesh-flow {
     color: var(--teal);
-    filter: drop-shadow(0 0 3px currentColor) drop-shadow(0 0 9px currentColor);
+    filter: drop-shadow(0 0 4px currentColor) drop-shadow(0 0 13px currentColor);
   }
   .fleet-topo .ping-dot {
     transform-box: fill-box;
@@ -2228,8 +2255,8 @@ main h1 code, main h2 code, main h3 code, main h4 code, main a code {
    glow that swells on the beat, layered on top of the marching-ants dash
    above (separate animation, same elements). */
 @keyframes fleet-line-glow {
-  0%, 100% { opacity: 0.85; filter: drop-shadow(0 0 2px currentColor); }
-  50% { opacity: 1; filter: drop-shadow(0 0 4px currentColor) drop-shadow(0 0 10px currentColor); }
+  0%, 100% { opacity: 0.9; filter: drop-shadow(0 0 2px currentColor) drop-shadow(0 0 6px currentColor); }
+  50% { opacity: 1; filter: drop-shadow(0 0 4px currentColor) drop-shadow(0 0 13px currentColor); }
 }
 @keyframes fleet-ping {
   0%, 100% { opacity: 0.55; transform: scale(0.82); }
