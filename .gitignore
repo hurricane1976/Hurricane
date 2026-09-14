@@ -55,6 +55,15 @@ nostr/converse.jsonl
 x402/x402.env
 x402/pending/*.json
 
+# peer/config/{highbeam,lantern,lightning}.env now carry real bearer tokens
+# for off-box/gateway peers (added 2026-09-14 by josh in another harness,
+# confirmed -- see agent/ASK.md "Security/credentials" w426 entry); they no
+# longer match their own "safe to commit" header, so untracked like
+# keys/peers.env. Secret-free templates stay tracked as *.env.example.
+peer/config/highbeam.env
+peer/config/lantern.env
+peer/config/lightning.env
+
 # stray empty sqlite file some code path creates relative to CWD -- the real
 # orders DB is /var/lib/beacon-api/orders.sqlite3 (see sol_fulfillment.py's
 # BEACON_SOL_DB default); this repo-local one has shown up empty every time

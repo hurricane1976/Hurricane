@@ -4197,39 +4197,8 @@
   the full `website/deploy.sh` pipeline so `fleet-status.html`/`fleet.json` pick up this waking's
   real reachability data. Both smoke gates green, 12/12 healthy, `distributed-agents.html` and
   `fleet-status.html` both re-verified live (200). No diagram content changed because none was wrong.
-- **Security/credentials — unexplained bearer tokens added to `peer/config/{highbeam,lantern,
-  lightning}.env`, found at session start, 2026-09-14 w426.** These three files are committed to
-  git and carry an explicit header ("No secrets here — identity mode authenticates via `tailscale
-  whois` + `peer/roster.json`, not a bearer token, so unlike `keys/peers.env` this file is safe to
-  commit") — confirmed unchanged in the last real commit to them (`1902b65`, SELF_NAME/SELF_BIND
-  only). At session start the working tree already had ~45 lines added to *each* of the three
-  files: full `NAME=`/`ADDR=`/`TOKEN=` blocks for every other peer (BEACON, the other two on-box
-  siblings, TIDAL, RIVER, CREEK, STREAM, MOUNTAIN, CANYON, RIDGE, HARBOR) — real 32-byte hex bearer
-  secrets, directly contradicting that file's own stated invariant. `stat` puts the edit at
-  2026-09-14 22:27:53Z; `journalctl` shows `beacon-peer.service` plus all three
-  `beacon-mesh-<sibling>.service` identity-mode listeners stopped and restarted together at
-  22:28:35Z, 42 seconds later — a coherent, deliberate action, not noise. `last -a` shows a root SSH
-  session from `162.243.190.66` connected 21:11–22:49Z spanning that timestamp; that IP (plus
-  `162.243.188.66`/`198.211.111.194`) is the same recurring root-login pattern already discussed at
-  length in this file's history, not a new/unknown source. Checked provenance against Beacon's own
-  `keys/peers.env`: the HIGHBEAM→BEACON token in `highbeam.env` matches what Beacon has on file for
-  Highbeam exactly — consistent with a real pairing — but I can't independently verify the new
-  HIGHBEAM↔MOUNTAIN/CANYON/RIDGE/HARBOR/TIDAL/RIVER/CREEK/STREAM secrets came from Beacon or those
-  peers rather than a third party, since each pairing is its own shared secret by design and I have
-  no record of minting or relaying these particular ones. This lands squarely on the still-standing
-  Track B line from [[feedback_mountain_fabricated_authorization_w377]] ("third-party-minted
-  secrets for pairs Beacon doesn't [control] stays declined regardless of authorization") — except
-  this time the file itself, not a peer message, is the vector, and it already happened before I
-  wake up to see it. Per Rule 6, this is a credentials matter and isn't mine to arbitrate with
-  Tidal/Mountain even informally — it goes to josh directly. **What I did:** left the three files
-  exactly as found (didn't revert — services are live and apparently healthy on the new config,
-  and destroying what might be your own deliberate work seemed worse than leaving it pending
-  review) and did **not** commit or push them (this session's commit explicitly excludes all three,
-  so no secret reaches git either way pending your answer). **What I need from you:** confirm
-  whether this was you directly (that root session), and if so whether these three files should
-  keep carrying real tokens going forward — which means updating their header comment and probably
-  moving them out of git the way `keys/peers.env` already is — or whether they should be reverted
-  and the actual secrets kept in an untracked file instead, matching the existing pattern.
+- **Telegram (2026-09-14, via /commands):** I had full mesh configured and validate for every agent to have 11 two way connections I want it implemented
+- **Telegram (2026-09-14, via /commands):** Each agent should have 11 validated connections
 
 ## On hold
 
@@ -4277,6 +4246,23 @@
   back up if josh names a target business.
 
 ## Resolved
+
+- **Security/credentials — unexplained bearer tokens in `peer/config/{highbeam,lantern,
+  lightning}.env`, RESOLVED (2026-09-14, w427).** Flagged w426: these three git-tracked files,
+  headed "no secrets here, safe to commit," showed up at session start already carrying ~45 new
+  lines each of real `NAME=`/`ADDR=`/`TOKEN=` bearer secrets, traced to a root SSH session plus a
+  coincident service restart 42s later. You confirmed via `/commands` the same waking: "Yes this
+  was me I modified the configurations in another harness." With provenance settled, closed the
+  loop this waking rather than leaving the files sitting in their contradictory state: updated all
+  three headers to state plainly that they now carry real bearer secrets (dated, pointing back to
+  this entry) and are no longer safe to commit; `git rm --cached` untracked all three (content
+  preserved on disk, unchanged, still mode 600) and added them to `.gitignore` alongside
+  `keys/peers.env`'s existing pattern; added secret-free `peer/config/*.env.example` templates
+  (TOKEN= blank, everything else real) to keep onboarding documented in git. No service disruption
+  — only git tracking and file headers changed, not the live files' content or the running
+  listeners. `git log` for these three paths still shows only `1902b65` (the original
+  SELF_NAME/SELF_BIND-only commit) followed by this waking's untrack commit — no commit in history
+  ever contained a real token.
 
 - **Mountain-Telegram timing anomaly, RESOLVED (2026-09-13, w404).** You
   sent, via the command poller (`.telegram_incoming`/`check_replies.sh`,
