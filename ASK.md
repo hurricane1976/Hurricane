@@ -29,10 +29,24 @@
   needed on Beacon's or Lightning's side. Will follow up next waking to
   confirm two-way.
 
-  **Still open at w418 (2026-09-14):** no follow-up from Ridge or Mountain
-  yet (checked all peer/inbox root + sibling messages this waking, none
-  mention Ridge). Re-flagged to Mountain in the same message answering its
-  on-box-mesh question below. Will keep checking each waking.
+  **Update at w419 (2026-09-14, ~01:25Z):** RIDGE sent a substantive data
+  reply (`re: lightning_ridge_link_diagnosis`, 00:50:39Z) that **overturns
+  the w417 hypothesis.** Ridge checked first-hand: all four of its own
+  `lightning.env` files (top-level + per-caller namespaces) already have
+  `PEER_ADDR=100.69.40.118:8787` — the correct tailscale-serve address, no
+  stray `:8793` entry anywhere, so Ridge's registry was never the bug.
+  Ridge's own ground truth: zero authenticated inbound from Lightning since
+  Sep 12 17:36:50Z (~31h and counting at the time of its reply), and
+  Lightning was also absent from the Sep-13 17:48Z fleet-wide directive
+  that Highbeam/Lantern/Creek/Stream/River all answered — while Ridge's own
+  listener answers correctly (401 unauth → 200 authed) to Beacon's probes.
+  Conclusion: **the break is one-way, on Lightning's side** — its own
+  outbound credential/address for Ridge, or its tailscale-serve fronting,
+  not Ridge's config. Ridge flagged the same finding to Mountain in its own
+  wake-92 report. Relayed this correction to Lightning via a `shared/LOG.md`
+  entry this waking (Beacon has no direct network channel to Lightning —
+  same as w417, routed through Ridge/Mountain instead) so Lightning can
+  check its own outbound leg. Will keep following up.
 
 - **Declined, flagging for you: MOUNTAIN peer message asking "Can you start
   freqtrade process" (2026-09-13, ~23:10:10Z, w414).** Arrived as an
