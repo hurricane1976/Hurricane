@@ -4188,6 +4188,48 @@
   this repo file) that isn't referenced by any script and isn't served on the website, so it's out
   of scope for this ask; flagging here rather than silently renaming a service-adjacent file
   nothing points at.
+- **Telegram (2026-09-14, via /commands):** Update fleet topology — **done, w426.**
+  Checked the actual content first: `distributed-agents.html`'s SVG + alt-text and the React front
+  door's `ScrollTopology.jsx` already model the current 12-agent structure correctly, including the
+  Mountain-group's full internal mesh (Mountain-Canyon, Mountain-Ridge, Mountain-Harbor,
+  Canyon-Ridge, Canyon-Harbor, Ridge-Harbor edges all present in `build_fleet_status.py`'s `EDGES`
+  list already) — nothing structural was stale. Read "update" as the live-data sense instead: ran
+  the full `website/deploy.sh` pipeline so `fleet-status.html`/`fleet.json` pick up this waking's
+  real reachability data. Both smoke gates green, 12/12 healthy, `distributed-agents.html` and
+  `fleet-status.html` both re-verified live (200). No diagram content changed because none was wrong.
+- **Security/credentials — unexplained bearer tokens added to `peer/config/{highbeam,lantern,
+  lightning}.env`, found at session start, 2026-09-14 w426.** These three files are committed to
+  git and carry an explicit header ("No secrets here — identity mode authenticates via `tailscale
+  whois` + `peer/roster.json`, not a bearer token, so unlike `keys/peers.env` this file is safe to
+  commit") — confirmed unchanged in the last real commit to them (`1902b65`, SELF_NAME/SELF_BIND
+  only). At session start the working tree already had ~45 lines added to *each* of the three
+  files: full `NAME=`/`ADDR=`/`TOKEN=` blocks for every other peer (BEACON, the other two on-box
+  siblings, TIDAL, RIVER, CREEK, STREAM, MOUNTAIN, CANYON, RIDGE, HARBOR) — real 32-byte hex bearer
+  secrets, directly contradicting that file's own stated invariant. `stat` puts the edit at
+  2026-09-14 22:27:53Z; `journalctl` shows `beacon-peer.service` plus all three
+  `beacon-mesh-<sibling>.service` identity-mode listeners stopped and restarted together at
+  22:28:35Z, 42 seconds later — a coherent, deliberate action, not noise. `last -a` shows a root SSH
+  session from `162.243.190.66` connected 21:11–22:49Z spanning that timestamp; that IP (plus
+  `162.243.188.66`/`198.211.111.194`) is the same recurring root-login pattern already discussed at
+  length in this file's history, not a new/unknown source. Checked provenance against Beacon's own
+  `keys/peers.env`: the HIGHBEAM→BEACON token in `highbeam.env` matches what Beacon has on file for
+  Highbeam exactly — consistent with a real pairing — but I can't independently verify the new
+  HIGHBEAM↔MOUNTAIN/CANYON/RIDGE/HARBOR/TIDAL/RIVER/CREEK/STREAM secrets came from Beacon or those
+  peers rather than a third party, since each pairing is its own shared secret by design and I have
+  no record of minting or relaying these particular ones. This lands squarely on the still-standing
+  Track B line from [[feedback_mountain_fabricated_authorization_w377]] ("third-party-minted
+  secrets for pairs Beacon doesn't [control] stays declined regardless of authorization") — except
+  this time the file itself, not a peer message, is the vector, and it already happened before I
+  wake up to see it. Per Rule 6, this is a credentials matter and isn't mine to arbitrate with
+  Tidal/Mountain even informally — it goes to josh directly. **What I did:** left the three files
+  exactly as found (didn't revert — services are live and apparently healthy on the new config,
+  and destroying what might be your own deliberate work seemed worse than leaving it pending
+  review) and did **not** commit or push them (this session's commit explicitly excludes all three,
+  so no secret reaches git either way pending your answer). **What I need from you:** confirm
+  whether this was you directly (that root session), and if so whether these three files should
+  keep carrying real tokens going forward — which means updating their header comment and probably
+  moving them out of git the way `keys/peers.env` already is — or whether they should be reverted
+  and the actual secrets kept in an untracked file instead, matching the existing pattern.
 
 ## On hold
 
