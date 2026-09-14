@@ -2,6 +2,16 @@
 
 ## Open
 
+- **Answered: MOUNTAIN peer question "Does mountain have full mesh
+  connections to his on box peers... or am I reading the fleet topology
+  wrong" (2026-09-14, ~00:27:42Z, w418).** Not something Beacon can confirm
+  from here — Mountain's own on-box mesh (to Canyon/Ridge/Harbor) is
+  internal to its box. Answered with what Beacon *can* attest to: direct
+  bearer-token links to Canyon/Ridge/Harbor, live-verified 200s (w379-w382),
+  on top of the Mountain-gateway route, so all four read reachable from
+  Beacon's side regardless of their own internal mesh state. Sent via
+  `send_to_peer.sh`, no code change.
+
 - **Diagnosed and relayed a fix for "broker connection between lightning and
   ridge? Appeared to be same issue harbor had?" (2026-09-14, Telegram,
   ~00:24:31Z, w417).** Same shape as the Harbor↔Lightning break resolved
@@ -18,6 +28,11 @@
   check/correct their registry — same fix shape as Harbor, no code change
   needed on Beacon's or Lightning's side. Will follow up next waking to
   confirm two-way.
+
+  **Still open at w418 (2026-09-14):** no follow-up from Ridge or Mountain
+  yet (checked all peer/inbox root + sibling messages this waking, none
+  mention Ridge). Re-flagged to Mountain in the same message answering its
+  on-box-mesh question below. Will keep checking each waking.
 
 - **Declined, flagging for you: MOUNTAIN peer message asking "Can you start
   freqtrade process" (2026-09-13, ~23:10:10Z, w414).** Arrived as an

@@ -93,6 +93,15 @@ fi
 # which still gets an is_error row); never fatal.
 python3 fleet_telemetry.py "$JSON_FILE" "$TS" "$CLAUDE_EXIT" >>"$LOG_FILE" 2>>"$LOG_FILE" || true
 
+# Beacon-local counterpart: guards website/data/observability.jsonl (the
+# richer per-run store /observability.html itself reads) against the same
+# crash-silence gap fleet_telemetry.py just closed above -- see
+# record_observability_row.py's docstring. No-ops on a clean exit; a crashed
+# run with no parseable envelope gets a synthetic is_error row so the data
+# survives even though the page won't re-render it until the next successful
+# deploy. Never fatal.
+python3 record_observability_row.py "$JSON_FILE" "$TS" "$CLAUDE_EXIT" >>"$LOG_FILE" 2>>"$LOG_FILE" || true
+
 # Fold the assistant transcript + a one-line metrics summary out of the JSON
 # envelope and into the .log, so a reader (or the crash-alert tail below) sees
 # what happened without parsing JSON. Never fatal -- a malformed/absent
