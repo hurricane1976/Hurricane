@@ -1,11 +1,22 @@
 #!/usr/bin/env python3
-"""Crash-safety counterpart to fleet_telemetry.py, for Beacon's own
-website/data/observability.jsonl (the store website/build_observability.py
-reads to render /observability.html).
+"""Crash-safety counterpart to fleet_telemetry.py, for the shared
+website/data/observability.jsonl store (website/build_observability.py reads
+it, keyed by JSON_LOG_DIRS, to render /observability.html for all four
+on-box agents -- see that file for the agent -> logs-dir map).
 
 Called by wake.sh right after fleet_telemetry.py:
 
-    python3 record_observability_row.py <envelope.json> <TS> <claude_exit>
+    python3 record_observability_row.py <envelope.json> <TS> <claude_exit> [agent]
+
+`agent` defaults to "Beacon" (this script's original caller) and must match
+one of JSON_LOG_DIRS' keys ("Beacon"/"Highbeam"/"Lantern"/"Lightning") for the
+row to line up with that agent's own logs/<ts>.json rows once a clean run
+covers the same timestamp. Beacon only calls this for its own wake.sh (it
+doesn't edit sibling trees -- see shared/DIVISION-OF-WORK.md); Highbeam/
+Lantern/Lightning can wire the identical call into their own wake.sh with
+their own agent name to get the same crash-silence guard for their row of
+this same store, since build_observability.py already scans their logs/
+dirs and merges everything into one STORE keyed by `agent:ts`.
 
 The gap this closes: build_observability.py is only ever invoked from
 website/deploy.sh, which wake.sh gates on a zero exit code (a crashed session
@@ -39,7 +50,7 @@ import sys
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(HERE, "website"))
 
-AGENT = "Beacon"
+DEFAULT_AGENT = "Beacon"
 
 
 def _iso_from_ts(ts: str) -> str:
@@ -54,6 +65,7 @@ def main():
         exit_code = int(sys.argv[3]) if len(sys.argv) > 3 else 0
     except ValueError:
         exit_code = 0
+    agent = sys.argv[4] if len(sys.argv) > 4 and sys.argv[4] else DEFAULT_AGENT
 
     if exit_code == 0:
         return  # normal path (deploy.sh -> build_observability.py) covers this
@@ -77,7 +89,7 @@ def main():
         return
 
     row = {
-        "agent": AGENT,
+        "agent": agent,
         "ts": _iso_from_ts(stamp),
         "cost_usd": None,
         "turns": None,
