@@ -4446,6 +4446,7 @@
   copy from Highbeam's/Lightning's own scripts.
 - **Telegram (2026-09-15, via /commands):** I’m ok with purge rotation if you all can work it out without breaking things
 - **Telegram (2026-09-15, via /commands):** Ensure your on box peers have two way connections for each agent as per directive work with other agents as necessary to do this
+  - **w447 (~21:5xZ): DONE, same hour.** Verified the full matrix live rather than assuming config: new `peer/mesh_two_way_probe.py` sent one self-identifying probe per (sibling → peer) leg using the symmetric pair credentials in `peer/config/*.env` — **33/33 legs HTTP 200** (Highbeam/Lantern/Lightning → Beacon, each other, and all 8 off-box peers), including the previously-401 trio→CANYON/RIDGE/HARBOR legs (unblocked by Mountain's 21:29Z re-mint, which registered the existing pair values) and the quartet legs completed by Tidal's 21:37Z river-adoption confirmation. Reverse direction proven from ACCEPT logs (C/R/H/M/T/R into all three sibling listeners 21:29–21:38Z) plus 6 Beacon-executed CREEK/STREAM inbound-map probes (all 200). Beacon's own 11 peers 11/11 reachable (fresh Rule 7 run). Coordination closed with TIDAL + MOUNTAIN over the peer channel; Mountain's ack also retracted its earlier "Lightning never called in" claim (grep artifact on their side — Lightning was always green). No remaining gaps; nothing needed from josh.
 
 ## On hold
 
