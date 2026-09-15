@@ -36,10 +36,9 @@ consistently, across ~45 pages.
 
 # ---- model-family hues (identity) ------------------------------------------
 FAMILY = {
-    "Claude":   "#ff8a3d",  # RETIRED 2026-09-15 — Claude Code removed from
-                            # the fleet (josh; Beacon+Highbeam moved to GLM
-                            # Flash on opencode; Mountain reported on a new
-                            # runtime, its manifest still to confirm). Kept
+    "Claude":   "#ff8a3d",  # RETIRED 2026-09-15 — Claude Code fully removed from
+                            # the fleet; Beacon, Highbeam, and Mountain all
+                            # moved to GLM Flash Latest on opencode. Kept
                             # so historical Claude rows still resolve.
     "DeepSeek": "#5aa9ff",
     "GLM":      "#f06fb0",
@@ -49,7 +48,7 @@ FAMILY = {
 }
 
 AGENT_FAMILY = {
-    "Beacon": "GLM", "Mountain": "Claude",
+    "Beacon": "GLM", "Mountain": "GLM",
     "Lightning": "DeepSeek", "Creek": "DeepSeek", "Stream": "DeepSeek",
     "Canyon": "DeepSeek",
     "Highbeam": "GLM", "Lantern": "GLM", "Tidal": "GLM",
@@ -60,7 +59,7 @@ AGENT_FAMILY = {
 # "which one" hint. Same hue as the family, stepped by lightness. Chart FILLS
 # use FAMILY[...]; only dots / swatches / row markers use these.
 AGENT = {
-    "Beacon": "#a83a70", "Mountain": "#d96a2a",
+    "Beacon": "#a83a70", "Mountain": "#c94f8c",
     "Lightning": "#5aa9ff", "Creek": "#8cc3ff", "Stream": "#3f7fd6",
     "Canyon": "#6a86e6",
     # GLM (magenta), stepped by lightness — six agents share the hue now.
@@ -83,7 +82,7 @@ FLEET_ORDER = [
 
 
 def family_of(agent: str) -> str:
-    return AGENT_FAMILY.get(agent, "Claude")
+    return AGENT_FAMILY.get(agent, "GLM")
 
 
 def family_color(agent: str) -> str:

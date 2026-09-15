@@ -28,7 +28,7 @@ A monitoring/status view for the WHOLE agent fleet, not just Beacon:
                for the off-box team. Announced by josh w216, listed in Tidal's
                fleet manifest. No independent endpoint; liveness mirrors Tidal's
                host, same as River and Creek.
-  Mountain  -- independent third host, Claude. Added w239, growth &
+  Mountain  -- independent third host, GLM Flash. Added w239, growth &
                distribution. Now serves a public manifest, so liveness is an
                HTTP fetch of its /.well-known/agent.json ("updated" field),
                same method as Tidal. The private Tailscale peer channel is
@@ -440,7 +440,7 @@ def tidal_and_river():
 
 
 def mountain_group():
-    """Mountain -- independent third host (Claude). Liveness is an HTTP fetch
+    """Mountain -- independent third host (GLM Flash). Liveness is an HTTP fetch
     of its public /.well-known/agent.json ("updated" field), same method as
     Tidal. If the public site is unreachable, fall back to a `tailscale ping`
     over the private peer channel so a coordination-reachable Mountain still
@@ -498,7 +498,7 @@ def mountain_group():
         "name": "Mountain",
         "role": "Growth & distribution",
         "host": "mountainwake.org (independent host)",
-        "model": "Claude (Anthropic)",
+        "model": "GLM Flash (via OpenRouter, on opencode)",
         "cadence": friendly_cadence("0 */4"),
         "wakings": "—",
         "state": state,
@@ -659,9 +659,7 @@ TOPO_LINKS = [
     ("Canyon", "Ridge"), ("Canyon", "Harbor"), ("Ridge", "Harbor"),
 ]
 # Canonical fleet family palette (design-tokens.json v2 .chart.family):
-# amber=Claude, blue=DeepSeek, magenta=GLM. The var()s resolve to the same
-# hexes; DeepSeek moves off the neutral slate onto the family blue. Gemini/teal
-# retired 2026-09-09 (Lantern/Tidal/River -> GLM Flash); the key is kept only so
+# magenta=GLM, blue=DeepSeek. Amber/historical Claude (#ff8a3d) is kept only so
 # legacy log lines still resolve a colour.
 FAMILY_COLOR = {
     "Claude": "var(--amber)", "DeepSeek": "#5aa9ff", "GLM": "var(--magenta)",
@@ -682,7 +680,7 @@ def family_of(model: str) -> str:
         return "Gemini"
     if "glm" in m:
         return "GLM"
-    return "Claude"
+    return "GLM"
 
 
 def topology_svg(fleet: list) -> str:
@@ -882,10 +880,10 @@ def topology_svg(fleet: list) -> str:
     # legend
     parts.append(
         '    <g class="topo-legend" font-size="11">\n'
-        '      <circle cx="60" cy="470" r="5" fill="var(--amber)"/><text x="74" y="474">Claude</text>\n'
+        '      <circle cx="60" cy="470" r="5" fill="var(--magenta)"/><text x="74" y="474">GLM</text>\n'
         '      <circle cx="150" cy="470" r="5" fill="#5aa9ff"/><text x="164" y="474">DeepSeek</text>\n'
-        '      <circle cx="250" cy="470" r="5" fill="var(--magenta)"/><text x="264" y="474">GLM</text>\n'
-        '      <text x="320" y="474" fill="var(--muted)">ring colour = live status &#183; hover or tap a node</text>\n'
+        '      <circle cx="250" cy="470" r="5" fill="var(--amber)"/><text x="264" y="474">Claude (retired)</text>\n'
+        '      <text x="360" y="474" fill="var(--muted)">ring colour = live status &#183; hover or tap a node</text>\n'
         '      <line x1="900" y1="470" x2="930" y2="470" class="topo-link-verified"/>'
         '<text x="938" y="474" fill="var(--muted)">direct Tailscale-authenticated link</text>\n'
         '    </g>'
@@ -985,11 +983,10 @@ def activity_stream():
             if al in ("creek", "lightning", "stream", "canyon"):
                 fam = "DeepSeek"
             elif al in ("beacon", "highbeam", "ridge", "harbor", "lantern",
-                        "tidal", "river"):
+                        "tidal", "river", "mountain"):
                 fam = "GLM"
             else:
-                fam = "Claude"  # Mountain (manifest still says Claude; a new
-                # runtime was reported 2026-09-15 but not yet corroborated)
+                fam = "GLM"
             color = FAMILY_COLOR[fam]
             label = date_s[5:]  # MM-DD; siblings' log lines carry no clock time
             events.append((dt, label, agent.upper(), color, _trunc(text)))

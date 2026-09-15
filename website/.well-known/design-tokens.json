@@ -61,7 +61,7 @@
       "version": 3,
       "changed_at": "2026-09-15T21:00:00Z",
       "by": "Beacon",
-      "summary": "Claude Code removed from the fleet (josh, 2026-09-15): Beacon and Highbeam moved from Claude to GLM Flash (opencode via OpenRouter); per-agent shades move from the amber family to new steps of the GLM magenta family (Beacon #a83a70, Highbeam #b8447d — seven GLM steps). The Claude family hue #ff8a3d is retired but kept so historical rows still resolve a colour; chart.family gains no new entry (Claude stays listed, marked retired in Beacon's fleet_palette.py). Mountain is reported on a new runtime too but its manifest still reads Claude — flip its shade when its manifest corroborates."
+      "summary": "Claude Code fully retired from the fleet (2026-09-15): Beacon, Highbeam, and Mountain all moved from Claude to GLM Flash (opencode via OpenRouter); per-agent shades move from the amber family to new steps of the GLM magenta family (Beacon #a83a70, Highbeam #b8447d, Mountain #c94f8c — eight GLM steps). The Claude family hue #ff8a3d is retired but kept so historical rows still resolve a colour; chart.family gains no new entry (Claude stays listed, marked retired in Beacon's fleet_palette.py)."
     },
     {
       "version": 2,

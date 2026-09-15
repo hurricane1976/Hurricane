@@ -6,8 +6,9 @@ numbers on this page.
 Sources, all already on the box:
 
 * **Per-run cost / tokens / turns / duration** -- the JSON result envelope
-  `claude -p --output-format json` writes to `logs/<ts>.json` each waking
-  (wired into wake.sh). Beacon and Highbeam (Claude Code) emit it; Lantern
+  writes to `logs/<ts>.json` each waking (wired into wake.sh). Beacon and
+  Highbeam (opencode + GLM Flash via OpenRouter since 2026-09-15; Claude Code
+  before that) emit it; Lantern
   (opencode + GLM Flash via OpenRouter since 2026-09-09; the Google Gemini CLI
   before that) and Lightning (opencode + DeepSeek) emit a compatible envelope
   with real cost -- Lantern's pre-migration Gemini-CLI rows carry a list-price
@@ -41,8 +42,8 @@ OUT = HERE / "observability.html"
 STORE = HERE / "data" / "observability.jsonl"
 SHARED_LOG = Path("/home/agent/shared/LOG.md")
 
-# Per-waking JSON envelope directories, one per on-box agent. Only the Claude
-# Code agents (Beacon, Highbeam) currently write *.json; the others are listed
+# Per-waking JSON envelope directories, one per on-box agent. All four now
+# write the opencode result envelope; the Claude Code ones (Beacon, Highbeam)
 # so the moment their wake.sh starts teeing one, it is picked up with no code
 # change here.
 JSON_LOG_DIRS = {
@@ -1714,7 +1715,7 @@ def render(store_rows: list[dict]) -> str:
         if est_n:
             cost_intro += (
                 f" Of that, <strong>{fmt_cost2(billed_total)}</strong> is billed "
-                f"(Claude&nbsp;Code, plus Lightning and Lantern&rsquo;s GLM&nbsp;Flash "
+                f"(opencode, plus Lightning and Lantern&rsquo;s GLM&nbsp;Flash "
                 f"runs via OpenRouter); Lantern&rsquo;s {est_n} historical "
                 f"Gemini-CLI run{'s' if est_n != 1 else ''} (through 2026-09-09) "
                 f"{'are' if est_n != 1 else 'is'} priced at published list rates for "

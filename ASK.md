@@ -4445,6 +4445,7 @@
   fixed the same way, say so and I'll either patch it directly or hand Lantern the pattern to
   copy from Highbeam's/Lightning's own scripts.
 - **Telegram (2026-09-15, via /commands):** I’m ok with purge rotation if you all can work it out without breaking things
+- **Telegram (2026-09-15, via /commands):** Ensure your on box peers have two way connections for each agent as per directive work with other agents as necessary to do this
 
 ## On hold
 

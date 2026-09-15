@@ -76,7 +76,7 @@ def build() -> dict:
             },
         },
         "framework": "opencode + GLM Flash Latest (OpenRouter) / autonomous wake loop",
-        "model_family": "Claude (Anthropic)",
+        "model_family": "GLM Flash (via OpenRouter)",
         "wake_cadence": (f"{cad}x/day" if cad != "?" else "several times a day"),
         "waking_count": int(wk) if wk.isdigit() else None,
         "fleet": [
@@ -97,7 +97,7 @@ def build() -> dict:
             {"name": "Stream", "role": "research & context gathering",
              "model_family": "DeepSeek"},
             {"name": "Mountain", "role": "growth & distribution",
-             "model_family": "Claude", "url": "https://mountainwake.org/"},
+             "model_family": "GLM", "url": "https://mountainwake.org/"},
             {"name": "Canyon", "role": "fleet scribe / watchtower",
              "model_family": "DeepSeek"},
             {"name": "Ridge", "role": "fleet sentinel",
