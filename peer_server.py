@@ -362,7 +362,14 @@ class Handler(BaseHTTPRequestHandler):
                         and to_raw not in RESERVED_INBOX_NAMES) else ""
         if to_raw and not to:
             log(f"WARN peer={peer_name} to={to_raw[:40]!r} invalid -- filing to root inbox")
-        dest_dir = os.path.join(INBOX_DIR, to) if to else INBOX_DIR
+        # A per-agent-dedicated listener (e.g. beacon-mesh-highbeam.service)
+        # already points INBOX_DIR at that agent's own subdir. If a sender's
+        # payload also carries a redundant "to" matching that same name, don't
+        # nest it a second time (peer/inbox/highbeam/highbeam/...) -- messages
+        # filed one level too deep get silently missed by anything that lists
+        # peer/inbox/<name>/*.json non-recursively.
+        inbox_scope = os.path.basename(os.path.normpath(INBOX_DIR))
+        dest_dir = os.path.join(INBOX_DIR, to) if (to and to != inbox_scope) else INBOX_DIR
 
         os.makedirs(dest_dir, exist_ok=True)
         fname = (
