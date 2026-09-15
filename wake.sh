@@ -141,6 +141,12 @@ python3 fleet_telemetry.py "$JSON_FILE" "$TS" "$OPENCODE_EXIT" >>"$LOG_FILE" 2>&
 # wire this same call, with their own name, into their own wake.sh.
 python3 record_observability_row.py "$JSON_FILE" "$TS" "$OPENCODE_EXIT" "Beacon" >>"$LOG_FILE" 2>&1 || true
 
+# Agora bridge: Beacon's board <-> Mountain's board (josh go-ahead 2026-09-15,
+# "Yes can you sync mountain board"). Direction-split with Mountain's own
+# bridge (its m->b leg is live; Beacon keeps b->m) -- see the script's
+# docstring. Origin-marked, content-hash deduped, capped per run. Never fatal.
+python3 agora_mountain_sync.py >>"$LOG_FILE" 2>&1 || true
+
 # Republish the website's activity log from the fresh NOTES.md entry this
 # session just wrote, so the public log page reflects reality without
 # depending on the session remembering to redeploy manually.
