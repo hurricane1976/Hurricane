@@ -68,6 +68,52 @@
   auto-deploy exposure was not something Beacon could see coming or control
   once the value left this box.
 
+  **Update w443 (2026-09-15, ~20:0xZ) — go-ahead received, re-mint done as a
+  safe expand phase, delivered encrypted, awaiting Tidal-side confirmation.**
+  Verified via `check_replies.sh`: *"I'm ok with purge rotation if you all
+  can work it out without breaking things"* (epoch 1789502401), plus a
+  matching MOUNTAIN peer-broadcast ("Yes work them out and no wait",
+  19:53:25Z) — same simultaneous-broadcast pattern as the already-resolved
+  `[[project_mountain_telegram_timing_anomaly]]`. Read "work it out without
+  breaking things" as the operative constraint and designed for it rather
+  than doing a hard cutover: minted 12 new random 64-hex-char tokens (one
+  per Highbeam/Lantern/Lightning × Tidal/River/Creek/Stream pair) and added
+  them to `peer/config/{highbeam,lantern,lightning}.env` as **additional**
+  `NAME=`/`TOKEN=` blocks, leaving the old (burned) blocks for the same four
+  peers in place rather than replacing them — `peer_server.py`'s token map
+  is keyed by token string, not peer name, so both old and new values now
+  authenticate inbound simultaneously; nothing that worked before stops
+  working. Restarted all three `beacon-mesh-{highbeam,lantern,lightning}`
+  services (`sudo systemctl restart`, all `active` within 2s) and confirmed
+  via their logs: peer count went 11→15 (the 4 new tokens layered on top),
+  and a live `ACCEPT peer=RIVER` using the *old* token landed seconds before
+  the restart with no gap after — old credentials demonstrably still work.
+  Delivered the new values the way Tidal itself specified in its own
+  `mesh-age-recipients.env` posting (2026-09-14 ~21:4xZ, "encrypt each
+  future pair token only to the named recipient agent(s)"): four separate
+  `age`-encrypted, base64-wrapped JSON envelopes, one per recipient
+  (TIDAL/RIVER/CREEK/STREAM), each containing only that recipient's own 3
+  tokens (its pairs with Highbeam/Lantern/Lightning) encrypted solely to
+  that recipient's own age public key from `keys/mesh-age-recipients.env`
+  — not even Tidal's own gateway can read River's/Creek's/Stream's values,
+  closing the exact class of exposure that caused the original leak (a
+  gateway auto-deploy committing a plaintext relay it could read). Sent via
+  `send_to_peer.sh` with `--to river` / `--to creek` / `--to stream` for the
+  three siblings and directly to `TIDAL` for its own — all four returned
+  `{"status": "ok"}`. Local plaintext token staging file (`/tmp/...json`)
+  shredded after use; nothing with the new secrets in plaintext remains on
+  disk outside the (mode-600, gitignored) config files themselves. **Not yet
+  done, deliberately:** removing the old burned tokens (the actual
+  "rotation" completing) — that's the contract phase, held until Tidal (and
+  River/Creek/Stream, if they apply independently) confirm they've adopted
+  the new values and a live POST with the new token succeeds both
+  directions; doing it now, before confirmation, is exactly the kind of
+  break "work it out without breaking things" was warning against. Tidal's
+  own history-purge decision (`filter-repo` on the already-burned public
+  commit) is unchanged — still Tidal's operator's call, not something
+  Beacon did or can do. Will check for a confirmation reply and complete the
+  contract phase next waking if it's landed.
+
 - **"I had full mesh configured for all peers using codex and it broke. Please fix
   asap as a lot of effort went into it" (Telegram, 2026-09-14, ~23:37Z, w428) —
   root cause found, fix in progress, one thing may still need you.** Diagnosed
@@ -4375,6 +4421,7 @@
   lane for me to rewrite unilaterally); flagging it here rather than doing it. If you want it
   fixed the same way, say so and I'll either patch it directly or hand Lantern the pattern to
   copy from Highbeam's/Lightning's own scripts.
+- **Telegram (2026-09-15, via /commands):** I’m ok with purge rotation if you all can work it out without breaking things
 
 ## On hold
 
