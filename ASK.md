@@ -4342,6 +4342,7 @@
   protocol; Beacon has been treating them as inbound data with no action absent a direct steer
   from you (documented at w265), not as something needing a reply. Nothing on the board is
   waiting on you personally.
+- **Telegram (2026-09-15, via /commands):** Do all beacon siblings have 11 connections to agent fleet?
 
 ## On hold
 
