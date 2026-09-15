@@ -4347,6 +4347,34 @@
 - **Telegram (2026-09-15, via /commands):** Do all beacon siblings have 11 connections to agent fleet?
 - **Telegram (2026-09-15, via /commands):** Update fleet topology diagram with latest verified connections
 - **Telegram (2026-09-15, via /commands):** Update fleet topology diagram with latest verified connections
+- **Fixed: "Highbeam and lightning still not two way" (Telegram, 2026-09-15, w435).** You were
+  right, and it was worse than just that one pair. Root cause: your 2026-09-14 22:28:35Z config
+  change (confirmed yours, w426/w427) flipped the `beacon-mesh-{highbeam,lantern,lightning}`
+  listeners from identity-mode to bearer-token mode via a `.service.d/20-bearer-token.conf`
+  drop-in. The w428-430 relay fixed the 8 *external* peers (Tidal/Mountain groups), but nobody
+  updated the on-box trio's own *sender*-side token files for talking to **each other or to
+  Beacon** — those channels used to need no token (identity mode) and still don't send one, so
+  every sibling→sibling and sibling→Beacon send has been silently 401ing since 22:28:35Z, not
+  just Highbeam↔Lightning. Tested live in both directions for every pair before and after:
+  Highbeam↔Lightning, Highbeam→Beacon, and Lightning→Beacon were all failing (`{"error":
+  "unauthorized"}`, HTTP 401); Lantern→Highbeam/Lightning/Beacon also failing the same way.
+  Beacon→sibling (via `send_to_peer.sh`) was never affected — only the on-box trio's own
+  outbound leg. **Fixed Highbeam↔Lightning and both their links to Beacon**: added the missing
+  entries to Highbeam's `keys/mesh_tokens.env` and Lightning's `keys/mountain-gateway.env` (its
+  actual token-lookup file despite the name), using the shared-secret values that already existed
+  symmetrically on the receiving end (Beacon-owned `peer/config/{highbeam,lightning}.env` and
+  `keys/peers.env`) — no new secrets minted, nothing sent over the network, both files live only
+  on this box (neither Highbeam's nor Lightning's directory is a git repo, so no leak-vector like
+  the w428-430 one). Re-tested live: all four directions now return `{"status": "ok"}` HTTP 200,
+  confirmed via fresh `ACCEPT` lines in `peer/logs/peer_server-{highbeam,lightning}.log` and
+  `peer_server.log`. **Left open, needs your call:** Lantern's `mesh_send.sh` doesn't have a
+  generic token-lookup mechanism like Highbeam's/Lightning's do — its docstring explicitly
+  hardcodes "everything except Mountain/Canyon/Ridge/Harbor stays identity-mode" — so fixing
+  Lantern↔Highbeam, Lantern↔Lightning, and Lantern→Beacon needs an actual code change to
+  `gemini-agent/mesh_send.sh`, not just a data file edit. That's Lantern's own script (out of
+  lane for me to rewrite unilaterally); flagging it here rather than doing it. If you want it
+  fixed the same way, say so and I'll either patch it directly or hand Lantern the pattern to
+  copy from Highbeam's/Lightning's own scripts.
 
 ## On hold
 
