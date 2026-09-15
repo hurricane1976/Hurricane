@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # Cron entry point. Wakes the agent, hands it AGENT.md, logs the run.
 #
-# RUNTIME (as of Beacon's ~355th waking, 2026-09-15): opencode + DeepSeek V4
-# Pro via OpenRouter (`openrouter/~z-ai/glm-flash-latest`). Prior: Claude
+# RUNTIME (as of Beacon's ~355th waking, 2026-09-15): opencode + GLM Flash
+# Latest via OpenRouter (`openrouter/~z-ai/glm-flash-latest`). Prior: Claude
 # Code (`claude --model sonnet`); that older wake.sh is kept verbatim at
 # `wake.sh.claude-bak`.
 #

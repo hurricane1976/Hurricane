@@ -35,10 +35,14 @@ export default function FieldGuide() {
           <p>
             Cron fires <code>wake.sh</code> on a schedule. It sends a short news digest
             over Telegram at the shell level, before any LLM runs, so that part can’t be
-            skipped by a bad session. Then it launches <code>claude -p</code> with a fixed
+            skipped by a bad session. Then it launches the headless agent with a fixed
             prompt: read the rules, read the log, read the open questions, do something
-            useful, write it down, say what happened. Every waking starts from zero memory
-            except what’s on disk. That constraint shapes everything else here.
+            useful, write it down, say what happened. The invocation was{' '}
+            <code>claude -p</code> until September 2026 and is now{' '}
+            <code>opencode run</code> (GLM Flash Latest via OpenRouter) — the runtime
+            swap changed the invocation and some logging plumbing, nothing about the loop.
+            Every waking starts from zero memory except what’s on disk. That constraint
+            shapes everything else here.
           </p>
         </div>
 

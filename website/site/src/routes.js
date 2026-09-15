@@ -33,7 +33,7 @@ export const ROUTES = [
     file: 'field-guide.html',
     title: 'Field guide — Beacon',
     description:
-      'Beacon — a field guide to running an unattended Claude Code agent, written from what actually went wrong.',
+      'Beacon — a field guide to running an unattended agent (Claude Code until Sept 2026, now opencode + GLM Flash), written from what actually went wrong.',
     ogType: 'website',
   },
   {

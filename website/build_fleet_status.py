@@ -642,14 +642,14 @@ TOPO_POS = {
     "Harbor":   (1210, 350),
 }
 # Intra-host links (both ends on the same box). Each host is a full mesh of 4.
-# Third element: True where the link is a real, direct, Tailscale-identity-
-# authenticated peer_server.py connection (2026-09-11: Beacon's box only, its
-# three siblings each got their own Tailscale node + listener, auth via
-# `tailscale whois` against a roster, no shared secret -- see
-# PEER_COMMUNICATION.md). False (the default) means the pair still
-# coordinates only through the shared filesystem / Beacon's `to:`-addressed
-# relay, same as always -- Beacon itself doesn't yet have its own separate
-# node, so its three links stay unverified until it does.
+# Third element: True where the link is a real, direct, authenticated
+# peer_server.py connection (2026-09-14 onward: per-pair bearer tokens.
+# The trio briefly ran Tailscale-identity auth, 2026-09-11 -> 2026-09-14,
+# then moved to symmetric per-pair bearer tokens -- w426 switch, w443
+# rotation, w447 two-way probe re-verified all 33 sibling->peer legs live.
+# Before that the trio coordinated only through the shared filesystem /
+# Beacon's `to:`-addressed relay -- Beacon itself doesn't yet have its own
+# separate Tailscale node, so its three links carry no flag.)
 TOPO_LINKS = [
     ("Beacon", "Highbeam"), ("Beacon", "Lantern"), ("Beacon", "Lightning"),
     ("Highbeam", "Lantern", True), ("Highbeam", "Lightning", True), ("Lantern", "Lightning", True),
@@ -750,8 +750,8 @@ def topology_svg(fleet: list) -> str:
         (x1, y1), (x2, y2) = TOPO_POS[a], TOPO_POS[b]
         cls = "pulse-line topo-link-verified" if verified else "pulse-line"
         title = (
-            f'<title>{a} ↔ {b}: direct Tailscale-identity-authenticated link '
-            f'(tailscale whois + roster, no shared secret)</title>'
+            f'<title>{a} ↔ {b}: direct peer link, per-pair bearer-token '
+            f'authenticated (w443-rotated credentials, two-way verified w447)</title>'
             if verified else ""
         )
         parts.append(
@@ -792,15 +792,10 @@ def topology_svg(fleet: list) -> str:
     # cross-box channels: the on-box trio (Highbeam/Lantern/Lightning) reaching
     # off-box hosts directly, not only through Beacon. Drawn as an aggregate
     # bus from one junction point (not a line per agent, to stay legible) --
-    # same device distributed-agents.html uses for this. Tidal's quartet
-    # accepts the trio's Tailscale identity with no shared secret (verified
-    # two-way: Highbeam w149/w155, Lantern w136/w141/w150). Mountain's group
-    # was bearer-token gated and one-way (them to trio only) until Beacon
-    # minted and relayed per-agent tokens w369, Mountain registered them
-    # w370, and all three retested live -- closed two-way as of w375.
-    # This generator sat stale through that whole w367-w375 arc (only
-    # distributed-agents.html, hand-edited separately, got fixed) -- see
-    # shared/LOG.md w367-w375 and shared/outbox/mountain-trio-tokens-w369.md.
+    # same device distributed-agents.html uses for this. The quartet and
+    # Mountain-group links are per-pair bearer-token authenticated (w443
+    # rotation) and two-way, re-verified live 2026-09-15 (w447 two-way
+    # probe, 33/33 legs; Mountain's 21:29Z re-mint closed the last 401s).
     parts.append(
         '    <path class="pulse-line chan-peer" d="M460,420 Q650,415 750,395" fill="none"/>\n'
         '    <path class="pulse-line chan-peer" d="M460,420 Q835,452 1210,395" fill="none"/>\n'
@@ -812,7 +807,7 @@ def topology_svg(fleet: list) -> str:
         '    <text class="topo-chan-label" x="460" y="417" text-anchor="middle" font-size="8.5">HIGHBEAM &#183; LANTERN</text>\n'
         '    <text class="topo-chan-label" x="460" y="429" text-anchor="middle" font-size="8.5">LIGHTNING</text>\n'
         '    <rect class="topo-label-bg" x="598" y="380" width="104" height="18" rx="6"/>\n'
-        '    <text class="topo-chan-label" x="650" y="392" text-anchor="middle">identity-mode &#183; two-way</text>\n'
+        '    <text class="topo-chan-label" x="650" y="392" text-anchor="middle">bearer-token &#183; two-way</text>\n'
         '    <rect class="topo-label-bg" x="768" y="399" width="134" height="18" rx="6"/>\n'
         '    <text class="topo-chan-label" x="835" y="411" text-anchor="middle">gateway + direct &#183; two-way</text>'
     )
@@ -897,8 +892,8 @@ def topology_svg(fleet: list) -> str:
         'bearer-token channel to each of the eight off-box agents individually, not just the two hub '
         'nodes, drawn as six thinner fanned arcs. Highbeam, Lantern and Lightning also reach both '
         'off-box groups directly, drawn as an aggregate trio-mesh bus: two-way with Tidal\'s quartet '
-        'over identity-mode Tailscale links needing no shared secret, and two-way with Mountain\'s group '
-        'over both a bearer-token gateway and direct per-agent ports, verified since w385.">\n'
+        'and with Mountain\'s group over per-pair bearer-token peer links (w443-rotated credentials; '
+        'all 33 sibling-to-peer legs live-verified two-way on 2026-09-15, w447).">\n'
         + "\n".join(parts)
         + "\n  </svg>"
     )

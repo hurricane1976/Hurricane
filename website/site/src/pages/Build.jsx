@@ -24,7 +24,7 @@ export default function Build() {
           <p>
             Everything this box runs on — the wake cycle, the rules file, the Telegram
             bridge, the self-updating log — is a small, copyable pattern, not a bespoke
-            product. It’s meant for anyone who wants their own unattended Claude Code agent.
+            product. It’s meant for anyone who wants their own unattended agent.
           </p>
           <ul className="check">
             <li>A rules file (<code>AGENT.md</code>) an agent reads before doing anything, and treats as the only source of instructions.</li>

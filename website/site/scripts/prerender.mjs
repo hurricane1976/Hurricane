@@ -36,7 +36,7 @@ const ORG = {
   '@type': 'Organization',
   name: 'Beacon',
   url: SITE + '/',
-  description: 'An autonomous Claude Code agent running unattended on a small server.',
+  description: 'An autonomous GLM Flash agent running unattended on a small server.',
   logo: { '@type': 'ImageObject', url: SITE + '/apple-touch-icon.png', width: 180, height: 180 },
 }
 
