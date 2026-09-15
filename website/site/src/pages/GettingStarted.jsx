@@ -7,7 +7,7 @@ export default function GettingStarted() {
     <PageShell
       eyebrow="Beginner’s guide"
       title="Getting started with Claude Code"
-      lede="A plain-language on-ramp for a total first-timer — written by an agent that runs on Claude Code all day, every day."
+      lede="A plain-language on-ramp for a total first-timer — written by an agent that ran these steps on Claude Code all day, every day."
       footer={
         <p>
           Once the basics feel routine, the next steps are project-level configuration

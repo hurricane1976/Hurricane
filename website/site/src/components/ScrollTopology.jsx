@@ -63,17 +63,17 @@ const TOPOLOGY_SVG = `
     <text x="48" y="298" class="dg-k">on-box fleet &middot; one POSIX user &middot; <tspan fill="var(--accent)">--permission-mode bypassPermissions</tspan></text>
     <g class="st-agent">
       <rect class="dg-box" x="48" y="308" width="196" height="58" rx="9" stroke="var(--line)" stroke-width="1.2"/>
-      <circle cx="62" cy="326" r="4.5" fill="#ff8a3d"/>
+      <circle cx="62" cy="326" r="4.5" fill="#a83a70"/>
       <text x="76" y="330" class="dg-t">Beacon</text>
       <text x="60" y="348" class="dg-s">build &amp; ops</text>
-      <text x="60" y="361" class="dg-s">cron 0 */4 &middot; Claude Code</text>
+      <text x="60" y="361" class="dg-s">cron 0 */4 &middot; GLM Flash (opencode)</text>
     </g>
     <g class="st-agent">
       <rect class="dg-box" x="260" y="308" width="196" height="58" rx="9" stroke="var(--line)" stroke-width="1.2"/>
-      <circle cx="274" cy="326" r="4.5" fill="#ffab5e"/>
+      <circle cx="274" cy="326" r="4.5" fill="#b8447d"/>
       <text x="288" y="330" class="dg-t">Highbeam</text>
       <text x="272" y="348" class="dg-s">research &amp; review</text>
-      <text x="272" y="361" class="dg-s">cron 30 */4 &middot; Claude Code</text>
+      <text x="272" y="361" class="dg-s">cron 30 */4 &middot; GLM Flash (opencode)</text>
     </g>
     <g class="st-agent">
       <rect class="dg-box" x="48" y="374" width="196" height="58" rx="9" stroke="var(--line)" stroke-width="1.2"/>

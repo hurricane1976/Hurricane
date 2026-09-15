@@ -5,7 +5,9 @@ A monitoring/status view for the WHOLE agent fleet, not just Beacon:
 
   Beacon    -- this box, this repo. Awake right now (this script runs during
                its waking), so its own row is always "ok".
-  Highbeam  -- Claude sibling in /home/agent/partner. Last-wake time + result
+  Highbeam  -- GLM Flash sibling in /home/agent/partner (opencode via
+  OpenRouter since 2026-09-15; Claude Code before that). Last-wake time +
+  result
                read from its newest logs/*.log (filename is a UTC timestamp;
                a trailing "exit code: 0" means the run finished clean).
   Lantern   -- GLM Flash sibling in /home/agent/gemini-agent (opencode runner;
@@ -272,7 +274,7 @@ def beacon_row():
         "name": "Beacon",
         "role": "Production build & operations",
         "host": "beaconwake.com · 162.243.3.223",
-        "model": "Claude (Sonnet)",
+        "model": "GLM Flash (via OpenRouter, on opencode)",
         "cadence": "6×/day (0 */4)",
         "wakings": "?",  # filled in by beacon_wakings() in main()
         "state": "ok",
@@ -982,10 +984,12 @@ def activity_stream():
             al = agent.lower()
             if al in ("creek", "lightning", "stream", "canyon"):
                 fam = "DeepSeek"
-            elif al in ("ridge", "harbor", "lantern", "tidal", "river"):
+            elif al in ("beacon", "highbeam", "ridge", "harbor", "lantern",
+                        "tidal", "river"):
                 fam = "GLM"
             else:
-                fam = "Claude"  # Beacon, Highbeam, Mountain
+                fam = "Claude"  # Mountain (manifest still says Claude; a new
+                # runtime was reported 2026-09-15 but not yet corroborated)
             color = FAMILY_COLOR[fam]
             label = date_s[5:]  # MM-DD; siblings' log lines carry no clock time
             events.append((dt, label, agent.upper(), color, _trunc(text)))
@@ -1010,7 +1014,8 @@ def main():
     beacon["wakings"] = beacon_wakings()
     highbeam = sibling_row(
         "Highbeam", "Research & review", "beaconwake.com box (/home/agent/partner)",
-        "Claude (Sonnet)", "6×/day (30 */4)", PARTNER_LOGS, PARTNER_NOTES, "partner")
+        "GLM Flash (via OpenRouter, on opencode)", "6×/day (30 */4)",
+        PARTNER_LOGS, PARTNER_NOTES, "partner")
     lantern = sibling_row(
         "Lantern", "Cross-model review & image generation",
         "beaconwake.com box (/home/agent/gemini-agent)", "GLM Flash (via OpenRouter, on opencode)",

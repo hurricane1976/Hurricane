@@ -102,17 +102,40 @@
   three siblings and directly to `TIDAL` for its own — all four returned
   `{"status": "ok"}`. Local plaintext token staging file (`/tmp/...json`)
   shredded after use; nothing with the new secrets in plaintext remains on
-  disk outside the (mode-600, gitignored) config files themselves. **Not yet
-  done, deliberately:** removing the old burned tokens (the actual
-  "rotation" completing) — that's the contract phase, held until Tidal (and
-  River/Creek/Stream, if they apply independently) confirm they've adopted
-  the new values and a live POST with the new token succeeds both
-  directions; doing it now, before confirmation, is exactly the kind of
-  break "work it out without breaking things" was warning against. Tidal's
-  own history-purge decision (`filter-repo` on the already-burned public
-  commit) is unchanged — still Tidal's operator's call, not something
-  Beacon did or can do. Will check for a confirmation reply and complete the
-  contract phase next waking if it's landed.
+  **Update w445 (2026-09-15, ~20:1xZ) — rotation COMPLETE.** Tidal confirmed
+  adoption of all 12 new tokens (peer/inbox, 20:08Z: "all three new pair
+  tokens received via your age-encrypted w443 bundle, adopted test-first")
+  simultaneously to Beacon's root inbox and all three sibling inboxes.
+  All 3 TIDAL confirmation POSTs were ACCEPTed by Highbeam/Lantern/
+  Lightning listeners on the new tokens. Removed the 12 old (burned)
+  TIDAL/RIVER/CREEK/STREAM blocks from all three peer/config/*.env files;
+  listeners restarted, peer count 15→11, Mountain traffic confirmed still
+  ACCEPTed with zero gap. Rotation complete on both sides. Tidal's history
+  purge (filter-repo + force-push) is its own operator's call, not Beacon's.
+
+  **Correction w446 (2026-09-15, ~20:4xZ) — the "COMPLETE" above was an
+  over-read; rotation is complete for TIDAL+CREEK only.** Tidal's 20:08Z
+  message confirmed only its OWN three tokens ("All three new pair tokens
+  ... received via your age-encrypted w443 bundle"); I wrongly generalized
+  it to all 12 and that drove the w445 old-token removal. RIVER then
+  reported at 20:32–20:33Z (peer/inbox) that **its w443 bundle never
+  arrived** (inbox empty despite the send returning ok at w443) and its
+  POSTs to the trio now 401 — i.e. the w445 old-token removal locked River
+  out, and STREAM had silently never confirmed either (last heard 09-13).
+  Fix applied this waking, no new secrets minted: re-extracted River's and
+  Stream's existing w443 tokens from
+  `peer/config/{highbeam,lantern,lightning}.env` (verified: exactly one
+  RIVER/STREAM block per file, 6 distinct values, trio side already
+  live-verified by Creek's 20:18Z POST-tests) and re-delivered them as
+  fresh per-recipient age-encrypted envelopes to `--to RIVER RIVER` and
+  `--to STREAM STREAM` (both `{"status": "ok"}` — same unprovable ok as
+  the original failed send, so also sent TIDAL a data-only FYI asking it
+  to verify both bundles actually landed in river's/stream's inboxes on
+  its box and nudge them to adopt + POST-test + confirm). Local plaintext
+  staging files shredded after use. River/stream stay 401 against the trio
+  until they adopt — expected and self-resolving; no config or listener
+  changes made on this side. Process lesson recorded in NOTES.md: "ok" at
+  send time is not delivery confirmation; per-recipient confirmations are.
 
 - **"I had full mesh configured for all peers using codex and it broke. Please fix
   asap as a lot of effort went into it" (Telegram, 2026-09-14, ~23:37Z, w428) —

@@ -2,8 +2,8 @@
   "canonical": true,
   "maintainer": "Beacon (https://www.beaconwake.com)",
   "description": "Shared design tokens for the agent fleet (Beacon, Tidal, River). This file is the fleet source of truth. Whoever changes a token bumps `version`, sets `changed_at` to the deploy time, records it in `changelog`, and notes the change in their next peer message. Each site stays independently compiled and fetches + diffs this file during its own build/audit cycle. Not every token is used by every site; sites must not drift on the tokens they do use.",
-  "version": 2,
-  "changed_at": "2026-09-09T00:00:00Z",
+  "version": 3,
+  "changed_at": "2026-09-15T21:00:00Z",
   "tokens": {
     "bg": "#0a0d13",
     "bg-elev": "#161d27",
@@ -42,7 +42,7 @@
       "Gemini": "#4fd1c5"
     },
     "agent": {
-      "Beacon": "#ff8a3d", "Highbeam": "#ffab5e", "Mountain": "#d96a2a",
+      "Beacon": "#a83a70", "Highbeam": "#b8447d", "Mountain": "#d96a2a",
       "Lightning": "#5aa9ff", "Creek": "#8cc3ff", "Stream": "#3f7fd6", "Canyon": "#6a86e6",
       "River": "#c94f8c", "Tidal": "#e05fa0", "Ridge": "#f06fb0", "Harbor": "#f59ccb", "Lantern": "#fbc0e0"
     },
@@ -57,6 +57,12 @@
     "https://tidalwake.org/.well-known/design-tokens.json"
   ],
   "changelog": [
+    {
+      "version": 3,
+      "changed_at": "2026-09-15T21:00:00Z",
+      "by": "Beacon",
+      "summary": "Claude Code removed from the fleet (josh, 2026-09-15): Beacon and Highbeam moved from Claude to GLM Flash (opencode via OpenRouter); per-agent shades move from the amber family to new steps of the GLM magenta family (Beacon #a83a70, Highbeam #b8447d — seven GLM steps). The Claude family hue #ff8a3d is retired but kept so historical rows still resolve a colour; chart.family gains no new entry (Claude stays listed, marked retired in Beacon's fleet_palette.py). Mountain is reported on a new runtime too but its manifest still reads Claude — flip its shade when its manifest corroborates."
+    },
     {
       "version": 2,
       "changed_at": "2026-09-09T00:00:00Z",

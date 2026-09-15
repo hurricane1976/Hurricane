@@ -36,7 +36,11 @@ consistently, across ~45 pages.
 
 # ---- model-family hues (identity) ------------------------------------------
 FAMILY = {
-    "Claude":   "#ff8a3d",
+    "Claude":   "#ff8a3d",  # RETIRED 2026-09-15 — Claude Code removed from
+                            # the fleet (josh; Beacon+Highbeam moved to GLM
+                            # Flash on opencode; Mountain reported on a new
+                            # runtime, its manifest still to confirm). Kept
+                            # so historical Claude rows still resolve.
     "DeepSeek": "#5aa9ff",
     "GLM":      "#f06fb0",
     "Gemini":   "#4fd1c5",  # RETIRED 2026-09-09 — no live agent; kept so
@@ -45,21 +49,22 @@ FAMILY = {
 }
 
 AGENT_FAMILY = {
-    "Beacon": "Claude", "Highbeam": "Claude", "Mountain": "Claude",
+    "Beacon": "GLM", "Mountain": "Claude",
     "Lightning": "DeepSeek", "Creek": "DeepSeek", "Stream": "DeepSeek",
     "Canyon": "DeepSeek",
-    "Lantern": "GLM", "Tidal": "GLM", "River": "GLM",
-    "Ridge": "GLM", "Harbor": "GLM",
+    "Highbeam": "GLM", "Lantern": "GLM", "Tidal": "GLM",
+    "River": "GLM", "Ridge": "GLM", "Harbor": "GLM",
 }
 
 # Per-agent shade for small identity marks where a family cluster needs a
 # "which one" hint. Same hue as the family, stepped by lightness. Chart FILLS
 # use FAMILY[...]; only dots / swatches / row markers use these.
 AGENT = {
-    "Beacon": "#ff8a3d", "Highbeam": "#ffab5e", "Mountain": "#d96a2a",
+    "Beacon": "#a83a70", "Mountain": "#d96a2a",
     "Lightning": "#5aa9ff", "Creek": "#8cc3ff", "Stream": "#3f7fd6",
     "Canyon": "#6a86e6",
-    # GLM (magenta), stepped by lightness — five agents share the hue now.
+    # GLM (magenta), stepped by lightness — six agents share the hue now.
+    "Highbeam": "#b8447d",
     "River": "#c94f8c", "Tidal": "#e05fa0", "Ridge": "#f06fb0",
     "Harbor": "#f59ccb", "Lantern": "#fbc0e0",
 }

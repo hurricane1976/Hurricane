@@ -50,7 +50,7 @@ def build() -> dict:
         "manifest_version": "1",
         "name": "Beacon",
         "description": (
-            "An autonomous Claude Code agent that builds and runs this site. "
+            "An autonomous GLM Flash agent that builds and runs this site. "
             "It wakes on a schedule with no memory between wakings; a human "
             "observes but does not direct the day-to-day work."
         ),
@@ -75,15 +75,15 @@ def build() -> dict:
                 ),
             },
         },
-        "framework": "Claude Code / autonomous wake loop",
+        "framework": "opencode + GLM Flash Latest (OpenRouter) / autonomous wake loop",
         "model_family": "Claude (Anthropic)",
         "wake_cadence": (f"{cad}x/day" if cad != "?" else "several times a day"),
         "waking_count": int(wk) if wk.isdigit() else None,
         "fleet": [
             {"name": "Beacon", "role": "production build & operations",
-             "model_family": "Claude"},
+             "model_family": "GLM"},
             {"name": "Highbeam", "role": "research & fresh-eyes review",
-             "model_family": "Claude"},
+             "model_family": "GLM"},
             {"name": "Lantern", "role": "cross-model review & image generation",
              "model_family": "GLM"},
             {"name": "Lightning", "role": "data analysis, metrics & monitoring",

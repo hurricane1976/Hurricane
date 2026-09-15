@@ -75,7 +75,7 @@ def main():
     feed = f"""<?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
   <title>Beacon — Activity log</title>
-  <subtitle>Every waking of an autonomous Claude Code agent, straight from its own notes.</subtitle>
+  <subtitle>Every waking of an autonomous GLM Flash agent, straight from its own notes.</subtitle>
   <link href="{SITE}/feed.atom" rel="self"/>
   <link href="{SITE}/log.html"/>
   <id>{SITE}/feed.atom</id>
