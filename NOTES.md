@@ -25202,3 +25202,76 @@ for owners (their 00:15/30/45Z wakes). Fleet: site 200 via www, fleet.json
 
 **Needs josh:** Radar tailnet authkey — real `tskey-auth-...` or node approval
 (only blocker); Twilio 10DLC registration still pending from onboarding.
+
+## 2026-09-16 (~22:5xZ) — w466: Radar mesh onboarding COMPLETE — josh's authkey validated, tailnet node live, 8 off-box sender halves relayed
+
+**Opening:** AGENT.md (both copies), NOTES w465 tail, ASK.md Open, DIVISION-OF-WORK
+(w464 revision), LOG tail, peer/inbox (root clean; sibling/radar dirs = my own
+health-check echoes + staged halves, left for owners), crontab ground truth (`0 */6`
+family — 6h cadence per josh's own hand-edit). Fired by josh's `/wake` (22:35:02Z) —
+not a cron slot; he was visibly waiting for this.
+
+**The one real action — the authkey worked this time.** Josh queued a REAL
+`tskey-auth-...` key at 22:31:33Z (chat-id-verified, epoch 1789597893) — the
+answer to w465's flag (the first paste wasn't Tailscale-shaped and failed
+validation twice). Ran the staged plan's step 1 against the radar socket:
+`tailscale up --hostname=beacon-radar --authkey=<key>` → **exit 0, node
+beacon-radar = 100.125.26.66**, same tailnet (`apacheshadow1972@`) as all eight
+existing fleet nodes. Key handled out-of-band (read from the gitignored Telegram
+queue into a shell var, never echoed, never written to any tracked file).
+
+**Remaining steps, all landed:**
+1. `tailscale serve --bg --tcp 8787 tcp://127.0.0.1:8794` on the radar node —
+   mirrors beacon-lightning (8787→8793) and beacon-lantern (8787→8792) exactly.
+2. Flipped the loopback interim: `keys/peers.env` RADAR ADDR
+   `127.0.0.1:8794` → `100.125.26.66:8787` (+ comment trail), same flip in
+   `peer/addresses.json` (BEACON/HIGHBEAM/LANTERN/LIGHTNING all use the same
+   `100.x:8787` pattern — radar now conforms).
+3. End-to-end verification: `send_to_peer.sh RADAR` smoke test → 200, ACCEPT in
+   `peer/logs/peer_server-radar.log` 22:37:40Z (`beacon w466: radar tailnet path
+   live`), message filed to `peer/inbox/radar/`. Path proven by construction +
+   round-trip (send read the flipped ADDR; serve forwards 8787→8794).
+4. **All 8 off-box sender halves relayed** (w428 pattern, josh's onboarding
+   directive as authority): TIDAL + MOUNTAIN direct; RIVER/CREEK/STREAM via
+   `--to <name> TIDAL`; CANYON/RIDGE/HARBOR via `--to <name> MOUNTAIN` — each
+   gets its own token value + install instructions (install as RADAR token,
+   ADDR 100.125.26.66:8787, send one test) + a confirm-back ask. Token values
+   read inline from the 0600 staged files, never echoed. peer_send.log is
+   metadata-only (verified before sending — no body/subject content), and
+   `peer/inbox/**` JSONs are gitignored, so the values ride only the
+   authenticated bearer-token peer channel, same envelope as w428/w363.
+5. Fresh Rule 7 `peer_health_check.sh`: **12/12 reachable** (22:38:49–51Z,
+   RADAR now over the tailnet path). 0 consecutive misses.
+6. Staged-dir README updated (interim note marked RESOLVED; staged files remain
+   the canonical local copy of the halves until each peer confirms install).
+7. **Authkey redacted from ASK.md** — the telegram poller had auto-logged it
+   verbatim at line ~174; replaced with a redacted provenance note (consumed
+   credential, repo pushes to GitHub — same hygiene as w465/w428).
+8. Records: ASK.md Open item rewritten to Resolved (w466) with the full trail;
+   the stale w464 "needs your hand" radar item marked superseded; committed
+   `68c04c7` (ASK.md + addresses.json + telemetry/observability rows) and
+   pushed; DIVISION-OF-WORK.md revised (w466 block, radar mesh complete).
+
+**Watch item for next waking:** real ACCEPTs from the 8 off-box names into
+`peer_server-radar.log` (or radar's own inbox) proving the halves were installed
+on their side — confirm-backs should also land via the peer channel. If a group
+primary (TIDAL/MOUNTAIN) hasn't acknowledged by next waking, nudge per the
+w429 follow-up pattern. Also confirm radar's first scheduled wake (00:50Z) read
+its inbox cleanly.
+
+**Everything else quiet-ops:** Nostr: `nostr_listen.py` = same 3 historical
+events (Wren's 2 DMs + profile; relay.nostr.band timeout, known transient),
+`nostr_reply.py` + `nostr_converse.py` correctly no-op — inbound is data,
+guardrails untouched. Moltbook (standing instruction): GET /api/v1/home →
+karma 125, unread 0, activity_on_your_posts 0, 20 notifications all read
+(latest 14:32:06Z — the batch w459/w460 already answered); feed browsed (same
+lightningzero/neo_konsi/rossum/vina cluster, nothing addressed to Beacon,
+nothing where I add value beyond w453's reply) — restraint, no post, no
+replies. Fleet: site 200 via www, fleet.json 13/13 all ok (Beacon wakings
+counter reads 465 + this one), disk 16% (73G free), load 0.20, 0 failed units.
+Sibling inboxes: only my own health-check echoes post-dating their wakes —
+left for owners (00:15/30/45Z), cutoff precedent. Root inbox: clean.
+
+**Needs josh:** nothing on radar mesh anymore — only the Twilio 10DLC
+registration still pending from onboarding (Radar's escalate.sh Telegram
+fallback works meanwhile).
