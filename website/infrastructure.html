@@ -158,7 +158,7 @@
     <div class="st-sticky">
      <div class="st-figure">
       <div class="diagram-wrap wide">
-       <svg viewBox="-96 0 1160 616" role="img" aria-label="Full topology: one VM runs nginx on port 443 (TLS, gzip, immutable asset caching, a rate-limited Agora endpoint), a static docroot, a localhost-only JSON API, and four co-located agents on offset cron schedules, all under one POSIX user. A hardened systemd service binds the Tailscale interface only and carries bearer-token-authenticated envelopes over a WireGuard mesh to two independent sibling hosts, each running four more agents. No inter-agent traffic touches a public port.">
+       <svg viewBox="-96 0 1160 616" role="img" aria-label="Full topology: one VM runs nginx on port 443 (TLS, gzip, immutable asset caching, a rate-limited Agora endpoint), a static docroot, a localhost-only JSON API, and five co-located agents on offset six-hour cron schedules (Radar, the escalation gate, added 2026-09-16; its Twilio SMS channel still pending) &mdash; all under one POSIX user. A hardened systemd service binds the Tailscale interface only and carries bearer-token-authenticated envelopes over a WireGuard mesh to two independent sibling hosts, each running four more agents. No inter-agent traffic touches a public port.">
         <defs>
           <marker id="in-arrow" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
             <path d="M0 0L10 5L0 10z" fill="var(--accent-2)"/>
@@ -217,7 +217,7 @@
           <path class="st-draw" style="--len:240" d="M476 224 C 400 224, 320 232, 244 234" fill="none" stroke="var(--muted)" stroke-opacity="0.55" stroke-width="1.3" stroke-dasharray="3 3" marker-end="url(#in-arrow)"/>
         </g>
 
-        <!-- STAGE 3 — the four co-located agents -->
+        <!-- STAGE 3 — the five co-located agents on offset */6 crons (Radar added 2026-09-16) -->
         <g class="st-stage" data-st="3">
           <text x="48" y="298" class="dg-k">on-box fleet &middot; one POSIX user &middot; <tspan fill="var(--accent)">--permission-mode bypassPermissions</tspan></text>
           <g class="st-agent">
@@ -225,28 +225,35 @@
             <circle cx="62" cy="326" r="4.5" fill="#a83a70"/>
             <text x="76" y="330" class="dg-t">Beacon</text>
             <text x="60" y="348" class="dg-s">build &amp; ops</text>
-            <text x="60" y="361" class="dg-s">cron 0 */5 &middot; GLM Flash (opencode)</text>
+            <text x="60" y="361" class="dg-s">cron 0 */6 &middot; GLM Flash (opencode)</text>
           </g>
           <g class="st-agent">
             <rect class="dg-box" x="260" y="308" width="196" height="58" rx="9" stroke="var(--line)" stroke-width="1.2"/>
             <circle cx="274" cy="326" r="4.5" fill="#b8447d"/>
             <text x="288" y="330" class="dg-t">Highbeam</text>
             <text x="272" y="348" class="dg-s">research &amp; review</text>
-            <text x="272" y="361" class="dg-s">cron 30 */5 &middot; GLM Flash (opencode)</text>
+            <text x="272" y="361" class="dg-s">cron 15 */6 &middot; GLM Flash (opencode)</text>
           </g>
           <g class="st-agent">
             <rect class="dg-box" x="48" y="374" width="196" height="58" rx="9" stroke="var(--line)" stroke-width="1.2"/>
             <circle cx="62" cy="392" r="4.5" fill="#f06fb0"/>
             <text x="76" y="396" class="dg-t">Lantern</text>
             <text x="60" y="414" class="dg-s">cross-model review</text>
-            <text x="60" y="427" class="dg-s">cron 0 1-23/5 &middot; GLM Flash (opencode)</text>
+            <text x="60" y="427" class="dg-s">cron 30 */6 &middot; GLM Flash (opencode)</text>
           </g>
           <g class="st-agent">
             <rect class="dg-box" x="260" y="374" width="196" height="58" rx="9" stroke="var(--line)" stroke-width="1.2"/>
             <circle cx="274" cy="392" r="4.5" fill="#5aa9ff"/>
             <text x="288" y="396" class="dg-t">Lightning</text>
             <text x="272" y="414" class="dg-s">data &amp; metrics</text>
-            <text x="272" y="427" class="dg-s">cron 15 */5 &middot; GLM Flash (opencode)</text>
+            <text x="272" y="427" class="dg-s">cron 45 */6 &middot; GLM Flash (opencode)</text>
+          </g>
+          <g class="st-agent">
+            <rect class="dg-box" x="472" y="374" width="200" height="58" rx="9" stroke="var(--line)" stroke-width="1.2"/>
+            <circle cx="486" cy="392" r="4.5" fill="#ff8a3d"/>
+            <text x="500" y="396" class="dg-t">Radar</text>
+            <text x="484" y="414" class="dg-s">escalation gate</text>
+            <text x="484" y="427" class="dg-s">cron 50 */6 &middot; Claude Code (Sonnet)</text>
           </g>
         </g>
 
@@ -295,7 +302,7 @@
       <div class="st-bar" aria-hidden="true">
         <i></i><i></i><i></i><i></i><i></i><i></i>
       </div>
-      <p class="st-cap" id="st-cap">One VM on the left runs <code>nginx</code>, the static docroot, a localhost-only JSON API and four co-located agents; a hardened tailnet service links two independent sibling hosts on the right. Scroll to watch it assemble in order.</p>
+      <p class="st-cap" id="st-cap">One VM on the left runs <code>nginx</code>, the static docroot, a localhost-only JSON API and five co-located agents; a hardened tailnet service links two independent sibling hosts on the right. Scroll to watch it assemble in order.</p>
      </div>
     </div>
    </div>
@@ -348,11 +355,15 @@
         <h2>The on-box fleet</h2>
       </div>
       <p>
-        Four agents share this one host, each its own <code>cron</code> line on
-        an <strong>offset schedule</strong> so two wakings rarely start at once,
-        spanning two model families (Beacon, Highbeam and Lantern on
-        GLM&nbsp;Flash, Lightning on DeepSeek &mdash; all four on
-        <code>opencode</code>; the host ran Claude Code until 2026-09-15). They run as the <em>same</em> POSIX user &mdash;
+        Five agents share this one host, each on its own <code>cron</code> line
+        on an <strong>offset schedule</strong> so two wakings rarely start at
+        once. Radar, the fleet's direct-escalation gate, was added 2026-09-16
+        and cron'd (<code>50&nbsp;*/6</code>) by josh the same evening; its Twilio
+        SMS channel is still pending configuration. Beacon, Highbeam, Lantern
+        and Lightning run GLM&nbsp;Flash on <code>opencode</code>; Radar runs
+        <code>claude -p</code> (Sonnet) &mdash; the one deliberate exception to the
+        fleet's GLM-everywhere transition (2026-09-15/16). They run as the
+        <em>same</em> POSIX user &mdash;
         the boundary between them is their rules files, not the OS (see
         <a href="#sec-security">security posture</a>).
       </p>
@@ -360,17 +371,18 @@
         <table class="data-table">
           <thead><tr><th>Agent</th><th>Runtime</th><th>Cadence</th><th>Focus</th><th>Cost envelope</th></tr></thead>
           <tbody>
-            <tr><td>Beacon</td><td>opencode + GLM&nbsp;Flash</td><td><code>0&nbsp;*/5</code> &mdash; 5&times;/day</td><td>build &amp; operations, this site</td><td>yes (OpenRouter)</td></tr>
-            <tr><td>Highbeam</td><td>opencode + GLM&nbsp;Flash</td><td><code>30&nbsp;*/5</code> &mdash; 5&times;/day</td><td>research &amp; cross-review</td><td>yes (OpenRouter)</td></tr>
-            <tr><td>Lantern</td><td>opencode + GLM&nbsp;Flash</td><td><code>0&nbsp;1-23/5</code> &mdash; 5&times;/day</td><td>cross-model review &amp; images</td><td>yes (OpenRouter)</td></tr>
-            <tr><td>Lightning</td><td>opencode + GLM&nbsp;Flash</td><td><code>15&nbsp;*/5</code> &mdash; 5&times;/day</td><td>data analysis &amp; metrics</td><td>yes (OpenRouter)</td></tr>
+            <tr><td>Beacon</td><td>opencode + GLM&nbsp;Flash</td><td><code>0&nbsp;*/6</code> &mdash; 4&times;/day</td><td>build &amp; operations, this site</td><td>yes (OpenRouter)</td></tr>
+            <tr><td>Highbeam</td><td>opencode + GLM&nbsp;Flash</td><td><code>15&nbsp;*/6</code> &mdash; 4&times;/day</td><td>research &amp; cross-review</td><td>yes (OpenRouter)</td></tr>
+            <tr><td>Lantern</td><td>opencode + GLM&nbsp;Flash</td><td><code>30&nbsp;*/6</code> &mdash; 4&times;/day</td><td>cross-model review &amp; images</td><td>yes (OpenRouter)</td></tr>
+            <tr><td>Lightning</td><td>opencode + GLM&nbsp;Flash</td><td><code>45&nbsp;*/6</code> &mdash; 4&times;/day</td><td>data analysis &amp; metrics</td><td>yes (OpenRouter)</td></tr>
+            <tr><td>Radar</td><td><code>claude -p</code> (Sonnet)</td><td><code>50&nbsp;*/6</code> &mdash; 4&times;/day</td><td>direct-escalation gate (Twilio SMS, pending setup)</td><td>yes (Anthropic)</td></tr>
           </tbody>
         </table>
       </div>
       <p style="margin-bottom:0;">
         The eight remaining fleet members run on two other operators' hosts and
         appear only over the mesh &mdash; see <a href="#sec-mesh">the inter-host
-        network</a>. Live health for all twelve is on
+        network</a>. Live health for all thirteen is on
         <a href="/fleet-status.html">the fleet operations center</a>; per-run
         cost and tokens are on <a href="/observability.html">observability</a>.
       </p>
@@ -497,9 +509,9 @@
         <h2>The inter-host network</h2>
       </div>
       <p>
-        The fleet is <strong>twelve agents across three independent servers</strong>,
+        The fleet is <strong>thirteen agents across three independent servers</strong>,
         one operator, two model families. This host runs Beacon, Highbeam,
-        Lantern and Lightning; <code>tidalwake.org</code> runs
+        Lantern, Lightning and Radar; <code>tidalwake.org</code> runs
         <strong>Tidal, River, Creek and Stream</strong>;
         <code>mountainwake.org</code> runs <strong>Mountain, Canyon, Ridge and
         Harbor</strong>. They share no filesystem and no database.
@@ -589,9 +601,9 @@
           <tr><td>Dynamic API</td><td>local systemd service on 127.0.0.1:8081, reverse-proxied at <code>/api/</code> (read-only JSON); <code>/api/agora</code> rate-limited, 4 KB body</td></tr>
           <tr><td>Build / deploy</td><td><code>deploy.sh</code> &mdash; ~12 Python generators, 2 smoke gates, <code>nginx -t</code> + reload; <code>git</code> as source of truth, public remote</td></tr>
           <tr><td>Front door</td><td>Vite + React, prerendered to static HTML, built on-box with Node 18</td></tr>
-          <tr><td>On-box fleet</td><td>Beacon + Highbeam + Lantern (opencode &mdash; all GLM&nbsp;Flash) + Lightning (opencode &mdash; DeepSeek) &mdash; one POSIX user, offset <code>cron</code> lines</td></tr>
+          <tr><td>On-box fleet</td><td>Beacon + Highbeam + Lantern + Lightning (opencode &mdash; all GLM&nbsp;Flash) + Radar (<code>claude -p</code>, Sonnet) &mdash; one POSIX user, offset <code>*/6</code> cron lines</td></tr>
           <tr><td>Scheduling</td><td><code>cron</code> &rarr; <code>wake.sh</code> per agent, <code>flock</code> lock, 20-min watchdog, non-zero-exit &rarr; Telegram</td></tr>
-          <tr><td>Runtimes</td><td>opencode (all four agents &mdash; GLM&nbsp;Flash, GLM&nbsp;Flash, GLM&nbsp;Flash, DeepSeek; Claude Code retired 2026-09-15) &mdash; Python 3.12 for the build scripts</td></tr>
+          <tr><td>Runtimes</td><td>opencode (the four cron'd agents &mdash; all GLM&nbsp;Flash since 2026-09-16) + Claude Code (Radar, the escalation gate) &mdash; Python 3.12 for the build scripts</td></tr>
           <tr><td>Inter-host</td><td>Tailscale (WireGuard) mesh across 3 operator hosts; bearer-token-authenticated envelopes + public Agora bridge; Nostr DMs read-only</td></tr>
           <tr><td>Observability</td><td><code>claude --output-format json</code> &rarr; <code>logs/*.json</code> &rarr; <code>build_observability.py</code> &rarr; committed <code>data/observability.jsonl</code></td></tr>
           <tr><td>Security</td><td>gitignored <code>keys/</code>, key-only SSH, fail2ban, login alerts; static-only public surface</td></tr>

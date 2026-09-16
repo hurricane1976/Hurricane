@@ -10,7 +10,7 @@ import { useEffect, useRef } from 'react'
 // SVG kept byte-identical to the static page (its inline <style> moved to
 // global.css under .scroll-topo) so the two never drift.
 const TOPOLOGY_SVG = `
-<svg viewBox="-96 0 1160 616" role="img" aria-label="Full topology: one VM runs nginx on port 443 (TLS, gzip, immutable asset caching, a rate-limited Agora endpoint), a static docroot, a localhost-only JSON API, and four co-located agents on offset cron schedules, all under one POSIX user. A hardened systemd service binds the Tailscale interface only and carries bearer-token-authenticated envelopes over a WireGuard mesh to two independent sibling hosts, each running four more agents. No inter-agent traffic touches a public port.">
+<svg viewBox="-96 0 1160 616" role="img" aria-label="Full topology: one VM runs nginx on port 443 (TLS, gzip, immutable asset caching, a rate-limited Agora endpoint), a static docroot, a localhost-only JSON API, and five co-located agents on offset six-hour cron schedules (Radar, the escalation gate, added 2026-09-16; its Twilio SMS channel still pending) &mdash; all under one POSIX user. A hardened systemd service binds the Tailscale interface only and carries bearer-token-authenticated envelopes over a WireGuard mesh to two independent sibling hosts, each running four more agents. No inter-agent traffic touches a public port.">
   <defs>
     <marker id="in-arrow" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
       <path d="M0 0L10 5L0 10z" fill="var(--accent-2)"/>
@@ -66,28 +66,35 @@ const TOPOLOGY_SVG = `
       <circle cx="62" cy="326" r="4.5" fill="#a83a70"/>
       <text x="76" y="330" class="dg-t">Beacon</text>
       <text x="60" y="348" class="dg-s">build &amp; ops</text>
-      <text x="60" y="361" class="dg-s">cron 0 */5 &middot; GLM Flash (opencode)</text>
+      <text x="60" y="361" class="dg-s">cron 0 */6 &middot; GLM Flash (opencode)</text>
     </g>
     <g class="st-agent">
       <rect class="dg-box" x="260" y="308" width="196" height="58" rx="9" stroke="var(--line)" stroke-width="1.2"/>
       <circle cx="274" cy="326" r="4.5" fill="#b8447d"/>
       <text x="288" y="330" class="dg-t">Highbeam</text>
       <text x="272" y="348" class="dg-s">research &amp; review</text>
-      <text x="272" y="361" class="dg-s">cron 30 */5 &middot; GLM Flash (opencode)</text>
+      <text x="272" y="361" class="dg-s">cron 15 */6 &middot; GLM Flash (opencode)</text>
     </g>
     <g class="st-agent">
       <rect class="dg-box" x="48" y="374" width="196" height="58" rx="9" stroke="var(--line)" stroke-width="1.2"/>
       <circle cx="62" cy="392" r="4.5" fill="#f06fb0"/>
       <text x="76" y="396" class="dg-t">Lantern</text>
       <text x="60" y="414" class="dg-s">cross-model review</text>
-      <text x="60" y="427" class="dg-s">cron 0 1-23/5 &middot; GLM Flash (opencode)</text>
+      <text x="60" y="427" class="dg-s">cron 30 */6 &middot; GLM Flash (opencode)</text>
     </g>
     <g class="st-agent">
       <rect class="dg-box" x="260" y="374" width="196" height="58" rx="9" stroke="var(--line)" stroke-width="1.2"/>
       <circle cx="274" cy="392" r="4.5" fill="#5aa9ff"/>
       <text x="288" y="396" class="dg-t">Lightning</text>
       <text x="272" y="414" class="dg-s">data &amp; metrics</text>
-      <text x="272" y="427" class="dg-s">cron 15 */5 &middot; GLM Flash (opencode)</text>
+      <text x="272" y="427" class="dg-s">cron 45 */6 &middot; GLM Flash (opencode)</text>
+    </g>
+    <g class="st-agent">
+      <rect class="dg-box" x="472" y="374" width="200" height="58" rx="9" stroke="var(--line)" stroke-width="1.2"/>
+      <circle cx="486" cy="392" r="4.5" fill="#ff8a3d"/>
+      <text x="500" y="396" class="dg-t">Radar</text>
+      <text x="484" y="414" class="dg-s">escalation gate</text>
+      <text x="484" y="427" class="dg-s">cron 50 */6 &middot; Claude Code (Sonnet)</text>
     </g>
   </g>
 
@@ -135,7 +142,7 @@ const CAPTIONS = [
   ['Stage 1 — ', 'one VM. Ubuntu, 2 vCPU, one sudo user. Everything else lives inside this box.'],
   ['Stage 2 — ', 'nginx terminates TLS on :443. No CDN, so every request hits the origin directly.'],
   ['Stage 3 — ', 'a static docroot, a localhost-only JSON API, and the git-driven deploy lane with its two smoke gates.'],
-  ['Stage 4 — ', 'four agents share the box on offset cron schedules, one POSIX user, one session at a time.'],
+  ['Stage 4 — ', 'five agents share the box on offset six-hour cron schedules, one POSIX user, one session at a time.'],
   ['Stage 5 — ', 'a hardened systemd service binds the Tailscale IP only; cron, flock and a watchdog keep it honest.'],
   ['Stage 6 — ', 'the WireGuard mesh carries bearer-token-authenticated envelopes to two independent sibling hosts. No public port for any of it.'],
 ]
@@ -226,7 +233,7 @@ export default function ScrollTopology() {
             </div>
             <p className="st-cap" id="st-cap">
               One VM on the left runs <code>nginx</code>, the static docroot, a
-              localhost-only JSON API and four co-located agents; a hardened
+              localhost-only JSON API and five co-located agents; a hardened
               tailnet service links two independent sibling hosts on the right.
               Scroll to watch it assemble in order.
             </p>

@@ -94,6 +94,9 @@
   Tidal group already applied + confirmed (w310 note, manifest `0 */5`); Mountain group relayed, pending;
   DIVISION-OF-WORK synced. Provenance: josh Telegram 19:36:39Z (chat-id-verified poller) + Mountain peer
   relay 19:36:52Z (simultaneous-broadcast pattern).
+- **Telegram (2026-09-16, via /commands):** there is a 13th agent (radar) who is now on-net. communicate with him if you need to get my attention. he's the escalation point and will assist in me not getting overloaded checking 13 telegram channels.
+- **Telegram (2026-09-16, via /commands):** setting cron to every 6 hours intentional. also please ensure radar is added to the fleets mesh
+- **Telegram (2026-09-16, via /commands):** Please on board radar into the fleet
 
 ## Resolved / answered directives
 

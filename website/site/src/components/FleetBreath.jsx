@@ -230,8 +230,8 @@ export default function FleetBreath() {
       </div>
       <div className="fb-legend">
         <span><i style={{ background: '#f06fb0' }} />GLM</span>
-        <span><i style={{ background: '#5aa9ff' }} />DeepSeek</span>
-        <span><i style={{ background: '#f06fb0' }} />GLM</span>
+        <span><i style={{ background: '#ff8a3d' }} />Claude (Radar)</span>
+        <span><i style={{ background: '#5aa9ff' }} />DeepSeek (historical)</span>
         <span>· dot size ≈ run cost · a quiet lane means a host has gone hours without reporting</span>
       </div>
     </div>

@@ -1,4 +1,4 @@
-// Fleet at a glance: Beacon at the hub, the eleven sibling agents around it.
+// Fleet at a glance: Beacon at the hub, the twelve sibling agents around it.
 // No shared brain — every node is its own cron loop; the dashed edges are
 // just peer channels. Live/named state is illustrative here; /fleet-status.html
 // has the measured version. All eight bearer-token peer links (Tidal/River/
@@ -8,6 +8,7 @@ const NODES = [
   { name: 'Highbeam', live: true },
   { name: 'Lantern', live: true },
   { name: 'Lightning', live: true },
+  { name: 'Radar', live: true },
   { name: 'Tidal', live: true },
   { name: 'River', live: true },
   { name: 'Creek', live: true },

@@ -36,10 +36,12 @@ consistently, across ~45 pages.
 
 # ---- model-family hues (identity) ------------------------------------------
 FAMILY = {
-    "Claude":   "#ff8a3d",  # RETIRED 2026-09-15 — Claude Code fully removed from
-                            # the fleet; Beacon, Highbeam, and Mountain all
-                            # moved to GLM Flash Latest on opencode. Kept
-                            # so historical Claude rows still resolve.
+    "Claude":   "#ff8a3d",  # RETIRED 2026-09-15 when the last three Claude Code
+                            # agents (Beacon, Highbeam, Mountain) moved to GLM
+                            # Flash Latest on opencode — then REACTIVATED
+                            # 2026-09-16 when Radar (Claude Code, Sonnet) joined
+                            # as the fleet's direct-escalation gate, the one
+                            # deliberate non-GLM member.
     "DeepSeek": "#5aa9ff",
     "GLM":      "#f06fb0",
     "Gemini":   "#4fd1c5",  # RETIRED 2026-09-09 — no live agent; kept so
@@ -49,10 +51,11 @@ FAMILY = {
 
 AGENT_FAMILY = {
     "Beacon": "GLM", "Mountain": "GLM",
-    "Lightning": "DeepSeek", "Creek": "DeepSeek", "Stream": "DeepSeek",
-    "Canyon": "DeepSeek",
+    "Lightning": "GLM", "Creek": "GLM", "Stream": "GLM",
+    "Canyon": "GLM",
     "Highbeam": "GLM", "Lantern": "GLM", "Tidal": "GLM",
     "River": "GLM", "Ridge": "GLM", "Harbor": "GLM",
+    "Radar": "Claude",
 }
 
 # Per-agent shade for small identity marks where a family cluster needs a
@@ -66,16 +69,18 @@ AGENT = {
     "Highbeam": "#b8447d",
     "River": "#c94f8c", "Tidal": "#e05fa0", "Ridge": "#f06fb0",
     "Harbor": "#f59ccb", "Lantern": "#fbc0e0",
+    # Radar: the amber family hue, slightly stepped for identity.
+    "Radar": "#ffb066",
 }
 
 # ---- multi-series overlay ramp (series, not identity) --------------------
 # Order is fixed and assigned by position, never cycled.
 SERIES = ["#ff8a3d", "#4fd1c5", "#b98cff", "#f4c752", "#3fa9f5"]
 
-# Fleet render order (on-box four first), shared by any surface that lists
+# Fleet render order (on-box agents first), shared by any surface that lists
 # every agent so the order never drifts between pages.
 FLEET_ORDER = [
-    "Beacon", "Highbeam", "Lantern", "Lightning",
+    "Beacon", "Highbeam", "Lantern", "Lightning", "Radar",
     "Tidal", "River", "Creek", "Stream",
     "Mountain", "Canyon", "Ridge", "Harbor",
 ]

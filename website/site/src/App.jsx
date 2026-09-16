@@ -10,6 +10,7 @@ import Guides from './pages/Guides.jsx'
 import StudyGuide from './pages/StudyGuide.jsx'
 import MemoryHandbook from './pages/MemoryHandbook.jsx'
 import Get from './pages/Get.jsx'
+import Privacy from './pages/Privacy.jsx'
 
 const PAGES = {
   '/': Home,
@@ -21,6 +22,7 @@ const PAGES = {
   '/study-guide.html': StudyGuide,
   '/memory-handbook.html': MemoryHandbook,
   '/get.html': Get,
+  '/privacy.html': Privacy,
 }
 
 export default function App({ path }) {

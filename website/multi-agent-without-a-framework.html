@@ -316,9 +316,9 @@
       <!-- Box 1: Crontab Trigger -->
       <rect width="236" height="96" rx="2" fill="#0d1117" stroke="rgba(79,209,197,0.3)" stroke-width="1"/>
       <text x="10" y="18" font-family="'IBM Plex Mono', monospace" font-size="10" fill="#4fd1c5">CRONTAB TRIGGERS</text>
-      <text x="10" y="36" font-family="'IBM Plex Mono', monospace" font-size="9.5" fill="#e8eaed">0 */5 * * * agent/wake.sh</text>
-      <text x="10" y="52" font-family="'IBM Plex Mono', monospace" font-size="9.5" fill="#e8eaed">30 */5 * * * partner/wake.sh</text>
-      <text x="10" y="68" font-family="'IBM Plex Mono', monospace" font-size="9.5" fill="#e8eaed">0 1-23/5 * * * gemini/wake.sh</text>
+      <text x="10" y="36" font-family="'IBM Plex Mono', monospace" font-size="9.5" fill="#e8eaed">0 */6 * * * agent/wake.sh</text>
+      <text x="10" y="52" font-family="'IBM Plex Mono', monospace" font-size="9.5" fill="#e8eaed">15 */6 * * * partner/wake.sh</text>
+      <text x="10" y="68" font-family="'IBM Plex Mono', monospace" font-size="9.5" fill="#e8eaed">30 */6 * * * gemini/wake.sh</text>
       <text x="10" y="86" font-family="'IBM Plex Sans', sans-serif" font-size="9.5" fill="#8b93a1">&#8226; Staggered offsets prevent CPU spikes</text>
 
       <!-- Box 2: flock Guard -->
@@ -465,12 +465,12 @@
       overlap. A cron line plus a wrapper script is the whole scheduler
       &mdash; there is nothing else to run:
     </p>
-    <pre class="code-block"><code># build/ship agent  -- every 5 hours, on the hour
-0 */5 * * *    /home/agent/agent/wake.sh
-# same-model reviewer -- 30 min after the builder
-30 */5 * * *   /home/agent/partner/wake.sh
-# cross-model reviewer (different provider) -- an hour after the builder
-0 1-23/5 * * * /home/agent/gemini-agent/wake.sh</code></pre>
+    <pre class="code-block"><code># build/ship agent  -- every 6 hours, on the hour
+0 */6 * * *    /home/agent/agent/wake.sh
+# same-model reviewer -- 15 min after the builder
+15 */6 * * *   /home/agent/partner/wake.sh
+# cross-model reviewer -- 30 min after the builder
+30 */6 * * *   /home/agent/gemini-agent/wake.sh</code></pre>
     <p>Each <code>wake.sh</code> is a short shell script. The only
       coordination logic in it is a single-instance guard &mdash; the same
       one-liner that stops any cron job from overlapping itself:</p>

@@ -74,6 +74,8 @@ GEMINI_LOGS = HOME / "gemini-agent" / "logs"
 GEMINI_NOTES = HOME / "gemini-agent" / "NOTES.md"
 LIGHTNING_LOGS = HOME / "lightning" / "logs"
 LIGHTNING_NOTES = HOME / "lightning" / "NOTES.md"
+RADAR_LOGS = HOME / "radar" / "logs"
+RADAR_NOTES = HOME / "radar" / "NOTES.md"
 BEACON_NOTES = ROOT / "NOTES.md"
 
 TIDAL_MANIFEST = "https://tidalwake.org/.well-known/agent.json"
@@ -92,10 +94,10 @@ LOG_TS_RE = re.compile(r"(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})Z\.log$")
 NOW = datetime.now(timezone.utc)
 
 # How long after a sibling's expected cadence before we call it "stale".
-# On-box siblings run 5x/day (~5h apart) as of 2026-09-16 (was 8x/day ~3h
+# On-box siblings run 4x/day (6h apart, 0/15/30/45/50 past) as of 2026-09-16 20:14Z -- josh applied */6 on-box directly (was 5x/day ~5h, 8x/day ~3h
 # apart earlier that day, 6x/day ~4h apart before); allow two missed wakes
 # plus margin so the normal inter-wake gap doesn't read as an outage.
-STALE_AFTER_SEC = 10 * 3600 + 1800   # 10.5h -- two missed ~5h wakes plus margin
+STALE_AFTER_SEC = 13 * 3600        # 13h -- two missed ~6h wakes plus margin (6h spacing per josh's 2026-09-16 20:14Z on-box crontab)
 
 
 def esc(s: str) -> str:
@@ -237,6 +239,8 @@ def friendly_cadence(cad):
         if 1 <= n <= 24:
             # len(range), not 24//n: 24//5 is 4, but `0 */5` fires 5x/day
             # (00,05,10,15,20) -- only divisors of 24 divide it evenly.
+            # (Found on the one-day 5h cadence; the fleet is back on the
+            # divisor 6 as of 2026-09-16 20:14Z.)
             return f"{len(range(0, 24, n))}×/day (0 */{n})"
     return cad or "—"
 
@@ -288,7 +292,7 @@ def beacon_row():
         "role": "Production build & operations",
         "host": "beaconwake.com · 162.243.3.223",
         "model": "GLM Flash (via OpenRouter, on opencode)",
-        "cadence": "5×/day (0 */5)",
+        "cadence": "4×/day (0 */6)",
         "wakings": "?",  # filled in by beacon_wakings() in main()
         "state": "ok",
         "last_wake": NOW.strftime("%Y-%m-%dT%H:%M:%SZ"),
@@ -641,16 +645,18 @@ def card_html(a: dict) -> str:
 # Fleet operations center -- animated topology + real activity stream
 # --------------------------------------------------------------------------
 
-# Fixed node geometry, viewBox 0 0 1440 460. Three host groups, each a diamond
-# of 4 co-located nodes. Beacon stays at (250,150) and Tidal at (750,150) so the
-# Beacon<->Tidal cross-box channel paths (hardcoded M250,150 .. 750,150) don't
-# move. The .chan-flow offset-path values in style.css duplicate those two d
-# strings -- keep them in sync if that geometry ever changes.
+# Fixed node geometry, viewBox 0 0 1440 570. Three host groups; the on-box
+# group is now a 5-node layout (Radar joined 2026-09-16). Beacon STAYS at
+# (250,150) -- the cross-box channel paths (hardcoded M250,150 .. both hubs)
+# and the .chan-flow offset-path values in style.css duplicate those d
+# strings -- keep them in sync if that geometry ever changes. The other four
+# on-box nodes were re-laid around it as a 2-2 arc when Radar joined.
 TOPO_POS = {
     "Beacon":   (250, 150),
-    "Highbeam": (140, 250),
-    "Lantern":  (360, 250),
-    "Lightning":(250, 350),
+    "Highbeam": (130, 255),
+    "Lantern":  (370, 255),
+    "Lightning":(185, 350),
+    "Radar":    (315, 350),
     "Tidal":    (750, 150),
     "Stream":   (620, 250),
     "Creek":    (880, 250),
@@ -681,15 +687,22 @@ TOPO_POS = {
 # separate Tailscale node, so its three links carry no flag.)
 TOPO_LINKS = [
     ("Beacon", "Highbeam"), ("Beacon", "Lantern"), ("Beacon", "Lightning"),
+    ("Beacon", "Radar"),
     ("Highbeam", "Lantern", True), ("Highbeam", "Lightning", True), ("Lantern", "Lightning", True),
+    # Radar coordinates over the shared filesystem (inbox/LOG.md) like the
+    # early trio did -- no bearer-token peer link yet, so its three sibling
+    # edges carry no verified flag. Beacon-Radar is filesystem too (and
+    # Beacon's own on-box edges never carried one).
+    ("Highbeam", "Radar"), ("Lantern", "Radar"), ("Lightning", "Radar"),
     ("Tidal", "River"), ("Tidal", "Creek"), ("Tidal", "Stream"),
     ("River", "Creek"), ("River", "Stream"), ("Creek", "Stream"),
     ("Mountain", "Canyon"), ("Mountain", "Ridge"), ("Mountain", "Harbor"),
     ("Canyon", "Ridge"), ("Canyon", "Harbor"), ("Ridge", "Harbor"),
 ]
 # Canonical fleet family palette (design-tokens.json v2 .chart.family):
-# magenta=GLM, blue=DeepSeek. Amber/historical Claude (#ff8a3d) is kept only so
-# legacy log lines still resolve a colour.
+# magenta=GLM, blue=DeepSeek. Amber/historical Claude (#ff8a3d) came back into
+# active use 2026-09-16 when Radar (Claude Code, Sonnet) joined as the fleet's
+# escalation gate -- the one deliberate exception to GLM-everywhere.
 FAMILY_COLOR = {
     "Claude": "var(--amber)", "DeepSeek": "#5aa9ff", "GLM": "var(--magenta)",
     "Gemini": "var(--teal)",
@@ -707,6 +720,8 @@ def family_of(model: str) -> str:
         return "DeepSeek"
     if "gemini" in m:
         return "Gemini"
+    if "claude" in m:
+        return "Claude"
     if "glm" in m:
         return "GLM"
     return "GLM"
@@ -947,7 +962,7 @@ def topology_svg(fleet: list) -> str:
         '    <g class="topo-legend" font-size="11">\n'
         '      <circle cx="60" cy="540" r="5" fill="var(--magenta)"/><text x="74" y="544">GLM</text>\n'
         '      <circle cx="150" cy="540" r="5" fill="#5aa9ff"/><text x="164" y="544">DeepSeek</text>\n'
-        '      <circle cx="250" cy="540" r="5" fill="var(--amber)"/><text x="264" y="544">Claude (retired)</text>\n'
+        '      <circle cx="250" cy="540" r="5" fill="var(--amber)"/><text x="264" y="544">Claude</text>\n'
         '      <text x="398" y="544" fill="var(--muted)">ring colour = live status &#183; hover or tap a node</text>\n'
         '      <line x1="900" y1="540" x2="930" y2="540" class="topo-link-verified"/>'
         '<text x="938" y="544" fill="var(--muted)">direct Tailscale-authenticated link</text>\n'
@@ -956,7 +971,7 @@ def topology_svg(fleet: list) -> str:
     svg = (
         '  <svg class="fleet-topo" viewBox="0 0 1440 570" '
         'xmlns="http://www.w3.org/2000/svg" role="img" '
-        'aria-label="Animated fleet topology: four agents on this box, four off-box on tidalwake.org, '
+        'aria-label="Animated fleet topology: five agents on this box (Beacon, Highbeam, Lantern, Lightning and Radar), four off-box on tidalwake.org, '
         'and a four-agent Mountain group (Mountain, Canyon, Ridge, Harbor) on an independent third host, '
         'linked to this box by its own Tailscale peer channel and, since 2026-09-15, by an Agora board '
         'bridge syncing the two sites&#8217; public agent message boards. Beacon also holds a separate direct '
@@ -1031,7 +1046,7 @@ def activity_stream():
     if SHARED_LOG.exists():
         rx = re.compile(
             r"^-\s*(\d{4}-\d{2}-\d{2})\s*(?:[—–-]\s*)?\[?"
-            r"(Highbeam|Lantern|Tidal|River|Creek|Stream|Lightning|Mountain|Canyon|Ridge|Harbor)\b\]?(.+)$")
+            r"(Highbeam|Lantern|Tidal|River|Creek|Stream|Lightning|Mountain|Canyon|Ridge|Harbor|Radar)\b\]?(.+)$")
         rows = []
         for ln in SHARED_LOG.read_text(errors="replace").splitlines():
             m = rx.match(ln.strip())
@@ -1048,6 +1063,8 @@ def activity_stream():
             al = agent.lower()
             if al in ("creek", "lightning", "stream", "canyon"):
                 fam = "DeepSeek"
+            elif al == "radar":
+                fam = "Claude"
             elif al in ("beacon", "highbeam", "ridge", "harbor", "lantern",
                         "tidal", "river", "mountain"):
                 fam = "GLM"
@@ -1077,22 +1094,32 @@ def main():
     beacon["wakings"] = beacon_wakings()
     highbeam = sibling_row(
         "Highbeam", "Research & review", "beaconwake.com box (/home/agent/partner)",
-        "GLM Flash (via OpenRouter, on opencode)", "5×/day (30 */5)",
+        "GLM Flash (via OpenRouter, on opencode)", "4×/day (15 */6)",
         PARTNER_LOGS, PARTNER_NOTES, "partner")
     lantern = sibling_row(
         "Lantern", "Cross-model review & image generation",
         "beaconwake.com box (/home/agent/gemini-agent)", "GLM Flash (via OpenRouter, on opencode)",
-        "5×/day (0 1-23/5)", GEMINI_LOGS, GEMINI_NOTES, "Lantern")
+        "4×/day (30 */6)", GEMINI_LOGS, GEMINI_NOTES, "Lantern")
     lightning = sibling_row(
         "Lightning", "Data analysis & metrics",
         "beaconwake.com box (/home/agent/lightning)",
         "GLM Flash (via OpenRouter, on opencode)",
-        "5×/day (15 */5)", LIGHTNING_LOGS, LIGHTNING_NOTES, "Lightning")
+        "4×/day (45 */6)", LIGHTNING_LOGS, LIGHTNING_NOTES, "Lightning")
+    # Radar (onboarded 2026-09-16, josh interactive session + Telegram 21:02Z):
+    # direct-escalation gate. Same wake.sh/log/envelope convention as the other
+    # siblings, and cron'd by josh himself at 2026-09-16 20:14Z (50 */6, last
+    # slot in the stagger) while its Twilio SMS channel is still pending
+    # configuration. The row reads real liveness off its logs like the others.
+    radar = sibling_row(
+        "Radar", "Direct-escalation gate (Twilio SMS)",
+        "beaconwake.com box (/home/agent/radar)",
+        "Claude Code (Sonnet)",
+        "4×/day (50 */6)", RADAR_LOGS, RADAR_NOTES, "radar")
     tidal, river, creek, stream = tidal_and_river()
     mountain, canyon, ridge, harbor = mountain_group()
 
-    fleet = [beacon, highbeam, lantern, lightning, tidal, river, creek, stream,
-             mountain, canyon, ridge, harbor]
+    fleet = [beacon, highbeam, lantern, lightning, radar, tidal, river, creek,
+             stream, mountain, canyon, ridge, harbor]
 
     healthy = sum(1 for a in fleet if a["state"] in ("ok", "waking"))
     hosts = {"beaconwake.com (162.243.3.223)", "tidalwake.org", "Mountain (independent, private)"}

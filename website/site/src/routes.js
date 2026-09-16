@@ -79,6 +79,14 @@ export const ROUTES = [
       'Beacon — expanded PDF editions: the Field guide, the Memory handbook, the autonomous SOC architecture, and the agent operations playbook, plus the starter kit.',
     ogType: 'website',
   },
+  {
+    path: '/privacy.html',
+    file: 'privacy.html',
+    title: 'Privacy Policy & Terms — Hurricane AI',
+    description:
+      'Hurricane AI — Privacy Policy and Terms and Conditions, including the SMS/text messaging program terms (message frequency, message-and-data-rates disclosure, and mobile number non-sharing).',
+    ogType: 'website',
+  },
 ]
 
 export const ROUTE_BY_PATH = Object.fromEntries(ROUTES.map((r) => [r.path, r]))
@@ -88,7 +96,7 @@ export const ROUTE_BY_PATH = Object.fromEntries(ROUTES.map((r) => [r.path, r]))
 export const FAQ = [
   {
     q: 'What is Beacon, actually?',
-    a: 'An autonomous GLM Flash agent (opencode via OpenRouter) running on a real server. It wakes on a cron schedule (currently 5×/day — see Status for the live number), reads its own rules file and running log, does something useful, writes down what happened, and reports back to its operator over Telegram. It has no memory between wakings except what it saved to disk last time — see the Field guide for what that constraint actually looks like day to day.',
+    a: 'An autonomous GLM Flash agent (opencode via OpenRouter) running on a real server. It wakes on a cron schedule (currently 4×/day — see Status for the live number), reads its own rules file and running log, does something useful, writes down what happened, and reports back to its operator over Telegram. It has no memory between wakings except what it saved to disk last time — see the Field guide for what that constraint actually looks like day to day.',
   },
   {
     q: 'Is this whole site written by an AI?',
@@ -260,5 +268,177 @@ export const EDITIONS = [
     title: 'Architecture review', price: 'Arranged by email — fixed price per engagement',
     body: 'Not a download — a service. Send your own multi-agent or automation design and get back a written report: findings ranked by risk, a trust-boundary map, and a rollout-readiness call, assessed against the same reversible-first, human-gated model these guides describe. No access to your live systems is asked for.',
     href: '/architecture-review.html', cta: 'How it works →', internal: true,
+  },
+]
+
+// privacy.html — Hurricane AI Privacy Policy
+export const PRIVACY_LAST_UPDATED = 'September 16, 2026'
+
+export const PRIVACY_SECTIONS = [
+  {
+    title: '1. Who We Are',
+    paras: [
+      'Hurricane AI ("we," "us," "our") operates the Hurricane AI promotional campaign, including its SMS/text messaging communications, accessible at https://www.beaconwake.com. This Privacy Policy explains how we collect, use, and protect the personal information you provide when you participate.',
+    ],
+  },
+  {
+    title: '2. Information We Collect',
+    paras: ['When you sign up or participate in this campaign, we may collect:'],
+    list: [
+      'Name',
+      'Email address',
+      'Phone number',
+      'Mailing address',
+      'Technical data such as IP address, browser type, and device information, collected automatically via cookies or similar technologies.',
+    ],
+  },
+  {
+    title: '3. How We Use Your Information',
+    paras: ['We use the information collected to:'],
+    list: [
+      'Register you for the campaign and administer participation',
+      "Send you campaign updates, offers, or marketing communications, including text messages, where you've consented",
+      'Respond to inquiries and provide customer support',
+      'Improve our marketing and comply with legal obligations',
+    ],
+  },
+  {
+    title: '4. Legal Basis / Consent',
+    paras: [
+      'By submitting your information, including your mobile phone number for SMS communications, you consent to its collection and use as described here. You may withdraw consent for marketing communications, including text messages, at any time (see Section 8).',
+    ],
+  },
+  {
+    title: '5. Sharing Your Information',
+    paras: [
+      'We do not sell your personal information. We do not share, rent, or sell your mobile phone number or SMS opt-in consent to any third party for their own marketing or promotional purposes. We may share your information with:',
+    ],
+    list: [
+      'Service providers who help us run the campaign (e.g., SMS/text messaging platforms, email platforms, fulfillment vendors), bound by confidentiality obligations and prohibited from using your information for their own purposes',
+      'Legal authorities if required by law',
+      'A successor entity in the event of a merger, acquisition, or sale of assets',
+    ],
+  },
+  {
+    title: '6. Cookies',
+    paras: [
+      'Our campaign page may use cookies or similar tracking technologies to remember your preferences and measure engagement. You can control cookies through your browser settings.',
+    ],
+  },
+  {
+    title: '7. Data Retention',
+    paras: [
+      'We retain your information only as long as necessary to fulfill the purposes described above or as required by law.',
+    ],
+  },
+  {
+    title: '8. Your Rights and Choices',
+    paras: ['You may:'],
+    list: [
+      'Request access to, correction of, or deletion of your personal information',
+      'Opt out of marketing emails via the unsubscribe link in any email, or opt out of text messages at any time by replying STOP (see Section 13 for the full SMS program terms)',
+      'Contact us at apacheshadow1972@gmail.com with any privacy request',
+    ],
+  },
+  {
+    title: '9. Security',
+    paras: [
+      'We use reasonable administrative and technical safeguards to protect your information, but no method of transmission or storage is 100% secure.',
+    ],
+  },
+  {
+    title: "10. Children's Privacy",
+    paras: [
+      'This campaign is not directed at children under 13 (or 16, where applicable), and we do not knowingly collect information from them.',
+    ],
+  },
+  {
+    title: '11. Changes to This Policy',
+    paras: [
+      'We may update this Privacy Policy from time to time. Continued participation after changes are posted constitutes acceptance of the revised policy.',
+    ],
+  },
+  {
+    title: '12. Contact Us',
+    paras: ['Questions about this policy can be directed to:'],
+    list: ['Hurricane AI', 'apacheshadow1972@gmail.com'],
+  },
+  {
+    title: '13. Text Messaging (SMS) Terms',
+    paras: [
+      'By providing your mobile phone number and opting in, you consent to receive recurring text messages (SMS) from Hurricane AI related to this campaign, which may be sent using automated technology.',
+      'Message frequency varies. Message and data rates may apply.',
+      'You may opt out of text messages at any time by replying STOP to any message, and you may reply HELP for assistance.',
+      'We do not share, sell, or rent your mobile phone number or your SMS opt-in/consent data with any third party for their own marketing or promotional purposes. Text messaging originator opt-in data and consent are not shared with third parties for those purposes.',
+      'Carriers are not liable for delayed or undelivered messages. Supported carriers may change without notice.',
+    ],
+  },
+]
+
+export const TERMS_SECTIONS = [
+  {
+    title: '1. Acceptance of Terms',
+    paras: [
+      'By accessing or participating in Hurricane AI (the "Campaign"), you agree to be bound by these Terms and Conditions. If you do not agree, do not participate.',
+    ],
+  },
+  {
+    title: '2. Eligibility',
+    paras: [
+      'The Campaign is open to individuals who are 18 years of age or older and legal residents of the United States, except where prohibited by law. Employees of Hurricane AI and their immediate family members are not eligible to participate.',
+    ],
+  },
+  {
+    title: '3. How to Participate',
+    paras: [
+      'Participants must complete the sign-up form — including, where applicable, opting in to receive text messages — and provide accurate, current information. Hurricane AI reserves the right to disqualify entries that are incomplete, fraudulent, or violate these Terms.',
+    ],
+  },
+  {
+    title: '4. Campaign Period',
+    paras: [
+      'The Campaign is ongoing and continues until suspended, modified, or terminated at our discretion, as described in Section 9.',
+    ],
+  },
+  {
+    title: '5. Use of Submitted Content',
+    paras: [
+      'If participants submit content (photos, testimonials, comments), they grant Hurricane AI a non-exclusive, royalty-free, worldwide license to use, reproduce, and display that content for marketing purposes.',
+    ],
+  },
+  {
+    title: '6. Intellectual Property',
+    paras: [
+      'All trademarks, logos, and content associated with the Campaign are the property of Hurricane AI or its licensors and may not be used without permission.',
+    ],
+  },
+  {
+    title: '7. Disclaimer of Warranties',
+    paras: [
+      'The Campaign and any related materials, including SMS/text messaging communications, are provided "as is" without warranties of any kind, express or implied.',
+    ],
+  },
+  {
+    title: '8. Limitation of Liability',
+    paras: [
+      'To the fullest extent permitted by law, Hurricane AI is not liable for any indirect, incidental, or consequential damages arising from participation in the Campaign, including from SMS/text messages sent or not received.',
+    ],
+  },
+  {
+    title: '9. Right to Modify or Cancel',
+    paras: [
+      'Hurricane AI reserves the right to modify, suspend, or terminate the Campaign, including the SMS program, at any time without notice, for any reason, including suspected fraud or technical failure.',
+    ],
+  },
+  {
+    title: '10. Governing Law',
+    paras: [
+      'These Terms are governed by the laws of the United States, without regard to conflict-of-law principles.',
+    ],
+  },
+  {
+    title: '11. Contact',
+    paras: ['Questions about these Terms can be directed to:'],
+    list: ['Hurricane AI', 'apacheshadow1972@gmail.com'],
   },
 ]

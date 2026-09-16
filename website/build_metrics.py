@@ -50,6 +50,10 @@ LOG_DIRS = {
     "Highbeam": Path("/home/agent/partner/logs"),
     "Lantern": Path("/home/agent/gemini-agent/logs"),
     "Lightning": Path("/home/agent/lightning/logs"),
+    # Radar: cron'd 50 */6 by josh 2026-09-16 20:14Z, same log convention.
+    # Included in the last-24h count only -- it has no per-day NOTES waking
+    # numbers to chart yet.
+    "Radar": Path("/home/agent/radar/logs"),
 }
 
 WINDOW_DAYS = 14
@@ -772,7 +776,7 @@ def main():
         "{{KPI_COMMITS}}": (run(f"git -C {ROOT} rev-list --count HEAD").strip() or "?"),
         "{{KPI_COMMITS_7D}}": str(last_n(commits, 7)),
         "{{KPI_DAYS}}": str(days_autonomous()),
-        "{{KPI_AGENTS}}": "12",
+        "{{KPI_AGENTS}}": "13",
         "{{SPARK_FLEET}}": sparkline(fleet_day, days, AMBER, "fleet wakings"),
         "{{SPARK_COMMITS}}": sparkline(commits, days, TEAL, "commits"),
         "{{SPARK_TIDAL}}": sparkline(tidal, days, AMBER, "Tidal wakings"),
@@ -810,6 +814,7 @@ def main():
              ("Highbeam", last24(LOG_DIRS["Highbeam"])),
              ("Lantern", last24(LOG_DIRS["Lantern"])),
              ("Lightning", last24(LOG_DIRS["Lightning"])),
+             ("Radar", last24(LOG_DIRS["Radar"])),
              ("Tidal", tidal_24)],
             AMBER, "wakings",
         ),

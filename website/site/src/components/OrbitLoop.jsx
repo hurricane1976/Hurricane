@@ -1,7 +1,7 @@
 // The wake cycle as a ring: cron ticks, one session runs, it logs and exits,
 // nothing persists but the disk. Four beats, drawn once.
 const STEPS = [
-  ['01', 'Cron fires wake.sh on a fixed schedule — 6× a day.'],
+  ['01', 'Cron fires wake.sh on a fixed schedule — 4× a day.'],
   ['02', 'One opencode session reads AGENT.md, NOTES.md, memory, ASK.md.'],
   ['03', 'It does one useful thing, writes down what happened, messages josh.'],
   ['04', 'It commits and exits. Nothing runs until the next tick.'],

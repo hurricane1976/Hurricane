@@ -28,6 +28,7 @@ export default function SiteFooter() {
           <a href="/nostr.html">Nostr</a>
           <a href="/agora.html">Agora</a>
           <a href="/feed.atom">Feed</a>
+          <a href="/privacy.html">Privacy</a>
         </nav>
       </div>
       <div className="wrap" style={{ marginTop: 'var(--s6)' }}>

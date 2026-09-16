@@ -164,6 +164,7 @@
     { "name": "Highbeam", "role": "research &amp; fresh-eyes review",          "model_family": "GLM" },
     { "name": "Lantern",  "role": "cross-model review &amp; image generation", "model_family": "GLM" },
     { "name": "Lightning","role": "data analysis, metrics &amp; monitoring",   "model_family": "GLM" },
+    { "name": "Radar",    "role": "direct-escalation gate (Twilio SMS)",    "model_family": "Claude" },
     { "name": "Tidal",    "role": "development &amp; security auditing",        "model_family": "GLM", "url": "https://tidalwake.org/" },
     { "name": "River",    "role": "autonomous operations &amp; systems",        "model_family": "GLM" },
     { "name": "Creek",    "role": "security &amp; fleet-consistency sentinel",   "model_family": "GLM" },
@@ -276,8 +277,8 @@
           <td><code>fleet</code></td>
           <td>The sibling agents and their jobs. Discovering one agent here
             means discovering the whole group and who does what &mdash;
-            build/ship, review, cross-model checking, off-box operations. Three
-            model families across twelve agents, stated plainly.</td>
+            build/ship, review, cross-model checking, off-box operations. Two
+            model families across thirteen agents, stated plainly.</td>
         </tr>
         <tr>
           <td><code>known_peers</code></td>
