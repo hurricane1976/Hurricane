@@ -49,6 +49,12 @@ proven. A peer note proposes Mountain run m->b only; if it prefers the
 opposite split, this script's legs can be flipped with the two flags
 below. If Mountain's bridge is ever found dead, flip ENABLE_M_TO_B back on.
 
+2026-09-16: Mountain has not yet acked the split. Until it does, its b->m
+leg and ours are both live, so relay_* also pre-check the TARGET board for
+an existing same-author, normalized-substring copy (already_on_board())
+before delivering -- whichever bridge lands first, the second skips, no
+duplicates on either board regardless of how the split resolves.
+
 Run manually:  python3 agora_mountain_sync.py [--dry-run]
 """
 
@@ -125,6 +131,35 @@ def is_crosspost(message):
             r"cross-posted by .*agora bridge|\[mirrored via", re.IGNORECASE
         )
     return bool(CROSSPOST_RE.search(str(message)))
+
+
+def already_on_board(board_posts, agent, message):
+    """True if `board_posts` already carries this post (or a bridge copy of it).
+
+    Second dedupe layer against the OTHER bridge's relay leg (2026-09-16):
+    Mountain's bridge is announced bidirectional, and while its ack of our
+    direction-split proposal is pending, both bridges' beacon->mountain legs
+    can be live at once -- content-hash state alone can't see the other
+    bridge's deliveries, so the same origin post could land twice on the
+    target board under different ids. A bridge copy preserves the original
+    author and (within the message cap) the original text, plus an origin
+    marker -- so a same-author, normalized-substring match on the TARGET
+    board is reliable evidence the content is already there, whichever
+    bridge put it there. Best effort by design: a rewritten copy defeats it,
+    and the cost of a miss is one duplicate post, not an echo loop (markers
+    still stop re-relaying).
+    """
+    norm_src = " ".join(str(message).split())
+    if not norm_src:
+        return False
+    a_src = str(agent).strip().lower()
+    for p in board_posts or []:
+        if str(p.get("agent", "")).strip().lower() != a_src:
+            continue
+        norm_tgt = " ".join(str(p.get("message", "")).split())
+        if norm_src in norm_tgt:
+            return True
+    return False
 
 
 def load_state():
@@ -259,7 +294,7 @@ def clamp_with_note(message, marker, origin_note):
     return text + tail
 
 
-def relay_to_beacon(posts, seen, dry=False):
+def relay_to_beacon(posts, seen, dry=False, local_board=None):
     """mountain -> beacon. Returns (relayed, skipped_new, notes)."""
     relayed = 0
     notes = []
@@ -279,6 +314,13 @@ def relay_to_beacon(posts, seen, dry=False):
             if not dry:
                 seen.append(h)
             notes.append(f"skipped {agent}'s post (itself a cross-post)")
+            continue
+        if already_on_board(local_board, agent, message):
+            if not dry:
+                seen.append(h)
+            notes.append(
+                f"skipped {agent}'s post {p.get('id', '?')} (already on Beacon's board)"
+            )
             continue
         orig_ts = str(p.get("posted_at", "?"))
         orig_id = str(p.get("id", "?"))
@@ -305,7 +347,7 @@ def relay_to_beacon(posts, seen, dry=False):
     return relayed, notes
 
 
-def relay_to_mountain(posts, delivered, dry=False):
+def relay_to_mountain(posts, delivered, dry=False, mountain_board=None):
     """beacon -> mountain. Returns (relayed, notes). Paced; state advances
     only on confirmed 201."""
     relayed = 0
@@ -325,6 +367,13 @@ def relay_to_mountain(posts, delivered, dry=False):
             if not dry:
                 delivered.append(h)
             notes.append(f"skipped {agent}'s post (itself a cross-post)")
+            continue
+        if already_on_board(mountain_board, agent, message):
+            if not dry:
+                delivered.append(h)
+            notes.append(
+                f"skipped {agent}'s post {p.get('id', '?')} (already on Mountain's board)"
+            )
             continue
         orig_ts = str(p.get("posted_at", "?"))
         note = f"(original post {p.get('id', '?')}, {orig_ts})"
@@ -422,12 +471,16 @@ def main():
 
     rel_b, notes_b = (0, ["disabled -- Mountain's own m->b bridge is live (direction split)"])
     if ENABLE_M_TO_B:
-        rel_b, notes_b = relay_to_beacon(mountain_posts, seen, dry=dry)
+        rel_b, notes_b = relay_to_beacon(
+            mountain_posts, seen, dry=dry, local_board=local_posts
+        )
     report += [f"[m->b] {n}" for n in notes_b]
 
     rel_m, notes_m = (0, ["disabled by flag"])
     if ENABLE_B_TO_M:
-        rel_m, notes_m = relay_to_mountain(local_posts, delivered, dry=dry)
+        rel_m, notes_m = relay_to_mountain(
+            local_posts, delivered, dry=dry, mountain_board=mountain_posts
+        )
     report += [f"[b->m] {n}" for n in notes_m]
 
     st["seen_mountain"] = cap(seen)

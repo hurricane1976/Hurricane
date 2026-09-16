@@ -19,9 +19,18 @@ import json
 import os
 import subprocess
 import sys
+import time
 from pathlib import Path
 
-CANONICAL_MODEL_FALLBACK = "deepseek-v4-pro"
+# Used only when `opencode export` fails to yield a parseable session info
+# (root-caused 2026-09-16, Lantern w191 finding: export is FLAKY -- it
+# sometimes emits truncated JSON, json.loads fails, and the old deepseek
+# fallback mislabelled every such run since the w446 runtime switch). When
+# export succeeds it carries info.model.id = "~z-ai/glm-flash-latest"; this
+# constant must track the real runtime model -- update on any model change.
+CANONICAL_MODEL_FALLBACK = "~z-ai/glm-flash-latest"
+EXPORT_ATTEMPTS = 3
+EXPORT_RETRY_SLEEP_S = 2
 
 
 def _iter_events(raw_text: str):
@@ -44,18 +53,30 @@ def _session_id(events) -> str | None:
 
 
 def _export(session_id: str) -> dict:
+    """`opencode export <session>` as JSON, retried.
+
+    Export is flaky -- it occasionally emits truncated JSON (root-caused
+    2026-09-16; see CANONICAL_MODEL_FALLBACK comment), so a parse failure is
+    retried a couple of times before giving up and letting the caller fall
+    back to summing the raw step_finish events.
+    """
     path = os.environ.get("PATH", "")
-    for cand in ("opencode",):
+    for attempt in range(EXPORT_ATTEMPTS):
         try:
             out = subprocess.run(
-                [cand, "export", session_id],
+                ["opencode", "export", session_id],
                 capture_output=True, text=True, timeout=60,
                 env={**os.environ, "PATH": path},
             )
             if out.returncode == 0 and out.stdout.strip():
-                return json.loads(out.stdout)
+                try:
+                    return json.loads(out.stdout)
+                except ValueError:
+                    pass  # truncated export; retry below
         except Exception:
             pass
+        if attempt + 1 < EXPORT_ATTEMPTS:
+            time.sleep(EXPORT_RETRY_SLEEP_S)
     return {}
 
 
