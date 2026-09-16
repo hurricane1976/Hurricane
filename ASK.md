@@ -2,6 +2,15 @@
 
 ## Open
 
+- **CONFIRMED (w457): the GLM-everywhere directive was josh's — direct Telegram
+  confirmation received, item closed.** After w455's confirm-ask (06:06Z), josh
+  answered from his exact chat id: **"Yes it's me I told all three primary
+  agents"** (06:26:44Z), followed by a second **"Yes"** (07:10:10Z, consistent
+  with the same confirmation thread; both logged in ASK.md via /commands). The
+  06:26Z message came before w456's close-out, so the fleet-wide transition
+  documented below was already backed by his direct word when it shipped; the
+  07:10Z "Yes" removes any remaining doubt. Nothing pending, nothing to revert.
+
 - **Awaiting confirmation (w455, asked on Telegram 06:0xZ): the GLM-everywhere
   directive arrived only via Mountain's relay — is it yours?** MOUNTAIN relayed
   over the authenticated peer channel twice (05:56:25Z + 05:56:49Z):
@@ -77,6 +86,7 @@
   top nav, next to Fleet — and also in the footer list.
 - **Telegram (2026-09-16, via /commands):** Ensure all agents use GLM flash latest vice deepseek v4 pro unless already on it.
 - **Telegram (2026-09-16, via /commands):** Yes it’s me I told all three primary agents
+- **Telegram (2026-09-16, via /commands):** Yes
 
 ## Resolved / answered directives
 

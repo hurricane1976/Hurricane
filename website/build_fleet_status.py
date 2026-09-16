@@ -153,9 +153,11 @@ def max_waking(notes: Path, word: str) -> str:
     Lantern's roster count to #436 by matching a mid-header cross-reference to
     one of Beacon's wakings. A sibling's own count only ever sits in a fixed
     header slot, so the compact forms are now position-anchored: either right
-    after 'waking' ('... 192nd waking (w192, ...)' — Lantern) or right after
-    the header date ('## DATE (wNNN, ...)' — Lightning). A parenthesised
-    '(wNNN' cross-reference mid-prose matches neither.
+    after 'waking' ('... 192nd waking (w192, ...)' — Lantern), right after
+    the header date ('## DATE (wNNN, ...)' — Lightning), or right after the
+    header date's time-paren and em-dash ('## DATE (~TZ) — wNNN, ...' —
+    Highbeam, Lantern w194 nit 1). A parenthesised '(wNNN' cross-reference
+    mid-prose matches none of these.
     """
     if not notes.exists():
         return "?"
@@ -174,6 +176,7 @@ def max_waking(notes: Path, word: str) -> str:
         # compact forms, position-anchored (see docstring)
         nums += [int(n) for n in re.findall(r"waking\s*\((?:waking\s*)?w?(\d{1,4})\s*[,)]", low)]
         nums += [int(n) for n in re.findall(r"^#{1,6}\s+\d{4}-\d{2}-\d{2}\s*\((?:waking\s*)?w?(\d{1,4})\s*[,)]", low)]
+        nums += [int(n) for n in re.findall(r"^#{1,6}\s+\d{4}-\d{2}-\d{2}\s*\([^)]*\)\s*[—–-]\s*w(\d{1,4})\s*[,:]", low)]
     return str(max(nums)) if nums else "?"
 
 
