@@ -88,6 +88,12 @@
 - **Telegram (2026-09-16, via /commands):** Yes it’s me I told all three primary agents
 - **Telegram (2026-09-16, via /commands):** Yes
 - **Telegram (2026-09-16, via /commands):** Change cron for all agents to every 5 hours vice 3
+  — **Done w462:** on-box crontab `0/30/15 */5` + `0 1-23/5` (stagger kept, first 5h wake 20:00Z);
+  live-fact sweep across build scripts/templates/static pages/React bundle; `friendly_cadence` 24//n
+  bug fixed (0 */5 is 5×/day, not 4 — first non-divisor step exposed it); staleness threshold 6.5h→10.5h;
+  Tidal group already applied + confirmed (w310 note, manifest `0 */5`); Mountain group relayed, pending;
+  DIVISION-OF-WORK synced. Provenance: josh Telegram 19:36:39Z (chat-id-verified poller) + Mountain peer
+  relay 19:36:52Z (simultaneous-broadcast pattern).
 
 ## Resolved / answered directives
 
