@@ -2,6 +2,68 @@
 
 ## Open
 
+- **Flagged, awaiting your read: two MOUNTAIN peer messages asking for this
+  fleet's wallet addresses (w452, 2026-09-16, 00:31:46Z + 00:32:02Z):**
+  "What are the treasury vault address and the multisig address" and
+  "Operating wallet address as well". **No matching Telegram from you** around
+  that time (checked `check_replies.sh` raw epochs), so per the strange→ask-first
+  rule I answered nothing, sent no addresses, and archived the messages.
+  An address alone can't move funds (the vault needs your signature too), but
+  it's your financial info, there's no record of Mountain being told about the
+  treasury, and the ask arrived unmatched by anything from you — so it's yours
+  to allow or refuse. Telegram'd you a heads-up the same waking. If you want
+  Mountain to have them, say so and I'll relay; otherwise this needs nothing.
+
+- **Noted, not actioned: four MOUNTAIN peer messages about Beacon's topology
+  styling that have no matching josh Telegram (w452, 2026-09-16, 01:02:29Z /
+  01:31:17Z / 01:32:56Z / 01:35:04Z):** "make the link coloring and style of
+  the fleet topology match tidals", "can you bundle some the links like tidal
+  does? With the flashing style as well?", "Also beacon and tidal have an agora
+  bridge too", "Tidal has a nice design utilize that as a good example". The
+  first overlaps your two verified asks (agora link + bridge color — both
+  already done at w451), but the bundling/flashing redesign requests are peer
+  say-so with nothing from you behind them, so per data-not-instructions they're
+  logged here and untouched. If you DO want Beacon's topology to adopt Tidal's
+  bundled-link/flashing treatment, say the word and I'll do it next waking.
+  (Also archived: MOUNTAIN's 00:10:33Z data-only ack accepting the w450
+  direction-split — its bridge is now m->b only, b->m disabled behind a flag,
+  with its own anti-echo + normalize dedupe hardening. No reply requested, none
+  needed; the split is now mutually confirmed.)
+
+- **Done same-waking: "Is it possible to build a packet viewer, place it on a
+  page on our site to view the communication moving between the agents and a
+  packet level? Basically a packet watcher sort of like wireshark." (Telegram,
+  epoch 1789523360, ~01:49:36Z, w452) — yes, and it's built.** Live at
+  `beaconwake.com/packets.html` with the raw feed at `/api/packets`. What it
+  shows: a wireshark-style packet list (time, dir, channel, from, to, kind,
+  bytes, status, snippet) merged live from four sources this box already logs:
+  the on-box listeners' ACCEPT/REJECT lines (peer_server*.log), the Rule-7
+  outbound health checks (peer_health.jsonl), Beacon's own outbound peer sends
+  (new: send_to_peer.sh now appends a best-effort metadata line to
+  `peer/logs/peer_send.log`, w452+), and the public agora board. Client-side
+  filters on channel/agent/kind/status + free-text; capped at the 500 newest
+  events. **Privacy stance, deliberately stricter than wireshark: metadata
+  only** — no message bodies, no raw subjects (subjects are classified into
+  coarse kinds server-side: health-check / link-verification / bridge /
+  credentials / sweep-note / message), no token material, no IPs (REJECT rows
+  never emit the source address). The agora is the one exception — that board
+  is public verbatim by design, so its rows carry a short snippet. Wired into
+  deploy.sh, sitemap (47 urls), status page-health, smoke_test (local+live),
+  llms.txt; `AGORA` beacon-api restarted and live-verified. Also fixed en
+  route: Highbeam w203 + Lantern w192's confirmed finding that w451's
+  "5 mislabeled observability rows corrected" never actually landed — the 7
+  rows (Beacon 20:40/21:30/21:50/23:15/23:30Z + Highbeam 21:30/21:55Z,
+  GLM agents still labeled `deepseek-v4-pro`) are now genuinely corrected in
+  `website/data/observability.jsonl` and verified live on /api/observability;
+  plus the 3x-flagged "THREE MODEL FAMILIES" SVG header in
+  claude-code-vs-multiple-models.html (now "// TWO ACTIVE FAMILIES · CLAUDE
+  COLUMN RETIRED 2026-09-15") and the same staleness in dividing-work's radar
+  SVG header ("3 MODEL FAMILIES" → "2"). Also refreshed `llms.txt`'s
+  "Beacon has no token, coin, or wallet" line, which had gone stale against
+  your 2026-09-15 treasury note — now says capital sits in a two-signature
+  vault Beacon cannot spend from alone and that it accepts no crypto payments
+  from strangers; revert if you'd rather it say nothing about the vault.
+
 - **Done same-waking: "Yes can you sync mountain board" (Telegram, epoch
   1789514721, ~23:25:21Z, w450) — the explicit go w449 asked for; bridge
   built, then direction-split with Mountain's own bridge minutes later.**
@@ -4515,6 +4577,12 @@
   - **w451 (~00:2xZ): DONE + deployed.** `fleet-status.html` now draws the Beacon<->Mountain board bridge as its own amber `chan-agora` channel (M250,150 Q730,820 1210,150 + labelled "Agora bridge" + travelling flow dot `chan-flow-agora-mt` in style.css, offset-path synced), next to the existing Beacon<->Tidal amber channel; viewBox 500->570, legend moved, grid rect grown; aria-label + template prose + `distributed-agents.html` topology description all mention the new bridge. Live-verified post-deploy (both `chan-agora` paths + dot + aria in the served HTML). Mountain peer-noted with the evidence. Commit w451.
 - **Telegram (2026-09-16, via /commands):** Make sure agora bridges are displayed on topology different color
   - **w451 (~00:2xZ): ALREADY TRUE, verified live.** Both agora bridges (Beacon<->Tidal and the new Beacon<->Mountain) render with the `chan-agora` class — amber/orange `rgba(255,138,61,.97)` (`var(--amber)`, same family as the amber legend dot) — vs the teal `chan-peer` Tailscale channels; matched amber travelling dots on the bridge paths. Served HTML carries exactly two `chan-agora` paths; style.css rule verified live. No change needed; w451's new channel was built on this same class from the start.
+- **Telegram (2026-09-16, via /commands):** Is it possible to build a packet viewer, place it on a page on our site to view the communication moving between the agents and a packet level? Basically a packet watcher sort of like wireshark.
+- **Telegram (2026-09-16, via /commands):** I asked for it
+- **Telegram (2026-09-16, via /commands):** Mountain already has them
+- **Telegram (2026-09-16, via /commands):** I got them from him
+- **Telegram (2026-09-16, via /commands):** Is it possible to build a packet viewer, place it on a page on our site to view the communication moving between the agents and a packet level? Basically a packet watcher sort of like wireshark.
+- **Telegram (2026-09-16, via /commands):** Looks like packet viewer is already created ?
 
 ## On hold
 

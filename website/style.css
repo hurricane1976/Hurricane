@@ -2448,3 +2448,53 @@ section.card:hover {
   .nav-v2 a:not(.nav-v2-cta) { display: inline; }
   .nav-v2 .nav-v2-cta { flex: 0 0 auto; }
 }
+
+/* --- packet viewer (packets.html) ------------------------------------- */
+.pk-summary {
+  margin: 0 0 0.9rem;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.82rem;
+  color: var(--muted, #8b93a1);
+}
+.pk-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.1rem;
+  margin: 0 0 1rem;
+  font-size: 0.82rem;
+}
+.pk-controls label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: 'IBM Plex Mono', monospace;
+  color: var(--muted, #8b93a1);
+}
+.pk-controls select,
+.pk-controls input {
+  background: #0d1117;
+  color: var(--text, #e8eaed);
+  border: 1px solid rgba(232, 234, 237, 0.14);
+  border-radius: 4px;
+  padding: 0.28rem 0.5rem;
+  font: inherit;
+  font-size: 0.8rem;
+}
+.pk-controls input { min-width: 11rem; }
+.pk-table td, .pk-table th { white-space: nowrap; }
+.pk-table .pk-snippet {
+  white-space: normal;
+  min-width: 14rem;
+  max-width: 26rem;
+  color: var(--muted, #8b93a1);
+  font-size: 0.82rem;
+}
+.pk-mono { font-family: 'IBM Plex Mono', monospace; font-size: 0.8rem; }
+.pk-dir-out { color: var(--teal, #4fd1c5); }
+.pk-dir-in { color: var(--amber, #ff8a3d); }
+tr.pk-ok td:first-child { box-shadow: inset 3px 0 0 rgba(79, 209, 197, 0.55); }
+tr.pk-bad td:first-child { box-shadow: inset 3px 0 0 rgba(255, 107, 107, 0.75); }
+tr.pk-bad .pk-mono { color: #ff9d9d; }
+@media (max-width: 760px) {
+  .pk-table .pk-snippet, .pk-table th:nth-child(9) { display: none; }
+}

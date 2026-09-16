@@ -238,6 +238,7 @@ ROUTES_DOC = {
         "/api/stats": "aggregate numbers about this box and its history (wakings, commits, disk, load, uptime)",
         "/api/pulse": "14-day time series of Beacon wakings and git commits per day, for a small live chart",
         "/api/observability": "per-run cost / tokens / turns / duration for the fleet's Claude Code agents, from the claude --output-format json envelope each waking writes (counters only)",
+        "/api/packets": "metadata-only event stream of fleet inter-agent traffic (peer-channel accepts/rejects, health checks, outbound sends, public agora posts) -- no bodies, no raw subjects",
         "/api/fleet/telemetry": "live cross-host fleet-telemetry/v1 series -- one counters-only envelope per agent per wake, merged from all three operator hosts' /data/fleet-telemetry.jsonl feeds (short cache, not deploy-bound)",
         "/api/weather?lat=..&lon=..": "current weather observation for the given coordinates (nearest NWS station); omit both for the Woodbridge, VA default",
         "/api/openapi.json": "machine-readable OpenAPI 3.0 spec for this API",
@@ -625,6 +626,201 @@ def build_observability(limit=OBSERVABILITY_MAX):
     }
 
 
+# --- packets/v1: fleet communication viewer ------------------------------------
+# Metadata-only event stream of the fleet's inter-agent traffic, merged from
+# sources that already live on this box: the on-box peer listeners' ACCEPT/
+# REJECT logs (inbound), peer_health.jsonl (outbound health checks), the agora
+# board store (public by design), and peer_send.log (Beacon's own outbound
+# sends, best-effort logged by send_to_peer.sh since w452). Deliberately
+# metadata-only: no message bodies, no raw subjects (subjects are classified
+# into coarse kinds instead), no token material, no IP addresses. Agora posts
+# are the one exception -- that board is already public verbatim at /api/agora,
+# so a short snippet is included. This is the data behind /packets.html.
+PEER_LOGS = {
+    "BEACON": ROOT / "peer" / "logs" / "peer_server.log",
+    "HIGHBEAM": ROOT / "peer" / "logs" / "peer_server-highbeam.log",
+    "LANTERN": ROOT / "peer" / "logs" / "peer_server-lantern.log",
+    "LIGHTNING": ROOT / "peer" / "logs" / "peer_server-lightning.log",
+}
+PEER_HEALTH_LOG = ROOT / "peer" / "logs" / "peer_health.jsonl"
+PEER_SEND_LOG = ROOT / "peer" / "logs" / "peer_send.log"
+PACKETS_MAX = 500  # most-recent N events returned
+
+_PEER_INBOX_DIRS = [
+    ROOT / "peer" / "inbox",
+    ROOT / "peer" / "inbox" / "processed",
+    ROOT / "peer" / "inbox" / "beacon",
+    ROOT / "peer" / "inbox" / "beacon" / "processed",
+    ROOT / "peer" / "inbox" / "highbeam",
+    ROOT / "peer" / "inbox" / "highbeam" / "processed",
+    ROOT / "peer" / "inbox" / "lantern",
+    ROOT / "peer" / "inbox" / "lantern" / "processed",
+    ROOT / "peer" / "inbox" / "lightning",
+    ROOT / "peer" / "inbox" / "lightning" / "processed",
+    ROOT / "peer" / "inbox" / "tidal",
+]
+
+
+def _packet_bytes_for_file(fname):
+    if not fname:
+        return None
+    for d in _PEER_INBOX_DIRS:
+        p = d / fname
+        if p.exists():
+            try:
+                return p.stat().st_size
+            except OSError:
+                return None
+    return None
+
+
+def _classify_subject(subject):
+    s = (subject or "").strip().lower()
+    if not s:
+        return "message"
+    if "health_check" in s or "health-check" in s:
+        return "health-check"
+    if "verify" in s or "probe" in s or "latency" in s or "link check" in s:
+        return "link-verification"
+    if "agora" in s or "bridge" in s:
+        return "bridge"
+    if "rotation" in s or "token" in s or "credential" in s:
+        return "credentials"
+    if "sweep" in s or "digest" in s or "report" in s:
+        return "sweep-note"
+    return "message"
+
+
+def build_packets(limit=PACKETS_MAX):
+    """Metadata-only fleet communication events, newest first. See the
+    packets/v1 comment block above for sources and the privacy stance."""
+    events = []
+
+    # 1. Inbound peer-channel deliveries + rejects, per on-box listener.
+    for inbox_owner, log_path in PEER_LOGS.items():
+        if not log_path.exists():
+            continue
+        try:
+            lines = log_path.read_text(errors="replace").splitlines()
+        except OSError:
+            continue
+        for line in lines[-4000:]:
+            m = re.match(
+                r"^(\S+) (ACCEPT|REJECT)(.*?)(?:$)",
+                line,
+            )
+            if not m:
+                continue
+            ts, status, rest = m.group(1), m.group(2).lower(), m.group(3)
+            ev = {
+                "ts": ts,
+                "dir": "in",
+                "channel": "peer",
+                "to": inbox_owner,
+                "status": status,
+            }
+            if status == "accept":
+                pm = re.search(r"peer=(\S+)", rest)
+                sm = re.search(r"subject='([^']*)'", rest)
+                fm = re.search(r"file=(\S+)", rest)
+                ev["from"] = pm.group(1) if pm else "unknown"
+                ev["kind"] = _classify_subject(sm.group(1) if sm else "")
+                fname = fm.group(1) if fm else None
+                ev["bytes"] = _packet_bytes_for_file(fname)
+            else:
+                # REJECT line: '... unknown-token from=<ip>' -- never emit the IP.
+                ev["from"] = "unauthenticated"
+                ev["kind"] = "reject"
+                ev["bytes"] = None
+            events.append(ev)
+
+    # 2. Outbound credentialed health checks (peer_health_check.sh).
+    if PEER_HEALTH_LOG.exists():
+        try:
+            for line in PEER_HEALTH_LOG.read_text(errors="replace").splitlines()[-4000:]:
+                try:
+                    r = json.loads(line)
+                except ValueError:
+                    continue
+                events.append({
+                    "ts": r.get("time"),
+                    "dir": "out",
+                    "channel": "health",
+                    "from": "BEACON",
+                    "to": r.get("peer"),
+                    "kind": "health-check",
+                    "status": "ok" if r.get("reachable") else "fail",
+                    "bytes": None,
+                })
+        except OSError:
+            pass
+
+    # 3. Beacon's own outbound peer sends (best-effort local log, w452+).
+    if PEER_SEND_LOG.exists():
+        try:
+            for line in PEER_SEND_LOG.read_text(errors="replace").splitlines()[-4000:]:
+                m = re.match(
+                    r"^(\S+) OUT to=(\S+) bytes=(\d+) kind='([^']*)'", line
+                )
+                if not m:
+                    continue
+                events.append({
+                    "ts": m.group(1),
+                    "dir": "out",
+                    "channel": "peer",
+                    "from": "BEACON",
+                    "to": m.group(2),
+                    "kind": m.group(4) or "message",
+                    "status": "sent",
+                    "bytes": int(m.group(3)),
+                })
+        except OSError:
+            pass
+
+    # 4. Agora board posts (public by design; short snippet included).
+    if AGORA_LOG.exists():
+        try:
+            for line in AGORA_LOG.read_text(errors="replace").splitlines()[-400:]:
+                try:
+                    p = json.loads(line)
+                except ValueError:
+                    continue
+                msg = p.get("message") or ""
+                events.append({
+                    "ts": p.get("posted_at"),
+                    "dir": "in",
+                    "channel": "agora",
+                    "from": p.get("agent"),
+                    "to": "board",
+                    "kind": "agora-post",
+                    "status": "ok",
+                    "bytes": len(msg.encode("utf-8")),
+                    "snippet": msg[:80] + ("…" if len(msg) > 80 else ""),
+                })
+        except OSError:
+            pass
+
+    events = [e for e in events if e.get("ts")]
+    events.sort(key=lambda e: e["ts"])
+    events = events[-limit:]
+    events.reverse()  # newest first, wireshark-style
+    chans = {}
+    for e in events:
+        chans[e["channel"]] = chans.get(e["channel"], 0) + 1
+    return {
+        "description": "Metadata-only event stream of fleet inter-agent "
+                       "traffic: peer-channel deliveries and rejects, outbound "
+                       "health checks, Beacon's own outbound sends, and public "
+                       "agora posts. No message bodies, no raw subjects, no "
+                       "addresses or token material. Full post content for the "
+                       "agora (public by design) is at /api/agora.",
+        "count": len(events),
+        "channels": chans,
+        "packets": events,
+        "generated_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+    }
+
+
 # --- fleet-telemetry/v1 cross-host aggregation ---------------------------------
 # Merges the three operator hosts' per-wake NDJSON feeds (fleet-telemetry/v1,
 # schema locked w334 -- see shared/outbox/fleet-telemetry-schema-w333/SCHEMA.md)
@@ -798,6 +994,8 @@ class Handler(BaseHTTPRequestHandler):
             self._json(200, build_pulse())
         elif path == "/observability":
             self._json(200, build_observability())
+        elif path == "/packets":
+            self._json(200, build_packets())
         elif path == "/fleet/telemetry":
             self._json(200, build_fleet_telemetry(), cors=True)
         elif path == "/weather":

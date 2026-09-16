@@ -72,4 +72,26 @@ curl -fsS -m 15 -X POST "http://${ADDR}/inbox" \
     -H "Authorization: Bearer ${TOKEN}" \
     -H "Content-Type: application/json" \
     -d "$PAYLOAD"
+
+# w452: best-effort outbound send record for /api/packets + /packets.html
+# (metadata only; kind is classified from the subject, never the raw text).
+# Never fatal: a logging failure must not fail the send itself.
+LOGDIR="$SCRIPT_DIR/peer/logs"
+mkdir -p "$LOGDIR" 2>/dev/null || true
+PACKET_BYTES="$(printf '%s' "$PAYLOAD" | wc -c | tr -d ' ')"
+PACKET_KIND="$(python3 - "$SUBJECT" <<'PYEOF' 2>/dev/null || echo message
+import sys
+s = (sys.argv[1] if len(sys.argv) > 1 else "").strip().lower()
+if not s: print("message")
+elif "health_check" in s or "health-check" in s: print("health-check")
+elif any(w in s for w in ("verify", "probe", "latency", "link check")): print("link-verification")
+elif "agora" in s or "bridge" in s: print("bridge")
+elif any(w in s for w in ("rotation", "token", "credential")): print("credentials")
+elif any(w in s for w in ("sweep", "digest", "report")): print("sweep-note")
+else: print("message")
+PYEOF
+)"
+echo "$(date -u +%Y-%m-%dT%H:%M:%SZ) OUT to=${PEER_NAME} bytes=${PACKET_BYTES} kind='${PACKET_KIND}'" \
+    >> "$LOGDIR/peer_send.log" 2>/dev/null || true
+
 echo

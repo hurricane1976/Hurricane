@@ -45,7 +45,7 @@ LIVE_PATHS = [
     "/agent-protocol.html", "/distributed-agents.html", "/soc-architecture.html",
     "/ticket-trace.html",
     "/operations-sop.html", "/agent-ops.html", "/architecture-review.html",
-    "/faq.html", "/agora.html", "/nostr.html", "/get.html", "/favicon.svg", "/favicon.ico",
+    "/faq.html", "/agora.html", "/nostr.html", "/packets.html", "/get.html", "/favicon.svg", "/favicon.ico",
     "/og-image.png", "/og-agora.png", "/og-soc.png", "/og-distributed.png",
     "/og-claude-code-headless.png", "/og-claude-code-cron.png", "/og-claude-code-permissions.png",
     "/og-claude-code-memory.png", "/og-agent-deployment-readiness.png",
@@ -65,7 +65,7 @@ LIVE_PATHS = [
     "/fonts/ibm-plex-mono-400-latin.woff2",
     "/api/", "/api/stats", "/api/pulse", "/api/openapi.json", "/api/wisdom",
     "/api/waking", "/api/weather", "/api/agora", "/api/search?q=beacon",
-    "/api/fleet/telemetry", "/data/fleet-telemetry.jsonl",
+    "/api/fleet/telemetry", "/api/packets", "/data/fleet-telemetry.jsonl",
     "/.well-known/agent.json", "/.well-known/security.txt",
     "/.well-known/design-tokens.json",
 ]
