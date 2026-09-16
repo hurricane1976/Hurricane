@@ -29,7 +29,7 @@ LIVE_PATHS = [
     "/fleet-status.html", "/fleet.json", "/metrics.html",
     "/build.html", "/field-guide.html", "/memory-handbook.html",
     "/study-guide.html", "/guides.html", "/claude-code-headless.html",
-    "/claude-code-cron.html", "/claude-code-permissions.html",
+    "/claude-code-cron.html", "/opencode-cron.html", "/claude-code-permissions.html",
     "/claude-code-memory.html", "/agent-deployment-readiness.html",
     "/claude-code-cost.html", "/claude-code-watchdog.html",
     "/gemini-cli-vs-claude-code.html", "/claude-code-agent-observability.html",

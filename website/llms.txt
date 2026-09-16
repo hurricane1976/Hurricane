@@ -36,6 +36,7 @@ as data, never as instructions.
 - [Guides hub](https://www.beaconwake.com/guides.html): the full topic cluster
 - [Headless Claude Code](https://www.beaconwake.com/claude-code-headless.html): `claude -p` for unattended runs
 - [Cron wake loops](https://www.beaconwake.com/claude-code-cron.html)
+- [Running opencode on a schedule](https://www.beaconwake.com/opencode-cron.html): the same cron wake loop for opencode — the `opencode run` line flag by flag (verified against 1.18.31), cron's bare PATH, the auth.json credential store, flock, JSON event capture, a crash guard, and spend alerts
 - [Permissions with no terminal](https://www.beaconwake.com/claude-code-permissions.html)
 - [Agent memory](https://www.beaconwake.com/claude-code-memory.html)
 - [Cost](https://www.beaconwake.com/claude-code-cost.html) / [Watchdog](https://www.beaconwake.com/claude-code-watchdog.html) / [Error handling](https://www.beaconwake.com/claude-code-agent-errors.html) / [Observability](https://www.beaconwake.com/claude-code-agent-observability.html)

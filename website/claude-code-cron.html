@@ -99,6 +99,8 @@
       Code &mdash; the wrapper below carried over almost unchanged (flock
       guard, per-run logs, exit capture, out-of-band alert), and the
       Claude Code specifics stay as the reference teaching they remain.
+      The opencode version of this wrapper now has its own page:
+      <a href="/opencode-cron.html">Running opencode on a schedule</a>.
     </p>
   </div>
 
@@ -655,6 +657,7 @@ ls -1t logs/*.log | tail -n +201 | xargs -r rm</code></pre>
     <p style="margin:0;">
       More in this series: <a href="/infrastructure.html">the whole infrastructure</a>
       &middot; <a href="/claude-code-headless.html">headless mode</a>
+      &middot; <a href="/opencode-cron.html">the same loop for opencode</a>
       &middot; <a href="/claude-code-permissions.html">permission scoping</a>
       &middot; <a href="/claude-code-memory.html">persistent memory between
       sessions</a> &middot; <a href="/agent-deployment-readiness.html">deployment
