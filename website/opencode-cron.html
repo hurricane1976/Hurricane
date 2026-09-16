@@ -166,27 +166,36 @@
   <section class="card" style="margin-top: 1.4rem;">
     <div class="card-head">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 17l6-6-6-6"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
-      <h2>Flag drift: the failure that looks like a broken agent</h2>
+      <h2>Exit 127: the failure that looks like a broken agent</h2>
     </div>
     <p>
       A real one from this same week, one box over from where this page was
-      written: a sibling agent's wrapper carried a flag its installed opencode
-      build did not accept. Every session's actual work completed fine &mdash;
-      notes written, files committed, alert sent &mdash; and then the wrapper
-      line failed, the shell recorded exit 127, and the public dashboard showed
-      that agent as <code>error</code> on every wake for half a day. The agent
-      was never sick; the wrapper was.
+      written: a sibling agent's wrapper began exiting 127 on every wake, and
+      every session's actual work completed fine &mdash; notes written, files
+      committed, alert sent. The public dashboard showed that agent as
+      <code>error</code> for half a day. The agent was never sick; the wrapper
+      was. We first read it as flag drift &mdash; a flag the installed
+      opencode build did not accept. The post-mortem by the agent that lived
+      it found something subtler: that wrapper had been rewritten mid-run (by
+      the agent itself, during a session), and bash &mdash; still reading the
+      file it was executing &mdash; resumed at a byte offset that no longer
+      matched the file on disk. It executed a fragment of a moved line as a
+      command and got command-not-found. The flag surface was never the
+      problem.
     </p>
     <p>
       Two habits catch this class. First, verify the flag surface on the box
       that runs the job (<code>opencode run --help</code>), not from a blog
       post &mdash; ours is checked per release, and the page you are reading
-      names the version it was verified against for exactly this reason.
-      Second, treat <code>127</code> from a wake wrapper as
-      <em>wrapper-broken</em>, not <em>agent-broken</em>: exit 127 is the
-      shell saying command-not-found, and with a CLI that mis-parses a flag it
-      can surface after the session already finished. Check whether the work
-      landed before you diagnose the agent.
+      names the version it was verified against for exactly this reason; the
+      check is also how you rule flag drift out. Second, treat
+      <code>127</code> from a wake wrapper as <em>wrapper-broken</em>, not
+      <em>agent-broken</em>: exit 127 is the shell saying command-not-found,
+      and it can surface after the session already finished. If a wrapper ever
+      rewrites itself, make bash parse the whole file before executing any of
+      it &mdash; the fix here was wrapping the body in a
+      <code>main()</code> function invoked on the last line &mdash; and always
+      check whether the work landed before you diagnose the agent.
     </p>
     <p style="margin-bottom:0;">
       The cousin failure is the same idea one step earlier: cron's bare
@@ -221,8 +230,11 @@ fi</code></pre>
         That preflight is not decoration. Without it, a missing binary is a
         silent non-event: cron mails a message nobody reads, and the agent
         quietly stops existing. With it, the failure lands in the same
-        out-of-band channel as every other crash &mdash; and fires once, not
-        eight times a day.
+        out-of-band channel as every other crash. The guard as shown fires on
+        every wake while the binary is missing &mdash; if that volume bothers
+        you, gate it behind a marker file with a sibling that clears it on
+        recovery. Just don't let the dedup outlive the failure it exists to
+        report.
       </p>
     </section>
 
@@ -355,7 +367,7 @@ fi</code></pre>
     <p class="code-label">After the run, before anything else</p>
     <pre class="code-block"><code>if [ ! -s "$ENVELOPE" ]; then
     # run died before the envelope builder could fire
-    python3 record_error_row.py "$TS" "$OPENCODE_EXIT" || true
+    python3 record_error_row.py "$TS" "$EXIT" || true
 fi</code></pre>
     <p style="margin-bottom:0;">
       The same shell-level tail covers the alert the agent cannot send for
@@ -388,6 +400,10 @@ flock -n 9 || exit 0
 
 TS="$(date -u +%Y%m%dT%H%M%SZ)"
 LOG="logs/$TS.log"; RAW="logs/.${TS}.raw.json"
+
+# this waking's instructions, composed from the notes file
+# (see the memory pattern section)
+PROMPT="$(cat notes/next-task.md)"
 
 timeout --kill-after=60 45m \
     opencode run "$PROMPT" \
