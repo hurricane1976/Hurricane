@@ -2,41 +2,38 @@
 
 ## Open
 
-- **Still needs your hand (w465, 2026-09-16 ~22:2xZ): Radar's tailnet node —
-  the authkey you sent didn't validate.** You queued the key string twice
-  (epochs 1789596601 + 1789596809, chat-id-verified). I ran `tailscale up
-  --hostname=beacon-radar --authkey=...` against
-  `/run/tailscale-radar/tailscaled.sock` exactly as planned — Tailscale
-  rejected it both times: `backend error: invalid key: unable to validate API
-  key` (exit 1). Node still `Logged out`, nothing changed on my side. That
-  string doesn't match Tailscale's `tskey-auth-...` key format, so it looks
-  like the wrong string got pasted (another service's token?) or the paste
-  was mangled. **Either send a real Tailscale authkey (starts `tskey-auth-`,
-  reusable if possible, tagged like the fleet ones) or approve a `beacon-radar`
-  node from the admin console** — everything else for Radar's mesh onboarding
-  is built and waiting; the moment a valid key or approved node exists, the
-  remaining steps (serve --tcp 8787 → 127.0.0.1:8794, flip peers.env/
-  addresses.json off the loopback interim, relay the 8 staged off-box sender
-  halves) are minutes of work. The key string itself has been redacted from
-  this file so an invalid credential doesn't ride into the git history.
+- **Resolved (w466, 2026-09-16 ~22:3xZ): Radar's tailnet node — the second
+  key worked. Radar mesh onboarding is now 100% complete.** Your 22:31:33Z
+  authkey (real `tskey-auth-` format, chat-id-verified) validated first
+  try: `tailscale up --hostname=beacon-radar` against
+  `/run/tailscale-radar/tailscaled.sock` → node **beacon-radar =
+  100.125.26.66**, same tailnet as the rest of the fleet. Installed its
+  `tailscale serve --bg --tcp 8787 -> 127.0.0.1:8794` (mirrors the three
+  on-box siblings exactly), flipped `keys/peers.env` RADAR + 
+  `peer/addresses.json` off the loopback interim to `100.125.26.66:8787`,
+  and verified end-to-end: Beacon→RADAR send via the tailnet path → 
+  `ACCEPT` in the radar listener log at 22:37:40Z. Relayed all 8 staged
+  off-box sender halves per the w428 pattern (TIDAL + MOUNTAIN direct;
+  RIVER/CREEK/STREAM via TIDAL, CANYON/RIDGE/HARBOR via MOUNTAIN, each
+  --to named), each with install instructions + a confirm-back ask —
+  their installs are their own side's work; I'll verify real ACCEPTs
+  next waking. Fresh Rule 7 check 12/12 (22:38:49Z, RADAR over tailnet).
+  The key value was redacted from this file (auto-logged verbatim by the
+  poller) so a consumed credential doesn't ride into git history. Nothing
+  left needing your hand here.
 
-- **Needs your hand (w464, 2026-09-16 ~22:0xZ): Radar's own tailnet node.**
-  Your x3 Telegram directive to onboard Radar into the fleet's mesh is
-  otherwise **done this waking** (see below) — but the final mesh piece is
-  the one thing I can't do: **you own the tailnet, so node approval/authkey
-  is yours** (your own w280 sketch: "josh mints the keys / approves the
-  nodes"). Radar's listener is live and Beacon-verified at loopback
-  `127.0.0.1:8794` (`beacon-mesh-radar.service`, token mode, 12 peers
-  configured, same sandboxing as the other three); its `tailscaled-radar`
-  daemon is running logged-out (`/var/lib/tailscale-radar`, socket
-  `/run/tailscale-radar`, port 41645). To finish: either mint/approve a
-  `beacon-radar` node yourself, or send me a Tailscale authkey (ideally
-  tagged like the fleet ones) and I'll run `tailscale up` against
-  `/run/tailscale-radar/tailscaled.sock`, add its `tailscale serve --tcp
-  8787 -> 127.0.0.1:8794` forwarding, then flip `keys/peers.env` RADAR +
-  `peer/addresses.json` from the loopback interim to the node IP and
-  re-verify. Until then: Beacon->Radar works; off-box peers can't reach
-  Radar's inbox (their sender halves are already staged and waiting).
+- **Needs your hand (older, still open): Twilio 10DLC registration** still
+  pending from Radar's onboarding (its escalate.sh Telegram fallback works
+  meanwhile).
+
+- **Superseded by the w466 resolution above (was "Needs your hand (w464)"):
+  Radar's own tailnet node — the key landed and the node is live; nothing
+  pending on your side for it.** Radar's x3 Telegram onboarding directive
+  was done across w463 (site sync) + w464 (mesh) and is fully closed by
+  w466's tailnet steps (above): node beacon-radar = 100.125.26.66, serve
+  tcp/8787 -> 127.0.0.1:8794, peers.env/addresses.json flipped off loopback,
+  Beacon→RADAR verified over tailnet, 8 off-box sender halves relayed.
+  Off-box peers CAN now reach Radar's inbox once they install their halves.
 
 - **Resolved (w464): Radar mesh onboarding — your x3 Telegram directive
   done.** ("setting cron to every 6 hours intentional. also please ensure
@@ -171,6 +168,11 @@
 - **Telegram (2026-09-16, via /commands):** [redacted — authkey-shaped string, sent
   twice (epochs 1789596601 + 1789596809); failed tailnet validation, see w465 note
   on the Radar item above; not stored elsewhere]
+- **Telegram (2026-09-16, via /commands):** [redacted — real `tskey-auth-`
+  authkey, sent 22:31:33Z (epoch 1789597893); VALIDATED and consumed this
+  waking, beacon-radar node is live — see resolved Radar item above. Kept out
+  of the repo per the credentials-out-of-git rule; the value lives only in
+  the (gitignored) Telegram queue + Tailscale's own node state.]
 
 ## Resolved / answered directives
 
