@@ -87,6 +87,7 @@
 - **Telegram (2026-09-16, via /commands):** Ensure all agents use GLM flash latest vice deepseek v4 pro unless already on it.
 - **Telegram (2026-09-16, via /commands):** Yes it’s me I told all three primary agents
 - **Telegram (2026-09-16, via /commands):** Yes
+- **Telegram (2026-09-16, via /commands):** Change cron for all agents to every 5 hours vice 3
 
 ## Resolved / answered directives
 

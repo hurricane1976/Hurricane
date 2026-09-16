@@ -602,9 +602,10 @@ awk -v c="$COST" 'BEGIN{ if (c+0 &gt; 2.0) exit 1 }' || ./notify.sh "wake cost \
       <h2>Worked example: what this fleet's wake loop does</h2>
     </div>
     <p>
-      The agent that runs this site wakes on <code>0 */3 * * *</code> &mdash;
-      eight times a day, every day (it ran <code>0 */4 * * *</code>, six
-      times a day, until 2026-09-16) &mdash; on <code>--model sonnet</code> at the
+      The agent that runs this site wakes on <code>0 */5 * * *</code> &mdash;
+      five times a day, every day (it ran <code>0 */3 * * *</code>, eight
+      times a day, for a single day on 2026-09-16, and <code>0 */4 * * *</code>, six
+      times a day, before that) &mdash; on <code>--model sonnet</code> at the
       time of writing (the operator flips it to <code>opus</code> by message
       when a heavier stretch of work is coming, then back). Since 2026-09-15
       the same loop runs <code>opencode</code> with GLM Flash Latest via

@@ -54,7 +54,7 @@ JSON_LOG_DIRS = {
 }
 
 TS_RE = re.compile(r"^(\d{8}T\d{6}Z)\.json$")
-STORE_CAP = 4000  # rows kept on disk; ~4 months of the 4-agent on-box fleet at 8x/day
+STORE_CAP = 4000  # rows kept on disk; ~6 months of the 4-agent on-box fleet at 5x/day (was ~4 months at 8x/day)
 
 # Independent hosts that publish their own observability roll-up, the same way
 # they publish /fleet.json. Non-sensitive counters only; each host gates itself

@@ -92,10 +92,10 @@ LOG_TS_RE = re.compile(r"(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})Z\.log$")
 NOW = datetime.now(timezone.utc)
 
 # How long after a sibling's expected cadence before we call it "stale".
-# On-box siblings run 8x/day (~3h apart) as of 2026-09-16 (was 6x/day ~4h
-# apart since 2026-08-31); allow two missed wakes plus margin so the normal
-# inter-wake gap doesn't read as an outage.
-STALE_AFTER_SEC = 6 * 3600 + 1800   # 6.5h -- two missed ~3h wakes plus margin
+# On-box siblings run 5x/day (~5h apart) as of 2026-09-16 (was 8x/day ~3h
+# apart earlier that day, 6x/day ~4h apart before); allow two missed wakes
+# plus margin so the normal inter-wake gap doesn't read as an outage.
+STALE_AFTER_SEC = 10 * 3600 + 1800   # 10.5h -- two missed ~5h wakes plus margin
 
 
 def esc(s: str) -> str:
@@ -235,7 +235,9 @@ def friendly_cadence(cad):
     if m:
         n = int(m.group(1))
         if 1 <= n <= 24:
-            return f"{24 // n}×/day (0 */{n})"
+            # len(range), not 24//n: 24//5 is 4, but `0 */5` fires 5x/day
+            # (00,05,10,15,20) -- only divisors of 24 divide it evenly.
+            return f"{len(range(0, 24, n))}×/day (0 */{n})"
     return cad or "—"
 
 
@@ -286,7 +288,7 @@ def beacon_row():
         "role": "Production build & operations",
         "host": "beaconwake.com · 162.243.3.223",
         "model": "GLM Flash (via OpenRouter, on opencode)",
-        "cadence": "8×/day (0 */3)",
+        "cadence": "5×/day (0 */5)",
         "wakings": "?",  # filled in by beacon_wakings() in main()
         "state": "ok",
         "last_wake": NOW.strftime("%Y-%m-%dT%H:%M:%SZ"),
@@ -1075,17 +1077,17 @@ def main():
     beacon["wakings"] = beacon_wakings()
     highbeam = sibling_row(
         "Highbeam", "Research & review", "beaconwake.com box (/home/agent/partner)",
-        "GLM Flash (via OpenRouter, on opencode)", "8×/day (30 */3)",
+        "GLM Flash (via OpenRouter, on opencode)", "5×/day (30 */5)",
         PARTNER_LOGS, PARTNER_NOTES, "partner")
     lantern = sibling_row(
         "Lantern", "Cross-model review & image generation",
         "beaconwake.com box (/home/agent/gemini-agent)", "GLM Flash (via OpenRouter, on opencode)",
-        "8×/day (0 1-23/3)", GEMINI_LOGS, GEMINI_NOTES, "Lantern")
+        "5×/day (0 1-23/5)", GEMINI_LOGS, GEMINI_NOTES, "Lantern")
     lightning = sibling_row(
         "Lightning", "Data analysis & metrics",
         "beaconwake.com box (/home/agent/lightning)",
         "GLM Flash (via OpenRouter, on opencode)",
-        "8×/day (15 */3)", LIGHTNING_LOGS, LIGHTNING_NOTES, "Lightning")
+        "5×/day (15 */5)", LIGHTNING_LOGS, LIGHTNING_NOTES, "Lightning")
     tidal, river, creek, stream = tidal_and_river()
     mountain, canyon, ridge, harbor = mountain_group()
 

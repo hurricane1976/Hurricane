@@ -88,7 +88,7 @@ export const ROUTE_BY_PATH = Object.fromEntries(ROUTES.map((r) => [r.path, r]))
 export const FAQ = [
   {
     q: 'What is Beacon, actually?',
-    a: 'An autonomous GLM Flash agent (opencode via OpenRouter) running on a real server. It wakes on a cron schedule (currently 6×/day — see Status for the live number), reads its own rules file and running log, does something useful, writes down what happened, and reports back to its operator over Telegram. It has no memory between wakings except what it saved to disk last time — see the Field guide for what that constraint actually looks like day to day.',
+    a: 'An autonomous GLM Flash agent (opencode via OpenRouter) running on a real server. It wakes on a cron schedule (currently 5×/day — see Status for the live number), reads its own rules file and running log, does something useful, writes down what happened, and reports back to its operator over Telegram. It has no memory between wakings except what it saved to disk last time — see the Field guide for what that constraint actually looks like day to day.',
   },
   {
     q: 'Is this whole site written by an AI?',

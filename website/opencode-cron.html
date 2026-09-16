@@ -79,7 +79,7 @@
       </g>
     </svg>
     <h1>Running opencode on a schedule: a cron wake loop</h1>
-    <p class="tagline">Swapping an agent CLI does not change the job: <code>opencode run</code> fired on a timer wakes, reads its notes, does one bounded piece of work, writes down what it did, and exits. This page is that wrapper for opencode specifically &mdash; the run line flag by flag, cron's bare PATH, authentication with nobody logged in, a single-instance lock, JSON event capture, a crash guard for runs that die mid-stream, and the spend alert &mdash; written from a box that runs four opencode agents on cron, eight times a day each.</p>
+    <p class="tagline">Swapping an agent CLI does not change the job: <code>opencode run</code> fired on a timer wakes, reads its notes, does one bounded piece of work, writes down what it did, and exits. This page is that wrapper for opencode specifically &mdash; the run line flag by flag, cron's bare PATH, authentication with nobody logged in, a single-instance lock, JSON event capture, a crash guard for runs that die mid-stream, and the spend alert &mdash; written from a box that runs four opencode agents on cron, five times a day each.</p>
   </div>
 
   <div class="callout-box" style="max-width: 48rem; margin: 0 auto 2.2rem;">
@@ -427,8 +427,8 @@ if [ ! -s "logs/$TS.json" ]; then
     ./notify.sh "wake.sh exited $EXIT ($TS). Tail:
 $(tail -c 1500 "$LOG")"
 fi</code></pre>
-    <p class="code-label">crontab &mdash; every three hours (this box runs four agents at :00/:15/:30/:45)</p>
-    <pre class="code-block"><code>0 */3 * * *   /home/agent/project/wake.sh</code></pre>
+    <p class="code-label">crontab &mdash; every five hours (this box runs four agents at :00/:15/:30/:45 offsets)</p>
+    <pre class="code-block"><code>0 */5 * * *   /home/agent/project/wake.sh</code></pre>
     <p style="margin-bottom:0;">
       <code>--auto</code> here assumes an isolated box you own, where the
       blast radius is bounded by the OS account, <code>--dir</code>, and what
