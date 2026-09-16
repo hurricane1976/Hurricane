@@ -1974,6 +1974,17 @@ main h1 code, main h2 code, main h3 code, main h4 code, main a code {
   stroke: rgba(255, 138, 61, 0.97); color: var(--amber); stroke-width: 2.7; stroke-dasharray: 5 7;
   filter: drop-shadow(0 0 3px currentColor) drop-shadow(0 0 13px currentColor);
 }
+/* Tidal-style bundled-channel glow underlay (josh GO 2026-09-16): one wide
+   blurred stroke beneath each cross-box channel so the channel reads as a
+   bundled multi-strand cable rather than a single wire. Static (no motion),
+   so it lives outside the prefers-reduced-motion block like the other
+   constant glows. */
+.fleet-topo .chan-glow {
+  fill: none; stroke-width: 8px; opacity: 0.4; filter: blur(5px);
+}
+.fleet-topo .chan-glow-peer { stroke: rgba(79, 209, 197, 0.9); }
+.fleet-topo .chan-glow-agora { stroke: rgba(255, 138, 61, 0.9); }
+.fleet-topo .chan-glow-fan { stroke: rgba(79, 209, 197, 0.55); }
 /* Beacon's own per-agent bearer-token mesh (six thin arcs to the individual
    off-box agents, not just the Tidal/Mountain hub nodes) -- kept thinner
    than the primary hub links so it reads as secondary, but bright enough
@@ -2152,6 +2163,13 @@ main h1 code, main h2 code, main h3 code, main h4 code, main a code {
   .fleet-topo .chan-agora {
     animation: fleet-dash 26s linear infinite;
   }
+  /* cross-box channels flash at Tidal's pace (10s dash march -- josh's
+     "flashing style" adoption, 2026-09-16) while the ambient mesh keeps the
+     slower 26s march above. Same specificity, later rule wins. */
+  .fleet-topo .chan-peer,
+  .fleet-topo .chan-agora {
+    animation-duration: 10s;
+  }
   .fleet-topo path.pulse-line:nth-of-type(even) { animation-delay: -13s; }
   .fleet-topo line.pulse-line:nth-of-type(odd) { animation-delay: -18s; }
   /* HUD extras: counter-rotating reticle per node, a slow "breathing" pulse
@@ -2185,7 +2203,12 @@ main h1 code, main h2 code, main h3 code, main h4 code, main a code {
      .chan-agora path d that build_fleet_status.py emits (both "M250,150 ..
      750,150"). If the topology node geometry moves in that script, update
      these two values too or the flow dot drifts off the channel line. */
-  .fleet-topo .chan-flow { display: block; animation: fleet-flow 4s linear infinite; }
+  .fleet-topo .chan-flow {
+    display: block;
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: fleet-flow 4s linear infinite, flow-pulse 1s ease-in-out infinite;
+  }
   .fleet-topo .chan-flow-peer {
     fill: rgba(79, 209, 197, 0.9);
     offset-path: path("M250,150 Q500,66 750,150");
@@ -2271,6 +2294,13 @@ main h1 code, main h2 code, main h3 code, main h4 code, main a code {
 @keyframes fleet-flow {
   from { offset-distance: 0%; }
   to   { offset-distance: 100%; }
+}
+/* Tidal-style breathing pulse on the travelling comet-train dots (josh GO
+   2026-09-16) -- scale + opacity swell so each dot reads as an energy
+   packet, not a flat circle. */
+@keyframes flow-pulse {
+  0%, 100% { opacity: 0.55; transform: scale(1); }
+  50%      { opacity: 1;    transform: scale(1.35); }
 }
 @keyframes orbit-spin { to { transform: rotate(360deg); } }
 @keyframes orbit-spin-rev { to { transform: rotate(-360deg); } }

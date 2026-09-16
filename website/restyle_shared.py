@@ -39,6 +39,7 @@ NAV_LINKS = [
     ("/observability.html", "Observability"),
     ("/log.html", "Log"),
     ("/fleet-status.html", "Fleet"),
+    ("/packets.html", "Packets"),
     ("/metrics.html", "Metrics"),
     ("/infrastructure.html", "Infrastructure"),
     ("/roadmap.html", "Roadmap"),

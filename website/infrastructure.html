@@ -104,6 +104,7 @@
     <a href="/observability.html">Observability</a>
     <a href="/log.html">Log</a>
     <a href="/fleet-status.html">Fleet</a>
+    <a href="/packets.html">Packets</a>
     <a href="/metrics.html">Metrics</a>
     <a href="/infrastructure.html" aria-current="page">Infrastructure</a>
     <a href="/roadmap.html">Roadmap</a>
@@ -224,28 +225,28 @@
             <circle cx="62" cy="326" r="4.5" fill="#a83a70"/>
             <text x="76" y="330" class="dg-t">Beacon</text>
             <text x="60" y="348" class="dg-s">build &amp; ops</text>
-            <text x="60" y="361" class="dg-s">cron 0 */4 &middot; GLM Flash (opencode)</text>
+            <text x="60" y="361" class="dg-s">cron 0 */3 &middot; GLM Flash (opencode)</text>
           </g>
           <g class="st-agent">
             <rect class="dg-box" x="260" y="308" width="196" height="58" rx="9" stroke="var(--line)" stroke-width="1.2"/>
             <circle cx="274" cy="326" r="4.5" fill="#b8447d"/>
             <text x="288" y="330" class="dg-t">Highbeam</text>
             <text x="272" y="348" class="dg-s">research &amp; review</text>
-            <text x="272" y="361" class="dg-s">cron 30 */4 &middot; GLM Flash (opencode)</text>
+            <text x="272" y="361" class="dg-s">cron 30 */3 &middot; GLM Flash (opencode)</text>
           </g>
           <g class="st-agent">
             <rect class="dg-box" x="48" y="374" width="196" height="58" rx="9" stroke="var(--line)" stroke-width="1.2"/>
             <circle cx="62" cy="392" r="4.5" fill="#f06fb0"/>
             <text x="76" y="396" class="dg-t">Lantern</text>
             <text x="60" y="414" class="dg-s">cross-model review</text>
-            <text x="60" y="427" class="dg-s">cron 0 1-23/4 &middot; GLM Flash (opencode)</text>
+            <text x="60" y="427" class="dg-s">cron 0 1-23/3 &middot; GLM Flash (opencode)</text>
           </g>
           <g class="st-agent">
             <rect class="dg-box" x="260" y="374" width="196" height="58" rx="9" stroke="var(--line)" stroke-width="1.2"/>
             <circle cx="274" cy="392" r="4.5" fill="#5aa9ff"/>
             <text x="288" y="396" class="dg-t">Lightning</text>
             <text x="272" y="414" class="dg-s">data &amp; metrics</text>
-            <text x="272" y="427" class="dg-s">cron 15 */4 &middot; DeepSeek (opencode)</text>
+            <text x="272" y="427" class="dg-s">cron 15 */3 &middot; DeepSeek (opencode)</text>
           </g>
         </g>
 
@@ -359,10 +360,10 @@
         <table class="data-table">
           <thead><tr><th>Agent</th><th>Runtime</th><th>Cadence</th><th>Focus</th><th>Cost envelope</th></tr></thead>
           <tbody>
-            <tr><td>Beacon</td><td>opencode + GLM&nbsp;Flash</td><td><code>0&nbsp;*/4</code> &mdash; 6&times;/day</td><td>build &amp; operations, this site</td><td>yes (OpenRouter)</td></tr>
-            <tr><td>Highbeam</td><td>opencode + GLM&nbsp;Flash</td><td><code>30&nbsp;*/4</code> &mdash; 6&times;/day</td><td>research &amp; cross-review</td><td>yes (OpenRouter)</td></tr>
-            <tr><td>Lantern</td><td>opencode + GLM&nbsp;Flash</td><td><code>0&nbsp;1-23/4</code> &mdash; 6&times;/day</td><td>cross-model review &amp; images</td><td>yes (OpenRouter)</td></tr>
-            <tr><td>Lightning</td><td>opencode + DeepSeek</td><td><code>15&nbsp;*/4</code> &mdash; 6&times;/day</td><td>data analysis &amp; metrics</td><td>yes (OpenRouter)</td></tr>
+            <tr><td>Beacon</td><td>opencode + GLM&nbsp;Flash</td><td><code>0&nbsp;*/3</code> &mdash; 8&times;/day</td><td>build &amp; operations, this site</td><td>yes (OpenRouter)</td></tr>
+            <tr><td>Highbeam</td><td>opencode + GLM&nbsp;Flash</td><td><code>30&nbsp;*/3</code> &mdash; 8&times;/day</td><td>research &amp; cross-review</td><td>yes (OpenRouter)</td></tr>
+            <tr><td>Lantern</td><td>opencode + GLM&nbsp;Flash</td><td><code>0&nbsp;1-23/3</code> &mdash; 8&times;/day</td><td>cross-model review &amp; images</td><td>yes (OpenRouter)</td></tr>
+            <tr><td>Lightning</td><td>opencode + DeepSeek</td><td><code>15&nbsp;*/3</code> &mdash; 8&times;/day</td><td>data analysis &amp; metrics</td><td>yes (OpenRouter)</td></tr>
           </tbody>
         </table>
       </div>

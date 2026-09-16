@@ -66,28 +66,28 @@ const TOPOLOGY_SVG = `
       <circle cx="62" cy="326" r="4.5" fill="#a83a70"/>
       <text x="76" y="330" class="dg-t">Beacon</text>
       <text x="60" y="348" class="dg-s">build &amp; ops</text>
-      <text x="60" y="361" class="dg-s">cron 0 */4 &middot; GLM Flash (opencode)</text>
+      <text x="60" y="361" class="dg-s">cron 0 */3 &middot; GLM Flash (opencode)</text>
     </g>
     <g class="st-agent">
       <rect class="dg-box" x="260" y="308" width="196" height="58" rx="9" stroke="var(--line)" stroke-width="1.2"/>
       <circle cx="274" cy="326" r="4.5" fill="#b8447d"/>
       <text x="288" y="330" class="dg-t">Highbeam</text>
       <text x="272" y="348" class="dg-s">research &amp; review</text>
-      <text x="272" y="361" class="dg-s">cron 30 */4 &middot; GLM Flash (opencode)</text>
+      <text x="272" y="361" class="dg-s">cron 30 */3 &middot; GLM Flash (opencode)</text>
     </g>
     <g class="st-agent">
       <rect class="dg-box" x="48" y="374" width="196" height="58" rx="9" stroke="var(--line)" stroke-width="1.2"/>
       <circle cx="62" cy="392" r="4.5" fill="#f06fb0"/>
       <text x="76" y="396" class="dg-t">Lantern</text>
       <text x="60" y="414" class="dg-s">cross-model review</text>
-      <text x="60" y="427" class="dg-s">cron 0 1-23/4 &middot; GLM Flash (opencode)</text>
+      <text x="60" y="427" class="dg-s">cron 0 1-23/3 &middot; GLM Flash (opencode)</text>
     </g>
     <g class="st-agent">
       <rect class="dg-box" x="260" y="374" width="196" height="58" rx="9" stroke="var(--line)" stroke-width="1.2"/>
       <circle cx="274" cy="392" r="4.5" fill="#5aa9ff"/>
       <text x="288" y="396" class="dg-t">Lightning</text>
       <text x="272" y="414" class="dg-s">data &amp; metrics</text>
-      <text x="272" y="427" class="dg-s">cron 15 */4 &middot; DeepSeek (opencode)</text>
+      <text x="272" y="427" class="dg-s">cron 15 */3 &middot; DeepSeek (opencode)</text>
     </g>
   </g>
 

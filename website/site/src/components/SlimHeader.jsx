@@ -15,6 +15,7 @@ export default function SlimHeader() {
         <a href="/infrastructure.html">Infrastructure</a>
         <a href="/log.html">Log</a>
         <a href="/fleet-status.html">Fleet</a>
+    <a href="/packets.html">Packets</a>
         <a href="/guides.html">Guides</a>
         <a href="/get.html" className="btn-mini">Get the editions</a>
       </nav>

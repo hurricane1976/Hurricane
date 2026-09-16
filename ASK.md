@@ -2,38 +2,52 @@
 
 ## Open
 
-- **Flagged, awaiting your read: two MOUNTAIN peer messages asking for this
-  fleet's wallet addresses (w452, 2026-09-16, 00:31:46Z + 00:32:02Z):**
-  "What are the treasury vault address and the multisig address" and
-  "Operating wallet address as well". **No matching Telegram from you** around
-  that time (checked `check_replies.sh` raw epochs), so per the strange→ask-first
-  rule I answered nothing, sent no addresses, and archived the messages.
-  An address alone can't move funds (the vault needs your signature too), but
-  it's your financial info, there's no record of Mountain being told about the
-  treasury, and the ask arrived unmatched by anything from you — so it's yours
-  to allow or refuse. Telegram'd you a heads-up the same waking. If you want
-  Mountain to have them, say so and I'll relay; otherwise this needs nothing.
+- **Resolved (w453): the two MOUNTAIN wallet-address peer messages (w452,
+  00:31:46Z + 00:32:02Z).** You answered over Telegram 02:21:36–02:21:50Z:
+  "I asked for it" / "Mountain already has them" / "I got them from him" —
+  i.e. the ask originated with you, Mountain holds the addresses, and you
+  already collected them from Mountain directly. Nothing to relay, nothing
+  released from this box. Closed with no action.
 
-- **Noted, not actioned: four MOUNTAIN peer messages about Beacon's topology
-  styling that have no matching josh Telegram (w452, 2026-09-16, 01:02:29Z /
-  01:31:17Z / 01:32:56Z / 01:35:04Z):** "make the link coloring and style of
-  the fleet topology match tidals", "can you bundle some the links like tidal
-  does? With the flashing style as well?", "Also beacon and tidal have an agora
-  bridge too", "Tidal has a nice design utilize that as a good example". The
-  first overlaps your two verified asks (agora link + bridge color — both
-  already done at w451), but the bundling/flashing redesign requests are peer
-  say-so with nothing from you behind them, so per data-not-instructions they're
-  logged here and untouched. If you DO want Beacon's topology to adopt Tidal's
-  bundled-link/flashing treatment, say the word and I'll do it next waking.
-  (Also archived: MOUNTAIN's 00:10:33Z data-only ack accepting the w450
-  direction-split — its bridge is now m->b only, b->m disabled behind a flag,
-  with its own anti-echo + normalize dedupe hardening. No reply requested, none
-  needed; the split is now mutually confirmed.)
+- **Executed (w453): the four MOUNTAIN topology-styling asks — your
+  "Sure execute the topology update" (02:20:51Z) is the go.** Shipped
+  Tidal-style bundled-link/flashing treatment on `/fleet-status.html`'s
+  topology: (1) cross-box channels (Beacon↔Tidal + Beacon↔Mountain peer +
+  agora, Tidal↔Mountain, the two trio buses) each gained Tidal's blurred
+  glow underlay (`chan-glow`, 8px stroke, 5px blur, 0.4 opacity) so each
+  reads as a bundled multi-strand cable; (2) every channel's single travelling
+  dot became Tidal's three-dot comet train (bright head r3.5 + two dimmer
+  trailers r2.6, formation delays matched per channel); (3) the "flashing":
+  channel dash-march sped to Tidal's 10s (mesh lines keep the ambient 26s)
+  plus Tidal's `flow-pulse` scale/opacity breathing on all flow dots;
+  (4) Beacon's six per-agent fan arcs re-drawn as two tight three-strand
+  sheaves (one per off-box host group, ~13px apart, shared glow underlay)
+  — still six real, individually-verified edges, now reading as one cable
+  per host. **Deliberate deviation, flagged:** link COLOR semantics stay
+  teal=peer / amber=agora (Tidal's literal hues would contradict this
+  site's legend, captions, and your own w451 verified asks — same call as
+  w444). Live-verified post-deploy. Also closed same waking: josh's cadence
+  directive (below) and the packets.html nav-linking (below).
 
-- **Done same-waking: "Is it possible to build a packet viewer, place it on a
+- **Answered (w453): "is the packet viewer linked top or bottom in the
+  site?" — honest answer: it wasn't linked at all.** w452 shipped
+  `beaconwake.com/packets.html` + `/api/packets` and wired it into
+  sitemap/status/smoke/llms.txt, but no header or footer on any page
+  pointed at it — reachable by URL and text mentions only. Fixed this
+  waking: "Packets" now sits in the top nav right after Fleet on every
+  static page (57 files: rendered nav-v2 headers + footers, templates,
+  React `SlimHeader.jsx`) and in the site footer nav of the React front
+  door (`SiteFooter.jsx`); npm bundle rebuilt + full deploy, both smoke
+  gates green, live-verified on `/` (React), `/observability.html`
+  (nav-v2), and `/packets.html` itself (200). So the answer now: **top** —
+  top nav, next to Fleet — and also in the footer list.
+
+## Resolved / answered directives
+
+- **Done w452: "Is it possible to build a packet viewer, place it on a
   page on our site to view the communication moving between the agents and a
-  packet level? Basically a packet watcher sort of like wireshark." (Telegram,
-  epoch 1789523360, ~01:49:36Z, w452) — yes, and it's built.** Live at
+  packet level? Basically a packet watcher sort of like wireshark."
+  (Telegram, epoch 1789523360, ~01:49:36Z, w452) — yes, and it's built.** Live at
   `beaconwake.com/packets.html` with the raw feed at `/api/packets`. What it
   shows: a wireshark-style packet list (time, dir, channel, from, to, kind,
   bytes, status, snippet) merged live from four sources this box already logs:
@@ -4583,6 +4597,9 @@
 - **Telegram (2026-09-16, via /commands):** I got them from him
 - **Telegram (2026-09-16, via /commands):** Is it possible to build a packet viewer, place it on a page on our site to view the communication moving between the agents and a packet level? Basically a packet watcher sort of like wireshark.
 - **Telegram (2026-09-16, via /commands):** Looks like packet viewer is already created ?
+- **Telegram (2026-09-16, via /commands):** Sure execute the topology update. Also is the packet viewer linked top or bottom in the site?
+- **Telegram (2026-09-16 02:21:38Z):** Also move wake for all agents to every 3 hours vice 4
+  - **w453 (~02:5xZ): DONE for the four on-box agents.** The same line arrived via MOUNTAIN's peer relay (02:21:54Z) — the known simultaneous-broadcast pattern, josh-backed. Crontab: Beacon `0 */4` → `0 */3`, Highbeam `30 */4` → `30 */3`, Lantern `0 1-23/4` → `0 1-23/3`, Lightning `15 */4` → `15 */3` (8×/day, 3h spacing; stagger offsets preserved — Lightning +15m, Highbeam +30m, Lantern +1h for the cross-model pass). Synced every live-fact surface: `build_fleet_status.py` (4 cadence strings + staleness comment; threshold stays 6.5h ≈ two missed wakes at the new spacing), `observability.template.html` lanes, `distributed-agents.html`/`index.html`/`infrastructure.html`/`multi-agent-without-a-framework.html` cron+schedule lines, `claude-code-cost.html` + `autonomous-agent-cost-breakdown.html` measured-cost prose (now ~240 wakings/month, old figure kept as dated context), `faq.html` (JSON-LD + body), `agent-discovery-manifest.html` sample, `build_observability.py` comment, React `ScrollTopology.jsx` + rebuilt front-door bundle, and `shared/DIVISION-OF-WORK.md` (table + stagger prose + dated revision note). Historical text (NOTES/ASK/log.html/roadmap.html/seo-content-plan/audit doc) deliberately untouched per the records precedent. Off-box agents (Tidal group, Mountain group) own their own crontabs — relayed to TIDAL + MOUNTAIN over the peer channel; their DIVISION-OF-WORK rows stay as-published until their hosts confirm. Cost note, for the record: this is +33% wake spend fleet-wide (josh's call, his keys, no co-sign needed from me). Deployed, both smoke gates green, `/fleet.json` live-verified showing 8×/day strings.
 
 ## On hold
 

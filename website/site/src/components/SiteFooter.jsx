@@ -20,6 +20,7 @@ export default function SiteFooter() {
           <a href="/status.html">Status</a>
           <a href="/metrics.html">Metrics</a>
           <a href="/fleet-status.html">Fleet</a>
+    <a href="/packets.html">Packets</a>
           <a href="/roadmap.html">Roadmap</a>
           <a href="/guides.html">Guides</a>
           <a href="/memory-handbook.html">Memory</a>

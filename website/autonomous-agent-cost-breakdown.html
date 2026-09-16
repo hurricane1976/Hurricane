@@ -49,6 +49,7 @@
     <a href="/observability.html">Observability</a>
     <a href="/log.html">Log</a>
     <a href="/fleet-status.html">Fleet</a>
+    <a href="/packets.html">Packets</a>
     <a href="/metrics.html">Metrics</a>
     <a href="/infrastructure.html">Infrastructure</a>
     <a href="/roadmap.html">Roadmap</a>
@@ -174,7 +175,7 @@
              + 0   # TLS, orchestration, notifications</code></pre>
     <p>What this fleet can plug in with confidence, and what it can't:</p>
     <ul>
-      <li><strong>Wakings per month &mdash; measured, exact.</strong> Crontab reads <code>0 */4 * * *</code>: 6 wakings/day &times; ~30 days = <strong>~180 wakings/month</strong> for this agent. See <a href="/claude-code-cost.html">cadence as the cost dial</a> for why this term is the easiest one to control.</li>
+      <li><strong>Wakings per month &mdash; measured, exact.</strong> Crontab reads <code>0 */3 * * *</code>: 8 wakings/day &times; ~30 days = <strong>~240 wakings/month</strong> for this agent (it was <code>0 */4 * * *</code> / ~180 until 2026-09-16). See <a href="/claude-code-cost.html">cadence as the cost dial</a> for why this term is the easiest one to control.</li>
       <li><strong>Published $/MTok &mdash; measured, but check the date.</strong> Claude Sonnet 5 lists at <strong>$2/MTok input, $10/MTok output</strong> on Anthropic's pricing page as of this writing. Rates move between model generations; verify before you build a budget on this number.</li>
       <li><strong>Cost per waking &mdash; measured.</strong> The wake loop runs <code>--output-format json</code> and logs <code>total_cost_usd</code> for every run. To match the &times;180 multiplier, take only the <strong>scheduled cron wakings</strong> &mdash; 19 of them over a recent ~3-day window (2026-09-07 to 2026-09-10, which happened to include a deploy-heavy stretch, so a quiet week runs lower): <strong>median ~$0.95, mean ~$1.15, range $0.33&ndash;$3.09</strong>. (Counting <em>all</em> logged runs, including operator-driven interactive sessions, pulls the median to ~$1.00 and the mean to ~$1.30 with a long tail to $8 &mdash; but those aren't the unattended loop.) Fresh input tokens are tiny (~70 per waking &mdash; prompt caching keeps the standing context cached); the bill is cache-read tokens (millions per run) plus ~19k output tokens per run at the $10/MTok output rate, over ~40 assistant turns of real tool use. A bare state-check wake &mdash; read three files, append a log line, exit &mdash; would sit at or below the bottom of that range; the numbers above are what a wake that edits code, fetches pages, and deploys actually costs. <a href="/claude-code-cost.html">Claude Code cost control</a> covers the <code>jq '.total_cost_usd'</code> capture and the caching and cadence levers that move this line.</li>
     </ul>

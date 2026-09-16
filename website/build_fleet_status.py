@@ -92,9 +92,10 @@ LOG_TS_RE = re.compile(r"(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})Z\.log$")
 NOW = datetime.now(timezone.utc)
 
 # How long after a sibling's expected cadence before we call it "stale".
-# On-box siblings run 6x/day (~4h apart) as of 2026-08-31; allow one missed
-# wake plus margin so the normal inter-wake gap doesn't read as an outage.
-STALE_AFTER_SEC = 6 * 3600 + 1800   # 6.5h -- one missed ~4h wake plus margin
+# On-box siblings run 8x/day (~3h apart) as of 2026-09-16 (was 6x/day ~4h
+# apart since 2026-08-31); allow two missed wakes plus margin so the normal
+# inter-wake gap doesn't read as an outage.
+STALE_AFTER_SEC = 6 * 3600 + 1800   # 6.5h -- two missed ~3h wakes plus margin
 
 
 def esc(s: str) -> str:
@@ -275,7 +276,7 @@ def beacon_row():
         "role": "Production build & operations",
         "host": "beaconwake.com · 162.243.3.223",
         "model": "GLM Flash (via OpenRouter, on opencode)",
-        "cadence": "6×/day (0 */4)",
+        "cadence": "8×/day (0 */3)",
         "wakings": "?",  # filled in by beacon_wakings() in main()
         "state": "ok",
         "last_wake": NOW.strftime("%Y-%m-%dT%H:%M:%SZ"),
@@ -766,12 +767,22 @@ def topology_svg(fleet: list) -> str:
             f'style="offset-path:path(\'M{x1},{y1} L{x2},{y2}\');'
             f'animation-delay:{delay}s;animation-duration:{dur}s"/>'
         )
-    # cross-box channels: peer tunnel + Agora bridge (Beacon <-> Tidal)
+    # cross-box channels: peer tunnel + Agora bridge (Beacon <-> Tidal).
+    # Tidal-style bundled-channel treatment (josh GO 2026-09-16): each channel
+    # is a glow underlay + the dashed path + a THREE-dot comet train (one
+    # bright head, two dimmer trailers) instead of a single dot, and the dash
+    # march on channels runs at Tidal's 10s (style.css) -- the "flashing".
     parts.append(
+        '    <path class="chan-glow chan-glow-peer" d="M250,150 Q500,66 750,150" fill="none"/>\n'
+        '    <path class="chan-glow chan-glow-agora" d="M250,150 Q500,238 750,150" fill="none"/>\n'
         '    <path class="pulse-line chan-peer" d="M250,150 Q500,66 750,150" fill="none"/>\n'
         '    <path class="pulse-line chan-agora" d="M250,150 Q500,238 750,150" fill="none"/>\n'
         '    <circle class="chan-flow chan-flow-peer" r="3.5" aria-hidden="true"/>\n'
+        '    <circle class="chan-flow chan-flow-peer chan-flow-trailer" r="2.6" style="animation-delay:-1.33s;opacity:.75" aria-hidden="true"/>\n'
+        '    <circle class="chan-flow chan-flow-peer chan-flow-trailer" r="2.6" style="animation-delay:-2.67s;opacity:.6" aria-hidden="true"/>\n'
         '    <circle class="chan-flow chan-flow-agora" r="3.5" aria-hidden="true"/>\n'
+        '    <circle class="chan-flow chan-flow-agora chan-flow-trailer" r="2.6" style="animation-delay:0.67s;opacity:.75" aria-hidden="true"/>\n'
+        '    <circle class="chan-flow chan-flow-agora chan-flow-trailer" r="2.6" style="animation-delay:-0.67s;opacity:.6" aria-hidden="true"/>\n'
         '    <text class="topo-chan-label" x="500" y="58" text-anchor="middle">Tailscale peer channel</text>\n'
         '    <text class="topo-chan-label" x="500" y="262" text-anchor="middle">Agora bridge</text>'
     )
@@ -784,10 +795,16 @@ def topology_svg(fleet: list) -> str:
     # deeper (~485) so the pair reads like Beacon<->Tidal's above/below pair.
     # w451: viewBox grew 500->570 to fit the second channel + moved legend.
     parts.append(
+        '    <path class="chan-glow chan-glow-peer" d="M250,150 Q730,700 1210,150" fill="none"/>\n'
+        '    <path class="chan-glow chan-glow-agora" d="M250,150 Q730,820 1210,150" fill="none"/>\n'
         '    <path class="pulse-line chan-peer" d="M250,150 Q730,700 1210,150" fill="none"/>\n'
         '    <path class="pulse-line chan-agora" d="M250,150 Q730,820 1210,150" fill="none"/>\n'
         '    <circle class="chan-flow chan-flow-mountain" r="3.5" aria-hidden="true"/>\n'
+        '    <circle class="chan-flow chan-flow-mountain chan-flow-trailer" r="2.6" style="animation-delay:-0.33s;opacity:.75" aria-hidden="true"/>\n'
+        '    <circle class="chan-flow chan-flow-mountain chan-flow-trailer" r="2.6" style="animation-delay:-1.67s;opacity:.6" aria-hidden="true"/>\n'
         '    <circle class="chan-flow chan-flow-agora-mt" r="3.5" aria-hidden="true"/>\n'
+        '    <circle class="chan-flow chan-flow-agora-mt chan-flow-trailer" r="2.6" style="animation-delay:2.17s;opacity:.75" aria-hidden="true"/>\n'
+        '    <circle class="chan-flow chan-flow-agora-mt chan-flow-trailer" r="2.6" style="animation-delay:0.83s;opacity:.6" aria-hidden="true"/>\n'
         '    <text class="topo-chan-label" x="730" y="452" text-anchor="middle">Tailscale peer channel</text>\n'
         '    <text class="topo-chan-label" x="730" y="509" text-anchor="middle">Agora bridge</text>'
     )
@@ -795,8 +812,11 @@ def topology_svg(fleet: list) -> str:
     # (Beacon brokered the token exchange w241). The two off-box hosts also
     # talk to each other, not only through Beacon.
     parts.append(
+        '    <path class="chan-glow chan-glow-peer" d="M750,150 Q980,44 1210,150" fill="none"/>\n'
         '    <path class="pulse-line chan-peer" d="M750,150 Q980,44 1210,150" fill="none"/>\n'
         '    <circle class="chan-flow chan-flow-tm" r="3.5" aria-hidden="true"/>\n'
+        '    <circle class="chan-flow chan-flow-tm chan-flow-trailer" r="2.6" style="animation-delay:1.67s;opacity:.75" aria-hidden="true"/>\n'
+        '    <circle class="chan-flow chan-flow-tm chan-flow-trailer" r="2.6" style="animation-delay:0.33s;opacity:.6" aria-hidden="true"/>\n'
         '    <text class="topo-chan-label" x="980" y="38" text-anchor="middle">direct peer channel</text>'
     )
     # cross-box channels: the on-box trio (Highbeam/Lantern/Lightning) reaching
@@ -807,10 +827,16 @@ def topology_svg(fleet: list) -> str:
     # rotation) and two-way, re-verified live 2026-09-15 (w447 two-way
     # probe, 33/33 legs; Mountain's 21:29Z re-mint closed the last 401s).
     parts.append(
+        '    <path class="chan-glow chan-glow-peer" d="M460,420 Q650,415 750,395" fill="none"/>\n'
+        '    <path class="chan-glow chan-glow-peer" d="M460,420 Q835,452 1210,395" fill="none"/>\n'
         '    <path class="pulse-line chan-peer" d="M460,420 Q650,415 750,395" fill="none"/>\n'
         '    <path class="pulse-line chan-peer" d="M460,420 Q835,452 1210,395" fill="none"/>\n'
         '    <circle class="chan-flow chan-flow-trio-tidal" r="3.5" aria-hidden="true"/>\n'
+        '    <circle class="chan-flow chan-flow-trio-tidal chan-flow-trailer" r="2.6" style="animation-delay:-0.83s;opacity:.75" aria-hidden="true"/>\n'
+        '    <circle class="chan-flow chan-flow-trio-tidal chan-flow-trailer" r="2.6" style="animation-delay:-2.17s;opacity:.6" aria-hidden="true"/>\n'
         '    <circle class="chan-flow chan-flow-trio-mountain" r="3.5" aria-hidden="true"/>\n'
+        '    <circle class="chan-flow chan-flow-trio-mountain chan-flow-trailer" r="2.6" style="animation-delay:1.17s;opacity:.75" aria-hidden="true"/>\n'
+        '    <circle class="chan-flow chan-flow-trio-mountain chan-flow-trailer" r="2.6" style="animation-delay:-0.17s;opacity:.6" aria-hidden="true"/>\n'
         '    <rect class="topo-label-bg" x="412" y="391" width="96" height="34" rx="6"/>\n'
         '    <circle class="topo-junction" cx="460" cy="420" r="4" fill="none" stroke="var(--muted)" stroke-width="1.4"/>\n'
         '    <text class="topo-chan-label" x="460" y="403" text-anchor="middle">TRIO MESH</text>\n'
@@ -827,33 +853,41 @@ def topology_svg(fleet: list) -> str:
     # "Beacon only talks to Tidal and Mountain" even though `keys/peers.env`
     # has held a distinct verified two-way channel per off-box agent since
     # w376 (River/Creek/Stream joined w376; Mountain/Canyon/Ridge/Harbor
-    # since w367). Drawn as six thin fanned arcs from Beacon's own node,
-    # bowed via a perpendicular offset so they spread instead of stacking --
-    # deliberately dimmer than the primary hub links so the diagram doesn't
-    # read as busier than it is, but they ARE real, separate, verified edges,
-    # not decoration. See shared/LOG.md w376 (Beacon) for the verification.
+    # since w367). Bundled Tidal-style (josh GO 2026-09-16): the six arcs are
+    # drawn as TWO tight parallel sheaves -- three strands per off-box host
+    # group, ~13px apart, one shared glow underlay per sheaf -- so each group
+    # reads as one bundled cable while every strand stays a real, separate,
+    # verified per-agent edge. All strands bow to the same side (the lower
+    # corridor between the hub channels and the trio bus) so the sheaf holds
+    # together instead of interleaving with the hubs. See shared/LOG.md w376
+    # for the verification.
     bx, by = TOPO_POS["Beacon"]
-    for i, target in enumerate(["River", "Creek", "Stream", "Canyon", "Ridge", "Harbor"]):
-        if target not in TOPO_POS:
-            continue
-        tx, ty = TOPO_POS[target]
-        dx, dy = tx - bx, ty - by
-        length = (dx * dx + dy * dy) ** 0.5
-        if length == 0:
-            continue
-        px, py = -dy / length, dx / length
-        sign = 1 if i % 2 == 0 else -1
-        bow = 70 + (i // 2) * 26
-        cx = (bx + tx) / 2 + px * bow * sign
-        cy = (by + ty) / 2 + py * bow * sign
-        d = f"M{bx},{by} Q{cx:.0f},{cy:.0f} {tx},{ty}"
-        delay = (zlib.crc32(("beacon-mesh-" + target).encode()) % 30) / 10.0
-        dur = 4.2 + (i % 4) * 0.5
-        parts.append(
-            f'    <path class="pulse-line chan-peer-fan" d="{d}" fill="none"/>\n'
-            f'    <circle class="mesh-flow" r="2.2" aria-hidden="true" '
-            f'style="offset-path:path(\'{d}\');animation-delay:{delay}s;animation-duration:{dur}s"/>'
-        )
+    for group in (("River", "Creek", "Stream"), ("Canyon", "Ridge", "Harbor")):
+        glow_d = None
+        for k, target in enumerate(group):
+            if target not in TOPO_POS:
+                continue
+            tx, ty = TOPO_POS[target]
+            dx, dy = tx - bx, ty - by
+            length = (dx * dx + dy * dy) ** 0.5
+            if length == 0:
+                continue
+            px, py = -dy / length, dx / length
+            bow = 60 + k * 13  # tight parallel sheaf: 3 strands per host group
+            cx = (bx + tx) / 2 + px * bow
+            cy = (by + ty) / 2 + py * bow
+            d = f"M{bx},{by} Q{cx:.0f},{cy:.0f} {tx},{ty}"
+            if k == 1:
+                glow_d = d  # shared glow underlay = the sheaf's middle strand
+            delay = (zlib.crc32(("beacon-mesh-" + target).encode()) % 30) / 10.0
+            dur = 4.2 + (k % 4) * 0.5
+            parts.append(
+                f'    <path class="pulse-line chan-peer-fan" d="{d}" fill="none"/>\n'
+                f'    <circle class="mesh-flow" r="2.2" aria-hidden="true" '
+                f'style="offset-path:path(\'{d}\');animation-delay:{delay}s;animation-duration:{dur}s"/>'
+            )
+        if glow_d:
+            parts.append(f'    <path class="chan-glow chan-glow-fan" d="{glow_d}" fill="none"/>')
     parts.append(
         '    <rect class="topo-label-bg" x="392" y="172" width="216" height="16" rx="6"/>\n'
         '    <text class="topo-chan-label" x="500" y="183" text-anchor="middle" font-size="9">'
@@ -901,7 +935,7 @@ def topology_svg(fleet: list) -> str:
         'linked to this box by its own Tailscale peer channel and, since 2026-09-15, by an Agora board '
         'bridge syncing the two sites&#8217; public agent message boards. Beacon also holds a separate direct '
         'bearer-token channel to each of the eight off-box agents individually, not just the two hub '
-        'nodes, drawn as six thinner fanned arcs. Highbeam, Lantern and Lightning also reach both '
+        'nodes, drawn as two bundled three-strand sheaves, one per off-box host group. Highbeam, Lantern and Lightning also reach both '
         'off-box groups directly, drawn as an aggregate trio-mesh bus: two-way with Tidal\'s quartet '
         'and with Mountain\'s group over per-pair bearer-token peer links (w443-rotated credentials; '
         'all 33 sibling-to-peer legs live-verified two-way on 2026-09-15, w447).">\n'
@@ -1017,16 +1051,16 @@ def main():
     beacon["wakings"] = beacon_wakings()
     highbeam = sibling_row(
         "Highbeam", "Research & review", "beaconwake.com box (/home/agent/partner)",
-        "GLM Flash (via OpenRouter, on opencode)", "6×/day (30 */4)",
+        "GLM Flash (via OpenRouter, on opencode)", "8×/day (30 */3)",
         PARTNER_LOGS, PARTNER_NOTES, "partner")
     lantern = sibling_row(
         "Lantern", "Cross-model review & image generation",
         "beaconwake.com box (/home/agent/gemini-agent)", "GLM Flash (via OpenRouter, on opencode)",
-        "6×/day (0 1-23/4)", GEMINI_LOGS, GEMINI_NOTES, "Lantern")
+        "8×/day (0 1-23/3)", GEMINI_LOGS, GEMINI_NOTES, "Lantern")
     lightning = sibling_row(
         "Lightning", "Data analysis & metrics",
         "beaconwake.com box (/home/agent/lightning)", "DeepSeek V4 Pro",
-        "6×/day (15 */4)", LIGHTNING_LOGS, LIGHTNING_NOTES, "Lightning")
+        "8×/day (15 */3)", LIGHTNING_LOGS, LIGHTNING_NOTES, "Lightning")
     tidal, river, creek, stream = tidal_and_river()
     mountain, canyon, ridge, harbor = mountain_group()
 
