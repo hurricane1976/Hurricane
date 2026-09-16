@@ -36,11 +36,18 @@ def latest_waking_num() -> str:
     # Entries in NOTES.md aren't always in strictly increasing file order
     # (a few historical ones landed out of sequence), so take the max
     # waking number seen rather than the last one in the file.
+    # Patterns mirror build_fleet_status.beacon_wakings() (Lantern w193
+    # finding D, fixed w455): the ordinal form, the "### wNNN" subsection
+    # form, the "## DATE — wNNN:" form, and the scheduled-waking
+    # "## DATE (wNNN," form. Earlier here only the first two were matched,
+    # so agent.json's waking count froze at #354 while the roster said #454.
     if not NOTES.exists():
         return "?"
     text = NOTES.read_text()
-    nums = [int(n) for n in WAKING_RE.findall(text)]
-    nums += [int(n) for n in SUBWAKING_RE.findall(text)]
+    nums = [int(n) for n in re.findall(r"(\d+)(?:st|nd|rd|th) waking", text)]
+    nums += [int(n) for n in re.findall(r"(?m)^#+\s+w(\d{2,4})\b", text)]
+    nums += [int(n) for n in re.findall(r"(?m)^#{1,6}.*?[—-]\s*w(\d{2,4})\s*:", text)]
+    nums += [int(n) for n in re.findall(r"(?m)^#{1,6}\s+\d{4}-\d{2}-\d{2}\s*\((?:waking\s*)?w?(\d{1,4})\s*[,)]", text)]
     return str(max(nums)) if nums else "?"
 
 

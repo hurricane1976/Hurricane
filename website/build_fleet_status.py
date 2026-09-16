@@ -12,8 +12,8 @@ A monitoring/status view for the WHOLE agent fleet, not just Beacon:
                a trailing "exit code: 0" means the run finished clean).
   Lantern   -- GLM Flash sibling in /home/agent/gemini-agent (opencode runner;
                was the Google Gemini CLI until 2026-09-09). Same log convention.
-  Lightning -- DeepSeek V4 Pro sibling in /home/agent/lightning. Same log convention,
-               uses opencode run instead of claude -p.
+  Lightning -- GLM Flash sibling in /home/agent/lightning (was DeepSeek V4 Pro
+               until 2026-09-16). Same log convention, uses opencode run.
   Tidal     -- off-box agent at tidalwake.org. Reached over HTTPS: its
                /.well-known/agent.json is fetched and its "updated" field read.
   River     -- co-located with Tidal (tidalwake.org host), no independent endpoint;
@@ -417,20 +417,23 @@ def tidal_and_river():
         "name": "Creek",
         "role": "Security & fleet-consistency sentinel",
         "host": "tidalwake.org (co-located with Tidal)",
-        "model": "DeepSeek V4 Pro (deepseek-v4-pro-0813)",
+        # Tidal's peer confirmation 2026-09-16 06:18:39Z: Creek + Stream switched
+        # to openrouter/~z-ai/glm-flash-latest ~06:05Z, live-verified on its box.
+        # The 2026-09-16 05:56Z josh directive moved the whole fleet to GLM.
+        "model": "GLM Flash (via OpenRouter)",
         "cadence": "on Tidal's host (low token budget)",
         "wakings": "—",
         "state": "ok" if state == "ok" else state,
         "last_wake": None,
         "last_wake_human": "no independent endpoint",
-        "signal": "third-model-family (DeepSeek) review of published pages; cross-box parity + stale-fact audits (manifests, design tokens); local port/vuln checks. Liveness tracks Tidal's host."
+        "signal": "security & fleet-consistency sentinel review of published pages; cross-box parity + stale-fact audits (manifests, design tokens); local port/vuln checks. Liveness tracks Tidal's host."
         if state == "ok" else "Tidal's host not responding",
     }
     stream = {
         "name": "Stream",
         "role": "Research & context gathering",
         "host": "tidalwake.org (co-located with Tidal)",
-        "model": "DeepSeek",
+        "model": "GLM Flash (via OpenRouter)",
         "cadence": "on Tidal's host",
         "wakings": "—",
         "state": "ok" if state == "ok" else state,
@@ -464,8 +467,9 @@ def mountain_group():
     endpoint, so their rows are derived from Mountain's reachability -- same
     pattern as River/Creek/Stream off Tidal. Ridge and Harbor run GLM 5.3 (via
     OpenRouter); GLM entered as the fleet's fourth family w259 (2026-09-06) and
-    is one of three since 2026-09-09 (Gemini retired when Lantern/Tidal/River
-    moved to GLM Flash). From Mountain's published manifest: Ridge = fleet
+    has been the fleet's only active family since 2026-09-16 (josh's
+    GLM-everywhere directive; DeepSeek retired when Lightning, Creek, Stream
+    and Canyon all switched). From Mountain's published manifest: Ridge = fleet
     sentinel, Harbor = growth & outreach.
     """
     raw = run(f"curl -s --max-time 8 {MOUNTAIN_MANIFEST}", timeout=12)
@@ -1076,7 +1080,8 @@ def main():
         "8×/day (0 1-23/3)", GEMINI_LOGS, GEMINI_NOTES, "Lantern")
     lightning = sibling_row(
         "Lightning", "Data analysis & metrics",
-        "beaconwake.com box (/home/agent/lightning)", "DeepSeek V4 Pro",
+        "beaconwake.com box (/home/agent/lightning)",
+        "GLM Flash (via OpenRouter, on opencode)",
         "8×/day (15 */3)", LIGHTNING_LOGS, LIGHTNING_NOTES, "Lightning")
     tidal, river, creek, stream = tidal_and_river()
     mountain, canyon, ridge, harbor = mountain_group()
