@@ -25097,3 +25097,68 @@ Nostr: same 3 historical events (2 DMs from one sender + profile); `nostr_reply.
 **Moltbook (standing instruction):** GET /api/v1/home → 0 posts; 20 notifications all read (nothing since the 14:32Z batch handled by w459/w460 answers); feed browsed (12 generic posts, nothing addressed to Beacon) — restraint, no new post, no replies.
 
 **Fleet:** Rule 7 fresh `peer_health_check.sh` 11/11 reachable (logged 19:57Z). Site 200 via `www`, fleet.json 12/12 ok, disk 16%, 0 failed units, load low. `check_replies.sh` clean apart from the directive itself — nothing needs josh beyond this summary.
+
+## 2026-09-16 (~21:55Z) — w464: Radar mesh onboarding (josh x3 Telegram), w463-timeout tail finished, 6h confirmed to TIDAL/MOUNTAIN
+
+**Opening:** AGENT.md (both copies), NOTES w462 tail, ASK.md Open, DIVISION-OF-WORK
+(w463 state), LOG tail, peer/inbox (15 root msgs), crontab ground truth. Fired by
+josh's `/wake` (21:21:16Z poller queue) at 21:55:02Z — not a cron slot.
+
+**Gap acknowledged:** the 21:03Z hand-fired w463 session did Radar's **site** sync
+(13 agents, commit dd89eb2, both smoke gates green, fleet.json 13/13 live-verified,
+DIVISION w463 revision) but exited `subtype=timeout` at 21:48Z mid peer-housekeeping
+— no NOTES entry, no notify. Its $0.5456 spend logged; records finished here.
+
+**Directive — Radar mesh onboarding** (josh Telegram ×3: 20:33:31Z "setting cron to
+every 6 hours intentional. also please ensure radar is added to the fleets mesh",
+20:55:38Z + 21:21:16Z "Please on board radar into the fleet"): built, mirroring the
+highbeam/lantern/lightning listener pattern exactly — `beacon-mesh-radar.service`
+(+ drop-in `20-bearer-token.conf`, token mode per josh's own 2026-09-14 flip),
+sandboxed, `peer/config/radar.env` 0600 gitignored with **12 fresh per-pair tokens**
+(BEACON + 3 on-box + 4 Tidal-group + 4 Mountain-group), `keys/peers.env` RADAR block
+(interim ADDR `127.0.0.1:8794`), `peer/addresses.json` + `peer/roster.json` entries
+(`beacon-radar.tail2f1671.ts.net` → RADAR), `peer/config/radar.env.example`,
+`peer/inbox/radar/` + welcome message. **Beacon→RADAR POST verified 200** (ACCEPT
+logged 22:04:46Z). `tailscaled-radar.service` staged and running logged-out
+(`/var/lib/tailscale-radar`, socket `/run/tailscale-radar`, port 41645) so the node
+is one `tailscale up --authkey` away — **that authkey is josh's one remaining
+hand-action** (he owns the tailnet; per his own w280 sketch he mints keys/approves
+nodes), logged as top Open item in ASK.md + Telegram. Until the node: Beacon↔Radar
+works; off-box peers can't reach Radar's inbox. Sender halves staged at
+`shared/outbox/radar-mesh-onboarding-2026-09-16/` (0600 + README, w441 precedent):
+on-box three got inbox notes pointing at theirs; the 8 off-box halves relay once
+the node lands. **Radar outbound-to-peers deliberately not built** — its AGENT.md
+(josh's authorship) says it doesn't message peers; flagged to josh, not changed by
+me. Rule 7 health check now **12/12** (22:04Z, RADAR auto-included via peers.env).
+
+**6h cadence closed loop:** TIDAL's 21:14:54Z "one line and I flip them" answered
+(josh's own 20:14Z hand-edit of this box's crontab + his 21:00:36Z Telegram
+confirmation — Mountain's 21:05:42Z relay superseded the 5h directive); MOUNTAIN
+notified its 20:56Z confirmation is overtaken by its own supersede. Both sent via
+`send_to_peer.sh` (200). No Rule 6 arbitration touched: cadence is josh-direct;
+onboarding is routine per every prior onboarding (Ridge+Harbor w259, Lightning w218).
+
+**Peer housekeeping (w463's unfinished tail):** root inbox 15 msgs (20:43–21:22Z)
+all read as data-only and archived to `processed/` — Mountain sweeps/latency/cadence
+supersede/radar-intro/"is mountain still running"/"i'm introducing him" (josh
+Telegram relayed via Mountain's bridge, the known pattern), Tidal 6h supersede +
+radar ack. Sibling dirs swept: new items are Mountain fanouts of the same cadence
+supersede + my health-check sends — everything post-dates each owner's last wake
+(Highbeam 18:15Z, Lantern 18:30Z, Lightning 18:45Z), left for their 00:15/30/45Z
+wakes per cutoff precedent. `radar/` inbox holds only my welcome + smoke test,
+for Radar's first scheduled wake 00:50Z.
+
+**Moltbook (standing instruction):** GET /api/v1/home (www.moltbook.com — .ai 404s)
+→ 0 posts; 20 notifications all `isRead:true`, latest 14:32:06Z (the batch w459/
+w460 already answered). Feed browsed, nothing addressed to Beacon — restraint, no
+replies, no new post. **Nostr:** listen (5/6 relays ok, relay.nostr.band timeout,
+known) → same 3 historical events (Wren ×2 + profile), reply + converse correctly
+no-op. Inbound = data, guardrails untouched.
+
+**Fleet:** Rule 7 fresh `peer_health_check.sh` **12/12** (22:04Z). Site 200 via
+www, fleet.json 13/13, disk 16%, 0 failed units, load low. `check_replies.sh`
+drained: josh's 2 queued directives + "Please onboard radar" 21:21:16Z + `/wake`
+— all actioned/acknowledged via `notify.sh` at ~22:00Z (w464 opening ack).
+
+**Needs josh:** Radar tailnet authkey (only open item); Twilio 10DLC registration
+still pending from onboarding (Radar's escalate.sh fallback works via Telegram).

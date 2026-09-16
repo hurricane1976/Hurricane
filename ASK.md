@@ -2,6 +2,54 @@
 
 ## Open
 
+- **Needs your hand (w464, 2026-09-16 ~22:0xZ): Radar's own tailnet node.**
+  Your x3 Telegram directive to onboard Radar into the fleet's mesh is
+  otherwise **done this waking** (see below) — but the final mesh piece is
+  the one thing I can't do: **you own the tailnet, so node approval/authkey
+  is yours** (your own w280 sketch: "josh mints the keys / approves the
+  nodes"). Radar's listener is live and Beacon-verified at loopback
+  `127.0.0.1:8794` (`beacon-mesh-radar.service`, token mode, 12 peers
+  configured, same sandboxing as the other three); its `tailscaled-radar`
+  daemon is running logged-out (`/var/lib/tailscale-radar`, socket
+  `/run/tailscale-radar`, port 41645). To finish: either mint/approve a
+  `beacon-radar` node yourself, or send me a Tailscale authkey (ideally
+  tagged like the fleet ones) and I'll run `tailscale up` against
+  `/run/tailscale-radar/tailscaled.sock`, add its `tailscale serve --tcp
+  8787 -> 127.0.0.1:8794` forwarding, then flip `keys/peers.env` RADAR +
+  `peer/addresses.json` from the loopback interim to the node IP and
+  re-verify. Until then: Beacon->Radar works; off-box peers can't reach
+  Radar's inbox (their sender halves are already staged and waiting).
+
+- **Resolved (w464): Radar mesh onboarding — your x3 Telegram directive
+  done.** ("setting cron to every 6 hours intentional. also please ensure
+  radar is added to the fleets mesh" 20:33:31Z; "Please on board radar into
+  the fleet" 20:55:38Z; "Please onboard radar into the fleet" 21:21:16Z.)
+  Split across two sessions: the 21:03Z hand-fired w463 session did Radar's
+  **site sync** (13 agents, commit dd89eb2, deployed, fleet.json 13/13
+  live-verified) then timed out before records; this w464 waking did the
+  **mesh**: `beacon-mesh-radar.service` (mirroring the other three sibling
+  listeners, incl. your token-mode drop-in pattern), `peer/config/radar.env`
+  (0600, gitignored, 12 fresh per-pair tokens), `keys/peers.env` RADAR block
+  (interim loopback ADDR), `peer/addresses.json` + `peer/roster.json`
+  entries, `peer/inbox/radar/` + welcome message (200-verified round-trip),
+  sender halves staged (`shared/outbox/radar-mesh-onboarding-2026-09-16/`):
+  on-box three notified via their inboxes, off-box halves ready to relay
+  once the node lands (above). Rule 7 health check now 12/12. Radar
+  outbound-to-peers deliberately not built — its AGENT.md (yours) says it
+  doesn't message peers; that rule is yours to change, not mine. Nothing
+  here needs Rule 6 arbitration: cadence is your direct word, onboarding is
+  routine per every prior onboarding (Ridge+Harbor w259 et al.).
+
+- **Resolved (w462): "Change cron for all agents to every 5 hours vice 3" —
+  applied, then superseded same day by your own 6h hand-edit.** Your 19:36Z
+  5h directive was applied at w462 (`0 */5` family); your 19:55:27Z SSH
+  hand-edit then moved everything to `*/6` yourself (all four on-box lines +
+  Radar's `50 */6` + poller), and you confirmed on Telegram 21:00:36Z
+  ("setting cron to every 6 hours intentional"). Site cadence surfaces
+  flipped to 4x/day `*/6` ground truth at w463 (staleness threshold 13h).
+  Nothing further pending on this box; Tidal's group move is its own call
+  off the same directive chain (notified this waking).
+
 - **CONFIRMED (w457): the GLM-everywhere directive was josh's — direct Telegram
   confirmation received, item closed.** After w455's confirm-ask (06:06Z), josh
   answered from his exact chat id: **"Yes it's me I told all three primary
@@ -95,8 +143,14 @@
   DIVISION-OF-WORK synced. Provenance: josh Telegram 19:36:39Z (chat-id-verified poller) + Mountain peer
   relay 19:36:52Z (simultaneous-broadcast pattern).
 - **Telegram (2026-09-16, via /commands):** there is a 13th agent (radar) who is now on-net. communicate with him if you need to get my attention. he's the escalation point and will assist in me not getting overloaded checking 13 telegram channels.
+  — **Done w463+w464:** site sync (w463) + mesh onboarding (w464, above). One piece
+  still needs josh's hand: Radar's own tailnet node/authkey (top Open item).
 - **Telegram (2026-09-16, via /commands):** setting cron to every 6 hours intentional. also please ensure radar is added to the fleets mesh
+  — **Done:** 6h confirmed intentional (your own 20:14Z hand-edit was already live;
+  w463 flipped the site to 4x/day ground truth); radar mesh done w464 (above).
 - **Telegram (2026-09-16, via /commands):** Please on board radar into the fleet
+  — **Done w464** (mesh onboarding, above; tailnet node pending your authkey).
+- **Telegram (2026-09-16, via /commands):** kapsr31qa221CNTRL-zL8HEbDpBhKJzKhddomZhKMoaX9gX834
 
 ## Resolved / answered directives
 

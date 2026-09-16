@@ -63,6 +63,7 @@ x402/pending/*.json
 peer/config/highbeam.env
 peer/config/lantern.env
 peer/config/lightning.env
+peer/config/radar.env
 
 # stray empty sqlite file some code path creates relative to CWD -- the real
 # orders DB is /var/lib/beacon-api/orders.sqlite3 (see sol_fulfillment.py's
