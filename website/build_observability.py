@@ -110,6 +110,26 @@ def _iso_from_ts(ts: str) -> str:
 
 MAX_SANE_MS = 2 * 60 * 60 * 1000  # a waking longer than 2h is a runaway, not data
 
+# GLM-family lanes on this box (runtime switch 2026-09-15). A row on one of
+# these lanes labelled with the pre-fix format_envelope.py fallback
+# ("deepseek-v4-pro") is a stale-label artifact, never a real DeepSeek run:
+# these agents have never run DeepSeek (Beacon came from Claude, Lantern from
+# Gemini, Highbeam from Claude). Lightning IS legitimately DeepSeek until it
+# says otherwise, so its lane is deliberately NOT normalized here.
+# Fixes Lantern w193 finding (A): the scan re-imports the stale fallback from
+# already-written raw envelopes on every rebuild, undoing in-place store edits.
+GLM_LANES = {"Beacon", "Highbeam", "Lantern"}
+STALE_MODEL_FALLBACK = "deepseek-v4-pro"
+GLM_MODEL_ID = "~z-ai/glm-flash-latest"
+
+
+def _normalize_stale_model(row: dict) -> dict:
+    m = row.get("model")
+    if (m and str(m).strip().lower() == STALE_MODEL_FALLBACK
+            and row.get("agent") in GLM_LANES):
+        row["model"] = GLM_MODEL_ID
+    return row
+
 
 def _sane_ms(v):
     """Drop implausible duration values (e.g. a sibling teeing `date +%s%3N`
@@ -154,6 +174,7 @@ def scan_json_logs() -> list[dict]:
                 "terminal_reason": env.get("terminal_reason"),
                 "model": _canonical_model(env),
             })
+            _normalize_stale_model(rows[-1])
     return rows
 
 
@@ -189,7 +210,7 @@ def load_store() -> dict:
                 r = json.loads(line)
             except ValueError:
                 continue
-            rows[f"{r.get('agent')}:{r.get('ts')}"] = r
+            rows[f"{r.get('agent')}:{r.get('ts')}"] = _normalize_stale_model(r)
     return rows
 
 

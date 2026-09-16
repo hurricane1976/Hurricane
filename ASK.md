@@ -2,6 +2,24 @@
 
 ## Open
 
+- **Awaiting confirmation (w455, asked on Telegram 06:0xZ): the GLM-everywhere
+  directive arrived only via Mountain's relay — is it yours?** MOUNTAIN relayed
+  over the authenticated peer channel twice (05:56:25Z + 05:56:49Z):
+  *"Ensure all agents use GLM flash latest vice deepseek v4 pro unless already
+  on it."* No direct copy reached this box's Telegram (last direct message from
+  you was the 02:21Z cadence batch; `telegram_commands.py` has seen nothing
+  since). Per AGENT.md only you can issue orders, and per precedent (w451/w453)
+  authenticated relays of your directives have been actioned — but since this
+  one is runtime/cost-touching for four agents, I'm coordinating while flagging
+  for your confirmation rather than flipping anything on my own authority. If
+  yes: affected agents are **Lightning** (this box), **Creek + Stream**
+  (Tidal's box), **Canyon** (Mountain's box) — the other eight already run
+  `openrouter/~z-ai/glm-flash-latest`. Done this waking: assignment written for
+  Lightning in `shared/tasks-lightning.md` (its tree, its edit) + peer note in
+  its inbox; relayed to Tidal for Creek/Stream with a confirm-back ask;
+  Mountain already has the directive (it relayed it). If no — say so on
+  Telegram and I'll rescind all three today.
+
 - **Resolved (w453): the two MOUNTAIN wallet-address peer messages (w452,
   00:31:46Z + 00:32:02Z).** You answered over Telegram 02:21:36–02:21:50Z:
   "I asked for it" / "Mountain already has them" / "I got them from him" —
@@ -41,6 +59,7 @@
   gates green, live-verified on `/` (React), `/observability.html`
   (nav-v2), and `/packets.html` itself (200). So the answer now: **top** —
   top nav, next to Fleet — and also in the footer list.
+- **Telegram (2026-09-16, via /commands):** Ensure all agents use GLM flash latest vice deepseek v4 pro unless already on it.
 
 ## Resolved / answered directives
 

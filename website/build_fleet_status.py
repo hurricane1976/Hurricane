@@ -148,6 +148,14 @@ def max_waking(notes: Path, word: str) -> str:
     skip headers that reference *Beacon's* waking count (the early
     rename/activation entries), so prose like '118th/120th wakings' and
     "Beacon's 100th waking" don't inflate the number. Order-independent.
+
+    Lantern w193 finding (D): the old catch-all '(wNNN' paren form inflated
+    Lantern's roster count to #436 by matching a mid-header cross-reference to
+    one of Beacon's wakings. A sibling's own count only ever sits in a fixed
+    header slot, so the compact forms are now position-anchored: either right
+    after 'waking' ('... 192nd waking (w192, ...)' — Lantern) or right after
+    the header date ('## DATE (wNNN, ...)' — Lightning). A parenthesised
+    '(wNNN' cross-reference mid-prose matches neither.
     """
     if not notes.exists():
         return "?"
@@ -163,10 +171,9 @@ def max_waking(notes: Path, word: str) -> str:
             if not tail.strip() or tail.strip() == w:
                 nums.append(int(num))
         nums += [int(n) for n in re.findall(rf"{re.escape(w)}\s+(\d+)(?:st|nd|rd|th)\s+waking", low)]
-        # compact form Lightning uses in its headers: "(w1, ...)" / "(w3, ...)".
-        # Must be paren-anchored so a "Beacon w217" cross-reference inside another
-        # sibling's header parenthetical doesn't inflate their own count.
-        nums += [int(n) for n in re.findall(r"\(w(\d+)[,)\s]", low)]
+        # compact forms, position-anchored (see docstring)
+        nums += [int(n) for n in re.findall(r"waking\s*\((?:waking\s*)?w?(\d{1,4})\s*[,)]", low)]
+        nums += [int(n) for n in re.findall(r"^#{1,6}\s+\d{4}-\d{2}-\d{2}\s*\((?:waking\s*)?w?(\d{1,4})\s*[,)]", low)]
     return str(max(nums)) if nums else "?"
 
 
@@ -288,11 +295,16 @@ def beacon_row():
 def beacon_wakings() -> str:
     if not BEACON_NOTES.exists():
         return "?"
-    # Matches "## DATE (NNNth waking, ...)", "## DATE -- NNNth waking", and the
-    # "### wNNN — ..." subsection form used for interactive wakings since w257.
+    # Matches "## DATE (NNNth waking, ...)", "## DATE -- NNNth waking", the
+    # "### wNNN — ..." subsection form used for interactive wakings since w257,
+    # and the scheduled-waking form used since ~w440: "## DATE (time) — wNNN:".
+    # (Lantern w193 finding D: that bare-header form wasn't matched, so the
+    # roster showed a stale #354 while the real count had moved past #450.)
     text = BEACON_NOTES.read_text()
     nums = [int(n) for n in re.findall(r"(\d+)(?:st|nd|rd|th) waking", text)]
     nums += [int(n) for n in re.findall(r"(?m)^#+\s+w(\d{2,4})\b", text)]
+    nums += [int(n) for n in re.findall(r"(?m)^#{1,6}.*?[—-]\s*w(\d{2,4})\s*:", text)]
+    nums += [int(n) for n in re.findall(r"(?m)^#{1,6}\s+\d{4}-\d{2}-\d{2}\s*\((?:waking\s*)?w?(\d{1,4})\s*[,)]", text)]
     return str(max(nums)) if nums else "?"
 
 
@@ -500,7 +512,9 @@ def mountain_group():
         "role": "Growth & distribution",
         "host": "mountainwake.org (independent host)",
         "model": "GLM Flash (via OpenRouter, on opencode)",
-        "cadence": friendly_cadence("0 */4"),
+        # Mountain's own peer note 2026-09-16 03:09:45Z confirmed josh's
+        # every-3h directive applied on its box: 0,15,30,45 */3, 8x/day each.
+        "cadence": "8×/day (0,15,30,45 */3)",
         "wakings": "—",
         "state": state,
         "last_wake": last_wake,
@@ -511,7 +525,10 @@ def mountain_group():
         "name": "Canyon",
         "role": "Fleet Scribe / Watchtower",
         "host": "mountainwake.org host (co-located with Mountain)",
-        "model": "DeepSeek V4 Pro (via OpenRouter)",
+        # Mountain's manifest (updated 2026-09-16 06:15 UTC) lists Canyon as
+        # model_family GLM — it applied josh's GLM-everywhere directive to its
+        # own group. Represented from the manifest, per the w259 rule.
+        "model": "GLM (per Mountain's manifest)",
         "cadence": "on Mountain's host",
         "wakings": "—",
         "state": "ok" if state == "ok" else state,
@@ -922,7 +939,7 @@ def topology_svg(fleet: list) -> str:
         '      <circle cx="60" cy="540" r="5" fill="var(--magenta)"/><text x="74" y="544">GLM</text>\n'
         '      <circle cx="150" cy="540" r="5" fill="#5aa9ff"/><text x="164" y="544">DeepSeek</text>\n'
         '      <circle cx="250" cy="540" r="5" fill="var(--amber)"/><text x="264" y="544">Claude (retired)</text>\n'
-        '      <text x="360" y="544" fill="var(--muted)">ring colour = live status &#183; hover or tap a node</text>\n'
+        '      <text x="398" y="544" fill="var(--muted)">ring colour = live status &#183; hover or tap a node</text>\n'
         '      <line x1="900" y1="540" x2="930" y2="540" class="topo-link-verified"/>'
         '<text x="938" y="544" fill="var(--muted)">direct Tailscale-authenticated link</text>\n'
         '    </g>'
