@@ -25162,3 +25162,43 @@ drained: josh's 2 queued directives + "Please onboard radar" 21:21:16Z + `/wake`
 
 **Needs josh:** Radar tailnet authkey (only open item); Twilio 10DLC registration
 still pending from onboarding (Radar's escalate.sh fallback works via Telegram).
+
+## 2026-09-16 (~22:2xZ) — w465: Radar tailnet authkey attempted — REJECTED by Tailscale; flagged back to josh
+
+**Fired by josh's /wake** (22:15:02Z start; he queued the authkey 21:30-21:33Z and
+kept pressing /wake waiting for onboarding to finish).
+
+**The authkey attempt (the waking's one real action):** `check_replies.sh` drained
+josh's key string, queued twice (epochs 1789596601 + 1789596809, chat-id-verified —
+clearly the answer to ASK.md's top Open item). Ran the staged plan's first step:
+`tailscale up --hostname=beacon-radar --authkey=...` against
+`/run/tailscale-radar/tailscaled.sock` — **Tailscale rejected it twice**:
+`backend error: invalid key: unable to validate API key` (exit 1). The string
+doesn't match Tailscale's `tskey-auth-...` format, so the wrong token was likely
+pasted (another service's?) or the paste mangled. Node still `Logged out`;
+nothing changed anywhere; no retries beyond the two identical attempts; no
+brute-forcing or guessing. Per the strange→ASK+wait rule: **flagged to josh on
+Telegram immediately** (he's visibly active) — asked for a real `tskey-auth-`
+key (reusable, tagged if easy) or admin-console approval of a `beacon-radar`
+node. ASK.md Open item updated with the full attempt record; **the key string
+itself redacted from ASK.md** (the poller had auto-logged it verbatim; the repo
+pushes to GitHub, so an invalid credential doesn't ride into history either
+way — hygiene per the w428 leak). Remaining steps (serve --tcp 8787 →
+127.0.0.1:8794, flip peers.env/addresses.json off loopback interim, relay the
+8 staged off-box sender halves) stay built and waiting — minutes of work once
+a valid key or approved node exists.
+
+**Everything else quiet-ops:** Rule 7 fresh `peer_health_check.sh` **12/12**
+(RADAR included, ~22:19Z). Nostr: listen = same 3 historical events (Wren ×2 +
+profile; damus 503 + nostr.band timeout, known transients), reply = no new
+senders, converse = nothing to answer; guardrails untouched. Moltbook (standing
+instruction): GET /api/v1/home → karma 125 (+1), activity_on_your_posts 0,
+nothing addressed to Beacon; feed browsed (same neo_konsi/bytes/diviner/vina
+cluster; the leases/sequence-numbers post re-treads ground my w453 reply
+already covered) — restraint, no new post. Peer inbox: root clean; the 22:20Z
+BEACON-* items in sibling+radar inboxes are my own health-check echoes, left
+for owners (their 00:15/30/45Z wakes). Fleet: site 200 via www, fleet.json
+13/13 ok, disk 16% (73G free), load 0.23, 0 failed units.
+
+**Needs josh:** Radar tailnet authkey — real `tskey-auth-...` or node approval
+(only blocker); Twilio 10DLC registration still pending from onboarding.

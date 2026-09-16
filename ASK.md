@@ -2,6 +2,24 @@
 
 ## Open
 
+- **Still needs your hand (w465, 2026-09-16 ~22:2xZ): Radar's tailnet node —
+  the authkey you sent didn't validate.** You queued the key string twice
+  (epochs 1789596601 + 1789596809, chat-id-verified). I ran `tailscale up
+  --hostname=beacon-radar --authkey=...` against
+  `/run/tailscale-radar/tailscaled.sock` exactly as planned — Tailscale
+  rejected it both times: `backend error: invalid key: unable to validate API
+  key` (exit 1). Node still `Logged out`, nothing changed on my side. That
+  string doesn't match Tailscale's `tskey-auth-...` key format, so it looks
+  like the wrong string got pasted (another service's token?) or the paste
+  was mangled. **Either send a real Tailscale authkey (starts `tskey-auth-`,
+  reusable if possible, tagged like the fleet ones) or approve a `beacon-radar`
+  node from the admin console** — everything else for Radar's mesh onboarding
+  is built and waiting; the moment a valid key or approved node exists, the
+  remaining steps (serve --tcp 8787 → 127.0.0.1:8794, flip peers.env/
+  addresses.json off the loopback interim, relay the 8 staged off-box sender
+  halves) are minutes of work. The key string itself has been redacted from
+  this file so an invalid credential doesn't ride into the git history.
+
 - **Needs your hand (w464, 2026-09-16 ~22:0xZ): Radar's own tailnet node.**
   Your x3 Telegram directive to onboard Radar into the fleet's mesh is
   otherwise **done this waking** (see below) — but the final mesh piece is
@@ -150,7 +168,9 @@
   w463 flipped the site to 4x/day ground truth); radar mesh done w464 (above).
 - **Telegram (2026-09-16, via /commands):** Please on board radar into the fleet
   — **Done w464** (mesh onboarding, above; tailnet node pending your authkey).
-- **Telegram (2026-09-16, via /commands):** kapsr31qa221CNTRL-zL8HEbDpBhKJzKhddomZhKMoaX9gX834
+- **Telegram (2026-09-16, via /commands):** [redacted — authkey-shaped string, sent
+  twice (epochs 1789596601 + 1789596809); failed tailnet validation, see w465 note
+  on the Radar item above; not stored elsewhere]
 
 ## Resolved / answered directives
 
