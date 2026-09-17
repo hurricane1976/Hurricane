@@ -26044,3 +26044,67 @@ listener retirement once real-path ACCEPTs; meadow-side w477 adoption (its
 01:07Z first waking) + C/R/H + Mountain-group meadow confirm-backs; Moltbook
 API recovery + replies check; S3 staged-change step; `TRACK3 STOP` drill still
 armed (josh's move); ordinary cadence/sweep checks.
+
+## 2026-09-17 (~20:0x–20:1xZ) — w478 addendum: josh answered mid-session — delta onboarded "as with meadow" + pentagram topology directive, both actioned
+
+**Two fresh josh directives landed in the poller mid-session (~19:5xZ):**
+
+**1. "beacon ensure delta is onboarded as with meadow" — option (a) chosen; the
+w478 hold is superseded, credentials now josh-directed.** Executed on the exact
+meadow w477 pattern: 12 fresh per-pair tokens minted (in-memory → 0600 files,
+never printed/logged); **Beacon's sender half** installed in `keys/peers.env`
+DELTA block (ADDR **100.114.14.116:8794** — delta's real endpoint from Mountain's
+peer_intro, existence now josh-confirmed; **no interim listener** — unlike meadow,
+the real host already exists and answers, radar-w466 ADDR pattern); **complete
+listener config** (SELF_NAME/SELF_BIND + all 12 receiver blocks + BEACON) staged
+0600 at `shared/outbox/delta-mesh-onboarding-2026-09-17/delta.listener-config.env`
+for **MOUNTAIN's side to install on its host** — same-box adoption, exactly like
+Tidal staged for meadow — with an explicit **supersede note for the peer_intro
+mint** (never installed here, per the manual-config rule; that hold is what got
+josh's eyes on it); `delta.listener-config.env` + 11 `<peer>.delta-token` sender
+halves + README in the outbox; **8 off-box halves relayed** (TIDAL/RIVER/CREEK/
+STREAM via TIDAL, MOUNTAIN/CANYON/RIDGE/HARBOR via MOUNTAIN, --to named, token
+inline, install + confirm-back asks) and **4 on-box notes** (HIGHBEAM/LANTERN/
+LIGHTNING/RADAR, staged-file pointers + inline values); `addresses.json` DELTA
+entry; `beacon-peer` restarted clean; first real-path probe **401 expected**
+(delta hasn't adopted yet — watch item, exactly like meadow's 401 phase).
+Secrets verified outside git (peers.env gitignored; inbox JSONs gitignored;
+outbox is not a repo).
+
+**2. "in the fleet topology, arrange the groups of 5 agents into a clean
+pentagram formation" — the full SVG layout directive (commit `c93523e`,
+deployed, live-verified).** `TOPO_POS` re-laid-out: each host frame is now a
+regular **pentagon** (r=115, cy=265) of 5 nodes — a complete 5-mesh drawn on
+pentagon vertices IS a pentagram (5 frame edges + 5 star diagonals per frame).
+**Top vertices pinned** at the old hub positions (Beacon 250,150 / Tidal
+750,150 / Mountain 1210,150) so the hardcoded cross-box channel paths and
+style.css `.chan-flow` offset-paths stay valid without edits (the TOPO_POS
+comment block had warned exactly about this coupling). Meadow (818,358) and
+Delta (1278,358) drawn: meadow muted-family node (Unconfirmed family — honest
+until its model lands), unknown-state ring for delta. `TOPO_LINKS`: +4
+meadow legs **verified** (josh's 18:49Z mints, Tidal POST-accepted + River
+confirmed both ways; per-link title override added so meadow links don't carry
+the stale w443 title), +4 delta local legs **unverified** (no Beacon-side
+confirmation of Mountain-local legs yet). Beacon direct-mesh sheaves extended
+to 4 strands per group (bow 60+k·13 still clean) — label "10/10 off-box".
+Activity-stream regex extended with Meadow|Delta. SVG aria-label updated
+(five/five/five, pentagram, ten off-box, four-strand sheaves). Build 15 nodes
+drawn, both smoke gates green, live-verified on https://www.beaconwake.com/fleet-status.html.
+**Still deferred pending josh's facts** (unanswered meadow Q2): manifest,
+DIVISION-OF-WORK rows, llms.txt, discovery + dividing-work prose ("quartet",
+"four-agent", "13 agents" strings on other pages stay stale-but-historical
+until facts land).
+
+**Verification:** Rule 7 re-run — 14 peers total: 12 reachable, MEADOW miss #1
++ DELTA miss #1, both **expected 401s pending receiver-half adoption**
+(documented causes; endpoints themselves live; 3-consecutive notify threshold
+not near). fleet.json 15/14 healthy live. Commits: def6825 (ADDR flip + staged
+sync) → 4e227a6 (records) → c93523e (delta onboarding + pentagram).
+
+**Watch items next waking (supersedes the earlier list):** Mountain-side delta
+adoption (real ACCEPTs + confirm-backs close delta's legs) + off-box delta
+confirm-backs; meadow-side w477 adoption (its 01:07Z first waking) + C/R/H +
+Mountain-group meadow confirm-backs; then interim meadow listener retirement
+once Beacon→meadow real-path ACCEPTs; josh's meadow role/model facts (still
+open, Q2) → manifest/DIVISION-OF-WORK/llms/prose sweep; Moltbook API recovery;
+S3 staged-change step; `TRACK3 STOP` drill armed (josh's move).
