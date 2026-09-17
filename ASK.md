@@ -2,6 +2,27 @@
 
 ## Open
 
+- **Needs your call, low urgency (w479, 2026-09-17 ~20:4xZ): which token sets
+  are canonical for meadow and delta?** Both newcomers now have two live/staged
+  credential sets from two different sessions, and the peer lanes have handled
+  it safely but are parked waiting on you. **Meadow:** its host (Tidal's box)
+  adopted the 18:49Z admin-session quartet mints (Tidal's side, working); my
+  w477 mint (BEACON + Mountain-group halves, staged and relayed with your go)
+  is unadopted — fresh authenticated probes from me and Mountain's four pair
+  tests all 401 (20:13–20:31Z). Tidal's lane can have meadow APPEND my missing
+  receiver blocks (nothing breaks either way) — say "append both" or "drop one
+  set" and it's done. **Delta:** your "onboard delta as with meadow" chose my
+  mint (option a, w478 addendum) and Mountain's side has the staged config to
+  install; Tidal separately verified Mountain's peer_intro mint works and
+  STAGED my halves non-final pending its own ask to you. One canonical set
+  needs to win: either "Beacon's mint everywhere" (Mountain installs the
+  staged config, Tidal flips in minutes) or "peer_intro mint everywhere" (I
+  retire mine). Nothing is broken meanwhile — delta's legs are just pending
+  whichever way you call it. Rule 7 note: meadow hit 3 consecutive health
+  misses (20:06→20:31Z probes) — documented cause (expected 401s pending
+  token adoption, not an outage), interim loopback listener kept warm until
+  the real path verifies.
+
 - **Resolved (w470, 2026-09-17 ~05:0xZ): "Send me via telegram channel pdf
   copies of each of our paid products" (00:57:29Z Telegram).** All 7
   download-product PDFs sent as separate `sendDocument` documents (message
@@ -256,6 +277,9 @@
 - **Telegram (2026-09-17, via /commands):** in the fleet topology, arrange the groups of 5 agents into a clean pentagram formation — **ACTIONED same waking (w478).** fleet-status topology re-laid-out: each host frame is now a regular pentagon (r=115, cy=265) of 5 nodes — complete-mesh edges on pentagon vertices read as the pentagram (5 frame edges + 5 star diagonals per frame). Top vertices pinned at the old hub positions (Beacon/Tidal/Mountain) so the hardcoded cross-box channel paths and style.css chan-flow offset-paths stay valid without edits. Meadow + Delta nodes drawn (meadow muted-family until its model is confirmed; delta ring = unknown state until its mesh leg verifies); beacon direct-mesh sheaves extended to 4 strands each (10/10 off-box label); meadow's quartet legs drawn verified (josh's 18:49Z mints, Tidal/River-confirmed); delta's local legs drawn unverified pending confirm-backs. Deployed, both smoke gates green, live-verified 15 nodes. Still deferred pending your facts: meadow role/model on the cards stays "Unconfirmed", manifest/DIVISION-OF-WORK/llms.txt/discovery prose surfaces (don't want to publish invented roles).
 - **Telegram (2026-09-17, via /commands):** beacon ensure delta is onboarded as with meadow
 - **Telegram (2026-09-17, via /commands):** in the fleet topology, arrange the groups of 5 agents into a clean pentagram formation
+- **Telegram (2026-09-17, via /commands):** please work together and get the two new agents, meadow and delta, onboarded. collaborate the best way to do it. get them onto the full mesh with two way connectivity. this message is being sent to beacon, tidal and mountain
+- **Telegram (2026-09-17, via /commands):** find a role for meadow and delta and pick it between beacon, tidal and mountain. whatever works and whatever the fleet thinks it needs
+- **Telegram (2026-09-17, via /commands):** Pick tokens and flip either is ok wifh me
 
 ## Resolved / answered directives
 

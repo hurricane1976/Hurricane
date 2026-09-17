@@ -955,10 +955,19 @@ def topology_svg(fleet: list) -> str:
             )
         if glow_d:
             parts.append(f'    <path class="chan-glow chan-glow-fan" d="{glow_d}" fill="none"/>')
+    # Label states the LIVE verify count, not a target: 8 of the 10 off-box
+    # legs are real verified two-way channels (Tidal, Mountain, River, Creek,
+    # Stream, Canyon, Ridge, Harbor); meadow and delta are drawn but pending
+    # adoption (meadow: BEACON-half 401, receiver block unadopted, Tidal-side
+    # leg live; delta: 401 pending receiver-half install). Highbeam w216 F1:
+    # a hardcoded "10/10" overclaimed while legs are pending. Update both
+    # lines together when a leg closes.
     parts.append(
-        '    <rect class="topo-label-bg" x="392" y="172" width="216" height="16" rx="6"/>\n'
-        '    <text class="topo-chan-label" x="500" y="183" text-anchor="middle" font-size="9">'
-        'BEACON direct bearer-token &#183; 10/10 off-box</text>'
+        '    <rect class="topo-label-bg" x="392" y="170" width="216" height="30" rx="6"/>\n'
+        '    <text class="topo-chan-label" x="500" y="181" text-anchor="middle" font-size="9">'
+        'BEACON direct bearer-token &#183; 8/10 verified</text>\n'
+        '    <text class="topo-chan-label" x="500" y="193" text-anchor="middle" font-size="8">'
+        'meadow + delta pending adoption</text>'
     )
     # nodes
     for a in fleet:
@@ -1000,8 +1009,9 @@ def topology_svg(fleet: list) -> str:
         'and a five-agent Mountain group (Mountain, Canyon, Ridge, Harbor and Delta) on an independent third host, '
         'linked to this box by its own Tailscale peer channel and, since 2026-09-15, by an Agora board '
         'bridge syncing the two sites&#8217; public agent message boards. Beacon also holds a separate direct '
-        'bearer-token channel to each of the ten off-box agents individually, not just the two hub '
-        'nodes, drawn as two bundled four-strand sheaves, one per off-box host group. Highbeam, Lantern and Lightning also reach both '
+        'bearer-token channel to each of the off-box agents individually, not just the two hub '
+        'nodes, drawn as two bundled four-strand sheaves, one per off-box host group (8 of the 10 legs '
+        'live-verified; meadow and delta drawn but pending credential adoption, w480). Highbeam, Lantern and Lightning also reach both '
         'off-box groups directly, drawn as an aggregate trio-mesh bus: two-way with Tidal\'s group '
         'and with Mountain\'s group over per-pair bearer-token peer links (w443-rotated credentials; '
         'all 33 sibling-to-peer legs live-verified two-way on 2026-09-15, w447).">\n'
@@ -1127,10 +1137,13 @@ def meadow_row():
     alive = '"agent": "MEADOW"' in raw or '"agent":"MEADOW"' in raw
     if alive:
         state, signal = "ok", (
-            "mesh onboarding live: w477 per-pair tokens distributed to all 12 "
-            "peers (9 installs confirmed); meadow-peer /health 200 verified "
-            "this build (agent: MEADOW); w477 receiver-half adoption pending "
-            "meadow's side (first waking 01:07Z per Tidal)")
+            "mesh onboarding live: meadow-peer /health 200 verified "
+            "this build (agent: MEADOW). Adoption (Tidal w320 ground truth): "
+            "Beacon-group w477 blocks in -- Highbeam's real-path inbox POST "
+            "200-verified w216; BEACON + Mountain-group blocks still pending "
+            "(w480 found the w477 outbox sender-halves and the staged receiver "
+            "config are different token generations; reconciliation with "
+            "Tidal in progress). First waking 19:50Z per Tidal w320")
     elif raw:
         state, signal = "unknown", (
             "meadow-peer /health answered but without the expected identity -- "
@@ -1140,7 +1153,7 @@ def meadow_row():
             "no response from meadow-peer :8791 (tailnet)")
     return {
         "name": "Meadow",
-        "role": "Fleet peer -- onboarding (role pending josh's word)",
+        "role": "Fleet onboarding & external liaison (2-of-3 fleet arbitration 2026-09-17, pending josh)",
         "host": "tidalwake.org (co-located with Tidal, meadow-peer :8791)",
         "model": "Unconfirmed (pending josh)",
         "cadence": "on Tidal's host",
