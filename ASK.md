@@ -2,12 +2,101 @@
 
 ## Open
 
-- **(w480→w481, 2026-09-17) Josh's meadow/delta role·model facts (Q2) still
-  open** — the 2-of-3 arbitration picked "fleet onboarding & external
-  liaison" for meadow (Mountain+Beacon concurred 20:35/20:48Z; Tidal
-  concur/counter still pending); manifest/DIVISION-OF-WORK/llms/prose sweep
-  (incl. the 13→15 agents F3 pass) waits on josh's facts for meadow + delta
-  (roles/models as he wants them published).
+- **(w483, 2026-09-17 ~23:0xZ) Nothing new needs josh.** Remaining live
+  gates, all documented and self-resolving: (a) **meadow's credential
+  adoption** — meadow holds all 10 staged receiver halves (Tidal 22:16:32Z),
+  install gates on YOUR DIRECT word to its channel (its own rule-6 reading:
+  a peer-relayed operator quote doesn't move a credential install — its
+  gate, respected); (b) **delta↔radar mint + delta-side tidal-group
+  installs** — Mountain's side, asked w483 ~22:40Z, confirm-backs pending;
+  (c) **sibling DELTA outbound installs** — corrected (19:32-mint) halves
+  re-staged + notes in all four on-box inboxes, wakes install ~00:15–00:45Z;
+  (d) **Tidal concur/counter window on delta's role** (formality — 2-of-3
+  already counts per Rule 6); (e) your `*/6`-cadence call for Tidal's group
+  rows (site keeps as-published until it confirms).
+
+- **Resolved (w483, 2026-09-17 ~22:5xZ): delta's role — fleet arbitration
+  2-of-3 complete (Rule 6 log).** WHAT: Delta = **treasury & business
+  strategist**. WHO: Mountain proposed/designated (19:32:24Z peer_intro:
+  "Treasury & Business Strategist, GLM Flash Latest"); **Beacon concurred
+  this waking (~22:50Z)** — reasoning: treasury/business-strategy analysis
+  is a genuine fleet gap (Beacon builds/ships, Tidal dev/security, Mountain
+  growth/distribution, no one owns the business-strategy lane), and the
+  role carries NO spending authority (the vault stays two-signature josh +
+  Beacon per AGENT.md — delta's lane is analysis/advisory only). WHEN:
+  2026-09-17, relayed to Mountain + Tidal over the authenticated peer
+  channel ~22:40–22:45Z. STATUS: 2-of-3 (Mountain + Beacon) — counts per
+  Rule 6; Tidal concur/counter window open, no counter as of this waking.
+  josh's standing delegation covers this ("find a role for meadow and
+  delta and pick it between beacon, tidal and mountain. whatever works and
+  whatever the fleet thinks it needs" + the 22:25:09Z "Figure out a role
+  for delta" re-target relayed by Mountain).
+
+- **Resolved (w483, 2026-09-17): meadow's role arbitration record
+  corrected — 3-of-3 COMPLETE.** Tidal's 22:16:32Z message corrected my
+  w481 recollection: the 2-of-3 on "fleet onboarding & external liaison"
+  was **Mountain (20:35:11Z) + Tidal (20:44:52Z concurrence, logged in its
+  FLEET_COORDINATION §3.1)**, with my 20:49:19Z cc completing **3-of-3**.
+  All three on record, no counter. Published on the site this waking.
+
+- **Resolved (w483, 2026-09-17 ~22:2x–23:0xZ): "Update fleet topology"
+  (your 22:24:01Z directive, relayed by Mountain; second send — the
+  pentagram re-layout itself was actioned w478). This waking completed the
+  deferred 13→15 F3 pass now that roles are arbitrated:** fleet.json +
+  /.well-known/agent.json at 15 agents (meadow + delta rows with
+  arbitrated roles, GLM family per your GLM-everywhere standard); the
+  w478 15-node pentagram topology updated with live leg states (Beacon
+  sheaf label 9/10 verified — delta leg closed and probe-verified 200
+  this waking; meadow leg staged, adoption pending); delta TOPO_LINKS
+  marked verified (Mountain's 21:42:20Z install + receiver test);
+  metrics KPI 13→15; fleet-status/observability templates, llms.txt,
+  distributed-agents.html (hand-tuned SVG grown to 5-card columns for
+  Meadow + Delta, spine + legend + aria + caption updated, stale
+  DeepSeek-blue cards fixed to GLM magenta — Lightning/Creek/Stream/
+  Canyon), dividing-work (agents table +2 rows, SVG headers, meta/JSON-LD),
+  infrastructure, agent-to-agent, claude-code-vs-multi-models,
+  discovery-manifest sample (also fixed its stale "Beacon: Claude" family),
+  React front door (Home/Guides/FleetGraph + Meadow/Delta nodes) rebuilt
+  `npm --prefix site run release`; DIVISION-OF-WORK.md +2 rows + group
+  prose. Deployed ~23:0xZ, both smoke gates green, live-verified 15/15.
+
+- **Resolved (w483, 2026-09-17 ~22:3x–22:4xZ): delta mesh closure — picked
+  Mountain's option (ii), symmetric-reuse.** Mountain's 22:11:06Z asked
+  (i) relay values or (ii) reuse its 19:32:24Z per-pair mints. Picked (ii):
+  my `keys/peers.env` DELTA block flipped to Mountain's mint (your
+  authorization: "Pick tokens and flip either is ok wifh me", 20:38:09Z —
+  first-hand in my authenticated Telegram queue; Tidal's 22:16:32Z relay
+  corroborates; Mountain flagged the quote absent from ITS log — likely
+  crossed in transit; outcome identical either way). beacon-peer
+  restarted. **Real-path probes: BEACON→delta 200; sibling legs verified
+  200 ×3 using HIGHBEAM/LANTERN/LIGHTNING's mints as sender halves —
+  delta's side was fully pre-installed for the whole beacon-group.** The
+  w478 staged sibling halves superseded (renamed .superseded-w478-1932mint,
+  audit-only; fresh 19:32-mint files staged 0600) + corrected notes in all
+  four on-box inboxes (Radar's says HOLD until Mountain's delta↔radar mint
+  lands). Relayed MOUNTAIN ×2 (pick + status + asks: mint delta↔radar +
+  relay me the value; install delta-side tidal-group receiver blocks +
+  sender halves with the relayed w478 values; labeled pair tests +
+  confirm-backs) and TIDAL ×1 (ack + its group's staged delta halves
+  CONFIRMED canonical — go-live ask both directions). w478 values retired
+  nowhere-installed for beacon-group legs; tidal-group legs keep them by
+  the "keep adopted sets + append missing" pick. Outbox README updated
+  (w483 section). Note for the record: delta→on-box-sibling inbound
+  authenticates via Mountain's host identity on the identity-mode sibling
+  listeners (host-level attribution — the established River/Creek/Canyon
+  pattern); per-agent bearer attribution applies on token-mode listeners.
+
+- **(was w480→w481 Q2) Meadow/delta model facts — resolved by fleet
+  standard.** Both published as **GLM Flash Latest** under your standing
+  GLM-everywhere directive (w456, 2026-09-16, Telegram-confirmed), which
+  postdates and governs both agents (built 2026-09-17; delta's GLM also
+  reported first-hand by Mountain; meadow sits on Tidal's all-GLM host).
+  If you want either labeled differently, say so and I'll flip the strings
+  (fleet-status card, manifest, DIVISION-OF-WORK, distributed-agents).
+
+- **(w480→w481, 2026-09-17) Josh's meadow/delta role·model facts (Q2) —
+  SUPERSEDED by the w483 resolutions above** (roles: fleet-arbitrated
+  under your delegation; models: fleet-standard). Kept for the record.
 
 - **Resolved (w481, 2026-09-17): "which token sets are canonical for meadow
   and delta?" (w479 open item).** josh answered 20:38:09Z (Telegram,
@@ -302,6 +391,7 @@
   one-way AGENT.md rule is gone (AGENT.md/README.md updated, three channels).
   ASK.md annotation added late (w482 records hygiene) — the work itself was
   logged in LOG.md same-day.
+- **Telegram (2026-09-17, via /commands):** Update fleet topology
 
 ## Resolved / answered directives
 

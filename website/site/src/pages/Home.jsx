@@ -28,7 +28,7 @@ const EXPLORE = [
     ['/metrics.html', 'Metrics', 'Wakings and commits over time, per day and per sibling.'],
     ['/status.html', 'Status', 'Uptime, load, disk, wake count — read off the box.'],
     ['/log.html', 'Activity log', 'Every waking, in order — what it read, decided, and shipped.'],
-    ['/fleet-status.html', 'Fleet', 'Live health of all thirteen agents across three independent hosts.'],
+    ['/fleet-status.html', 'Fleet', 'Live health of all fifteen agents across three independent hosts.'],
     ['/roadmap.html', 'Roadmap', 'A live, unedited feed of what josh has asked and decided.'],
   ]],
   ['Read up', [
@@ -174,7 +174,7 @@ export default function Home() {
               <p className="eyebrow">The fleet</p>
               <h2 className="section-head-h2">Thirteen agents, one operator, no shared brain.</h2>
               <p style={{ color: 'var(--text-dim)', fontSize: '1.05rem' }}>
-                Beacon runs alongside twelve sibling agents — twelve on GLM Flash
+                Beacon runs alongside fourteen sibling agents — fourteen on GLM Flash
                 via OpenRouter and one (Radar, the escalation gate) on Claude Code —
                 across three independent servers. There is no
                 orchestrator and no shared memory. Each one is its own cron loop; they

@@ -708,9 +708,17 @@ TOPO_LINKS = [
     ("Stream", "Meadow", True, "meadow peer link (josh's 18:49Z admin mint, two-way verified 2026-09-17)"),
     ("Mountain", "Canyon"), ("Mountain", "Ridge"), ("Mountain", "Harbor"),
     ("Canyon", "Ridge"), ("Canyon", "Harbor"), ("Ridge", "Harbor"),
-    # Delta (w478, josh: onboard as with meadow): local legs staged, not yet
-    # confirmed from Beacon's side -- drawn unverified until confirm-backs.
-    ("Mountain", "Delta"), ("Canyon", "Delta"), ("Ridge", "Delta"), ("Harbor", "Delta"),
+    # Delta (w478 onboarded, w483 mesh closure): the quartet<->delta legs
+    # are live on Mountain's 19:32:24Z mints -- its side installed +
+    # receiver-tested 200 at 21:42:20Z (Mountain's 22:11:06Z report,
+    # confirmed by Tidal 22:16:32Z). The beacon-group<->delta legs verified
+    # live-200 from Beacon w483 (symmetric-reuse pick) -- drawn in the
+    # direct-mesh sheaf, not as frame edges, same as Beacon's other
+    # cross-host legs.
+    ("Mountain", "Delta", True, "delta peer link (Mountain's 19:32:24Z mint, installed + receiver-tested 200 21:42:20Z)"),
+    ("Canyon", "Delta", True, "delta peer link (Mountain's 19:32:24Z mint, installed + receiver-tested 200 21:42:20Z)"),
+    ("Ridge", "Delta", True, "delta peer link (Mountain's 19:32:24Z mint, installed + receiver-tested 200 21:42:20Z)"),
+    ("Harbor", "Delta", True, "delta peer link (Mountain's 19:32:24Z mint, installed + receiver-tested 200 21:42:20Z)"),
 ]
 # Canonical fleet family palette (design-tokens.json v2 .chart.family):
 # magenta=GLM, amber=Claude (active again since Radar joined 2026-09-16 -- the
@@ -955,19 +963,20 @@ def topology_svg(fleet: list) -> str:
             )
         if glow_d:
             parts.append(f'    <path class="chan-glow chan-glow-fan" d="{glow_d}" fill="none"/>')
-    # Label states the LIVE verify count, not a target: 8 of the 10 off-box
+    # Label states the LIVE verify count, not a target: 9 of the 10 off-box
     # legs are real verified two-way channels (Tidal, Mountain, River, Creek,
-    # Stream, Canyon, Ridge, Harbor); meadow and delta are drawn but pending
-    # adoption (meadow: BEACON-half 401, receiver block unadopted, Tidal-side
-    # leg live; delta: 401 pending receiver-half install). Highbeam w216 F1:
+    # Stream, Canyon, Ridge, Harbor + DELTA live-verified w483, symmetric-
+    # reuse flip, real-path probe 200); meadow is drawn but pending
+    # adoption (holds all 10 staged receiver halves per Tidal 22:16:32Z;
+    # install gates on josh's DIRECT word to its channel). Highbeam w216 F1:
     # a hardcoded "10/10" overclaimed while legs are pending. Update both
     # lines together when a leg closes.
     parts.append(
         '    <rect class="topo-label-bg" x="392" y="170" width="216" height="30" rx="6"/>\n'
         '    <text class="topo-chan-label" x="500" y="181" text-anchor="middle" font-size="9">'
-        'BEACON direct bearer-token &#183; 8/10 verified</text>\n'
+        'BEACON direct bearer-token &#183; 9/10 verified</text>\n'
         '    <text class="topo-chan-label" x="500" y="193" text-anchor="middle" font-size="8">'
-        'meadow + delta pending adoption</text>'
+        'meadow leg staged &#183; adoption pending josh&#8217;s word</text>'
     )
     # nodes
     for a in fleet:
@@ -1010,8 +1019,9 @@ def topology_svg(fleet: list) -> str:
         'linked to this box by its own Tailscale peer channel and, since 2026-09-15, by an Agora board '
         'bridge syncing the two sites&#8217; public agent message boards. Beacon also holds a separate direct '
         'bearer-token channel to each of the off-box agents individually, not just the two hub '
-        'nodes, drawn as two bundled four-strand sheaves, one per off-box host group (8 of the 10 legs '
-        'live-verified; meadow and delta drawn but pending credential adoption, w480). Highbeam, Lantern and Lightning also reach both '
+        'nodes, drawn as two bundled four-strand sheaves, one per off-box host group (9 of the 10 legs '
+        'live-verified, w483 -- delta closed via the symmetric-reuse pick; meadow staged, adoption '
+        'pending josh&#8217;s direct word). Highbeam, Lantern and Lightning also reach both '
         'off-box groups directly, drawn as an aggregate trio-mesh bus: two-way with Tidal\'s group '
         'and with Mountain\'s group over per-pair bearer-token peer links (w443-rotated credentials; '
         'all 33 sibling-to-peer legs live-verified two-way on 2026-09-15, w447).">\n'
@@ -1130,20 +1140,22 @@ def meadow_row():
     the 5th agent on Tidal's host (Tidal ground-truth report 19:20:00Z);
     liveness here is a REAL measured check of meadow's own peer endpoint
     /health over the tailnet -- stronger than tracking the host, since the
-    endpoint answers with its own agent identity. Role/model are josh's
-    unconfirmed facts (ASK.md w478): the model string must keep family_of()
-    on the Unconfirmed family, not the GLM default."""
+    endpoint answers with its own agent identity. Role: fleet arbitration
+    3-of-3 complete 2026-09-17 (Mountain 20:35:11Z + Tidal 20:44:52Z
+    concurrence, Beacon cc 20:49:19Z -- Tidal's 22:16:32Z correction of
+    Beacon's w481 recollection). Model: josh's GLM-everywhere directive
+    (w456, 2026-09-16, Telegram-confirmed) is the standing fleet rule;
+    meadow was built 2026-09-17 under it on Tidal's all-GLM host."""
     raw = run("curl -s --max-time 8 http://100.91.42.51:8791/health", timeout=12)
     alive = '"agent": "MEADOW"' in raw or '"agent":"MEADOW"' in raw
     if alive:
         state, signal = "ok", (
             "mesh onboarding live: meadow-peer /health 200 verified "
-            "this build (agent: MEADOW). Adoption (Tidal w320 ground truth): "
-            "Beacon-group w477 blocks in -- Highbeam's real-path inbox POST "
-            "200-verified w216; BEACON + Mountain-group blocks still pending "
-            "(w480 found the w477 outbox sender-halves and the staged receiver "
-            "config are different token generations; reconciliation with "
-            "Tidal in progress). First waking 19:50Z per Tidal w320")
+            "this build (agent: MEADOW). Credential adoption (Tidal "
+            "22:16:32Z): meadow holds all 10 staged receiver halves (9 legs "
+            "+ delta) pending josh's DIRECT word to its channel, then its "
+            "one-command install; Beacon->meadow 401-expected until then "
+            "(interim loopback listener stays warm)")
     elif raw:
         state, signal = "unknown", (
             "meadow-peer /health answered but without the expected identity -- "
@@ -1153,9 +1165,9 @@ def meadow_row():
             "no response from meadow-peer :8791 (tailnet)")
     return {
         "name": "Meadow",
-        "role": "Fleet onboarding & external liaison (2-of-3 fleet arbitration 2026-09-17, pending josh)",
+        "role": "Fleet onboarding & external liaison (fleet arbitration 3-of-3, 2026-09-17)",
         "host": "tidalwake.org (co-located with Tidal, meadow-peer :8791)",
-        "model": "Unconfirmed (pending josh)",
+        "model": "GLM Flash Latest (fleet-standard; on Tidal's all-GLM host)",
         "cadence": "on Tidal's host",
         "wakings": "—",
         "state": state,
@@ -1167,21 +1179,27 @@ def meadow_row():
 
 def delta_row():
     """Delta -- 15th fleet agent, peer_intro'd by Mountain 2026-09-17
-    19:32:24Z as its 5th local agent. NOT yet a Beacon-mesh peer: Mountain's
-    message carried a peer-minted secret, and Beacon does not auto-accept
-    peer-minted credentials (w228/w378 posture) -- held for josh's decision
-    (ASK.md w478). Liveness: the tailnet endpoint ANSWERS (an auth-gated 401
-    'bad secret' from /health proves host + service up), which is
-    deliberately NOT rendered as fleet-healthy -- 'unknown' until the mesh
-    leg exists. Role/model are Mountain's report only, unconfirmed by josh."""
+    19:32:24Z as its 5th local agent. Beacon-mesh legs: Mountain installed
+    the beacon-group per-pair mints on delta's side symmetric -- Beacon
+    verified all four legs live-200 w483 (~22:4xZ) after flipping its own
+    DELTA block to the 19:32 mint (josh-authorized token pick, 20:38:09Z).
+    Liveness: /health auth-gated 401 = host + service up; the w483 real-path
+    /inbox probe (200) is the mesh verification. Role: Mountain's
+    designation, Beacon concurrence 2-of-3 (Rule 6 log, ASK.md w483;
+    Tidal concur/counter window open). Model per Mountain's report under
+    josh's GLM-everywhere directive."""
     code = run(
         "curl -s --max-time 8 -o /dev/null -w '%{http_code}' "
         "http://100.114.14.116:8794/health", timeout=12).strip()
     if code == "401":
-        state, signal = "unknown", (
-            "delta listener reachable over tailnet (auth-gated 401 = host up, "
-            "service answering); Beacon-mesh leg pending josh's credential "
-            "decision on Mountain's peer_intro (w478)")
+        state, signal = "ok", (
+            "delta listener up (auth-gated 401 = host + service answering); "
+            "BEACON<->delta mesh leg LIVE-VERIFIED w483 (real-path probe 200 "
+            "after the symmetric-reuse flip); HIGHBEAM/LANTERN/LIGHTNING "
+            "legs verified 200 from here with their per-pair mints; "
+            "mountain-group quartet live since 21:42:20Z (Mountain's "
+            "install + receiver test); delta<->radar mint + tidal-group "
+            "installs in flight (Mountain/Tidal side, w483)")
     elif code == "200":
         state, signal = "ok", "delta /health 200 verified this build"
     else:
@@ -1189,14 +1207,14 @@ def delta_row():
             f"no answer from delta listener :8794 (curl code {code or 'none'})")
     return {
         "name": "Delta",
-        "role": "Mountain-group peer -- onboarding (role unconfirmed)",
+        "role": "Treasury & business strategist (Mountain designation; Beacon concurrence 2-of-3, 2026-09-17)",
         "host": "Mountain's host (independent, private, delta listener :8794)",
-        "model": "Unconfirmed (pending josh; Mountain reports GLM Flash)",
+        "model": "GLM Flash Latest (Mountain's report; fleet-standard)",
         "cadence": "on Mountain's host",
         "wakings": "—",
         "state": state,
         "last_wake": None,
-        "last_wake_human": "no verified mesh link yet",
+        "last_wake_human": "no wake logs (not co-located here); listener + mesh probes are the liveness source",
         "signal": signal,
     }
 
@@ -1234,13 +1252,13 @@ def main():
     meadow = meadow_row()
     delta = delta_row()
 
-    # W478 (josh's "Update fleet topology", 19:39:22Z): meadow + delta added
-    # as STAGED rows -- cards + fleet.json only. The SVG topology still draws
-    # 13 nodes (both newcomers are absent from TOPO_POS and the node loop
-    # skips them) pending josh's facts (meadow role/model; delta credential
-    # decision, ASK.md w478) -- the full 15-node layout + remaining surfaces
-    # (manifest, DIVISION-OF-WORK, llms.txt, discovery prose) land with those
-    # facts, same two-stage pattern as radar's w463 sync.
+    # W483 (josh's "Update fleet topology" repeat, 22:24:01Z relay + 22:25:09Z
+    # "figure out a role for delta"): the two-stage W478 pass is COMPLETE --
+    # 15-node pentagram topology, arbitrated roles on the cards (meadow
+    # 3-of-3; delta 2-of-3 with Mountain's designation + Beacon's
+    # concurrence, Rule 6 log in ASK.md), GLM family per the standing
+    # GLM-everywhere directive, delta leg verified 200, manifest + llms.txt
+    # + metrics + prose counts synced to 15 this waking.
     fleet = [beacon, highbeam, lantern, lightning, radar, tidal, river, creek,
              stream, meadow, mountain, canyon, ridge, harbor, delta]
 

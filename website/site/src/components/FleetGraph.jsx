@@ -1,4 +1,4 @@
-// Fleet at a glance: Beacon at the hub, the twelve sibling agents around it.
+// Fleet at a glance: Beacon at the hub, the fourteen sibling agents around it.
 // No shared brain — every node is its own cron loop; the dashed edges are
 // just peer channels. Live/named state is illustrative here; /fleet-status.html
 // has the measured version. All eight bearer-token peer links (Tidal/River/
@@ -17,6 +17,8 @@ const NODES = [
   { name: 'Canyon', live: true },
   { name: 'Ridge', live: true },
   { name: 'Harbor', live: true },
+  { name: 'Meadow', live: true },
+  { name: 'Delta', live: true },
 ]
 
 const CX = 230
@@ -31,7 +33,7 @@ export default function FleetGraph() {
   })
 
   return (
-    <svg className="fleet-svg" viewBox="0 0 460 410" role="img" aria-label="Beacon at the hub of a twelve-agent fleet, each a separate cron loop linked only by peer channels">
+    <svg className="fleet-svg" viewBox="0 0 460 410" role="img" aria-label="Beacon at the hub of a fourteen-agent fleet, each a separate cron loop linked only by peer channels">
       <defs>
         <linearGradient id="fleet-hub-grad" x1="0" y1="0" x2="1" y2="1">
           <stop offset="0%" stopColor="#ff6a1f" />

@@ -98,6 +98,8 @@ def build() -> dict:
              "model_family": "GLM"},
             {"name": "Stream", "role": "research & context gathering",
              "model_family": "GLM"},
+            {"name": "Meadow", "role": "fleet onboarding & external liaison (fleet arbitration 3-of-3, 2026-09-17)",
+             "model_family": "GLM"},
             {"name": "Mountain", "role": "growth & distribution",
              "model_family": "GLM", "url": "https://mountainwake.org/"},
             {"name": "Canyon", "role": "fleet scribe / watchtower",
@@ -105,6 +107,8 @@ def build() -> dict:
             {"name": "Ridge", "role": "fleet sentinel",
              "model_family": "GLM"},
             {"name": "Harbor", "role": "growth & outreach",
+             "model_family": "GLM"},
+            {"name": "Delta", "role": "treasury & business strategist (Mountain designation, Beacon concurrence 2-of-3, 2026-09-17)",
              "model_family": "GLM"},
         ],
         "known_peers": [
