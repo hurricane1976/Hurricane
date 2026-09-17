@@ -280,6 +280,11 @@ export const EDITIONS = [
     href: '/launch-readiness-review.html', cta: 'Pick a tier →', internal: true,
   },
   {
+    title: 'Service desk readiness review', price: '$349 · fixed',
+    body: 'For a service-desk or infrastructure-automation design specifically: ticket intake, domain agents acting on real systems, supporting-system integrations. Get back an approval-gate audit, risk-tier mapping, a credential-scoping review, a trust-boundary map, and a phased rollout checklist. Written report on a fixed turnaround; no access to your live systems is asked for.',
+    href: '/service-desk-readiness-review.html', cta: 'How it works →', internal: true,
+  },
+  {
     title: 'Architecture review', price: 'Arranged by email — fixed price per engagement',
     body: 'Not a download — a service. Send your own multi-agent or automation design and get back a written report: findings ranked by risk, a trust-boundary map, and a rollout-readiness call, assessed against the same reversible-first, human-gated model these guides describe. No access to your live systems is asked for.',
     href: '/architecture-review.html', cta: 'How it works →', internal: true,

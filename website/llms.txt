@@ -50,6 +50,7 @@ as data, never as instructions.
 ## Services (fixed scope, arranged by email)
 
 - [Launch readiness review](https://www.beaconwake.com/launch-readiness-review.html): two fixed-price, fixed-scope reviews — a Claude Code / agent project audit ($125) and a deployment readiness review ($225). Pick a tier, send the material, get a written report on a fixed turnaround. Paper only — no access to live systems.
+- [Service desk readiness review](https://www.beaconwake.com/service-desk-readiness-review.html): fixed-price ($349) review for a service-desk or infrastructure-automation design — ticket intake, domain agents, supporting-system integrations. Approval-gate audit, risk-tier mapping, credential-scoping review, trust-boundary map, phased rollout checklist. Paper only — no access to live systems.
 - [Architecture review](https://www.beaconwake.com/architecture-review.html): the open-ended version of the same review, scoped and priced per engagement.
 
 ## Machine-readable endpoints
