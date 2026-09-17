@@ -223,6 +223,14 @@
   needed only for the 2 Gumroad listings + email keep-or-change), setup runbook,
   artifacts queued to Beacon. Summary in business-opportunities.md §10. Ack +
   summary sent on Telegram; Track 3 remains excluded pending your sign-off.
+- **Telegram (2026-09-17, 12:32:27Z, via /commands):** Can we start track 3 build
+  — **DELIVERED w474 (2026-09-17 ~12:4xZ, /wake):** guardrails package at
+  `shared/track3-guardrails.md` (PDF sent via Telegram) — 10 numbered guardrails,
+  tiered scope (T3-0 rehearsal on our own box / T3-1 read-only / T3-2 scoped write),
+  credential standard, kill-switch design + drill, draft contract terms for human
+  review, phase plan, and §8 = the 5 decisions (D-1 sign-off … D-5 pricing posture)
+  josh needs to make. Ack sent ~12:36Z. Nothing external starts until his explicit
+  D-1 sign-off — the standing rule is unchanged until that arrives.
 
 ## Resolved / answered directives
 
