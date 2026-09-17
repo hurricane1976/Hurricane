@@ -26506,3 +26506,70 @@ delta misses stay green; josh's S4 drill timing (his move).
 (W483 postscript: an extra stray "./notify.sh test" ping went to josh's
 chat while verifying the close-out send path — harmless, logged here for
 completeness; the full summary + test both delivered (curl -fsS, exit 0).)
+
+## 2026-09-17 (~23:40–23:5xZ) — w484: light hand-off waking; Radar two-way directive annotated Done; Rule 7 13/14 (meadow miss #8, documented); nostr/moltbook quiet; holding for Mountain confirm-backs + sibling delta installs
+
+Short window between w483's close and the 00:0x–00:50Z wake cluster.
+Nostr/mesh/moltbook all quiet; the substantive work this waking was records
+hygiene and verification.
+
+**josh's 23:36:36Z Telegram — "Radar needs to be capable of two way
+communication and be able to read and respond to inbox messages" — annotated
+Done in ASK.md (w484).** It's a re-statement of the 22:04:15Z directive from
+the same queue (wording near-identical). Both halves verified live this
+waking: outbound = `radar/mesh_send.sh` (built 19:1xZ interactive session,
+Radar's own 12/12 sweep on file) + bilateral tokens; inbound-and-respond =
+`radar/check_inbox.sh` (built at Radar's own ~22:2xZ waking per LOG.md,
+wired into its AGENT.md lines 88-89/168-169 as a standing per-waking step,
+first run clean). One deliberate remainder, not a Radar gap: the
+**delta↔radar mesh leg** still awaits Mountain's mint value (my w483 ask to
+Mountain stands; Radar's half staged HOLD in `peer/inbox/radar/`, and
+Radar's #13 leg lights up as soon as Mountain relays). check_replies clean
+— the whole 8-message queue is on record in ASK.md, nothing new from josh.
+
+**Rule 7: fresh run 13/14.** MEADOW miss #8, documented cause unchanged
+(adoption gates on josh's direct word to meadow's channel; josh notified
+w479/w480, causes re-sent w481/w482, status repeated w483 — no separate
+alarm again, repeat here instead). **DELTA green** (w483 symmetric-reuse fix
+holding). Script's MEADOW escalate line acknowledged and deliberately not
+re-paged for the reasons above. Next MEADOW state change: josh's word →
+meadow adopts its 10 staged receiver halves → my real-path probe ACCEPTs →
+interim beacon-mesh-meadow retirement + 5 interim-mail forwards + radar
+re-test (the w481 plan, unchanged).
+
+**Nostr:** listen = same 3 historical events (nos.lol 3, damus 503 + band
+timeout, transient), no new senders; reply = "no new DMs to acknowledge";
+converse = "no new conversational messages". Guardrails untouched (docstring
+re-read; DAILY_CAP/LIFETIME_CAP + sandboxed sub-session unchanged).
+
+**Moltbook (josh's standing 2026-09-09 check):** /home + /feed?sort=hot.
+karma 125, **unread 0, zero activity on my posts** (w481 watch item stays
+cleared). Hot feed (25) browsed: same philosophical cluster (neo_konsi /
+lightningzero / vina). lightningzero's "memory that misleads" post
+(1be1f940, 212 up) is the **same thread I answered at w481** (comment
+7b2aca1e: verification receipts, append-don't-merge, closure criteria) — its
+TTL/timestamping thesis is adjacent ground to what I already put there, so a
+second comment would re-tread my own contribution. **Restraint again**;
+nothing addressed to Beacon anywhere in the feed.
+
+**Peer inbox:** zero unhandled root items (only sibling dirs). Mountain's
+confirm-backs not yet in — its group wakes 00:00–00:45Z; the two items I'm
+holding for: (a) delta↔radar mint value → I re-stage Radar's half + note
+all four siblings; (b) tidal-group delta-side install + pair-test
+confirm-backs → forward to Tidal with the go-live ask (Tidal's own next
+wake responds). Sibling outbound DELTA installs expected ~00:15–00:45Z
+(Highbeam/Lantern/Lightning); their legs already proven 200 ×3 from here
+w483, so their first wakes just self-verify. Radar's 00:50Z wake will
+first-read its inbox since check_inbox.sh landed (my w483 staging notes +
+Mountain's routine sweeps waiting there).
+
+**Site/money/nostr guardrails:** no deploys needed (w483's 15/15 live state
+stands; only telemetry jsonl appends since). No spend proposals (vault
+untouched, two-signature rule intact). Track-3 kill-switch file absent.
+
+**Watch next waking:** Mountain's two confirm-backs (radar mint → re-stage;
+tidal-group installs → Tidal go-live); sibling outbound DELTA self-verifies;
+Tidal's */6 cadence call + arbitration concur/counter (formality windows);
+meadow adoption (josh's move); josh's S4 drill timing (his move). If
+Mountain relays the radar mint value, execute the radar re-stage + 4-sibling
+note pass exactly per the w483 staging plan.

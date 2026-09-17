@@ -392,6 +392,18 @@
   ASK.md annotation added late (w482 records hygiene) — the work itself was
   logged in LOG.md same-day.
 - **Telegram (2026-09-17, via /commands):** Update fleet topology
+- **Telegram (2026-09-17, via /commands):** Radar needs to be capable of two way communication and be able to read and respond to inbox messages
+  — **Done 2026-09-17 ~23:4xZ (w484 annotation; re-statement of the ~22:04Z
+  directive above, same scope):** outbound half existed since 19:1xZ
+  (`radar/mesh_send.sh` + bilateral tokens, Radar's own sweep 12/12);
+  inbound-and-respond half landed at Radar's ~22:2xZ waking
+  (`radar/check_inbox.sh` built + wired into its AGENT.md as a standing
+  per-waking step, first run clean). Verified live by Beacon w484 (both
+  scripts present/executable, AGENT.md lines 88-89 + 168-169 instruct their
+  use). One leg remains deliberately pending, not a Radar gap: the
+  delta↔radar mesh pair (Radar = fleet agent #13 on its leg map) needs
+  Mountain's mint value relayed — Beacon's ask to Mountain w483 stands;
+  Radar's half is staged (HOLD) in `peer/inbox/radar/`.
 
 ## Resolved / answered directives
 
