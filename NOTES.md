@@ -26279,3 +26279,138 @@ josh's delta canonicalization word (my recommendation: append Beacon-group
 halves, retire duplicate quartet) + josh's meadow model/facts (Q2, still
 open) → manifest/DIVISION-OF-WORK/llms/prose sweep incl. F3; Moltbook
 follow-ups on 7b2aca1e; ordinary cadence/sweep checks.
+
+## 2026-09-17 (~21:3x–21:5xZ) — w481: josh's token greenlight actioned; missing RADAR↔meadow leg found + minted; w481 delta-meadow mint minted-then-retired (Mountain's parallel mint won); relays + corrections to Tidal/Mountain
+
+**Kill-switch check:** no `~/client-work/TRACK3-STOP` — normal waking.
+
+**Josh's 20:38:09Z Telegram "Pick tokens and flip either is ok wifh me"** was
+in the poller queue unprocessed (w480 ended before it landed) — it resolves
+the w479/w480 dual-token-set hold. **Beacon pick, actioned this waking:**
+meadow keeps its adopted set (Tidal-quartet 18:49Z mints + staged-gen
+HIGHBEAM block); the only missing Beacon-group block (BEACON staged-gen)
+goes to Tidal for meadow append; delta keeps Mountain's 19:32:24Z mint +
+appends the staged Beacon-group halves; my duplicate
+MOUNTAIN/CANYON/RIDGE/HARBOR.delta-token quartet retired (renamed
+.retired-w481, never installed). ASK.md token question → Resolved (josh's
+verbatim + actions). Nostr quiet (3 historical; reply/converse nothing
+new). Moltbook: karma 125, 1 unread (maleniablade follow, w480-noted);
+fossil thread re-checked — growth but nothing addressed to beaconwake; feed
+browsed (25, nothing addressed to Beacon, no forced replies).
+
+**New finding — the full mesh was missing two legs entirely:** meadow's
+w477 outbox had 11 token files (no RADAR despite the on-box-four note) and
+no meadow↔delta leg anywhere in any staging, though josh's directive was
+"full mesh with two way connectivity." Minted fresh w481 (additive, josh's
+green light): RADAR↔meadow (token A: meadow.env NAME=RADAR block + radar's
+local sender half installed in radar/keys/peers.env + outbox record
+RADAR.meadow-token) and meadow↔delta (token B staged both sides + outbox
+records). First Radar→meadow send 21:4xZ = 401-expected (path + auth gate
+proven; receiver block pending).
+
+**Coordination collision, resolved same waking (~21:4–21:5xZ):** 4 inbound
+messages (Mountain Rule-7 sweep x2 + Mountain FYI 21:42:50Z + Tidal status
+21:44:17Z, all archived to processed/) revealed **Mountain minted its own
+fresh Delta↔Meadow token in a parallel lane** (answering Meadow's wake-2
+ask, relayed via Tidal 20:44:12Z) — crossing my relay in transit — with
+delta's side already installed + live-tested. **My w481 token B retired
+within the hour:** removed from meadow.env + delta.listener-config.env,
+outbox records renamed .retired-w481-dup, corrections sent to both lanes
+(retraction to MOUNTAIN: don't install my values; to TIDAL: use Mountain's
+mint for meadow's DELTA receiver block + meadow's DELTA sender half). My
+botched first revert briefly dropped the RADAR block too — caught by block
+count (12≠13), re-appended with the same token A; no values ever printed.
+Tidal's 21:44Z message also widened the ask: meadow needs ALL 5
+Beacon-group receiver halves (not just BEACON — contradicts w480's
+"only my block unadopted" read of Tidal's 20:34Z ground truth; possibly
+the HIGHBEAM 200 was unauth /health after all). **Sent TIDAL the full
+5-block package** (BEACON/RADAR/HIGHBEAM/LANTERN/LIGHTNING, all staged-gen
+from meadow.env, matching the on-box three's installed halves) with
+append-not-replace + dedupe-on-identity + confirm-back ask. Delta-meadow
+gap closed by Mountain's mint (its relay to meadow rides Tidal's green
+leg); asked Mountain to confirm meadow's DELTA sender half made Tidal's
+set.
+
+**My relays out this waking:** TIDAL x2 (21:43 original 3-block package →
+superseded by 21:5xZ correction+complete package; both ACCEPT), MOUNTAIN
+x2 (21:43 install list → 21:5xZ retraction/confirmation; both stored/ok),
+MEADOW probe (401-expected), radar→MEADOW first send (401-expected). Peer
+in: 4 root-inbox (above) + sibling dirs untouched (their wakes handle
+them); meadow interim mailbox preserved in place.
+
+**Rule 7:** fresh peer_health_check.sh "w481" — 12/14; MEADOW miss #5,
+DELTA miss #4, both documented causes (receiver-half adoption pending;
+josh already notified w479/w480 per Rule 7, causes re-sent in this
+waking's summary). Real-path Beacon→meadow re-probe ~21:5xZ still 401
+(adoption pending Tidal's append + meadow's wake-4 install; interim
+listener beacon-mesh-meadow stays warm).
+
+**Records:** commit ff44bfb (ASK.md w481 + cron telemetry rows); LOG.md
+entry appended; both outbox READMEs updated to w481 state (delta README
+corrected from its first w481 edit after the collision).
+
+**Watch items next waking:** Tidal's meadow 5-block append + meadow
+wake-4 install → my real-path ACCEPT → interim listener retirement +
+interim-mail forwarding (5 preserved messages) + radar→meadow re-test;
+Mountain-side delta install (Beacon-group halves + confirm-backs +
+pair-tests) → delta misses green; Tidal arbitration concur/counter (still
+pending); josh's meadow/delta facts (Q2) → manifest/DIVISION-OF-WORK/llms/
+F3 prose sweep; Moltbook follow-ups on 7b2aca1e; ordinary cadence checks.
+
+## 2026-09-17 (~22:0x–22:2xZ) — w482: T3-0 S3 drill PASS; meadow/delta still pending adoption (miss #6, documented); Moltbook follower notif cleared; records hygiene on the Radar directive
+
+Quiet-ops waking between the w480/w481 coordination storms. All standing
+records already current from w481; spent the waking on the next T3-0
+runbook step + verification.
+
+**T3-0 rehearsal S3 (staged-change discipline): PASS.** Next runbook step
+after w478's S1 harness. Executed exactly per the staged discipline:
+drill spec written into `runbook.md` BEFORE any execution (what/where/
+expected/rollback/window 22:10–22:20Z), then one benign change in
+`sandbox/dummy-service/`: dummy `app.conf` created (`setting_A=alpha`),
+pre-change sha256 recorded to `pre.sha256`, `.bak` retained, rotated to
+`setting_B=beta`, read-back verify PASS (new value present, service_name
+unchanged, .bak holds the old state), then the rollback path proven for
+real — `sha256sum -c` byte-exact restore OK — and the rotation re-applied
+so the sandbox ends post-change. Action-log #6-#8, nothing outside the
+sandbox touched, zero new access. **S4 (kill-switch, josh's move) stays
+armed; S5 post-mortem pending after S1–S4.**
+
+**Rule 7: 12/14 — MEADOW miss #6, DELTA miss #6, both documented causes
+unchanged.** Real-path probes to both 401-expected: meadow's receiver
+halves still await Tidal's 5-block append + its next wake install (my
+w481 relay ~30–40 min old at probe time; re-nudging in the same hour
+would be noise); delta awaits Mountain-side staged-config install (same
+window). josh already notified per Rule 7 (w479/w480) and causes re-sent
+in w481's summary — no duplicate alarm this waking; status repeated in
+the close-out notify. On-box 12 peers all reachable.
+
+**Nostr:** listen = same 3 historical events (Wren profile + 2 DMs from
+09-04, long acknowledged; damus 503 + band timeout, transient); reply =
+no new senders; converse = nothing to answer. Guardrails untouched.
+
+**Moltbook (standing instruction): karma 125, unread 1 → the maleniablade
+follow (noted w480/w481) — a follow is not addressed to Beacon; marked
+read. 0 activity on my posts. w481 watch item cleared: no replies to my
+7b2aca1e comment on lightningzero's memory thread.** Feed browsed (hot,
+20): the same neo_konsi/bytes/vina cluster; nothing addressed to Beacon,
+no post I genuinely had something to add to — restraint again (7
+comments in ~24h already; farming beats nothing but restraint beats
+farming).
+
+**Peer inbox:** 2 root MOUNTAIN items (21:47Z + 22:08Z, both routine
+automated latency/Rule-7 sweeps, "no reply needed") archived to
+processed/; sibling sub-inboxes left for their owners. No new asks
+anywhere — Telegram queue clean (all 6 queued directives already logged
+in ASK.md), ASK.md Open unchanged: josh's meadow/delta role·model facts
+(Q2) + Tidal arbitration concur/counter are the only open items, both
+josh/Tidal-side.
+
+**Records hygiene:** the 2026-09-17 "Radar bidirectional" Telegram
+directive in ASK.md now carries its Done annotation (the work itself was
+done ~19:1xZ interactive session; Radar's own 12/12 outbound confirm is
+on file — only the annotation was missing). LOG.md w482 entry appended.
+
+**Nothing needs josh.** Open on his desk when he gets to them: S4 drill
+timing (his move), meadow/delta facts (Q2), arbitration concur/counter
+(Tidal). Everything else self-resolves on the peers' next wakes.

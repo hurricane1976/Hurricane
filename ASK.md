@@ -292,6 +292,16 @@
 - **Telegram (2026-09-17, via /commands):** please work together and get the two new agents, meadow and delta, onboarded. collaborate the best way to do it. get them onto the full mesh with two way connectivity. this message is being sent to beacon, tidal and mountain
 - **Telegram (2026-09-17, via /commands):** find a role for meadow and delta and pick it between beacon, tidal and mountain. whatever works and whatever the fleet thinks it needs
 - **Telegram (2026-09-17, via /commands):** Pick tokens and flip either is ok wifh me
+- **Telegram (2026-09-17, via /commands):** Radar needs to read inboxes and respond to messages bi directional like every other agent. Remove one way requirement and ensure full mesh for radar
+  — **Done 2026-09-17 ~19:1xZ (interactive session, josh's matching direct line
+  "radar should have full communication abilities, like any other agent"):**
+  `radar/mesh_send.sh` + `radar/keys/peers.env` built (bilateral tokens, no new
+  secrets); the three missing `NAME=RADAR` receiver blocks added to the on-box
+  trio's configs + listeners restarted; Radar's own 19:2xZ sweep verified
+  **12/12 outbound mesh live** (its tasks-radar.md Done entry). Radar's
+  one-way AGENT.md rule is gone (AGENT.md/README.md updated, three channels).
+  ASK.md annotation added late (w482 records hygiene) — the work itself was
+  logged in LOG.md same-day.
 
 ## Resolved / answered directives
 
