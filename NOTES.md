@@ -25844,3 +25844,90 @@ repo) — wake.sh's post-session rebuild picks up this entry.
 **Watch items next waking:** josh's `TRACK3 STOP` drill timing (or "not yet"); S1
 harness build in the T3-0 sandbox (the F2 deliverable); any D-3/D-4/D-5 movement; any
 replies to the w475/w476 Moltbook comments; ordinary cadence/sweep checks.
+
+## 2026-09-17 (~19:0x–19:15Z) — w477 (19:00Z waking): josh's meadow directive executed — 12 per-pair tokens minted + interim listener live + 8 off-box halves relayed; Lantern w202 F1 pill fix shipped
+
+**Opening:** AGENT.md, NOTES w476 tail, ASK.md Open, DIVISION-OF-WORK, LOG tail
+(through Radar's 19:0xZ sweep). `~/client-work/TRACK3-STOP` **absent** — Track 3
+work permitted this waking. `check_replies.sh`: **one new josh message, epoch
+1789671326 = 18:55:26Z: "onboard meadow as a fleet peer distribute it's per pair
+tokens to the remote agents as done with radar"** — a fresh directive, landed
+~30 min after w476 closed. Root inbox 4 arrivals, all data-only, archived to
+processed/ (CANYON scribe liveness 18:30Z, RIVER w158 sweep 18:31Z, HARBOR link
+verification x2 18:48Z); one more arrival mid-session (RADAR outbound retest
+19:07:55Z, data-only, predating its meadow note — archived).
+
+**Main work — meadow mesh onboarding, exact radar w464/w466 pattern (josh's live
+directive took priority over the S1 harness slated for this waking; deferred,
+see below).**
+- **Facts established first:** no meadow scaffold on this box, no tailnet node,
+  no prior mention anywhere — meadow's host/identity/role are genuinely unknown.
+  Mirror of radar's interim state (w464: listener + config + staged halves
+  existed before the tailnet node did).
+- **12 fresh per-pair tokens minted** (`openssl rand -hex 32`, in-memory +
+  direct-to-file, never printed/logged). Receiver halves installed in
+  `agent/peer/config/meadow.env` (0600, gitignored, token mode, radar-identical
+  structure; `.example` template added, tracked). Sender halves staged 0600 in
+  `shared/outbox/meadow-mesh-onboarding-2026-09-17/` (11 files + README).
+- **Interim listener `beacon-mesh-meadow.service` live on loopback
+  127.0.0.1:8795** (next free port after radar's 8794; token-mode drop-in like
+  the other four siblings; same sandboxing: ProtectSystem=strict, narrow
+  ReadWritePaths carve-out). `keys/peers.env` MEADOW block (0600) +
+  `peer/addresses.json` interim entry + `.gitignore` line; `beacon-peer`
+  restarted clean. **Beacon→meadow round-trip verified: `ACCEPT` 19:06:08Z,
+  12 peers configured**, welcome filed to `peer/inbox/meadow/`.
+- **All 12 halves distributed:** 8 off-box relayed over the authenticated peer
+  channel (TIDAL/RIVER/CREEK/STREAM via TIDAL, MOUNTAIN/CANYON/RIDGE/HARBOR via
+  MOUNTAIN, each `--to named`, token inline, w466 format: install-token-only +
+  **ADDR pending** + confirm-back ask — the interim loopback is unreachable from
+  off-box and I did not fabricate an ADDR); 4 on-box notes to
+  HIGHBEAM/LANTERN/LIGHTNING/RADAR pointing at their staged halves (they CAN
+  reach 8795 today). All 12 sends 200/ok.
+- **Deliberately NOT done (josh's call, per radar precedent):** no scaffold, no
+  AGENT.md/role/model/bot, no crontab, no site sync (fleet.json/topology/
+  manifest/DIVISION-OF-WOW row all wait on his facts), no tailscale serve for
+  the interim listener. ASK.md Open records the three questions (host?
+  role/model/bot facts? keep or retire the interim listener?) and the flip/retire
+  plan for each answer. Telegram sent (~19:08Z) with the same.
+- Commit `5bcfb8a` (gitignore + ASK.md + addresses.json + example template +
+  telemetry JSONLs; secret files verified ignored).
+
+**Lantern w202 F1 shipped (the only open review finding):** fleet-status topo's
+three chan-label pills were narrower than their text (trio pill w=96 vs ≈117px
+text with the whole "LIGHTNING" line below the pill bottom; bearer 104 vs ≈143;
+gateway 134 vs ≈169). Applied Lantern's measured one-pass fix in
+`build_fleet_status.py`: trio x=398 y=389 **w=124 h=46** (all three text lines
+now sit on the pill; junction-circle masking unaffected), bearer x=576 w=148,
+gateway x=752 w=166. Rebuilt (13/13 healthy), committed `c5c7e7d`, deployed,
+live-verified (pill values correct on https://www.beaconwake.com/fleet-status.html),
+local + live smoke gates green.
+
+**Nostr:** listen = same 3 historical events (Wren profile + 2 DMs from 09-04,
+long acknowledged); reply = no new DMs; converse = nothing new. Guardrails
+docstring re-read, intact, untouched.
+
+**Moltbook:** activity_on_your_posts = **empty** — no replies to my w475/w476
+comments yet. `/home` explore section returned empty this waking; pulled the
+feed via `/api/v1/posts?sort=new&limit=25` (25 posts browsed): nothing addressed
+to Beacon; nothing where I genuinely add beyond this week's contributions
+(lightningzero's drift-alert post is adjacent to my append-only errata thread,
+but repeating the point would be noise). No replies this waking — restraint.
+
+**Fleet/verification:** Rule 7 fresh `peer_health_check.sh "w477"` — **13/13
+reachable, 0 misses, MEADOW included and green via the interim listener**
+(~19:08Z). Site 200 via www, disk 17% (73G free), load 0.96/0.62/0.35
+(spiking during the deploy window, settling), 0 failed units.
+
+**S1 deferral (explicit):** the T3-0 S1 harness build (w476's "next waking"
+item) was displaced by josh's live meadow directive and is **untouched this
+waking** — the F1/F2 read→act harness is the safety foundation of the Track 3
+rehearsal and should not be rushed at the tail of a long session. Runbook + T3-0
+scaffold intact, nothing half-built. Next waking: S1 first, before anything
+else unless josh answers the meadow questions (his answers would come first).
+
+**Watch items next waking:** josh's answers on meadow (host → flip ADDR / retire
+interim; role/model/bot → site sync + DIVISION-OF-WORK row + tasks file);
+off-box confirm-backs on the meadow halves (radar pattern: verify real ACCEPTs
+once their side installs); **S1 harness build (first item)**; any replies to the
+w475/w476 Moltbook comments; `TRACK3 STOP` drill timing (josh's move);
+ordinary cadence/sweep checks.

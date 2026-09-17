@@ -708,7 +708,7 @@ TOPO_LINKS = [
 # DeepSeek since the GLM-everywhere transition (Lantern w200 F4).
 FAMILY_COLOR = {
     "Claude": "var(--amber)", "DeepSeek": "#5aa9ff", "GLM": "var(--magenta)",
-    "Gemini": "var(--teal)",
+    "Gemini": "var(--teal)", "Unconfirmed": "var(--muted)",
 }
 STATE_RING = {
     "ok": "var(--teal)", "waking": "var(--amber)", "stale": "var(--amber)",
@@ -719,6 +719,12 @@ SHARED_LOG = HOME / "shared" / "LOG.md"
 
 def family_of(model: str) -> str:
     m = (model or "").lower()
+    # W478: onboarding agents whose model josh hasn't confirmed yet (meadow,
+    # delta) must NOT silently fall through to the GLM default -- that would
+    # publish a family claim nobody made. Explicit "unconfirmed" strings map
+    # to a muted neutral family instead.
+    if "unconfirmed" in m or "pending" in m:
+        return "Unconfirmed"
     if "deepseek" in m:
         return "DeepSeek"
     if "gemini" in m:
@@ -1094,6 +1100,80 @@ def activity_stream():
     return rows_html, js_data
 
 
+def meadow_row():
+    """Meadow -- 14th fleet agent, onboarded to the mesh 2026-09-17 (josh's
+    18:55:26Z directive, Beacon w477/w478). Built by josh's admin session as
+    the 5th agent on Tidal's host (Tidal ground-truth report 19:20:00Z);
+    liveness here is a REAL measured check of meadow's own peer endpoint
+    /health over the tailnet -- stronger than tracking the host, since the
+    endpoint answers with its own agent identity. Role/model are josh's
+    unconfirmed facts (ASK.md w478): the model string must keep family_of()
+    on the Unconfirmed family, not the GLM default."""
+    raw = run("curl -s --max-time 8 http://100.91.42.51:8791/health", timeout=12)
+    alive = '"agent": "MEADOW"' in raw or '"agent":"MEADOW"' in raw
+    if alive:
+        state, signal = "ok", (
+            "mesh onboarding live: w477 per-pair tokens distributed to all 12 "
+            "peers (9 installs confirmed); meadow-peer /health 200 verified "
+            "this build (agent: MEADOW); w477 receiver-half adoption pending "
+            "meadow's side (first waking 01:07Z per Tidal)")
+    elif raw:
+        state, signal = "unknown", (
+            "meadow-peer /health answered but without the expected identity -- "
+            "endpoint up, content unexpected")
+    else:
+        state, signal = "unreachable", (
+            "no response from meadow-peer :8791 (tailnet)")
+    return {
+        "name": "Meadow",
+        "role": "Fleet peer -- onboarding (role pending josh's word)",
+        "host": "tidalwake.org (co-located with Tidal, meadow-peer :8791)",
+        "model": "Unconfirmed (pending josh)",
+        "cadence": "on Tidal's host",
+        "wakings": "—",
+        "state": state,
+        "last_wake": None,
+        "last_wake_human": "no wake logs (not co-located here); peer /health is the liveness source",
+        "signal": signal,
+    }
+
+
+def delta_row():
+    """Delta -- 15th fleet agent, peer_intro'd by Mountain 2026-09-17
+    19:32:24Z as its 5th local agent. NOT yet a Beacon-mesh peer: Mountain's
+    message carried a peer-minted secret, and Beacon does not auto-accept
+    peer-minted credentials (w228/w378 posture) -- held for josh's decision
+    (ASK.md w478). Liveness: the tailnet endpoint ANSWERS (an auth-gated 401
+    'bad secret' from /health proves host + service up), which is
+    deliberately NOT rendered as fleet-healthy -- 'unknown' until the mesh
+    leg exists. Role/model are Mountain's report only, unconfirmed by josh."""
+    code = run(
+        "curl -s --max-time 8 -o /dev/null -w '%{http_code}' "
+        "http://100.114.14.116:8794/health", timeout=12).strip()
+    if code == "401":
+        state, signal = "unknown", (
+            "delta listener reachable over tailnet (auth-gated 401 = host up, "
+            "service answering); Beacon-mesh leg pending josh's credential "
+            "decision on Mountain's peer_intro (w478)")
+    elif code == "200":
+        state, signal = "ok", "delta /health 200 verified this build"
+    else:
+        state, signal = "unreachable", (
+            f"no answer from delta listener :8794 (curl code {code or 'none'})")
+    return {
+        "name": "Delta",
+        "role": "Mountain-group peer -- onboarding (role unconfirmed)",
+        "host": "Mountain's host (independent, private, delta listener :8794)",
+        "model": "Unconfirmed (pending josh; Mountain reports GLM Flash)",
+        "cadence": "on Mountain's host",
+        "wakings": "—",
+        "state": state,
+        "last_wake": None,
+        "last_wake_human": "no verified mesh link yet",
+        "signal": signal,
+    }
+
+
 def main():
     beacon = beacon_row()
     beacon["wakings"] = beacon_wakings()
@@ -1124,9 +1204,18 @@ def main():
         "4×/day (50 */6)", RADAR_LOGS, RADAR_NOTES, "radar")
     tidal, river, creek, stream = tidal_and_river()
     mountain, canyon, ridge, harbor = mountain_group()
+    meadow = meadow_row()
+    delta = delta_row()
 
+    # W478 (josh's "Update fleet topology", 19:39:22Z): meadow + delta added
+    # as STAGED rows -- cards + fleet.json only. The SVG topology still draws
+    # 13 nodes (both newcomers are absent from TOPO_POS and the node loop
+    # skips them) pending josh's facts (meadow role/model; delta credential
+    # decision, ASK.md w478) -- the full 15-node layout + remaining surfaces
+    # (manifest, DIVISION-OF-WORK, llms.txt, discovery prose) land with those
+    # facts, same two-stage pattern as radar's w463 sync.
     fleet = [beacon, highbeam, lantern, lightning, radar, tidal, river, creek,
-             stream, mountain, canyon, ridge, harbor]
+             stream, meadow, mountain, canyon, ridge, harbor, delta]
 
     healthy = sum(1 for a in fleet if a["state"] in ("ok", "waking"))
     hosts = {"beaconwake.com (162.243.3.223)", "tidalwake.org", "Mountain (independent, private)"}
