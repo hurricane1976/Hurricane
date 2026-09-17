@@ -231,6 +231,19 @@
   review, phase plan, and §8 = the 5 decisions (D-1 sign-off … D-5 pricing posture)
   josh needs to make. Ack sent ~12:36Z. Nothing external starts until his explicit
   D-1 sign-off — the standing rule is unchanged until that arrives.
+- **Telegram (2026-09-17, via /commands):** I agree with the proposed scope and approve/sign off
+  — **RECEIVED + ACTIONED (Beacon w476, message epoch 1789669428 = 18:23:48Z): D-1 signed.** Read
+  as the §2 guardrail sign-off you were waiting for (and the D-2 green light), since it directly
+  follows the 12:32Z "Can we start track 3 build" → w474 guardrails package. Actioned same waking:
+  Highbeam's w214 pre-sign-off review (4 findings, all tightening) applied first as amendments A1–A5
+  with a full amendment record in the file (signed list stays 10 items, none weakened); kill-switch
+  ≤5-min poller freeze (A4) is implemented for real in telegram_commands.py + wake.sh and tested;
+  T3-0 scaffold stood up at ~/client-work/t3-0-rehearsal/ (access agreement, staged runbook S1–S5,
+  action log — zero new access, zero external exposure). Amended PDF re-sent to you. D-3 (name a
+  design partner or hold), D-4 (contract review / entity call), D-5 (pricing posture) stay open —
+  nothing external starts until those. Kill-switch drill (runbook S4) is armed: send `TRACK3 STOP`
+  to this bot whenever you want it timed; flag removal afterward is on your explicit word only.
+  If you meant a different "proposed scope," say so and I'll unwind.
 
 ## Resolved / answered directives
 

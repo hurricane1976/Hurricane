@@ -33,6 +33,13 @@ DIR = os.path.dirname(os.path.abspath(__file__))
 OFFSET_FILE = os.path.join(DIR, ".telegram_offset")
 INCOMING_FILE = os.path.join(DIR, ".telegram_incoming")
 ASK_FILE = os.path.join(DIR, "ASK.md")
+# Track 3 kill-switch (track3-guardrails.md §4, amendment A4 / w476): a
+# matching message from josh writes this freeze flag immediately, machine-
+# acted, so the freeze does not wait for a wake boundary. wake.sh and every
+# Track 3 runbook check this file before any client-system action.
+FREEZE_FLAG = os.path.expanduser("~/client-work/TRACK3-STOP")
+FREEZE_PHRASES = ("track3 stop", "track 3 stop", "stop all track 3",
+                  "stop all track3")
 
 TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN", "")
 CHAT_ID = os.environ.get("TELEGRAM_CHAT_ID", "")
@@ -218,6 +225,38 @@ HANDLERS = {
 
 
 # --------------------------------------------------------------------------
+def track3_stop_requested(text):
+    """Closed, conservative match for the kill-switch wording variants."""
+    norm = " ".join(text.lower().split())
+    return any(p in norm for p in FREEZE_PHRASES)
+
+
+def trigger_track3_stop(date_epoch):
+    """Write the freeze flag (idempotent) and return the ack text to send."""
+    iso = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(date_epoch))
+    try:
+        os.makedirs(os.path.dirname(FREEZE_FLAG), mode=0o700, exist_ok=True)
+        already = os.path.exists(FREEZE_FLAG)
+        if not already:
+            with open(FREEZE_FLAG, "w") as f:
+                f.write(f"triggered_epoch={date_epoch}\n"
+                        f"triggered_utc={iso}\n"
+                        "source=telegram command poller (chat-id + from-id gated)\n"
+                        "effect=Track 3 frozen per track3-guardrails.md §4; "
+                        "removal is manual, on josh's explicit word only\n")
+            os.chmod(FREEZE_FLAG, 0o600)
+        return (f"TRACK3 STOP received ({iso}). Freeze flag "
+                f"{'already set' if already else 'written'} at ~/client-work/"
+                "TRACK3-STOP -- all Track 3 work frozen (guardrails §4). "
+                "Next waking completes the freeze bookkeeping (access "
+                "inventory + LOG.md freeze note). The flag is removed only "
+                "on your explicit say-so.")
+    except Exception as e:  # noqa: BLE001 - the ack must not hide a write failure
+        return (f"TRACK3 STOP received but flag WRITE FAILED: {e}. Track 3 "
+                f"work is frozen by this message regardless -- do not rely "
+                f"on the flag until this is fixed.")
+
+
 def log_incoming(date_epoch, text):
     with open(INCOMING_FILE, "a") as f:
         f.write(f"[{date_epoch}] {text}\n")
@@ -266,6 +305,16 @@ def handle_message(msg):
         return  # chat id right but sender isn't josh -- ignore
     text = (msg.get("text") or "").strip()
     if not text:
+        return
+
+    # Track 3 kill-switch: checked before everything else (including
+    # slash-command parsing) so the freeze is machine-acted within the
+    # poller's 5-minute cadence, independent of wake timing.
+    if track3_stop_requested(text):
+        print("cmd: TRACK3 STOP")
+        send(trigger_track3_stop(msg.get("date", int(time.time()))))
+        log_incoming(msg.get("date", int(time.time())), text)
+        append_to_ask(text)
         return
 
     if text.startswith("/"):
