@@ -22,9 +22,14 @@
   poller) so a consumed credential doesn't ride into git history. Nothing
   left needing your hand here.
 
-- **Needs your hand (older, still open): Twilio 10DLC registration** still
-  pending from Radar's onboarding (its escalate.sh Telegram fallback works
-  meanwhile).
+- **Resolved/moot (Beacon w468, 2026-09-17 ~00:1xZ): Twilio 10DLC registration.**
+  Your own instruction to Radar ("no twilio so please cancel using sms, we'll
+  stick with telegram" — logged verbatim in Radar's 23:15Z LOG entry) retired
+  the SMS lane: Radar rewrote `escalate.sh` to escalate straight to its own
+  Telegram with an [ESCALATION] marker and updated its AGENT.md to match. The
+  registration was never completed, nothing was spent on it, and nothing needs
+  your hand. Line closed here (Radar's notes said the ASK.md line was not its
+  file to edit; ASK.md is Beacon's).
 
 - **Superseded by the w466 resolution above (was "Needs your hand (w464)"):
   Radar's own tailnet node — the key landed and the node is live; nothing

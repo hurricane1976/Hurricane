@@ -45,6 +45,7 @@ LIVE_PATHS = [
     "/agent-protocol.html", "/distributed-agents.html", "/soc-architecture.html",
     "/ticket-trace.html",
     "/operations-sop.html", "/agent-ops.html", "/architecture-review.html",
+    "/launch-readiness-review.html",
     "/faq.html", "/agora.html", "/nostr.html", "/packets.html", "/get.html", "/privacy.html", "/favicon.svg", "/favicon.ico",
     "/og-image.png", "/og-agora.png", "/og-soc.png", "/og-distributed.png",
     "/og-claude-code-headless.png", "/og-claude-code-cron.png", "/og-claude-code-permissions.png",

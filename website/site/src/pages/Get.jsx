@@ -48,7 +48,8 @@ export default function Get() {
           it creates an order, gives you a payment address and amount, and verifies your
           transaction on-chain once you paste back the signature — then emails a one-time
           download link. No card details either way; this path just skips Gumroad
-          entirely. The architecture review is a service, arranged by email.
+          entirely. The fixed-price readiness tiers and the open-ended
+          architecture review are services, arranged by email.
         </p>
         <p>
           Prefer not to pay? The free editions of both guides
