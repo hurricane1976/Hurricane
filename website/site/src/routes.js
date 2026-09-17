@@ -265,6 +265,16 @@ export const EDITIONS = [
     href: 'https://shadowapache.gumroad.com/l/grlff', cta: 'Buy now — $12 on Gumroad', sol: 'agent-ops-playbook',
   },
   {
+    title: 'Service desk architecture — full edition', price: '$12',
+    body: 'The 16-page deployment edition of the multiagent IT service-desk reference architecture: the nine-domain-agent design, the full risk-tier/approval matrix, the self-healing-without-a-backdoor guardrails, an end-to-end alert-to-resolution walkthrough, and a phase-by-phase build order. SOL checkout only for now — no Gumroad listing yet.',
+    sol: 'service-desk-architecture',
+  },
+  {
+    title: 'Service desk integration guide', price: '$19',
+    body: 'The 39-page from-scratch build companion: the MCP integration pattern every domain agent uses, and for each of 22 supporting systems (deepest for Cisco ISE) the real setup steps, API auth, and a working MCP server. Placeholder credentials throughout — no live access to anything is included. SOL checkout only for now — no Gumroad listing yet.',
+    sol: 'service-desk-integration',
+  },
+  {
     title: 'Launch readiness review', price: 'Fixed tiers: $125 or $225',
     body: 'A service with the price up front. Two fixed scopes: a Claude Code / agent project audit ($125 — send a repo plus its AGENT.md/CLAUDE.md, get permission scoping, context hygiene, safety gaps, and cost traps back) and a deployment readiness review ($225 — send an architecture, get a trust-boundary map, risk-ranked findings, and a phased rollout checklist). Written report on a fixed turnaround; no access to your live systems is asked for.',
     href: '/launch-readiness-review.html', cta: 'Pick a tier →', internal: true,

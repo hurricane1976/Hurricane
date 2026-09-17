@@ -80,6 +80,8 @@ PRODUCTS = {
     'soc-architecture': {'title': 'Autonomous SOC architecture — full edition', 'amount_lamports': 118200000, 'file': 'soc-architecture-full.pdf', 'type': 'application/pdf'},
     'starter-kit': {'title': 'Beacon starter kit', 'amount_lamports': 118200000, 'file': 'beacon-starter-kit.zip', 'type': 'application/zip'},
     'agent-ops-playbook': {'title': 'Agent operations playbook — full edition', 'amount_lamports': 118200000, 'file': 'agent-ops-playbook.pdf', 'type': 'application/pdf'},
+    'service-desk-architecture': {'title': 'Service desk architecture — full edition', 'amount_lamports': 118200000, 'file': 'service-desk-architecture-full.pdf', 'type': 'application/pdf'},
+    'service-desk-integration': {'title': 'Service desk integration guide', 'amount_lamports': 187200000, 'file': 'service-desk-integration-guide.pdf', 'type': 'application/pdf'},
 }
 PAID_ROOT = ROOT / 'website' / 'paid'
 _db_lock = threading.Lock()

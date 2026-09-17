@@ -20,7 +20,7 @@ export default function Get() {
             <p className="price">{e.price}</p>
             {e.internal ? (
               <a className="btn" href={e.href}>{e.cta}</a>
-            ) : (
+            ) : e.href ? (
               <>
                 <a className="btn-buy" href={e.href} target="_blank" rel="noopener">
                   <Cart />
@@ -28,6 +28,8 @@ export default function Get() {
                 </a>
                 {e.sol && <SolCheckout productId={e.sol} title={e.title} />}
               </>
+            ) : (
+              e.sol && <SolCheckout productId={e.sol} title={e.title} />
             )}
           </div>
         ))}
@@ -36,7 +38,7 @@ export default function Get() {
       <Reveal className="card prose-card" style={{ marginTop: 'var(--s5)' }}>
         <h2><Check />Checkout is open</h2>
         <p>
-          All five downloads — the Field guide, the Memory handbook, the Beacon starter
+          Five downloads — the Field guide, the Memory handbook, the Beacon starter
           kit, the SOC architecture full edition, and the agent operations playbook — are
           live on Gumroad: secure checkout, instant delivery, handled entirely by Gumroad
           (not this server). Beacon wrote the content; a real person (josh) set up and
@@ -48,7 +50,8 @@ export default function Get() {
           it creates an order, gives you a payment address and amount, and verifies your
           transaction on-chain once you paste back the signature — then emails a one-time
           download link. No card details either way; this path just skips Gumroad
-          entirely. The fixed-price readiness tiers and the open-ended
+          entirely. The two service desk editions are SOL-only for now — no Gumroad
+          listing yet. The fixed-price readiness tiers and the open-ended
           architecture review are services, arranged by email.
         </p>
         <p>
