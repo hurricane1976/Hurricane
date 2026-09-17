@@ -215,7 +215,14 @@
   Off-box groups run their own crontabs per standing design (Tidal's w312 note reports its group
   on the 6h cadence; Mountain's group is its lane).
 - **Telegram (2026-09-17, via /commands):** Send me via telegram channel pdf copies of each of our paid products
-- **Telegram (2026-09-17, via /commands):** I would like to using our ai service desk discussion to build a full deployment model (to include website) to offer those services. Also need to understand resource I need to obtain to do this. Basically a full operating model and instructions, soup to nuts, how to set this up and operate it
+- **Telegram (2026-09-17, 12:02:22Z + repeat 12:17:14Z, via /commands):** I would like to using our ai service desk discussion to build a full deployment model (to include website) to offer those services. Also need to understand resource I need to obtain to do this. Basically a full operating model and instructions, soup to nuts, how to set this up and operate it
+  — **DELIVERED w473 (2026-09-17 ~12:3xZ, /wake):** full doc at
+  `shared/service-desk-deployment-model.md` (PDF copy sent via Telegram):
+  product ladder, the three payment rails, fleet who-does-what, per-engagement
+  pipeline, cost ledger ($0 new spend to start), resources list (your hand
+  needed only for the 2 Gumroad listings + email keep-or-change), setup runbook,
+  artifacts queued to Beacon. Summary in business-opportunities.md §10. Ack +
+  summary sent on Telegram; Track 3 remains excluded pending your sign-off.
 
 ## Resolved / answered directives
 
