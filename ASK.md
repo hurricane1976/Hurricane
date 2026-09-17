@@ -2,26 +2,38 @@
 
 ## Open
 
-- **Needs your call, low urgency (w479, 2026-09-17 ~20:4xZ): which token sets
-  are canonical for meadow and delta?** Both newcomers now have two live/staged
-  credential sets from two different sessions, and the peer lanes have handled
-  it safely but are parked waiting on you. **Meadow:** its host (Tidal's box)
-  adopted the 18:49Z admin-session quartet mints (Tidal's side, working); my
-  w477 mint (BEACON + Mountain-group halves, staged and relayed with your go)
-  is unadopted — fresh authenticated probes from me and Mountain's four pair
-  tests all 401 (20:13–20:31Z). Tidal's lane can have meadow APPEND my missing
-  receiver blocks (nothing breaks either way) — say "append both" or "drop one
-  set" and it's done. **Delta:** your "onboard delta as with meadow" chose my
-  mint (option a, w478 addendum) and Mountain's side has the staged config to
-  install; Tidal separately verified Mountain's peer_intro mint works and
-  STAGED my halves non-final pending its own ask to you. One canonical set
-  needs to win: either "Beacon's mint everywhere" (Mountain installs the
-  staged config, Tidal flips in minutes) or "peer_intro mint everywhere" (I
-  retire mine). Nothing is broken meanwhile — delta's legs are just pending
-  whichever way you call it. Rule 7 note: meadow hit 3 consecutive health
-  misses (20:06→20:31Z probes) — documented cause (expected 401s pending
-  token adoption, not an outage), interim loopback listener kept warm until
-  the real path verifies.
+- **(w480→w481, 2026-09-17) Josh's meadow/delta role·model facts (Q2) still
+  open** — the 2-of-3 arbitration picked "fleet onboarding & external
+  liaison" for meadow (Mountain+Beacon concurred 20:35/20:48Z; Tidal
+  concur/counter still pending); manifest/DIVISION-OF-WORK/llms/prose sweep
+  (incl. the 13→15 agents F3 pass) waits on josh's facts for meadow + delta
+  (roles/models as he wants them published).
+
+- **Resolved (w481, 2026-09-17): "which token sets are canonical for meadow
+  and delta?" (w479 open item).** josh answered 20:38:09Z (Telegram,
+  authenticated): **"Pick tokens and flip either is ok wifh me."** Beacon's
+  pick, actioned w481 (~21:4xZ): meadow keeps its adopted set (Tidal-quartet
+  18:49Z mints + staged-gen HIGHBEAM block); the ONLY missing Beacon-group
+  block (BEACON staged-gen) relayed to TIDAL for append; delta keeps
+  Mountain's 19:32:24Z mint for its legs + appends the staged Beacon-group
+  halves (relayed to MOUNTAIN with the install list; my duplicate
+  MOUNTAIN/CANYON/RIDGE/HARBOR.delta-token quartet retired, renamed
+  .retired-w481, never installed anywhere). NEW in the same pass: the
+  RADAR<->meadow and meadow<->delta legs had never been minted at all
+  (outbox had 11 files, no RADAR; no delta-meadow leg) — both minted fresh
+  w481 per josh's "full mesh with two way connectivity" directive and this
+  green light; staged + relayed (radar's half installed locally).
+  Remaining to close the loop: Tidal append + meadow restart (→ my real-path
+  ACCEPT → interim listener retirement), Mountain-side delta install +
+  confirm-backs. **CORRECTION (same waking, ~21:5xZ): my w481 delta↔meadow
+  mint was immediately superseded — Mountain minted its own fresh
+  Delta↔Meadow token in a parallel lane (answering Meadow's wake-2 ask
+  relayed via Tidal 20:44:12Z, crossing my relay in transit), with delta's
+  side already installed + live-tested. Mountain's mint is canonical; mine
+  retired same hour (removed from both staged configs, outbox records
+  renamed .retired-w481-dup, never installed anywhere; corrections sent to
+  TIDAL + MOUNTAIN). The RADAR↔meadow leg mint stands — no duplicate
+  existed.**
 
 - **Resolved (w470, 2026-09-17 ~05:0xZ): "Send me via telegram channel pdf
   copies of each of our paid products" (00:57:29Z Telegram).** All 7
