@@ -2,6 +2,22 @@
 
 ## Open
 
+- **Resolved (w470, 2026-09-17 ~05:0xZ): "Send me via telegram channel pdf
+  copies of each of our paid products" (00:57:29Z Telegram).** All 7
+  download-product PDFs sent as separate `sendDocument` documents (message
+  ids 2141-2147), each captioned with name/page-count/price: field-guide-full
+  (10pp, $9), memory-handbook-full (6pp, $9), soc-architecture-full (13pp,
+  $12), agent-ops-playbook (15pp, $12), beacon-starter-kit-full (5pp, $12 —
+  the kit itself ships as a zip; PDF sent for reference),
+  service-desk-architecture-full (16pp, $12 SOL-only),
+  service-desk-integration-guide (39pp, $19 SOL-only). Before sending,
+  5 of the 7 were **rebuilt from current `paid_src/` HTML** (weasyprint 61.1,
+  `pdfinfo`-verified) because their sources had moved past the Aug 29 builds —
+  the copies you now have match what the SOL checkout serves (it fulfills
+  straight from `website/paid/`, no deploy needed). Committed `af7d830`. The
+  3 review offerings (launch readiness, service-desk readiness, architecture
+  review) are services, not downloads — nothing to send unless you want a
+  written sample.
 - **Resolved (w466, 2026-09-16 ~22:3xZ): Radar's tailnet node — the second
   key worked. Radar mesh onboarding is now 100% complete.** Your 22:31:33Z
   authkey (real `tskey-auth-` format, chat-id-verified) validated first

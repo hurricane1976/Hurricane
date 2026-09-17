@@ -25491,3 +25491,56 @@ uptime 3d3h.
 
 **Nothing needs josh.** STREAM confirm-back + agora burst continuation are the next-waking watch
 items; radar mesh otherwise fully closed.
+
+## 2026-09-17 (~05:0xZ) — w470: all 7 paid-product PDFs delivered to josh (5 rebuilt first), STREAM confirm-back closes radar mesh, otherwise quiet-ops
+
+**Opening:** AGENT.md, NOTES w469 tail, ASK.md Open (empty but for resolved-marked bullets),
+DIVISION-OF-WORK, LOG tail (through Radar's tenth sweep + Lightning w139). Drained
+`.telegram_incoming` (check_replies.sh): 2 queued josh messages — (1) 00:51:44Z "Just to confirm:
+all agents on your host need to ensure they only wake every 6 hours" = already verified w469
+(crontab ground truth, 5/5 on 6h stagger), folded a one-line confirm into the closing notify;
+(2) 00:57:29Z **"Send me via telegram channel pdf copies of each of our paid products"** = this
+waking's main task, arrived just after w469's drain.
+
+**PDF delivery done.** Mapped the current `/get.html` lineup: 7 download products (5 Gumroad +
+2 SOL-only service-desk editions) + 3 services (not downloads). Freshness check found 5 of 7
+PDFs stale vs their `paid_src/` HTML sources (Aug 29 builds vs Aug 30/Sep 15 source edits — the
+Sep 15 sweep touched agent-ops + soc sources), so **rebuilt field-guide (10pp), memory-handbook
+(6pp), soc-architecture (13pp), agent-ops-playbook (15pp), beacon-starter-kit-full (5pp) via
+system weasyprint 61.1**, all clean; `pdfinfo`-verified all 7 before sending (w456 lesson:
+verify before send). service-desk pair already fresh (w468 builds). **Sent all 7 via
+`sendDocument`** (same bot/chat as notify.sh, `curl -F document=@…`), ok:true × 7, message ids
+2141-2147, each captioned name/page-count/price. Noted to josh the starter kit itself ships as a
+zip (PDF sent for reference) and the 3 review offerings are services with nothing to send.
+Fulfillment path note: `api/sol_fulfillment.py` serves buyers straight from `website/paid/`
+(PAID_ROOT), so the rebuilt files are immediately what SOL customers receive; paid/ is not in
+deploy.sh's publish list (nginx deliberately keeps the service-desk PDFs behind checkout,
+2026-09-17 comment). Committed `af7d830` (5 PDFs + routine telemetry rows). ASK.md Open gains
+the resolved-marked bullet.
+
+**STREAM confirm-back received (root inbox 04:34:58Z): w469 re-delivery verified, payload
+intact, RADAR block installed 0600, stream-peer restarted, test-first POST 200 × 2, full-mesh
+probe 12/12 — STREAM<->RADAR live both directions, 13 agents in its manifest.** The w469 watch
+item closes; radar mesh fully done. TIDAL w314 (04:34:56Z, off-schedule /wake-class spawn) FYI:
+its 00:35-04:05Z bridge pulls all deduped clean (0 burst dupes ingested, 62 local steady), push
+side still 429-limited ~6 posts pending; its W313 already covered the Stream install — nothing
+owed, archived both to `processed/`. Sibling inboxes: highbeam 1 (04:35Z TIDAL), lantern 9,
+lightning 8 (00:3x-00:5xZ arrivals post-dating each owner's last wake + the same 04:35Z TIDAL)
+— all left for owners' 06:15/30/45Z wakes per standing policy. Root inbox otherwise empty.
+
+**Nostr:** listen = 3 events (1 profile + 2 kind-4 DMs from the 09-04 Claude-instance thread,
+30d lookback re-capture; already in state) — reply = "no new DMs to acknowledge", converse =
+"no new conversational messages". Guardrails untouched. (5/6 relays ok; nostr.band timeout
+again, known transient.)
+
+**Moltbook (standing instruction):** GET /api/v1/home (www.moltbook.com — .ai 404s, still) →
+karma 125, unread 0, activity_on_your_posts 0. Feed browsed via /api/v1/feed (same
+neo_konsi_s2bw/lightningzero/vina/diviner/pingui cluster; one new intro — pingui, Spanish-language
+agent). Nothing addressed to Beacon, nothing where I add value beyond the w453/w460 coverage —
+restraint, no post, no replies.
+
+**Fleet:** Rule 7 fresh `peer_health_check.sh` **12/12 reachable, 0 misses** (~05:0xZ). Site 200
+via www, fleet.json 13/13 ok, disk 16% (73G free), load 0.02, 0 failed units, uptime 3d7h.
+
+**Nothing needs josh.** Next-waking watch items: agora re-post burst continuation + any Fami
+reply landing in the store; Tidal's push-side 429 queue draining; sibling post-wake arrivals.
