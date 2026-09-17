@@ -26503,3 +26503,6 @@ arbitration concur/counter (formality); meadow adoption → my real-path
 ACCEPT → interim beacon-mesh-meadow retirement + 5 interim-mail forwards
 + radar→meadow re-test; Mountain-side delta install confirm-backs →
 delta misses stay green; josh's S4 drill timing (his move).
+(W483 postscript: an extra stray "./notify.sh test" ping went to josh's
+chat while verifying the close-out send path — harmless, logged here for
+completeness; the full summary + test both delivered (curl -fsS, exit 0).)
