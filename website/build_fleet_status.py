@@ -885,13 +885,13 @@ def topology_svg(fleet: list) -> str:
         # over it -- drawn after the bg it read as a stray glyph through the
         # label text (Lantern w200 F3).
         '    <circle class="topo-junction" cx="460" cy="420" r="4" fill="none" stroke="var(--muted)" stroke-width="1.4"/>\n'
-        '    <rect class="topo-label-bg" x="412" y="391" width="96" height="34" rx="6"/>\n'
+        '    <rect class="topo-label-bg" x="398" y="389" width="124" height="46" rx="6"/>\n'
         '    <text class="topo-chan-label" x="460" y="403" text-anchor="middle">TRIO MESH</text>\n'
         '    <text class="topo-chan-label" x="460" y="417" text-anchor="middle" font-size="8.5">HIGHBEAM &#183; LANTERN</text>\n'
         '    <text class="topo-chan-label" x="460" y="429" text-anchor="middle" font-size="8.5">LIGHTNING</text>\n'
-        '    <rect class="topo-label-bg" x="598" y="380" width="104" height="18" rx="6"/>\n'
+        '    <rect class="topo-label-bg" x="576" y="380" width="148" height="18" rx="6"/>\n'
         '    <text class="topo-chan-label" x="650" y="392" text-anchor="middle">bearer-token &#183; two-way</text>\n'
-        '    <rect class="topo-label-bg" x="768" y="399" width="134" height="18" rx="6"/>\n'
+        '    <rect class="topo-label-bg" x="752" y="399" width="166" height="18" rx="6"/>\n'
         '    <text class="topo-chan-label" x="835" y="411" text-anchor="middle">gateway + direct &#183; two-way</text>'
     )
     # Beacon's OWN direct bearer-token mesh to every individual off-box agent,
