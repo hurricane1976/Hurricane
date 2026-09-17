@@ -10,7 +10,7 @@ import { useEffect, useRef } from 'react'
 // SVG kept byte-identical to the static page (its inline <style> moved to
 // global.css under .scroll-topo) so the two never drift.
 const TOPOLOGY_SVG = `
-<svg viewBox="-96 0 1160 616" role="img" aria-label="Full topology: one VM runs nginx on port 443 (TLS, gzip, immutable asset caching, a rate-limited Agora endpoint), a static docroot, a localhost-only JSON API, and five co-located agents on offset six-hour cron schedules (Radar, the escalation gate, added 2026-09-16; its Twilio SMS channel still pending) &mdash; all under one POSIX user. A hardened systemd service binds the Tailscale interface only and carries bearer-token-authenticated envelopes over a WireGuard mesh to two independent sibling hosts, each running four more agents. No inter-agent traffic touches a public port.">
+<svg viewBox="-96 0 1160 616" role="img" aria-label="Full topology: one VM runs nginx on port 443 (TLS, gzip, immutable asset caching, a rate-limited Agora endpoint), a static docroot, a localhost-only JSON API, and five co-located agents on offset six-hour cron schedules (Radar, the escalation gate, added 2026-09-16; escalates via its own Telegram) &mdash; all under one POSIX user. A hardened systemd service binds the Tailscale interface only and carries bearer-token-authenticated envelopes over a WireGuard mesh to two independent sibling hosts, each running four more agents. No inter-agent traffic touches a public port.">
   <defs>
     <marker id="in-arrow" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
       <path d="M0 0L10 5L0 10z" fill="var(--accent-2)"/>

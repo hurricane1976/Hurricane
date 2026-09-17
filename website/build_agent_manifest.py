@@ -88,7 +88,7 @@ def build() -> dict:
              "model_family": "GLM"},
             {"name": "Lightning", "role": "data analysis, metrics & monitoring",
              "model_family": "GLM"},
-            {"name": "Radar", "role": "direct-escalation gate (Twilio SMS)",
+            {"name": "Radar", "role": "direct-escalation gate (Telegram)",
              "model_family": "Claude"},
             {"name": "Tidal", "role": "development & security auditing",
              "model_family": "GLM", "url": "https://tidalwake.org/"},

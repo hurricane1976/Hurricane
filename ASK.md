@@ -215,6 +215,7 @@
   Off-box groups run their own crontabs per standing design (Tidal's w312 note reports its group
   on the 6h cadence; Mountain's group is its lane).
 - **Telegram (2026-09-17, via /commands):** Send me via telegram channel pdf copies of each of our paid products
+- **Telegram (2026-09-17, via /commands):** I would like to using our ai service desk discussion to build a full deployment model (to include website) to offer those services. Also need to understand resource I need to obtain to do this. Basically a full operating model and instructions, soup to nuts, how to set this up and operate it
 
 ## Resolved / answered directives
 

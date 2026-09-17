@@ -525,9 +525,11 @@ def mountain_group():
         "role": "Growth & distribution",
         "host": "mountainwake.org (independent host)",
         "model": "GLM Flash (via OpenRouter, on opencode)",
-        # Mountain's own peer note 2026-09-16 03:09:45Z confirmed josh's
-        # every-3h directive applied on its box: 0,15,30,45 */3, 8x/day each.
-        "cadence": "8×/day (0,15,30,45 */3)",
+        # Mountain's own published manifest (fetched live 2026-09-17 ~12:0xZ,
+        # after josh's 6h hand-edit): "4x/day (0 */6 * * *)". Supersedes the
+        # 2026-09-16 03:09Z every-3h note (Lantern w200 F2 caught the stale
+        # copy).
+        "cadence": "4×/day (0 */6)",
         "wakings": "—",
         "state": state,
         "last_wake": last_wake,
@@ -700,9 +702,10 @@ TOPO_LINKS = [
     ("Canyon", "Ridge"), ("Canyon", "Harbor"), ("Ridge", "Harbor"),
 ]
 # Canonical fleet family palette (design-tokens.json v2 .chart.family):
-# magenta=GLM, blue=DeepSeek. Amber/historical Claude (#ff8a3d) came back into
-# active use 2026-09-16 when Radar (Claude Code, Sonnet) joined as the fleet's
-# escalation gate -- the one deliberate exception to GLM-everywhere.
+# magenta=GLM, amber=Claude (active again since Radar joined 2026-09-16 -- the
+# one deliberate exception to GLM-everywhere). Blue (#5aa9ff) stays mapped for
+# DeepSeek dot colours but no longer has a legend entry: no fleet node runs
+# DeepSeek since the GLM-everywhere transition (Lantern w200 F4).
 FAMILY_COLOR = {
     "Claude": "var(--amber)", "DeepSeek": "#5aa9ff", "GLM": "var(--magenta)",
     "Gemini": "var(--teal)",
@@ -878,8 +881,11 @@ def topology_svg(fleet: list) -> str:
         '    <circle class="chan-flow chan-flow-trio-mountain" r="3.5" aria-hidden="true"/>\n'
         '    <circle class="chan-flow chan-flow-trio-mountain chan-flow-trailer" r="2.6" style="animation-delay:1.17s;opacity:.75" aria-hidden="true"/>\n'
         '    <circle class="chan-flow chan-flow-trio-mountain chan-flow-trailer" r="2.6" style="animation-delay:-0.17s;opacity:.6" aria-hidden="true"/>\n'
-        '    <rect class="topo-label-bg" x="412" y="391" width="96" height="34" rx="6"/>\n'
+        # Junction marker FIRST (z-order): the trio-mesh label bg then paints
+        # over it -- drawn after the bg it read as a stray glyph through the
+        # label text (Lantern w200 F3).
         '    <circle class="topo-junction" cx="460" cy="420" r="4" fill="none" stroke="var(--muted)" stroke-width="1.4"/>\n'
+        '    <rect class="topo-label-bg" x="412" y="391" width="96" height="34" rx="6"/>\n'
         '    <text class="topo-chan-label" x="460" y="403" text-anchor="middle">TRIO MESH</text>\n'
         '    <text class="topo-chan-label" x="460" y="417" text-anchor="middle" font-size="8.5">HIGHBEAM &#183; LANTERN</text>\n'
         '    <text class="topo-chan-label" x="460" y="429" text-anchor="middle" font-size="8.5">LIGHTNING</text>\n'
@@ -961,9 +967,8 @@ def topology_svg(fleet: list) -> str:
     parts.append(
         '    <g class="topo-legend" font-size="11">\n'
         '      <circle cx="60" cy="540" r="5" fill="var(--magenta)"/><text x="74" y="544">GLM</text>\n'
-        '      <circle cx="150" cy="540" r="5" fill="#5aa9ff"/><text x="164" y="544">DeepSeek</text>\n'
-        '      <circle cx="250" cy="540" r="5" fill="var(--amber)"/><text x="264" y="544">Claude</text>\n'
-        '      <text x="398" y="544" fill="var(--muted)">ring colour = live status &#183; hover or tap a node</text>\n'
+        '      <circle cx="150" cy="540" r="5" fill="var(--amber)"/><text x="164" y="544">Claude</text>\n'
+        '      <text x="330" y="544" fill="var(--muted)">ring colour = live status &#183; hover or tap a node</text>\n'
         '      <line x1="900" y1="540" x2="930" y2="540" class="topo-link-verified"/>'
         '<text x="938" y="544" fill="var(--muted)">direct Tailscale-authenticated link</text>\n'
         '    </g>'
@@ -1108,10 +1113,12 @@ def main():
     # Radar (onboarded 2026-09-16, josh interactive session + Telegram 21:02Z):
     # direct-escalation gate. Same wake.sh/log/envelope convention as the other
     # siblings, and cron'd by josh himself at 2026-09-16 20:14Z (50 */6, last
-    # slot in the stagger) while its Twilio SMS channel is still pending
-    # configuration. The row reads real liveness off its logs like the others.
+    # slot in the stagger). Escalation runs via Radar's own Telegram bot since
+    # josh canceled the Twilio SMS lane that same evening (Lantern w200 F1
+    # caught the stale copy). The row reads real liveness off its logs like
+    # the others.
     radar = sibling_row(
-        "Radar", "Direct-escalation gate (Twilio SMS)",
+        "Radar", "Direct-escalation gate (Telegram)",
         "beaconwake.com box (/home/agent/radar)",
         "Claude Code (Sonnet)",
         "4×/day (50 */6)", RADAR_LOGS, RADAR_NOTES, "radar")
