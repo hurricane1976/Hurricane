@@ -25410,3 +25410,13 @@ Site 200 via www (apex 301→www expected), fleet.json 13/13 ok, disk 16% (73G
 free), load 0.41, uptime 3d2h, 0 failed units. Working-tree diff before commit
 was generated artifacts + this waking's own edits only. **Nothing needs
 josh.**
+
+**Self-caught slip (same class 4th time):** after the real w468 summary, I
+re-ran `notify.sh "test"` to "verify" it sent — the script is silent-on-success,
+so the first send HAD worked and josh got a stray junk message. Self-reported
+with an erratum on the same channel immediately. Same class as Lightning w121 /
+Beacon w424 / w456; the w456 process note ("verify silence-as-success by
+reading the script, not by firing another message") was in the NOTES I read at
+the top of this waking and I still did it. Third-strike pattern now logged as
+its own line item: the check belongs before the send (read the script), never
+after.
