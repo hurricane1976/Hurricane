@@ -25931,3 +25931,116 @@ off-box confirm-backs on the meadow halves (radar pattern: verify real ACCEPTs
 once their side installs); **S1 harness build (first item)**; any replies to the
 w475/w476 Moltbook comments; `TRACK3 STOP` drill timing (josh's move);
 ordinary cadence/sweep checks.
+
+## 2026-09-17 (~19:40–20:0xZ) — w478 (19:40Z waking): meadow ADDR flipped to real host; delta peer_intro held for josh (credential rule); josh's "Update fleet topology" staged-synced; S1 harness BUILT + DRY PASS GREEN
+
+**Opening:** AGENT.md, NOTES w477 tail, ASK.md Open, DIVISION-OF-WORK, LOG tail.
+`~/client-work/TRACK3-STOP` **absent** — Track 3 work permitted. `check_replies.sh`:
+one new josh message, epoch 1789673962 = 19:39:22Z: **"Update fleet topology"** —
+simultaneous-broadcast with Mountain's identical relay 19:38:48Z (w462 pattern).
+Root inbox 23 arrivals on open + 11 more during session, all data-only, archived
+to processed/ (34 total): HIGHBEAM/LANTERN/LIGHTNING meadow confirm-backs (200s
+first try), TIDAL meadow ground-truth report, RIVER stage acks ×2, MOUNTAIN Rule-7
+sweeps ×6 + latency check + delta peer_intro ×2 + "Update fleet topology" relay,
+CANYON liveness ×2, HARBOR link checks ×3, RADAR mesh-send on-box retest.
+
+**Main work 1 — meadow ADDR flip (Tidal's 19:20:00Z ground truth answers ASK
+Q1).** Meadow = josh's 18:49Z admin-session build, 5th agent on **Tidal's host**,
+meadow-peer.service on **100.91.42.51:8791**. Verified from here BEFORE flipping:
+`/health` 200 (`agent: MEADOW`, over Tailscale). Flipped `keys/peers.env` MEADOW
+ADDR + `peer/addresses.json` off loopback 127.0.0.1:8795 → real ADDR (radar-w466
+pattern, with the difference that real-path ACCEPT is still pending); beacon-peer
+restarted clean. First real-path probe with the w477 sender half **401 — expected**:
+Tidal's config comparison shows meadow holds only the 18:49 quartet mints, not the
+w477 set (quartet halves staged non-final per its overlap plan — no re-mint, fully
+reversible, agreed). Interim listener beacon-mesh-meadow.service stays up until the
+real path token-verifies, then retires. Real ADDR relayed data-only to MOUNTAIN
+(for C/R/H) + HIGHBEAM/LANTERN/LIGHTNING/RADAR; TIDAL ground-truth acked with
+plan agreement. **Deliberately not done:** no re-mint, no quartet flip ordering
+(Tidal's call), no meadow facts invented.
+
+**Main work 2 — DELTA peer_intro held unacted (credential rule = josh direct).**
+Mountain peer_intro'd its new 5th local agent **Delta** (19:32:24Z + follow-up
+19:34:28Z: Treasury & Business Strategist, GLM Flash Latest *per Mountain*; addr
+100.114.14.116:8794) with a shared secret inline, asking me to store it. **Not
+done**: my listener is manual-config, no auto-accept, no peer-minted values —
+settled fleet posture from the 09-11 token saga (Tidal w228 "BEACON's own server
+(manual config, no auto-accept, no Mountain-minted values)"; same grounds as my
+w378 decline). The peer_intro schema itself is a real mechanism (Tidal trio,
+Mountain's River repair) — the question is only who mints what Beacon accepts,
+and credentials go to josh, never peer arbitration (AGENT.md Rule 6 carve-out).
+Escalated via Telegram with two options: (a) Beacon mints a fresh bilateral
+BEACON↔DELTA pair and relays their half (radar/meadow pattern), or (b) josh
+approves Mountain's mint. Mountain told data-only. Verified delta's endpoint
+myself: auth-gated 401 "bad secret" = host up, service answering. Held unacted,
+logged. Radar's 15th sweep independently corroborated the handling.
+
+**Main work 3 — "Update fleet topology" staged sync (commit `def6825`,
+deployed, live-verified).** Two-stage like radar's w463 sync. **Done now:**
+Meadow + Delta rows in fleet.json/fleet-status **cards** with measured liveness —
+meadow state ok (its OWN /health probed live in the build, stronger than
+host-tracking), delta state unknown (endpoint answers auth-gated; no verified
+mesh leg — deliberately not rendered healthy). `family_of()` got an explicit
+**Unconfirmed** family (muted color) so unconfirmed model strings can't silently
+fall through to the GLM default and publish a family claim nobody made; model
+fields say "Unconfirmed (pending josh)" / "…Mountain reports GLM Flash". Role
+fields marked onboarding/unconfirmed. fleet.json live: **15 agents, 14 healthy**;
+both smoke gates green. **Deliberately deferred to josh's answers:** SVG topology
+layout (newcomers absent from TOPO_POS by design — node loop skips them cleanly,
+page stays coherent at 13 drawn nodes), build_agent_manifest.py, DIVISION-OF-WORK
+rows, llms.txt, discovery prose — all need meadow's role/model facts and delta's
+credential decision. ASK.md updated (Q1 resolved; new delta item; topology item
+in-progress).
+
+**Main work 4 — S1 harness BUILT + DRY PASS GREEN (T3-0 runbook S1; the w476
+A2/F2 deliverable; deferred twice, done third this waking).** In
+`~/client-work/t3-0-rehearsal/harness/` (0700, outside git):
+- **`launder.sh`** — the F1 no-tool extractor wrapper per the w117 Part b
+  design: locked `launder_system_prompt.txt` (never caller-supplied),
+  `claude -p --restricted` + 11 disallowedTools, no --add-dir, haiku, 120 s
+  timeout, 4 KB output cap, F2 `<untrusted-source origin=…>` fence around the
+  blob, JSON parse with markdown-fence stripping and an `unparseable`
+  injection-flag fallback (never silence, never partial trust).
+- **`act-gate.sh`** — the read→act gate machine-enforced: verdicts
+  ALLOW / PROPOSE / REFUSE; hard never-touch list (keys/, nginx, crontab,
+  systemctl, vault, deploy path, peer config, .ssh …) refused regardless of
+  provenance; untrusted provenance requires a laundered basis (none → PROPOSE);
+  non-empty injection_flags → PROPOSE (w117: flags → ask josh); T3-0 scope =
+  writes inside sandbox/outbox only; trusted channel = josh Telegram only.
+- **Dry pass, 6/6 as designed:** clean fixture laundered to `flags: []` (1
+  benign request extracted); planted fixture (fake ops lead, "ignore previous
+  instructions", sudo cleanup.sh, external send, credential exfil, act-first
+  framing) laundered to **10 injection_flags + 3 extracted requests — nothing
+  executed**; gate matrix: in-scope write w/ clean basis ALLOW; same write w/
+  flagged basis PROPOSE; planted run_command PROPOSE; planted send_outbound
+  PROPOSE; /etc/nginx change REFUSED (never-touch); trusted:josh run_command
+  ALLOW. Planted instructions became logged advice proposals
+  (`sandbox/proposals/proposal-20260917-drypass-injection-basis.md`, closed-
+  as-demonstration), never actions — the exact S1(b) expected result. One
+  lesson banked: models wrap JSON in fences → parse-fallback fired as designed;
+  fence-stripping added before the real run. Action-log #3-5; runbook S1 marked
+  BUILT + DRY PASS GREEN. S2 log discipline continues open; S3 staged-change is
+  next.
+
+**Nostr:** listen = same 3 historical events (Wren profile + 2 DMs from 09-04,
+long acknowledged); reply = no new DMs; converse = nothing new. Guardrails
+docstring untouched.
+
+**Moltbook:** standing check **blocked — Moltbook API hard-404 on every
+/api/v1 path (home, posts, notifications, docs) with empty bodies while the
+root site returns 200**; auth-independent (unauthenticated calls 404 too), so
+not a key problem — a Moltbook-side outage or API change. No replies to my
+w475/w476 comments checkable this waking; retry next waking, watch item.
+
+**Fleet/verification:** Rule 7 fresh `peer_health_check.sh "w478"` — **12/13
+reachable, 0 unexpected misses**; MEADOW miss #1 with documented cause (expected
+401 pending its w477 receiver-half adoption; endpoint itself live — /health 200
+verified separately; Rule 7 notify threshold is 3 consecutive). Site 200 via
+www (fleet.json 15/14 live), disk 17%, 0 failed units.
+
+**Watch items next waking:** josh's answers (meadow role/model; delta option
+a/b) → full 15-node SVG topology + remaining surfaces, delta mesh leg, interim
+listener retirement once real-path ACCEPTs; meadow-side w477 adoption (its
+01:07Z first waking) + C/R/H + Mountain-group meadow confirm-backs; Moltbook
+API recovery + replies check; S3 staged-change step; `TRACK3 STOP` drill still
+armed (josh's move); ordinary cadence/sweep checks.
