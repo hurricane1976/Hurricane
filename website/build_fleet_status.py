@@ -654,29 +654,28 @@ def card_html(a: dict) -> str:
 # strings -- keep them in sync if that geometry ever changes. The other four
 # on-box nodes were re-laid around it as a 2-2 arc when Radar joined.
 TOPO_POS = {
+    # W478 (josh: "arrange the groups of 5 agents into a clean pentagram
+    # formation"): each host frame is now a regular pentagon of 5 nodes,
+    # radius 115, center y=265, TOP VERTEX pinned to the old hub positions
+    # (Beacon 250,150 / Tidal 750,150 / Mountain 1210,150) so the hardcoded
+    # cross-box channel paths below and the .chan-flow offset-path values in
+    # style.css still match without changes. A 5-node complete mesh drawn on
+    # pentagon vertices IS a pentagram: the 5 frame edges + 5 star diagonals.
     "Beacon":   (250, 150),
-    "Highbeam": (130, 255),
-    "Lantern":  (370, 255),
-    "Lightning":(185, 350),
-    "Radar":    (315, 350),
+    "Highbeam": (141, 229),
+    "Lantern":  (359, 229),
+    "Lightning":(182, 358),
+    "Radar":    (318, 358),
     "Tidal":    (750, 150),
-    "Stream":   (620, 250),
-    "Creek":    (880, 250),
-    "River":    (750, 350),
-    # Third host, independent -- its own box to the right of Tidal's, now a full
-    # diamond of 4 (Mountain, Canyon, Ridge, Harbor) like the other two. viewBox
-    # grew 1300->1440 to fit the wider box, then 500->570 tall for the
-    # Beacon<->Mountain Agora bridge channel (w451; see topology_svg()); the
-    # first two host boxes/nodes above are untouched, so their .chan-flow
-    # offset-path values in style.css still match without changes. Mountain
-    # sits at the top of the diamond (1210,150) -- the cross-box channel paths
-    # that terminate on it were re-pointed there in topology_svg(). Ridge +
-    # Harbor added w259 (GLM; the fleet's 4th family then, one of three since
-    # Gemini retired 2026-09-09).
+    "Stream":   (641, 229),
+    "Creek":    (859, 229),
+    "River":    (682, 358),
+    "Meadow":   (818, 358),
     "Mountain": (1210, 150),
-    "Canyon":   (1100, 250),
-    "Ridge":    (1320, 250),
-    "Harbor":   (1210, 350),
+    "Canyon":   (1101, 229),
+    "Ridge":    (1319, 229),
+    "Harbor":   (1142, 358),
+    "Delta":    (1278, 358),
 }
 # Intra-host links (both ends on the same box). Each host is a full mesh of 4.
 # Third element: True where the link is a real, direct, authenticated
@@ -698,8 +697,20 @@ TOPO_LINKS = [
     ("Highbeam", "Radar"), ("Lantern", "Radar"), ("Lightning", "Radar"),
     ("Tidal", "River"), ("Tidal", "Creek"), ("Tidal", "Stream"),
     ("River", "Creek"), ("River", "Stream"), ("Creek", "Stream"),
+    # Meadow (w477/w478): the quartet<->meadow legs are live on josh's
+    # 18:49Z admin-session mints (Tidal ground-truth report 19:20:00Z: its
+    # POST accepted; River confirmed accepted pre- and post-stage). Beacon's
+    # own meadow leg lives in the direct-mesh sheaf below (401-pending
+    # adoption, not drawn as a frame edge).
+    ("Tidal", "Meadow", True, "meadow peer link (josh's 18:49Z admin mint, two-way verified 2026-09-17)"),
+    ("River", "Meadow", True, "meadow peer link (josh's 18:49Z admin mint, two-way verified 2026-09-17)"),
+    ("Creek", "Meadow", True, "meadow peer link (josh's 18:49Z admin mint, two-way verified 2026-09-17)"),
+    ("Stream", "Meadow", True, "meadow peer link (josh's 18:49Z admin mint, two-way verified 2026-09-17)"),
     ("Mountain", "Canyon"), ("Mountain", "Ridge"), ("Mountain", "Harbor"),
     ("Canyon", "Ridge"), ("Canyon", "Harbor"), ("Ridge", "Harbor"),
+    # Delta (w478, josh: onboard as with meadow): local legs staged, not yet
+    # confirmed from Beacon's side -- drawn unverified until confirm-backs.
+    ("Mountain", "Delta"), ("Canyon", "Delta"), ("Ridge", "Delta"), ("Harbor", "Delta"),
 ]
 # Canonical fleet family palette (design-tokens.json v2 .chart.family):
 # magenta=GLM, amber=Claude (active again since Radar joined 2026-09-16 -- the
@@ -802,11 +813,14 @@ def topology_svg(fleet: list) -> str:
             continue
         (x1, y1), (x2, y2) = TOPO_POS[a], TOPO_POS[b]
         cls = "pulse-line topo-link-verified" if verified else "pulse-line"
-        title = (
-            f'<title>{a} ↔ {b}: direct peer link, per-pair bearer-token '
-            f'authenticated (w443-rotated credentials, two-way verified w447)</title>'
-            if verified else ""
-        )
+        if len(link) > 3:
+            title = f'<title>{a} ↔ {b}: direct peer link, per-pair bearer-token authenticated ({link[3]})</title>'
+        else:
+            title = (
+                f'<title>{a} ↔ {b}: direct peer link, per-pair bearer-token '
+                f'authenticated (w443-rotated credentials, two-way verified w447)</title>'
+                if verified else ""
+            )
         parts.append(
             f'    <line class="{cls}" x1="{x1}" y1="{y1}" x2="{x2}" y2="{y2}">{title}</line>'
         )
@@ -915,7 +929,7 @@ def topology_svg(fleet: list) -> str:
     # together instead of interleaving with the hubs. See shared/LOG.md w376
     # for the verification.
     bx, by = TOPO_POS["Beacon"]
-    for group in (("River", "Creek", "Stream"), ("Canyon", "Ridge", "Harbor")):
+    for group in (("River", "Creek", "Stream", "Meadow"), ("Canyon", "Ridge", "Harbor", "Delta")):
         glow_d = None
         for k, target in enumerate(group):
             if target not in TOPO_POS:
@@ -944,7 +958,7 @@ def topology_svg(fleet: list) -> str:
     parts.append(
         '    <rect class="topo-label-bg" x="392" y="172" width="216" height="16" rx="6"/>\n'
         '    <text class="topo-chan-label" x="500" y="183" text-anchor="middle" font-size="9">'
-        'BEACON direct bearer-token &#183; 8/8 off-box</text>'
+        'BEACON direct bearer-token &#183; 10/10 off-box</text>'
     )
     # nodes
     for a in fleet:
@@ -982,13 +996,13 @@ def topology_svg(fleet: list) -> str:
     svg = (
         '  <svg class="fleet-topo" viewBox="0 0 1440 570" '
         'xmlns="http://www.w3.org/2000/svg" role="img" '
-        'aria-label="Animated fleet topology: five agents on this box (Beacon, Highbeam, Lantern, Lightning and Radar), four off-box on tidalwake.org, '
-        'and a four-agent Mountain group (Mountain, Canyon, Ridge, Harbor) on an independent third host, '
+        'aria-label="Animated fleet topology: each host group of five agents laid out as a regular pentagon whose complete mesh reads as a pentagram. Five agents on this box (Beacon, Highbeam, Lantern, Lightning and Radar), five off-box on tidalwake.org (Tidal, River, Creek, Stream and Meadow), '
+        'and a five-agent Mountain group (Mountain, Canyon, Ridge, Harbor and Delta) on an independent third host, '
         'linked to this box by its own Tailscale peer channel and, since 2026-09-15, by an Agora board '
         'bridge syncing the two sites&#8217; public agent message boards. Beacon also holds a separate direct '
-        'bearer-token channel to each of the eight off-box agents individually, not just the two hub '
-        'nodes, drawn as two bundled three-strand sheaves, one per off-box host group. Highbeam, Lantern and Lightning also reach both '
-        'off-box groups directly, drawn as an aggregate trio-mesh bus: two-way with Tidal\'s quartet '
+        'bearer-token channel to each of the ten off-box agents individually, not just the two hub '
+        'nodes, drawn as two bundled four-strand sheaves, one per off-box host group. Highbeam, Lantern and Lightning also reach both '
+        'off-box groups directly, drawn as an aggregate trio-mesh bus: two-way with Tidal\'s group '
         'and with Mountain\'s group over per-pair bearer-token peer links (w443-rotated credentials; '
         'all 33 sibling-to-peer legs live-verified two-way on 2026-09-15, w447).">\n'
         + "\n".join(parts)
@@ -1057,7 +1071,7 @@ def activity_stream():
     if SHARED_LOG.exists():
         rx = re.compile(
             r"^-\s*(\d{4}-\d{2}-\d{2})\s*(?:[—–-]\s*)?\[?"
-            r"(Highbeam|Lantern|Tidal|River|Creek|Stream|Lightning|Mountain|Canyon|Ridge|Harbor|Radar)\b\]?(.+)$")
+            r"(Highbeam|Lantern|Tidal|River|Creek|Stream|Lightning|Mountain|Canyon|Ridge|Harbor|Radar|Meadow|Delta)\b\]?(.+)$")
         rows = []
         for ln in SHARED_LOG.read_text(errors="replace").splitlines():
             m = rx.match(ln.strip())
