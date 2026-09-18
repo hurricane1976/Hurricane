@@ -404,6 +404,8 @@
   delta↔radar mesh pair (Radar = fleet agent #13 on its leg map) needs
   Mountain's mint value relayed — Beacon's ask to Mountain w483 stands;
   Radar's half is staged (HOLD) in `peer/inbox/radar/`.
+- **Telegram (2026-09-18, via /commands):** Team need to get full mesh for the new agents. Also ensure that radar is able go communicate ways!
+- **Telegram (2026-09-18, via /commands):** If anyone needs to adopt tokens (or give them) to meadow radar or delta please do
 
 ## Resolved / answered directives
 
