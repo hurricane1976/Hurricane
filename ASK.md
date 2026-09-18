@@ -2,6 +2,17 @@
 
 ## Open
 
+- **(w493, 2026-09-18 ~17:3xZ) Dispatched, awaiting Mountain: the on-box
+  sibling→delta fix (your 17:05:57Z directive).** Root cause + relay + the
+  append instruction are recorded in the Telegram item at the bottom of this
+  section ("Your on box siblings are not connected please fix"). Nothing
+  needs your hand unless Mountain reports it deliberately rotated the
+  Beacon-group pairs — in that case I distribute its new values to the four
+  senders (the fallback it was offered). Everything else from the w490 list
+  below still stands (meadow adoption gate = your word to meadow's channel;
+  Tidal concur/counter on delta's role = formality; */6 cadence call for
+  Tidal's group rows).
+
 - **(w490, 2026-09-18 ~11:5xZ) Nothing new needs josh.** State of the
   2026-09-17 w483 open gates: (c) **sibling DELTA receiver installs —
   RESOLVED w490.** The siblings' own wakes never executed the w483
@@ -422,6 +433,28 @@
   Radar's half is staged (HOLD) in `peer/inbox/radar/`.
 - **Telegram (2026-09-18, via /commands):** Team need to get full mesh for the new agents. Also ensure that radar is able go communicate ways!
 - **Telegram (2026-09-18, via /commands):** If anyone needs to adopt tokens (or give them) to meadow radar or delta please do
+- **Telegram (2026-09-18, via /commands):** What is the status of your connection to Meadow radar and delta?
+- **Telegram (2026-09-18, via /commands):** What is the status of your connection to Meadow radar and delta?
+- **Telegram (2026-09-18, via /commands):** Your on box siblings are not connected please fix
+  — **ACTIONED w493 (2026-09-18 ~17:1x–17:3xZ):** diagnosis first — the three
+  on-box siblings' outbound legs to delta 401 "bad secret" since ~12:15Z
+  (Highbeam w220 ×3, Lantern w210, Lightning w149) while their stored halves
+  hash-verify byte-identical to the canonical staged `*.delta-token` files
+  (Mountain's 19:32Z mints) and all three legs 200'd before ~12:15Z; my own
+  BEACON→DELTA leg 200 all day. Conclusion: delta's listener accepted-set on
+  Mountain's host was re-staged ~12:15Z without the Beacon-group receiver
+  blocks (Mountain re-staged delta credentials 2× today). Fix is delta-side,
+  so relayed MOUNTAIN over the authenticated peer lane (17:1xZ, stored ok):
+  **append-don't-replace** instruction with all four canonical receiver blocks
+  inline (HIGHBEAM/LANTERN/LIGHTNING/RADAR → DELTA — Mountain's own mints,
+  senders unchanged, additive so nothing working breaks), restart + confirm-
+  back + labeled POST tests + check its own Mountain-group delta legs, with a
+  fallback offer (deliberate rotation → it sends new values, I distribute to
+  senders). Radar→delta was 200 at 11:07Z, unverified since — included so all
+  four fix at once. Awaiting Mountain's install + confirm-back; real ACCEPTs
+  verified next waking. Status question (17:05:38Z repeat) answered same hour
+  via notify.sh (RADAR+DELTA green my legs, MEADOW miss #17 documented gate).
+- **Telegram (2026-09-18, via /commands):** What is the status of your connection to Meadow radar and delta? (17:05:38Z repeat — answered w493, see above)
 
 ## Resolved / answered directives
 
@@ -6158,3 +6191,13 @@ RIVER/CREEK/STREAM) up, 0 consecutive misses. Plus the 3 on-box siblings
 `send_to_peer.sh` (subject `peer_status_reply`) and to josh via
 `notify.sh`. No code change needed -- this is Rule 7's existing mechanism
 answering a direct request for its output, not a new capability.
+
+## 2026-09-18 ~16:4xZ — w492 — josh Telegram 16:43:26Z: "What is the status of your connection to Meadow radar and delta?" — answered same waking with fresh authenticated evidence
+
+Hand-fired waking (~16:45Z, 5h after w491's 12:0x cron; josh's question landed 16:43:26Z). Fresh per-leg status, all from live authenticated POSTs 16:47Z (`peer_health.jsonl`):
+
+- **RADAR: two-way green.** BEACON->RADAR 200 16:47:06Z; radar's own-identity probes landed in my inbox earlier today (11:07:36Z, w489). Both directions installed + verified.
+- **DELTA: my leg green** — 200 at 11:54:59Z, 12:08:46Z, 16:47:07Z (never dropped on my side). **Caveat relayed to Mountain:** Highbeam w220 observed HIGHBEAM->DELTA 401 x3 (12:15/12:17/12:21Z) with its installed token hash-verified equal to the canonical staged HIGHBEAM.delta-token — pattern matches a delta-listener accepted-set re-stage in that window (Mountain re-staged delta credentials twice today). Asked Mountain to confirm Highbeam's canonical pair is in delta's listener state and that delta's own-identity verify (~12:0xZ) still stands.
+- **MEADOW: still one-way, gate unchanged.** My BEACON->MEADOW returns 401 (16 consecutive misses, latest 16:47:07Z) — meadow's listener is UP (lightning<->meadow verified two-way 12:45Z per Lightning w148) but my pair is not installed on its side. Receiver halves for meadow are armed on all four on-box listeners (w490, 8/8 self-tests). Install stays gated on josh's direct word reaching meadow's own channel (Tidal relayed the 11:13:06Z word 11:24:04Z with the channel-gate caveat; rule-6 reading stands). Told josh: everything on my side is ready; a direct word to meadow's channel closes the leg.
+
+Answer sent to josh via notify.sh 16:5xZ; Mountain coordination note stored ok. No new ask for josh beyond the standing meadow channel-gate item (w490 Open item (a)).
