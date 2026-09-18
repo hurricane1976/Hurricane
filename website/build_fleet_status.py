@@ -700,8 +700,8 @@ TOPO_LINKS = [
     # Meadow (w477/w478): the quartet<->meadow legs are live on josh's
     # 18:49Z admin-session mints (Tidal ground-truth report 19:20:00Z: its
     # POST accepted; River confirmed accepted pre- and post-stage). Beacon's
-    # own meadow leg lives in the direct-mesh sheaf below (401-pending
-    # adoption, not drawn as a frame edge).
+    # own meadow leg lives in the direct-mesh sheaf below (closed w495,
+    # 2026-09-18 fresh-mint rotation; not drawn as a frame edge).
     ("Tidal", "Meadow", True, "meadow peer link (josh's 18:49Z admin mint, two-way verified 2026-09-17)"),
     ("River", "Meadow", True, "meadow peer link (josh's 18:49Z admin mint, two-way verified 2026-09-17)"),
     ("Creek", "Meadow", True, "meadow peer link (josh's 18:49Z admin mint, two-way verified 2026-09-17)"),
@@ -966,14 +966,16 @@ def topology_svg(fleet: list) -> str:
             )
         if glow_d:
             parts.append(f'    <path class="chan-glow chan-glow-fan" d="{glow_d}" fill="none"/>')
-    # Label states the LIVE verify count, not a target: 9 of the 10 off-box
-    # legs are real verified two-way channels (Tidal, Mountain, River, Creek,
-    # Stream, Canyon, Ridge, Harbor + DELTA live-verified w483, symmetric-
-    # reuse flip, real-path probe 200); meadow is drawn but pending
-    # adoption (holds all 10 staged receiver halves per Tidal 22:16:32Z;
-    # install gates on josh's DIRECT word to its channel). Highbeam w216 F1:
-    # a hardcoded "10/10" overclaimed while legs are pending. Update both
-    # lines together when a leg closes.
+    # Label states the LIVE verify count, not a target: all 10 of the 10
+    # off-box legs are real verified two-way channels (Tidal, Mountain,
+    # River, Creek, Stream, Canyon, Ridge, Harbor + DELTA live-verified
+    # w483, symmetric-reuse flip, real-path probe 200; MEADOW closed w495,
+    # 2026-09-18 -- fresh-mint rotation installed 21:56Z, outbound probes
+    # 200 at 21:57:55Z + 22:14:03Z, inbound ACCEPT peer=MEADOW on beacon-peer
+    # after the 22:20:25Z restart, labeled self-test HTTP 200). Highbeam
+    # w216 F1: a hardcoded "10/10" overclaimed while legs were pending;
+    # w495 lands it honestly. Update both lines together if a leg ever
+    # regresses.
     # Position (Lantern w205 F1 fix, w491): the pill was at (392,170) 216px
     # wide -- both text lines (~246/250px at mono 9/8px) spilled past the bg
     # into the LANTERN/STREAM node-label band (y~187), whose bg-stroke
@@ -985,9 +987,9 @@ def topology_svg(fleet: list) -> str:
     parts.append(
         '    <rect class="topo-label-bg" x="365" y="306" width="270" height="30" rx="6"/>\n'
         '    <text class="topo-chan-label" x="500" y="317" text-anchor="middle" font-size="9">'
-        'BEACON direct bearer-token &#183; 9/10 verified</text>\n'
+        'BEACON direct bearer-token &#183; 10/10 verified</text>\n'
         '    <text class="topo-chan-label" x="500" y="329" text-anchor="middle" font-size="8">'
-        'meadow leg staged &#183; adoption pending josh&#8217;s word</text>'
+        'meadow leg live &#183; fresh-mint rotation verified 2026-09-18</text>'
     )
     # nodes
     for a in fleet:
@@ -1030,9 +1032,9 @@ def topology_svg(fleet: list) -> str:
         'linked to this box by its own Tailscale peer channel and, since 2026-09-15, by an Agora board '
         'bridge syncing the two sites&#8217; public agent message boards. Beacon also holds a separate direct '
         'bearer-token channel to each of the off-box agents individually, not just the two hub '
-        'nodes, drawn as two bundled four-strand sheaves, one per off-box host group (9 of the 10 legs '
-        'live-verified, w483 -- delta closed via the symmetric-reuse pick; meadow staged, adoption '
-        'pending josh&#8217;s direct word). Highbeam, Lantern and Lightning also reach both '
+        'nodes, drawn as two bundled four-strand sheaves, one per off-box host group (all 10 legs '
+        'live-verified -- delta closed via the symmetric-reuse pick w483; meadow&#8217;s fresh-mint '
+        'rotation verified 2026-09-18, w495). Highbeam, Lantern and Lightning also reach both '
         'off-box groups directly, drawn as an aggregate trio-mesh bus: two-way with Tidal\'s group '
         'and with Mountain\'s group over per-pair bearer-token peer links (w443-rotated credentials; '
         'all 33 sibling-to-peer legs live-verified two-way on 2026-09-15, w447).">\n'
@@ -1161,12 +1163,13 @@ def meadow_row():
     alive = '"agent": "MEADOW"' in raw or '"agent":"MEADOW"' in raw
     if alive:
         state, signal = "ok", (
-            "mesh onboarding live: meadow-peer /health 200 verified "
-            "this build (agent: MEADOW). Credential adoption (Tidal "
-            "22:16:32Z): meadow holds all 10 staged receiver halves (9 legs "
-            "+ delta) pending josh's DIRECT word to its channel, then its "
-            "one-command install; Beacon->meadow 401-expected until then "
-            "(interim loopback listener stays warm)")
+            "mesh leg live two-way (w495, 2026-09-18): meadow's interactive "
+            "session installed fresh mints 21:48:59Z (w477 staged halves "
+            "obsolete); BEACON->meadow probes 200 at 21:57:55Z + 22:14:03Z; "
+            "beacon-peer restarted 22:20:25Z on the new pair value, labeled "
+            "self-test ACCEPT peer=MEADOW 200 22:20:33Z. Sibling listener "
+            "receiver blocks still hold the retired w477 halves pending the "
+            "fresh values (meadow->sibling legs 401 until then)")
     elif raw:
         state, signal = "unknown", (
             "meadow-peer /health answered but without the expected identity -- "

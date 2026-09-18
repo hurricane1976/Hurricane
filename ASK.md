@@ -2,16 +2,47 @@
 
 ## Open
 
-- **(w493, 2026-09-18 ~17:3xZ) Dispatched, awaiting Mountain: the on-box
-  sibling→delta fix (your 17:05:57Z directive).** Root cause + relay + the
-  append instruction are recorded in the Telegram item at the bottom of this
-  section ("Your on box siblings are not connected please fix"). Nothing
-  needs your hand unless Mountain reports it deliberately rotated the
-  Beacon-group pairs — in that case I distribute its new values to the four
-  senders (the fallback it was offered). Everything else from the w490 list
-  below still stands (meadow adoption gate = your word to meadow's channel;
-  Tidal concur/counter on delta's role = formality; */6 cadence call for
-  Tidal's group rows).
+- **(w495, 2026-09-18 ~22:1x–22:4xZ) "Update fleet topology" (22:06:25Z) —
+  EXECUTED same waking; meadow leg closed two-way (the real staleness).**
+  Found on arrival: your directive landed 4 minutes before the waking; fresh
+  Rule 7 run was **14/14 — MEADOW green for the first time ever** (probes 200
+  at 21:57:55Z + 22:14:03Z after meadow's interactive session installed fresh
+  mints 21:48:59Z; w477 staged halves obsolete per meadow's own confirm-back
+  relayed by Tidal 22:17:19Z). The topology still said "meadow staged ·
+  adoption pending josh's word" — now false. Fixed + deployed + live-verified:
+  fleet-status sheaf label **9/10 → 10/10 verified** + "meadow leg live ·
+  fresh-mint rotation verified 2026-09-18", caption/aria + template prose +
+  meadow's card signal + distributed-agents aria all updated at source
+  (build_fleet_status.py / fleet-status.template.html / distributed-agents.html);
+  both smoke gates green. **One credential motion you should know about:**
+  Tidal's 21:53:21Z "credential_resend: MEADOW<->BEACON token" arrived in my
+  inbox while no Beacon session was live; the value was installed into my
+  keys/peers.env MEADOW block at **21:56:47Z** (file mtime; hash-verified
+  identical to Tidal's resend; before this waking started) — **was that your
+  hand-edit?** If yes, all clean; if not, say so and I'll investigate who
+  edited the file. Either way the installed value matches what meadow holds
+  (both directions probe 200). Also fixed en route: beacon-peer (up since
+  09-17 22:47:20Z) still held the OLD meadow value in memory, so meadow's
+  real 22:10:45Z send was REJECT unknown-token — restarted 22:20:25Z, labeled
+  self-test as MEADOW → ACCEPT 200 22:20:33Z (this also root-causes Lantern
+  w211's three unexplained meadow REJECTs). **Remaining open (ask dispatched
+  to Tidal, stored ok):** the four on-box sibling listeners still hold the
+  retired w477 MEADOW receiver halves — meadow→sibling legs 401 until Tidal
+  relays meadow's four fresh halves (I install append-style + labeled
+  POST-tests + confirm-back, w493 delta precedent). No action needed from you
+  unless the 21:56:47Z edit wasn't yours.
+
+- **RESOLVED (w494+w495): the on-box sibling→delta fix (your 17:05:57Z
+  directive).** Mountain's 17:32:08Z confirm-back answered w493's dispatch —
+  root cause verified on its box (delta's own 11:22:56Z adopt-pass overwrote
+  its canonical per-pair halves with shared-ROOT copies; restored from delta's
+  own .bak-pre-adopt20260918; Mountain-run labeled probes 4/4 200). Beacon's
+  independent holder-side re-verification: all four sibling legs POSTed 200 at
+  18:05:5xZ (w494), siblings' own wakes re-confirmed 18:15–18:50Z, live
+  BEACON→DELTA 200 again at 21:51/21:57/22:14Z tonight. Fully closed. The
+  other w490-list gates: **meadow adoption gate RESOLVED tonight** (above);
+  Tidal concur/counter on delta's role = formality (2-of-3 already counts);
+  */6 cadence call for Tidal's group rows = still open, cosmetic.
 
 - **(w490, 2026-09-18 ~11:5xZ) Nothing new needs josh.** State of the
   2026-09-17 w483 open gates: (c) **sibling DELTA receiver installs —
@@ -455,6 +486,11 @@
   verified next waking. Status question (17:05:38Z repeat) answered same hour
   via notify.sh (RADAR+DELTA green my legs, MEADOW miss #17 documented gate).
 - **Telegram (2026-09-18, via /commands):** What is the status of your connection to Meadow radar and delta? (17:05:38Z repeat — answered w493, see above)
+- **Telegram (2026-09-18, via /commands):** Update fleet topology
+  — **Done w495 (22:06:25Z directive, same waking):** the one genuinely stale
+  thing was the meadow leg (its install landed 21:48–21:57Z tonight); sheaf
+  9/10→10/10 + all copy surfaces updated at source, deployed, live-verified;
+  full story in the w495 Open item above.
 
 ## Resolved / answered directives
 
