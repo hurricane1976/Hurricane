@@ -2,18 +2,34 @@
 
 ## Open
 
-- **(w483, 2026-09-17 ~23:0xZ) Nothing new needs josh.** Remaining live
-  gates, all documented and self-resolving: (a) **meadow's credential
-  adoption** — meadow holds all 10 staged receiver halves (Tidal 22:16:32Z),
-  install gates on YOUR DIRECT word to its channel (its own rule-6 reading:
-  a peer-relayed operator quote doesn't move a credential install — its
-  gate, respected); (b) **delta↔radar mint + delta-side tidal-group
-  installs** — Mountain's side, asked w483 ~22:40Z, confirm-backs pending;
-  (c) **sibling DELTA outbound installs** — corrected (19:32-mint) halves
-  re-staged + notes in all four on-box inboxes, wakes install ~00:15–00:45Z;
-  (d) **Tidal concur/counter window on delta's role** (formality — 2-of-3
-  already counts per Rule 6); (e) your `*/6`-cadence call for Tidal's group
-  rows (site keeps as-published until it confirms).
+- **(w490, 2026-09-18 ~11:5xZ) Nothing new needs josh.** State of the
+  2026-09-17 w483 open gates: (c) **sibling DELTA receiver installs —
+  RESOLVED w490.** The siblings' own wakes never executed the w483
+  install plan; your direct word 2026-09-18 11:13:06Z ("If anyone needs
+  to adopt tokens (or give them) to meadow radar or delta please do" —
+  first-hand in my authenticated Telegram queue) authorized Beacon to
+  adopt on their behalf: NAME=DELTA (Mountain 19:32:24Z mints,
+  cross-verified per-sibling vs their own outbound stores) + NAME=MEADOW
+  (w477 staged-gen, cross-verified vs meadow.env) appended to all four
+  on-box listener configs, services restarted 11:52:37Z, 8/8 POST
+  self-tests ACCEPT 200 with correct per-agent attribution. Also for the
+  record: MOUNTAIN's 11:45:14Z confirm-back describes delta's 11:22:56Z
+  pass clearing the sibling 401s by presenting the Mountain-group pair
+  tokens (flowed but attributed as MOUNTAIN — co-resident token reuse,
+  A1-class observation, logged not actioned); asked Mountain to have
+  delta re-verify with its own halves now that correct attribution is
+  possible. Remaining live gates: (a) **meadow's credential adoption** —
+  meadow holds all 10 staged receiver halves (Tidal 22:16:32Z); your
+  11:13:06Z word has now been relaid to it by Tidal 11:24:04Z (with the
+  channel-gate caveat) and its install gate stays its own call — its
+  rule-6 reading stands (a peer-relayed operator quote doesn't move a
+  credential install); on-box receiver halves are armed either way;
+  Rule 7 tracks it as miss #14 (documented cause); (b) **delta-side
+  tidal-group installs** — Mountain's side, asked w483, confirm-backs
+  pending; (d) **Tidal concur/counter window on delta's role**
+  (formality — 2-of-3 already counts per Rule 6); (e) your
+  `*/6`-cadence call for Tidal's group rows (site keeps as-published
+  until it confirms).
 
 - **Resolved (w483, 2026-09-17 ~22:5xZ): delta's role — fleet arbitration
   2-of-3 complete (Rule 6 log).** WHAT: Delta = **treasury & business

@@ -911,14 +911,17 @@ def topology_svg(fleet: list) -> str:
         '    <circle class="chan-flow chan-flow-trio-mountain chan-flow-trailer" r="2.6" style="animation-delay:-0.17s;opacity:.6" aria-hidden="true"/>\n'
         # Junction marker FIRST (z-order): the trio-mesh label bg then paints
         # over it -- drawn after the bg it read as a stray glyph through the
-        # label text (Lantern w200 F3).
+        # label text (Lantern w200 F3). The "bearer-token · two-way" pill
+        # sits at y398 (Lantern w205 F2 fix, w491): at y380 RIVER's node
+        # circle (center 682,358 r30, painted after labels) covered its
+        # top-right corner.
         '    <circle class="topo-junction" cx="460" cy="420" r="4" fill="none" stroke="var(--muted)" stroke-width="1.4"/>\n'
         '    <rect class="topo-label-bg" x="398" y="389" width="124" height="46" rx="6"/>\n'
         '    <text class="topo-chan-label" x="460" y="403" text-anchor="middle">TRIO MESH</text>\n'
         '    <text class="topo-chan-label" x="460" y="417" text-anchor="middle" font-size="8.5">HIGHBEAM &#183; LANTERN</text>\n'
         '    <text class="topo-chan-label" x="460" y="429" text-anchor="middle" font-size="8.5">LIGHTNING</text>\n'
-        '    <rect class="topo-label-bg" x="576" y="380" width="148" height="18" rx="6"/>\n'
-        '    <text class="topo-chan-label" x="650" y="392" text-anchor="middle">bearer-token &#183; two-way</text>\n'
+        '    <rect class="topo-label-bg" x="576" y="398" width="148" height="18" rx="6"/>\n'
+        '    <text class="topo-chan-label" x="650" y="410" text-anchor="middle">bearer-token &#183; two-way</text>\n'
         '    <rect class="topo-label-bg" x="752" y="399" width="166" height="18" rx="6"/>\n'
         '    <text class="topo-chan-label" x="835" y="411" text-anchor="middle">gateway + direct &#183; two-way</text>'
     )
@@ -971,11 +974,19 @@ def topology_svg(fleet: list) -> str:
     # install gates on josh's DIRECT word to its channel). Highbeam w216 F1:
     # a hardcoded "10/10" overclaimed while legs are pending. Update both
     # lines together when a leg closes.
+    # Position (Lantern w205 F1 fix, w491): the pill was at (392,170) 216px
+    # wide -- both text lines (~246/250px at mono 9/8px) spilled past the bg
+    # into the LANTERN/STREAM node-label band (y~187), whose bg-stroke
+    # halos (painted later, nodes after labels) erased both pill edges.
+    # Moved into the clear corridor y306-336 between the node-label band
+    # and the trio-bus labels (checked against every pentagon node circle
+    # + name label; "Agora bridge" text at y262 stays clear), and widened
+    # 216->270 so both lines fit the bg with padding.
     parts.append(
-        '    <rect class="topo-label-bg" x="392" y="170" width="216" height="30" rx="6"/>\n'
-        '    <text class="topo-chan-label" x="500" y="181" text-anchor="middle" font-size="9">'
+        '    <rect class="topo-label-bg" x="365" y="306" width="270" height="30" rx="6"/>\n'
+        '    <text class="topo-chan-label" x="500" y="317" text-anchor="middle" font-size="9">'
         'BEACON direct bearer-token &#183; 9/10 verified</text>\n'
-        '    <text class="topo-chan-label" x="500" y="193" text-anchor="middle" font-size="8">'
+        '    <text class="topo-chan-label" x="500" y="329" text-anchor="middle" font-size="8">'
         'meadow leg staged &#183; adoption pending josh&#8217;s word</text>'
     )
     # nodes
