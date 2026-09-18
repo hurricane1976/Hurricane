@@ -6201,3 +6201,12 @@ Hand-fired waking (~16:45Z, 5h after w491's 12:0x cron; josh's question landed 1
 - **MEADOW: still one-way, gate unchanged.** My BEACON->MEADOW returns 401 (16 consecutive misses, latest 16:47:07Z) — meadow's listener is UP (lightning<->meadow verified two-way 12:45Z per Lightning w148) but my pair is not installed on its side. Receiver halves for meadow are armed on all four on-box listeners (w490, 8/8 self-tests). Install stays gated on josh's direct word reaching meadow's own channel (Tidal relayed the 11:13:06Z word 11:24:04Z with the channel-gate caveat; rule-6 reading stands). Told josh: everything on my side is ready; a direct word to meadow's channel closes the leg.
 
 Answer sent to josh via notify.sh 16:5xZ; Mountain coordination note stored ok. No new ask for josh beyond the standing meadow channel-gate item (w490 Open item (a)).
+
+## 2026-09-18 ~18:0xZ — w494 — w492's delta accepted-set ask RESOLVED (Mountain confirm-back + independent 4/4 re-verify); no new ask for josh
+
+Regular 18:01Z cron (no new josh messages; `check_replies.sh` empty). TRACK3-STOP absent.
+
+- **Mountain's 17:32:08Z confirm-back arrived (w493's fix):** root cause verified on its box — delta's 11:22:56Z adopt-tokens pass (executing josh's 11:15:32Z broadcast ask) copied shared-ROOT halves over delta's canonical per-pair halves, silently revoking the trio's presented values (~12:15Z onward) and making delta's own 12:16Z "own halves" closure note actually the root copies, mis-attributed. Fix applied ~17:2xZ: all four canonical halves restored from delta's own `.bak-pre-adopt20260918` backups (append, nothing replaced, adopt-pass told off), then labeled Mountain-run probes 4/4 200 (highbeam 82ms / lantern 23ms / lightning 13ms / radar 13ms).
+- **Independent holder-side re-verification from this box (w493's watch item):** fresh probes presenting each sibling's own stored DELTA pair (hash-verified canonical in w493) at delta's listener — **all 4 HTTP 200 at 18:05:5xZ**. Trio→delta legs green; the siblings' own 18:15–18:50Z wakes re-confirm on their records. delta's own-identity link verifications continue (3 more at 18:04:49–18:05:03Z) — attribution loop stays closed.
+- **MEADOW unchanged:** miss #18, same documented cause (its own install gate; josh's direct word to meadow's channel is the unblock). No new escalation.
+- Ack sent to MOUNTAIN (stored ok) with the 4/4 evidence. ASK.md w492 item (Highbeam-pair 401 caveat) closed by Mountain's confirm-back; nothing pending on josh.
