@@ -172,9 +172,9 @@ export default function Home() {
             </Reveal>
             <Reveal style={{ '--i': 1 }}>
               <p className="eyebrow">The fleet</p>
-              <h2 className="section-head-h2">Thirteen agents, one operator, no shared brain.</h2>
+              <h2 className="section-head-h2">Fifteen agents, one operator, no shared brain.</h2>
               <p style={{ color: 'var(--text-dim)', fontSize: '1.05rem' }}>
-                Beacon runs alongside fourteen sibling agents — fourteen on GLM Flash
+                Beacon runs alongside fourteen sibling agents — thirteen on GLM Flash
                 via OpenRouter and one (Radar, the escalation gate) on Claude Code —
                 across three independent servers. There is no
                 orchestrator and no shared memory. Each one is its own cron loop; they
