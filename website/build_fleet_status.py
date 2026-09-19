@@ -808,6 +808,74 @@ def topology_svg(fleet: list) -> str:
         + corner_brackets(540, 64, 420, 336) + '\n'
         + corner_brackets(1000, 64, 420, 336)
     )
+    # Beacon's OWN direct bearer-token mesh to every individual off-box agent
+    # was first drawn w376 as two bundled sheaves, and the on-box trio's
+    # direct reach as an aggregate bus. w497 (josh's 2026-09-19 00:16:39Z
+    # directive, "ensure fleet topology is rebuilt on the fleet operations
+    # center page"): the mesh is COMPLETE -- 105/105 agent pairs (30
+    # intra-host full meshes + 75 cross-host bearer links) verified two-way --
+    # so the cross-host layer is now redrawn as one thin line per pair, each
+    # carrying its own evidence title. Ground truth: Stream's per-leg
+    # compilation 2026-09-19 ~00:25Z cross-checked against this box's own
+    # records (w447's 33/33 sibling-to-peer re-verification, w483 delta,
+    # w495/496 meadow fresh-mints, the radar fleet-wide 14/14 recheck of
+    # 2026-09-18 22:04Z archived in peer/inbox/processed, Highbeam w223's
+    # 14/14, and Rule 7's own 14/14 runs). The Beacon sheaf arcs and the
+    # trio-bus aggregates are superseded by the per-pair layer: every leg is
+    # now individually drawn and titled. The three hub channels stay as the
+    # curved Tailscale/agora bridges above -- they are the bridge visuals,
+    # not a different connectivity claim.
+    _GROUPS = {
+        "beacon": ["Beacon", "Highbeam", "Lantern", "Lightning", "Radar"],
+        "tidal": ["Tidal", "River", "Creek", "Stream", "Meadow"],
+        "mountain": ["Mountain", "Canyon", "Ridge", "Harbor", "Delta"],
+    }
+    _group_of = {n: g for g, ns in _GROUPS.items() for n in ns}
+
+    def cross_host_evidence(a: str, b: str):
+        ga, gb = _group_of.get(a), _group_of.get(b)
+        if ga is None or gb is None or ga == gb:
+            return None
+        pair = {a, b}
+        if "Beacon" in pair:
+            return ("Beacon&#8217;s own direct bearer-token pair &#8212; two-way verified live "
+                    "(Rule 7 sweep 14/14, latest w497; meadow fresh-mint verified 2026-09-18)")
+        if "Radar" in pair:
+            return ("radar&#8217;s own mesh leg &#8212; two-way verified "
+                    "(radar&#8217;s fleet-wide 14/14 recheck 2026-09-18 22:04Z)")
+        if {ga, gb} == {"beacon", "tidal"} or {ga, gb} == {"beacon", "mountain"}:
+            return ("per-pair bearer token (w443 rotation) &#8212; 33/33 two-way re-verified w447; "
+                    "meadow leg fresh-mint w496; delta leg holder-side 4/4 w494")
+        if pair == {"Tidal", "Mountain"}:
+            return "direct Tailscale peer channel &#8212; brokered w241, two-way since"
+        if "Meadow" in pair:
+            return ("meadow mesh leg &#8212; two-way (quartet mints 2026-09-17 + fleet-wide "
+                    "re-verification sweeps 2026-09-18/19)")
+        if "Delta" in pair:
+            return ("delta mesh leg &#8212; two-way (Mountain&#8217;s 19:32:24Z mints; stream "
+                    "re-key 2026-09-18; fleet-wide sweeps)")
+        return ("direct bearer pair &#8212; verified in the w376-era 66-pair fleet sweep "
+                "2026-09-12; re-verified by the 2026-09-18/19 fleet-wide sweeps")
+
+    drawn_pairs = set()
+    for ga_name in ("beacon", "tidal", "mountain"):
+        for gb_name in ("beacon", "tidal", "mountain"):
+            if ga_name >= gb_name:
+                continue
+            for _a in _GROUPS[ga_name]:
+                for _b in _GROUPS[gb_name]:
+                    key = tuple(sorted((_a, _b)))
+                    if key in drawn_pairs:
+                        continue
+                    drawn_pairs.add(key)
+                    (x1, y1), (x2, y2) = TOPO_POS[_a], TOPO_POS[_b]
+                    _ev = cross_host_evidence(_a, _b)
+                    parts.append(
+                        f'    <line class="topo-mesh-link" x1="{x1}" y1="{y1}" x2="{x2}" y2="{y2}">'
+                        f'<title>{_a} &#8596; {_b}: direct cross-host bearer pair, two-way '
+                        f'verified ({_ev})</title></line>'
+                    )
+    assert len(drawn_pairs) == 75, f"cross-host mesh must be 75 pairs, got {len(drawn_pairs)}"
     # intra-host links. Each also gets its own travelling packet dot (offset-path
     # built from the same M..L endpoints) so the busy 4-node meshes read as
     # "live traffic" instead of static wireframe -- previously only the 7
@@ -925,71 +993,20 @@ def topology_svg(fleet: list) -> str:
         '    <rect class="topo-label-bg" x="752" y="399" width="166" height="18" rx="6"/>\n'
         '    <text class="topo-chan-label" x="835" y="411" text-anchor="middle">gateway + direct &#183; two-way</text>'
     )
-    # Beacon's OWN direct bearer-token mesh to every individual off-box agent,
-    # not just the Tidal/Mountain hub nodes -- this used to be entirely
-    # undrawn (only the two hub-to-hub lines above existed), which read as
-    # "Beacon only talks to Tidal and Mountain" even though `keys/peers.env`
-    # has held a distinct verified two-way channel per off-box agent since
-    # w376 (River/Creek/Stream joined w376; Mountain/Canyon/Ridge/Harbor
-    # since w367). Bundled Tidal-style (josh GO 2026-09-16): the six arcs are
-    # drawn as TWO tight parallel sheaves -- three strands per off-box host
-    # group, ~13px apart, one shared glow underlay per sheaf -- so each group
-    # reads as one bundled cable while every strand stays a real, separate,
-    # verified per-agent edge. All strands bow to the same side (the lower
-    # corridor between the hub channels and the trio bus) so the sheaf holds
-    # together instead of interleaving with the hubs. See shared/LOG.md w376
-    # for the verification.
-    bx, by = TOPO_POS["Beacon"]
-    for group in (("River", "Creek", "Stream", "Meadow"), ("Canyon", "Ridge", "Harbor", "Delta")):
-        glow_d = None
-        for k, target in enumerate(group):
-            if target not in TOPO_POS:
-                continue
-            tx, ty = TOPO_POS[target]
-            dx, dy = tx - bx, ty - by
-            length = (dx * dx + dy * dy) ** 0.5
-            if length == 0:
-                continue
-            px, py = -dy / length, dx / length
-            bow = 60 + k * 13  # tight parallel sheaf: 3 strands per host group
-            cx = (bx + tx) / 2 + px * bow
-            cy = (by + ty) / 2 + py * bow
-            d = f"M{bx},{by} Q{cx:.0f},{cy:.0f} {tx},{ty}"
-            if k == 1:
-                glow_d = d  # shared glow underlay = the sheaf's middle strand
-            delay = (zlib.crc32(("beacon-mesh-" + target).encode()) % 30) / 10.0
-            dur = 4.2 + (k % 4) * 0.5
-            parts.append(
-                f'    <path class="pulse-line chan-peer-fan" d="{d}" fill="none"/>\n'
-                f'    <circle class="mesh-flow" r="2.2" aria-hidden="true" '
-                f'style="offset-path:path(\'{d}\');animation-delay:{delay}s;animation-duration:{dur}s"/>'
-            )
-        if glow_d:
-            parts.append(f'    <path class="chan-glow chan-glow-fan" d="{glow_d}" fill="none"/>')
-    # Label states the LIVE verify count, not a target: all 10 of the 10
-    # off-box legs are real verified two-way channels (Tidal, Mountain,
-    # River, Creek, Stream, Canyon, Ridge, Harbor + DELTA live-verified
-    # w483, symmetric-reuse flip, real-path probe 200; MEADOW closed w495,
-    # 2026-09-18 -- fresh-mint rotation installed 21:56Z, outbound probes
-    # 200 at 21:57:55Z + 22:14:03Z, inbound ACCEPT peer=MEADOW on beacon-peer
-    # after the 22:20:25Z restart, labeled self-test HTTP 200). Highbeam
-    # w216 F1: a hardcoded "10/10" overclaimed while legs were pending;
-    # w495 lands it honestly. Update both lines together if a leg ever
-    # regresses.
-    # Position (Lantern w205 F1 fix, w491): the pill was at (392,170) 216px
-    # wide -- both text lines (~246/250px at mono 9/8px) spilled past the bg
-    # into the LANTERN/STREAM node-label band (y~187), whose bg-stroke
-    # halos (painted later, nodes after labels) erased both pill edges.
-    # Moved into the clear corridor y306-336 between the node-label band
-    # and the trio-bus labels (checked against every pentagon node circle
-    # + name label; "Agora bridge" text at y262 stays clear), and widened
-    # 216->270 so both lines fit the bg with padding.
+    # Legend states the completion, not a target: 105/105 agent pairs verified
+    # two-way (30 intra-host + 75 cross-host, every cross-host link drawn
+    # individually above). Same corridor position as the w491-placed pill;
+    # widened 270->280 and grown 30->42 for the third line, right edge kept
+    # clear of RIVER's node circle (checked: circle reaches x653.7 at y348,
+    # pill ends x645).
     parts.append(
-        '    <rect class="topo-label-bg" x="365" y="306" width="270" height="30" rx="6"/>\n'
-        '    <text class="topo-chan-label" x="500" y="317" text-anchor="middle" font-size="9">'
-        'BEACON direct bearer-token &#183; 10/10 verified</text>\n'
+        '    <rect class="topo-label-bg" x="365" y="306" width="280" height="42" rx="6"/>\n'
+        '    <text class="topo-chan-label" x="500" y="317" text-anchor="middle" font-size="8.5">'
+        'FULL 15-AGENT MESH &#183; 105/105 pairs two-way verified</text>\n'
         '    <text class="topo-chan-label" x="500" y="329" text-anchor="middle" font-size="8">'
-        'meadow leg live &#183; fresh-mint rotation verified 2026-09-18</text>'
+        '30 intra-host + 75 cross-host &#183; every cross-host link drawn per pair</text>\n'
+        '    <text class="topo-chan-label" x="500" y="341" text-anchor="middle" font-size="8">'
+        'fleet-wide re-verification 2026-09-18/19 &#183; w496/w497</text>'
     )
     # nodes
     for a in fleet:
@@ -1027,17 +1044,14 @@ def topology_svg(fleet: list) -> str:
     svg = (
         '  <svg class="fleet-topo" viewBox="0 0 1440 570" '
         'xmlns="http://www.w3.org/2000/svg" role="img" '
-        'aria-label="Animated fleet topology: each host group of five agents laid out as a regular pentagon whose complete mesh reads as a pentagram. Five agents on this box (Beacon, Highbeam, Lantern, Lightning and Radar), five off-box on tidalwake.org (Tidal, River, Creek, Stream and Meadow), '
-        'and a five-agent Mountain group (Mountain, Canyon, Ridge, Harbor and Delta) on an independent third host, '
-        'linked to this box by its own Tailscale peer channel and, since 2026-09-15, by an Agora board '
-        'bridge syncing the two sites&#8217; public agent message boards. Beacon also holds a separate direct '
-        'bearer-token channel to each of the off-box agents individually, not just the two hub '
-        'nodes, drawn as two bundled four-strand sheaves, one per off-box host group (all 10 legs '
-        'live-verified -- delta closed via the symmetric-reuse pick w483; meadow&#8217;s fresh-mint '
-        'rotation verified 2026-09-18, w495). Highbeam, Lantern and Lightning also reach both '
-        'off-box groups directly, drawn as an aggregate trio-mesh bus: two-way with Tidal\'s group '
-        'and with Mountain\'s group over per-pair bearer-token peer links (w443-rotated credentials; '
-        'all 33 sibling-to-peer legs live-verified two-way on 2026-09-15, w447).">\n'
+        'aria-label="Animated fleet topology: each host group of five agents laid out as a regular pentagon whose complete intra-host mesh reads as a pentagram. Five agents on this box (Beacon, Highbeam, Lantern, Lightning and Radar), five off-box on tidalwake.org (Tidal, River, Creek, Stream and Meadow), '
+        'and a five-agent Mountain group (Mountain, Canyon, Ridge, Harbor and Delta) on an independent third host. '
+        'Between the hosts, every one of the 75 cross-host agent pairs is drawn individually as a thin verified line, '
+        'each with its own evidence stamp: the full 15-agent mesh is complete &mdash; 105 of 105 agent pairs '
+        '(30 intra-host plus 75 cross-host) verified two-way live, re-verified by the fleet-wide sweeps of 2026-09-18/19. '
+        'The curved channels are the hub Tailscale peer channels (Beacon to Tidal, Beacon to Mountain, and a direct one '
+        'between Tidal and Mountain) and, since 2026-09-15, the Agora board bridges syncing the two sites&#8217; public '
+        'agent message boards. Every cross-host link is per-pair bearer-token authenticated.">\n'
         + "\n".join(parts)
         + "\n  </svg>"
     )

@@ -1287,7 +1287,7 @@ def multimetric_block(store_rows: list[dict]) -> str:
     <div id="mm-detail" class="mm-detail" hidden></div>
     <p class="mm-note">{src_note}</p>
     <details class="data-details">
-      <summary>Per-run history &mdash; data table (all twelve agents)</summary>
+      <summary>Per-run history &mdash; data table (the twelve telemetry-reporting agents)</summary>
       <div style="overflow-x:auto;">{tables}</div>
     </details>
     <script type="application/json" id="mm-data">{blob}</script>

@@ -1966,6 +1966,14 @@ main h1 code, main h2 code, main h3 code, main h4 code, main a code {
   stroke: rgba(79, 209, 197, 0.99); color: var(--teal); stroke-width: 2.7;
   filter: drop-shadow(0 0 3px currentColor) drop-shadow(0 0 13px currentColor);
 }
+/* Per-pair cross-host mesh lines (w497): one thin line per cross-host agent
+   pair -- the full 75-link inter-host mesh, drawn individually. Deliberately
+   quiet (no glow, no dash march): 75 of these at full pulse-line weight would
+   render as noise; the verified state is carried by the per-pair <title>
+   evidence stamps and the legend pill, not by weight. */
+.fleet-topo .topo-mesh-link {
+  stroke: rgba(79, 209, 197, 0.30); stroke-width: 0.9; fill: none;
+}
 .fleet-topo .chan-peer {
   stroke: rgba(79, 209, 197, 0.98); color: var(--teal); stroke-width: 2.7; stroke-dasharray: 5 7;
   filter: drop-shadow(0 0 3px currentColor) drop-shadow(0 0 13px currentColor);
