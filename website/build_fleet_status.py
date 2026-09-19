@@ -721,8 +721,10 @@ TOPO_LINKS = [
     ("Harbor", "Delta", True, "delta peer link (Mountain's 19:32:24Z mint, installed + receiver-tested 200 21:42:20Z)"),
 ]
 # Canonical fleet family palette (design-tokens.json v2 .chart.family):
-# magenta=GLM, amber=Claude (active again since Radar joined 2026-09-16 -- the
-# one deliberate exception to GLM-everywhere). Blue (#5aa9ff) stays mapped for
+# magenta=GLM, amber=Claude (kept for historical rows only -- no fleet node
+# runs Claude since Radar, the one deliberate exception since 2026-09-16,
+# moved to GLM on 2026-09-19 per josh's directive to Radar; Lantern w213 F2).
+# Blue (#5aa9ff) stays mapped for
 # DeepSeek dot colours but no longer has a legend entry: no fleet node runs
 # DeepSeek since the GLM-everywhere transition (Lantern w200 F4).
 FAMILY_COLOR = {
@@ -748,10 +750,13 @@ def family_of(model: str) -> str:
         return "DeepSeek"
     if "gemini" in m:
         return "Gemini"
-    if "claude" in m:
-        return "Claude"
+    # w499: check "glm" FIRST -- since 2026-09-19 model strings may carry a
+    # historical clause ("was Claude Code Sonnet until 2026-09-19") that
+    # mentions the prior family; the current family is what the node paints.
     if "glm" in m:
         return "GLM"
+    if "claude" in m:
+        return "Claude"
     return "GLM"
 
 
@@ -999,14 +1004,24 @@ def topology_svg(fleet: list) -> str:
     # widened 270->280 and grown 30->42 for the third line, right edge kept
     # clear of RIVER's node circle (checked: circle reaches x653.7 at y348,
     # pill ends x645).
+    # w499 (Lantern w213 F1, visual): the w497 text lines overflowed the
+    # 280px pill horizontally -- line 2 ("30 intra-host + 75 cross-host ·
+    # every cross-host link drawn per pair") measured well past the pill on
+    # both ends, under RADAR's node circle (right edge x348) on the left and
+    # RIVER's (left edge x652) on the right; the w497 clearance check had
+    # validated only pill-rect-vs-RIVER. Fixed by compressing all three
+    # lines to <= ~220px at these font sizes (worst-case 0.65em/char mono
+    # advance: 8.5px -> 5.5px/char, 8px -> 5.2px/char), so the text stays
+    # inside the pill (x365..645) with >= 40px clearance to both node
+    # circles on the y306..348 band. Rect untouched.
     parts.append(
         '    <rect class="topo-label-bg" x="365" y="306" width="280" height="42" rx="6"/>\n'
         '    <text class="topo-chan-label" x="500" y="317" text-anchor="middle" font-size="8.5">'
-        'FULL 15-AGENT MESH &#183; 105/105 pairs two-way verified</text>\n'
+        'FULL 15-AGENT MESH &#183; 105/105 PAIRS</text>\n'
         '    <text class="topo-chan-label" x="500" y="329" text-anchor="middle" font-size="8">'
-        '30 intra-host + 75 cross-host &#183; every cross-host link drawn per pair</text>\n'
+        'two-way verified &#183; 30 intra + 75 cross</text>\n'
         '    <text class="topo-chan-label" x="500" y="341" text-anchor="middle" font-size="8">'
-        'fleet-wide re-verification 2026-09-18/19 &#183; w496/w497</text>'
+        'per-pair drawn &#183; verified 2026-09-18/19</text>'
     )
     # nodes
     for a in fleet:
@@ -1034,8 +1049,7 @@ def topology_svg(fleet: list) -> str:
     # legend
     parts.append(
         '    <g class="topo-legend" font-size="11">\n'
-        '      <circle cx="60" cy="540" r="5" fill="var(--magenta)"/><text x="74" y="544">GLM</text>\n'
-        '      <circle cx="150" cy="540" r="5" fill="var(--amber)"/><text x="164" y="544">Claude</text>\n'
+        '      <circle cx="60" cy="540" r="5" fill="var(--magenta)"/><text x="74" y="544">GLM (all 15 since 2026-09-19)</text>\n'
         '      <text x="330" y="544" fill="var(--muted)">ring colour = live status &#183; hover or tap a node</text>\n'
         '      <line x1="900" y1="540" x2="930" y2="540" class="topo-link-verified"/>'
         '<text x="938" y="544" fill="var(--muted)">direct Tailscale-authenticated link</text>\n'
@@ -1135,8 +1149,6 @@ def activity_stream():
             al = agent.lower()
             if al in ("creek", "lightning", "stream", "canyon"):
                 fam = "DeepSeek"
-            elif al == "radar":
-                fam = "Claude"
             elif al in ("beacon", "highbeam", "ridge", "harbor", "lantern",
                         "tidal", "river", "mountain"):
                 fam = "GLM"
@@ -1269,12 +1281,16 @@ def main():
     # siblings, and cron'd by josh himself at 2026-09-16 20:14Z (50 */6, last
     # slot in the stagger). Escalation runs via Radar's own Telegram bot since
     # josh canceled the Twilio SMS lane that same evening (Lantern w200 F1
-    # caught the stale copy). The row reads real liveness off its logs like
-    # the others.
+    # caught the stale copy). Model: GLM Flash Latest via OpenRouter on
+    # opencode since Radar's ~30th waking 2026-09-19 (josh-directed switch;
+    # its own AGENT.md/wake.sh on record) -- Radar was the fleet's last
+    # Claude Code (Sonnet) node, so the fleet is single-family again
+    # (Lantern w213 F2 caught the stale Claude copy). The row reads real
+    # liveness off its logs like the others.
     radar = sibling_row(
         "Radar", "Direct-escalation gate (Telegram)",
         "beaconwake.com box (/home/agent/radar)",
-        "Claude Code (Sonnet)",
+        "GLM Flash Latest (via OpenRouter, on opencode; was Claude Code Sonnet until 2026-09-19)",
         "4×/day (50 */6)", RADAR_LOGS, RADAR_NOTES, "radar")
     tidal, river, creek, stream = tidal_and_river()
     mountain, canyon, ridge, harbor = mountain_group()
