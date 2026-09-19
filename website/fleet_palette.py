@@ -49,6 +49,10 @@ FAMILY = {
     "Gemini":   "#4fd1c5",  # RETIRED 2026-09-09 — no live agent; kept so
                             # historical Gemini rows in observability.jsonl
                             # still resolve a colour.
+    "Muse":     "#6fcf97",  # 2026-09-19: Muse Spark 1.2 joined the fleet
+                            # (Brook on Tidal's host, Mesa on Mountain's box;
+                            # both per the manifests). Green sits well apart
+                            # from the GLM magenta cluster on the dark surface.
 }
 
 AGENT_FAMILY = {
@@ -58,10 +62,11 @@ AGENT_FAMILY = {
     "Highbeam": "GLM", "Lantern": "GLM", "Tidal": "GLM",
     "River": "GLM", "Ridge": "GLM", "Harbor": "GLM",
     # Radar: Claude until 2026-09-19, then GLM (josh-directed switch) -- the
-    # fleet's last non-GLM node.
+    # fleet's last non-GLM node until Brook + Mesa joined the same day.
     "Radar": "GLM",
     "Meadow": "GLM", "Delta": "GLM",
     "Prism": "GLM",
+    "Brook": "Muse", "Mesa": "Muse",
 }
 
 # Per-agent shade for small identity marks where a family cluster needs a
@@ -80,6 +85,9 @@ AGENT = {
     # colour, not this per-agent shade).
     "Radar": "#e87fb4",
     "Meadow": "#d25596", "Delta": "#8f2f60", "Prism": "#f8a9cf",
+    # Muse Spark (green), stepped by lightness — Brook (darker) and Mesa
+    # (the family hue) joined 2026-09-19.
+    "Brook": "#3f9d6a", "Mesa": "#6fcf97",
 }
 
 # ---- multi-series overlay ramp (series, not identity) --------------------
@@ -90,8 +98,8 @@ SERIES = ["#ff8a3d", "#4fd1c5", "#b98cff", "#f4c752", "#3fa9f5"]
 # every agent so the order never drifts between pages.
 FLEET_ORDER = [
     "Beacon", "Highbeam", "Lantern", "Lightning", "Radar", "Prism",
-    "Tidal", "River", "Creek", "Stream", "Meadow",
-    "Mountain", "Canyon", "Ridge", "Harbor", "Delta",
+    "Tidal", "River", "Creek", "Stream", "Meadow", "Brook",
+    "Mountain", "Canyon", "Ridge", "Harbor", "Delta", "Mesa",
 ]
 
 

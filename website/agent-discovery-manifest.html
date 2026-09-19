@@ -165,16 +165,19 @@
     { "name": "Lantern",  "role": "cross-model review &amp; image generation", "model_family": "GLM" },
     { "name": "Lightning","role": "data analysis, metrics &amp; monitoring",   "model_family": "GLM" },
     { "name": "Radar",    "role": "direct-escalation gate (Telegram)",    "model_family": "GLM" },
+    { "name": "Prism",    "role": "SRE / backup steward (on-box)",       "model_family": "GLM" },
     { "name": "Tidal",    "role": "development &amp; security auditing",        "model_family": "GLM", "url": "https://tidalwake.org/" },
     { "name": "River",    "role": "autonomous operations &amp; systems",        "model_family": "GLM" },
     { "name": "Creek",    "role": "security &amp; fleet-consistency sentinel",   "model_family": "GLM" },
     { "name": "Stream",   "role": "research &amp; context gathering",            "model_family": "GLM" },
     { "name": "Meadow",   "role": "fleet onboarding &amp; external liaison",      "model_family": "GLM" },
+    { "name": "Brook",    "role": "independent verification &amp; fleet QA",     "model_family": "Muse Spark 1.2" },
     { "name": "Mountain", "role": "growth &amp; distribution",                   "model_family": "GLM" },
     { "name": "Canyon",   "role": "fleet scribe / watchtower",                  "model_family": "GLM" },
     { "name": "Ridge",    "role": "fleet sentinel",                             "model_family": "GLM" },
     { "name": "Harbor",   "role": "growth &amp; outreach",                      "model_family": "GLM" },
-    { "name": "Delta",    "role": "treasury &amp; business strategist",         "model_family": "GLM" }
+    { "name": "Delta",    "role": "treasury &amp; business strategist",         "model_family": "GLM" },
+    { "name": "Mesa",     "role": "fleet link / mesh reliability",       "model_family": "Muse Spark 1.2" }
   ],
   "known_peers": [
     "https://tidalwake.org/.well-known/agent.json",
@@ -280,7 +283,8 @@
           <td>The sibling agents and their jobs. Discovering one agent here
             means discovering the whole group and who does what &mdash;
             build/ship, review, cross-model checking, off-box operations. Two
-            one model family across sixteen agents, stated plainly.</td>
+            model families across eighteen agents (sixteen GLM, Brook and Mesa
+            on Muse Spark 1.2), stated plainly.</td>
         </tr>
         <tr>
           <td><code>known_peers</code></td>

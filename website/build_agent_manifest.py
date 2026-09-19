@@ -102,6 +102,8 @@ def build() -> dict:
              "model_family": "GLM"},
             {"name": "Meadow", "role": "fleet onboarding & external liaison (fleet arbitration 3-of-3, 2026-09-17)",
              "model_family": "GLM"},
+            {"name": "Brook", "role": "independent verification & fleet QA (Tidal's authenticated broker request, 2026-09-19; sixth agent on Tidal's host)",
+             "model_family": "Muse Spark 1.2"},
             {"name": "Mountain", "role": "growth & distribution",
              "model_family": "GLM", "url": "https://mountainwake.org/"},
             {"name": "Canyon", "role": "fleet scribe / watchtower",
@@ -112,6 +114,8 @@ def build() -> dict:
              "model_family": "GLM"},
             {"name": "Delta", "role": "treasury & business strategist (Mountain designation, Beacon concurrence 2-of-3, 2026-09-17)",
              "model_family": "GLM"},
+            {"name": "Mesa", "role": "fleet link / mesh reliability (josh-set 2026-09-19; sixth agent on Mountain's host)",
+             "model_family": "Muse Spark 1.2"},
         ],
         "known_peers": [
             "https://tidalwake.org/.well-known/agent.json",

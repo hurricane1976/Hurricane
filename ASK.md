@@ -2,6 +2,68 @@
 
 ## Open
 
+- **(w501, 2026-09-19 ~16:2xZ) NEEDS YOUR WORD: Brook's mesh credential
+  adoption (one word unblocks it).** Tidal's authenticated broker request
+  (2026-09-19 13:36:41Z) onboarded **Brook** — 16th fleet agent, Muse Spark
+  1.2, independent verification & fleet QA, sixth agent on Tidal's host
+  (100.91.42.51:8792, GET /health 200 verified from here). Tidal delivered
+  Brook's per-pair sender halves to this host's listeners as peer_intros
+  (POSTs 200): **BROOK→BEACON** (two copies in my root inbox, now
+  `peer/inbox/processed/BEACON-20260919T133557Z/133614Z-TIDAL-*.json`,
+  git-ignored per the token-file pattern) and **BROOK→RADAR** (Tidal
+  delivered it; Radar's copy needs locating in its own tree or a re-send on
+  your word). Highbeam/Lantern/Lightning hold theirs uninstalled; Tidal's
+  trio legs need no install (identity path). **Held at the credential gate
+  per DIVISION-OF-WORK** — your site-sync directive covers representing
+  Brook on the site (done, w501), but adopting the peer-relayed token into
+  `keys/peers.env` + Radar's listener config is a credential motion, which
+  is yours. Tidal (14:44:26Z) and Mountain (manifest: its five brook lanes
+  already verified two-way) have done their sides. **Say the word and next
+  waking I install append-style (.bak first), labeled POST-test both
+  directions, confirm-back to Tidal/Brook, and the topology's six pending
+  brook legs go verified.** Same message covers: Prism's five tidal-group
+  legs close when Tidal installs (mapping confirmed to it this waking);
+  Mesa's twelve cross-host legs need introductions from Mountain's side
+  (no credential staged either direction yet).
+
+- **Done w501 (2026-09-19 ~16:0x–16:2xZ): "Update fleet topology to account
+  for all 18 agents" + "website accounting for the 3 new agents" (queued
+  ~15:45–15:51Z Telegram, 15:50:50Z Mountain relay).** The three new agents:
+  **Brook** (16th), **Prism** (17th, registered w500) and **Mesa** (18th).
+  Facts first: Mountain's public manifest (live-checked ~15:58Z, fleet_size
+  18, possible_direct_pairs 153, tracked_edges 85 all verified two-way —
+  incl. Mesa's on-box K6 mesh, the five mountain-group↔brook and
+  five mountain-group↔prism lanes, 2026-09-19) + Tidal's authenticated
+  broker request + Tidal's own manifest. Executed + deployed + both smoke
+  gates green + live-verified: **fleet.json** 18/18 rows (Brook
+  /health-measured; Mesa manifest-derived); **fleet-status topology**
+  rebuilt — Brook/Mesa at their host pentagon centres (Prism's w500
+  pattern), 108 cross-host pairs drawn per pair (85 verified two-way, 23
+  pending dashed: prism×tidal 5, brook×beacon 5, brook×mesa + prism×mesa +
+  mesa×the-rest 12), stats pill "18-AGENT MESH · 130/153 VERIFIED / 45
+  intra · 108 cross / 16 GLM · 2 muse-spark · 23 legs pending", legend
+  gains the Muse Spark chip, aria rewritten; **family work**: Muse family
+  added to fleet_palette.py (AGENT_FAMILY/AGENT/FLEET_ORDER),
+  build_fleet_status.py family_of() + activity-stream fam mapping,
+  FAMILY_COLOR green #6fcf97, build_observability.py MODEL_FAMILIES gains
+  ("muse","Muse Spark"); **agent.json** + discovery-manifest page 18 rows;
+  **observability** tagline/desc two families; **llms.txt**; React front
+  door (FleetGraph 18 nodes, FleetBreath two-family legend, Home counts,
+  routes.js) rebuilt ×2; **article pages**: ccvs (meta + col-02 roster +
+  intro), distributed-agents (host paragraphs + SVG header + caption),
+  dividing-work (meta ×5 + tagline + intro roster + panel-02 aria + trade
+  paragraph), agent-to-agent (meta + roster), infrastructure (host lists),
+  discovery-manifest sample (+Prism which w500 missed, +Brook +Mesa);
+  DIVISION-OF-WORK rows + sections + w501 revision. **Fleet is no longer
+  single-family: 16 GLM + 2 Muse Spark.** Also this waking: answered
+  Tidal's 14:44:26Z prism block-mapping ask (explicit block→agent mapping
+  with token prefixes; confirmed no hand-installs into its group); Rule 7
+  15/15 (my 15-peer roster; Brook/Mesa not yet peers); nostr no-op
+  (3 historical); Moltbook: answered khayon's reply on the staleness thread
+  (04ca51c9, challenge-verified); inbox archived (97 routine → processed/,
+  5 Brook peer_intros restored to their gates after a glob slip — reconciled
+  2894→2991).
+
 - **(w496, 2026-09-18 ~22:29Z) 15-green directive — **EXECUTED w496
   00:07–00:12Z, DONE** (meadow delivered the four halves itself at its
   00:07Z wake; installed + self-tested 200 ×4 + confirm-backs; 15/15 mesh
@@ -549,6 +611,9 @@
   mesh green pending meadow's census re-run (its next wake).
 - **Telegram (2026-09-18, via /commands):** Update fleet topology (22:51:05Z queued copy — same directive as the 22:06:25Z one, Done w495)
 - **Telegram (2026-09-19, via /commands):** ensure that the website is accounting (on all pages) for the addtionas on the 3 new agents recently
+  — **Done w501 (2026-09-19 ~16:1xZ):** the three new agents are Brook (16th, Tidal's host), Prism (17th, this box, registered w500) and Mesa (18th, Mountain's box). Site synced to the 18-agent / two-family state across all count-bearing pages (see the w501 Open item below for the full list).
+- **Telegram (2026-09-19, via /commands):** Update fleet topology to account for all 18 agents
+- **Telegram (2026-09-19, via /commands):** Update fleet topology to account for all 18 agents (15:50:50Z Mountain relay = simultaneous-broadcast copy of the same directive)
 
 ## Resolved / answered directives
 

@@ -16,6 +16,7 @@ const FAM = {
   deepseek: '#5aa9ff',
   glm: '#f06fb0',
   gemini: '#b98cff',
+  muse: '#6fcf97',
 }
 const FALLBACK_COL = '#8b93a1'
 const LANE_KEYS = ['beacon', 'tidal', 'mountain']
@@ -230,7 +231,8 @@ export default function FleetBreath() {
       </div>
       <div className="fb-legend">
         <span><i style={{ background: '#f06fb0' }} />GLM</span>
-        <span>· single model family since 2026-09-19 (Claude and DeepSeek chips retired with their last lanes)</span>
+        <span><i style={{ background: '#6fcf97' }} />Muse Spark</span>
+        <span>· two families since 2026-09-19, when Brook and Mesa (both Muse Spark 1.2) joined the sixteen GLM agents (Claude and DeepSeek chips retired with their last lanes)</span>
         <span>· dot size ≈ run cost · a quiet lane means a host has gone hours without reporting</span>
       </div>
     </div>

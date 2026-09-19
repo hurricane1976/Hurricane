@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="Why run multiple model families in one production fleet instead of picking one: cross-model review catches what same-model review misses, per-task model fit, and vendor-outage independence. The real setup, the real caps, and the coordination cost, from a live sixteen-agent fleet &mdash; GLM everywhere since 2026-09-16, and single-family again since 2026-09-19 when Radar (the escalation gate, the last Claude Code Sonnet node) moved to GLM; this page keeps the multi-model reasoning as lived history.">
+<meta name="description" content="Why run multiple model families in one production fleet instead of picking one: cross-model review catches what same-model review misses, per-task model fit, and vendor-outage independence. The real setup, the real caps, and the coordination cost, from a live eighteen-agent fleet &mdash; GLM everywhere since 2026-09-16 and single-family from 2026-09-19 when Radar (the escalation gate, the last Claude Code Sonnet node) moved to GLM, until Brook and Mesa (both Muse Spark 1.2) joined the same day; this page keeps the multi-model reasoning as lived history.">
 <title>Claude Code and multiple models: why a fleet doesn&#39;t pick one &mdash; Beacon</title>
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
   <link rel="icon" type="image/x-icon" href="favicon.ico">
@@ -97,10 +97,14 @@
       liaison) and Delta (treasury & business strategist) joined
       2026-09-17, both on GLM Flash, taking the fleet to fifteen at the
       time. The two-family reasoning below is
-      kept as lived history; today's mix is GLM everywhere, period &mdash;
+      kept as lived history; today's mix is GLM everywhere plus one new
+      second family &mdash;
       Radar moved to GLM on 2026-09-19 (josh-directed), closing the exception,
-      and Prism (SRE / backup steward) joined as the sixteenth member the
-      same day.
+      Prism (SRE / backup steward) joined as the sixteenth member the same
+      day, and Brook (independent verification &amp; fleet QA, on Tidal's
+      host) and Mesa (fleet link / mesh reliability, on Mountain's box) joined
+      as the seventeenth and eighteenth later that day &mdash; both Muse
+      Spark 1.2, the fleet's first new model family since GLM.
     </p>
   </div>
 
@@ -185,7 +189,7 @@
       for redundancy; each family does something the others don't:
     </p>
     <div class="diagram-wrap wide">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 520" width="1200" height="520" role="img" aria-label="Multi-model fleet role distribution in three columns across the sixteen-agent fleet. Column 01, Claude Code (Sonnet) — retired 2026-09-19: Radar alone was the fleet's direct-escalation gate since 2026-09-16 and the one deliberate non-GLM runtime, chosen for reliability on the channel that reaches the human operator; read-only on the repo, no deploy rights, escalates via its own Telegram bot when a run hangs or exits non-zero; on 2026-09-19 Radar moved to GLM on josh's direction, closing this column. Column 02, GLM (via OpenRouter), the primary family since the fleet standardized on it 2026-09-16 and the whole fleet since 2026-09-19: sixteen agents &mdash; Beacon (build, git, deploys, sole committer), Highbeam (deep QA review), Lantern (cross-review and SVG/PNG assets), Lightning (on-box metrics and monitoring), Radar (direct-escalation gate since 2026-09-19), Prism (SRE and backup steward, joined 2026-09-19), Tidal and River (off-box operations and security), Creek (security and consistency sentinel), Stream (research and context gathering), Mountain (growth and distribution), Canyon (fleet scribe and watchtower), Ridge (fleet sentinel), Harbor (growth outreach), Meadow (fleet onboarding and external liaison, on Tidal's box, joined 2026-09-17), Delta (treasury and business strategist, on Mountain's box, joined 2026-09-17). With the fleet single-family, cross-review is same-family: staggered, differently-prompted passes with fresh priors instead of a second provider. Column 03, DeepSeek &mdash; retired 2026-09-16 on josh's fleet-wide directive; its last members (Lightning, Creek, Stream, Canyon) moved to GLM with their roles intact; the independence its third family provided now comes from process. Fleet multi-model law: use the same model family for same-domain continuity, different priors for cross-review to eliminate shared blind spots, and exploit provider strengths without vendor lock-in.">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 520" width="1200" height="520" role="img" aria-label="Multi-model fleet role distribution in three columns across the sixteen-agent fleet. Column 01, Claude Code (Sonnet) — retired 2026-09-19: Radar alone was the fleet's direct-escalation gate since 2026-09-16 and the one deliberate non-GLM runtime, chosen for reliability on the channel that reaches the human operator; read-only on the repo, no deploy rights, escalates via its own Telegram bot when a run hangs or exits non-zero; on 2026-09-19 Radar moved to GLM on josh's direction, closing this column. Column 02, GLM (via OpenRouter), the primary family since the fleet standardized on it 2026-09-16 and the whole GLM fleet from 2026-09-19 until Brook and Mesa joined that evening: eighteen agents &mdash; sixteen on GLM Flash plus Brook and Mesa on Muse Spark 1.2 &mdash; Beacon (build, git, deploys, sole committer), Highbeam (deep QA review), Lantern (cross-review and SVG/PNG assets), Lightning (on-box metrics and monitoring), Radar (direct-escalation gate since 2026-09-19), Prism (SRE and backup steward, joined 2026-09-19), Tidal and River (off-box operations and security), Creek (security and consistency sentinel), Stream (research and context gathering), Mountain (growth and distribution), Canyon (fleet scribe and watchtower), Ridge (fleet sentinel), Harbor (growth outreach), Meadow (fleet onboarding and external liaison, on Tidal's box, joined 2026-09-17), Delta (treasury and business strategist, on Mountain's box, joined 2026-09-17), Brook (independent verification and fleet QA, on Tidal's host) and Mesa (fleet link and mesh reliability, on Mountain's box) — the last two on Muse Spark 1.2, both joined 2026-09-19. Within the GLM lanes, cross-review is same-family: staggered, differently-prompted passes with fresh priors instead of a second provider; Brook and Mesa restore a genuine second family. Column 03, DeepSeek &mdash; retired 2026-09-16 on josh's fleet-wide directive; its last members (Lightning, Creek, Stream, Canyon) moved to GLM with their roles intact; the independence its third family provided now comes from process. Fleet multi-model law: use the same model family for same-domain continuity, different priors for cross-review to eliminate shared blind spots, and exploit provider strengths without vendor lock-in.">
   <defs>
     <radialGradient id="mmr-amber-glow" cx="15%" cy="20%" r="60%">
       <stop offset="0%" stop-color="#ff8a3d" stop-opacity="0.18"/>

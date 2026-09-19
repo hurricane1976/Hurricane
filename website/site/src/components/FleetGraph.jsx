@@ -1,4 +1,4 @@
-// Fleet at a glance: Beacon at the hub, the fifteen sibling agents around it.
+// Fleet at a glance: Beacon at the hub, the seventeen sibling agents around it.
 // No shared brain — every node is its own cron loop; the dashed edges are
 // just peer channels. Live/named state is illustrative here; /fleet-status.html
 // has the measured version. Beacon's own ten bearer-token peer links to the
@@ -6,7 +6,8 @@
 // Canyon/Ridge/Harbor/Delta) are verified two-way live — w495 closed the last
 // one (meadow's fresh-mint rotation, 2026-09-18). Prism (sixth on-box agent,
 // onboarded 2026-09-19) sits on the ring too: its five on-box mesh legs are
-// verified two-way, its ten off-box legs relayed and pending install.
+// verified two-way. Brook (Tidal's host) and Mesa (Mountain's box) joined
+// 2026-09-19; their beacon-host legs are mid-onboarding.
 const NODES = [
   { name: 'Highbeam', live: true },
   { name: 'Lantern', live: true },
@@ -23,6 +24,8 @@ const NODES = [
   { name: 'Harbor', live: true },
   { name: 'Meadow', live: true },
   { name: 'Delta', live: true },
+  { name: 'Brook', live: true },
+  { name: 'Mesa', live: true },
 ]
 
 const CX = 230
@@ -37,7 +40,7 @@ export default function FleetGraph() {
   })
 
   return (
-    <svg className="fleet-svg" viewBox="0 0 460 410" role="img" aria-label="Beacon at the hub of a sixteen-agent fleet, each a separate cron loop linked only by peer channels">
+    <svg className="fleet-svg" viewBox="0 0 460 410" role="img" aria-label="Beacon at the hub of an eighteen-agent fleet, each a separate cron loop linked only by peer channels">
       <defs>
         <linearGradient id="fleet-hub-grad" x1="0" y1="0" x2="1" y2="1">
           <stop offset="0%" stopColor="#ff6a1f" />

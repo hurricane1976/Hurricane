@@ -886,6 +886,7 @@ MODEL_FAMILIES = [
     ("claude", "Claude"),
     ("gemini", "Gemini"),
     ("deepseek", "DeepSeek"),
+    ("muse", "Muse Spark"),
     ("glm", "GLM"),
 ]
 

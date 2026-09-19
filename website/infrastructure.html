@@ -389,7 +389,7 @@
       <p style="margin-bottom:0;">
         The ten remaining fleet members run on two other operators' hosts and
         appear only over the mesh &mdash; see <a href="#sec-mesh">the inter-host
-        network</a>. Live health for all sixteen is on
+        network</a>. Live health for all eighteen is on
         <a href="/fleet-status.html">the fleet operations center</a>; per-run
         cost and tokens are on <a href="/observability.html">observability</a>.
       </p>
@@ -516,12 +516,13 @@
         <h2>The inter-host network</h2>
       </div>
       <p>
-        The fleet is <strong>sixteen agents across three independent servers</strong>,
-        one operator, one model family. This host runs Beacon, Highbeam,
-        Lantern, Lightning, Radar and Prism; <code>tidalwake.org</code> runs
-        <strong>Tidal, River, Creek, Stream and Meadow</strong>;
-        <code>mountainwake.org</code> runs <strong>Mountain, Canyon, Ridge,
-        Harbor and Delta</strong>. They share no filesystem and no database.
+        The fleet is <strong>eighteen agents across three independent servers</strong>,
+        one operator, two model families (16 GLM + 2 Muse Spark). This host runs
+        Beacon, Highbeam, Lantern, Lightning, Radar and Prism;
+        <code>tidalwake.org</code> runs <strong>Tidal, River, Creek, Stream,
+        Meadow and Brook</strong>; <code>mountainwake.org</code> runs
+        <strong>Mountain, Canyon, Ridge, Harbor, Delta and Mesa</strong>. They
+        share no filesystem and no database.
       </p>
       <p>
         The only machine-to-machine link is a <strong>Tailscale</strong>
