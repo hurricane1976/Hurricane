@@ -2,7 +2,24 @@
 
 ## Open
 
-- **(w501, 2026-09-19 ~16:2xZ) NEEDS YOUR WORD: Brook's mesh credential
+- **RESOLVED w502 (2026-09-19 ~16:5xZ).** josh's go landed 16:32:17Z
+  ("Install and ensure the connections the word is given:yes"). Executed
+  same waking: **BROOK→BEACON** half installed append-style in
+  `keys/peers.env` (backup `peers.env.bak-pre-brook-w502`), beacon-peer
+  restarted; **BROOK→RADAR** half installed in `radar/keys/inbound.env`
+  (source: Tidal's relayed intro in Radar's tree; backup
+  `inbound.env.bak-pre-brook-w502`), radar-mesh restarted (17 peers).
+  Tests green: BEACON→BROOK real pair test 200; sim-BROOK self-tests
+  `ACCEPT peer=BROOK` on both listeners (attribution correct). Labeled
+  test messages left for Radar; confirm-backs sent to Tidal + Brook.
+  Still open (not part of the ask): trio legs HIGHBEAM/LANTERN/LIGHTNING
+  hold their brook halves uninstalled (their lanes); Radar's radar→brook
+  sender half is Radar's lane; brook↔mesa + prism↔brook need fresh
+  josh-gated mints; topology updated honestly (legs stay pending until
+  brook's own-identity pair tests; stamp now says what's done).
+
+- **(w501, 2026-09-19 ~16:2xZ) ANSWERED w502 — original ask kept for the
+  record: Brook's mesh credential
   adoption (one word unblocks it).** Tidal's authenticated broker request
   (2026-09-19 13:36:41Z) onboarded **Brook** — 16th fleet agent, Muse Spark
   1.2, independent verification & fleet QA, sixth agent on Tidal's host
@@ -18,10 +35,9 @@
   Brook on the site (done, w501), but adopting the peer-relayed token into
   `keys/peers.env` + Radar's listener config is a credential motion, which
   is yours. Tidal (14:44:26Z) and Mountain (manifest: its five brook lanes
-  already verified two-way) have done their sides. **Say the word and next
-  waking I install append-style (.bak first), labeled POST-test both
-  directions, confirm-back to Tidal/Brook, and the topology's six pending
-  brook legs go verified.** Same message covers: Prism's five tidal-group
+  already verified two-way) have done their sides. **ANSWERED: yes
+  ("Install and ensure the connections the word is given:yes", 16:32:17Z)
+  — see the RESOLVED w502 bullet above.** Same message covers: Prism's five tidal-group
   legs close when Tidal installs (mapping confirmed to it this waking);
   Mesa's twelve cross-host legs need introductions from Mountain's side
   (no credential staged either direction yet).
@@ -614,6 +630,7 @@
   — **Done w501 (2026-09-19 ~16:1xZ):** the three new agents are Brook (16th, Tidal's host), Prism (17th, this box, registered w500) and Mesa (18th, Mountain's box). Site synced to the 18-agent / two-family state across all count-bearing pages (see the w501 Open item below for the full list).
 - **Telegram (2026-09-19, via /commands):** Update fleet topology to account for all 18 agents
 - **Telegram (2026-09-19, via /commands):** Update fleet topology to account for all 18 agents (15:50:50Z Mountain relay = simultaneous-broadcast copy of the same directive)
+- **Telegram (2026-09-19, via /commands):** Install and ensure the connections the word is given:yes
 
 ## Resolved / answered directives
 
