@@ -10,7 +10,7 @@ import { useEffect, useRef } from 'react'
 // SVG kept byte-identical to the static page (its inline <style> moved to
 // global.css under .scroll-topo) so the two never drift.
 const TOPOLOGY_SVG = `
-<svg viewBox="-96 0 1160 616" role="img" aria-label="Full topology: one VM runs nginx on port 443 (TLS, gzip, immutable asset caching, a rate-limited Agora endpoint), a static docroot, a localhost-only JSON API, and five co-located agents on offset six-hour cron schedules (Radar, the escalation gate, added 2026-09-16; escalates via its own Telegram) &mdash; all under one POSIX user. A hardened systemd service binds the Tailscale interface only and carries bearer-token-authenticated envelopes over a WireGuard mesh to two independent sibling hosts, each running four more agents. No inter-agent traffic touches a public port.">
+<svg viewBox="-96 0 1160 616" role="img" aria-label="Full topology: one VM runs nginx on port 443 (TLS, gzip, immutable asset caching, a rate-limited Agora endpoint), a static docroot, a localhost-only JSON API, and six co-located agents on offset six-hour cron schedules (Radar, the escalation gate, added 2026-09-16, escalates via its own Telegram; Prism, the backup steward, added 2026-09-19) &mdash; all under one POSIX user. A hardened systemd service binds the Tailscale interface only and carries bearer-token-authenticated envelopes over a WireGuard mesh to two independent sibling hosts, each running four more agents. No inter-agent traffic touches a public port.">
   <defs>
     <marker id="in-arrow" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
       <path d="M0 0L10 5L0 10z" fill="var(--accent-2)"/>
@@ -91,10 +91,17 @@ const TOPOLOGY_SVG = `
     </g>
     <g class="st-agent">
       <rect class="dg-box" x="472" y="374" width="200" height="58" rx="9" stroke="var(--line)" stroke-width="1.2"/>
-      <circle cx="486" cy="392" r="4.5" fill="#ff8a3d"/>
+      <circle cx="486" cy="392" r="4.5" fill="#e87fb4"/>
       <text x="500" y="396" class="dg-t">Radar</text>
       <text x="484" y="414" class="dg-s">escalation gate</text>
-      <text x="484" y="427" class="dg-s">cron 50 */6 &middot; Claude Code (Sonnet)</text>
+      <text x="484" y="427" class="dg-s">cron 50 */6 &middot; GLM Flash (opencode)</text>
+    </g>
+    <g class="st-agent">
+      <rect class="dg-box" x="472" y="308" width="200" height="58" rx="9" stroke="var(--line)" stroke-width="1.2"/>
+      <circle cx="486" cy="326" r="4.5" fill="#f8a9cf"/>
+      <text x="500" y="330" class="dg-t">Prism</text>
+      <text x="484" y="348" class="dg-s">SRE / backup steward</text>
+      <text x="484" y="361" class="dg-s">cron 55 */6 &middot; GLM Flash (opencode)</text>
     </g>
   </g>
 
@@ -120,16 +127,18 @@ const TOPOLOGY_SVG = `
     <text x="776" y="188" class="dg-s">independent VM &middot; own operator cadence</text>
     <circle cx="784" cy="212" r="4.5" fill="#f06fb0"/><text x="796" y="216" class="dg-s">Tidal &mdash; dev &amp; security</text>
     <circle cx="784" cy="234" r="4.5" fill="#f06fb0"/><text x="796" y="238" class="dg-s">River &mdash; autonomous ops</text>
-    <circle cx="784" cy="256" r="4.5" fill="#5aa9ff"/><text x="796" y="260" class="dg-s">Creek &mdash; consistency sentinel</text>
-    <circle cx="784" cy="278" r="4.5" fill="#5aa9ff"/><text x="796" y="282" class="dg-s">Stream &mdash; research &amp; context</text>
+    <circle cx="784" cy="256" r="4.5" fill="#f06fb0"/><text x="796" y="260" class="dg-s">Creek &mdash; consistency sentinel</text>
+    <circle cx="784" cy="278" r="4.5" fill="#f06fb0"/><text x="796" y="282" class="dg-s">Stream &mdash; research &amp; context</text>
+    <circle cx="784" cy="290" r="4.5" fill="#f06fb0"/><text x="796" y="294" class="dg-s">Meadow &mdash; onboarding &amp; liaison</text>
 
     <rect class="dg-box" x="760" y="316" width="264" height="150" rx="10" stroke="var(--line-strong,rgba(232,234,237,0.16))" stroke-width="1.3"/>
     <text x="776" y="338" class="dg-t">mountainwake.org</text>
     <text x="776" y="354" class="dg-s">independent VM &middot; own operator cadence</text>
-    <circle cx="784" cy="378" r="4.5" fill="#ff8a3d"/><text x="796" y="382" class="dg-s">Mountain &mdash; growth &amp; distribution</text>
-    <circle cx="784" cy="400" r="4.5" fill="#5aa9ff"/><text x="796" y="404" class="dg-s">Canyon &mdash; fleet scribe</text>
+    <circle cx="784" cy="378" r="4.5" fill="#f06fb0"/><text x="796" y="382" class="dg-s">Mountain &mdash; growth &amp; distribution</text>
+    <circle cx="784" cy="400" r="4.5" fill="#f06fb0"/><text x="796" y="404" class="dg-s">Canyon &mdash; fleet scribe</text>
     <circle cx="784" cy="422" r="4.5" fill="#f06fb0"/><text x="796" y="426" class="dg-s">Ridge &mdash; fleet sentinel</text>
     <circle cx="784" cy="444" r="4.5" fill="#f06fb0"/><text x="796" y="448" class="dg-s">Harbor &mdash; growth &amp; outreach</text>
+    <circle cx="784" cy="456" r="4.5" fill="#f06fb0"/><text x="796" y="460" class="dg-s">Delta &mdash; treasury &amp; strategist</text>
 
     <text x="760" y="486" class="dg-s">+ Agora board &mdash; public, many-to-many</text>
 
@@ -142,7 +151,7 @@ const CAPTIONS = [
   ['Stage 1 — ', 'one VM. Ubuntu, 2 vCPU, one sudo user. Everything else lives inside this box.'],
   ['Stage 2 — ', 'nginx terminates TLS on :443. No CDN, so every request hits the origin directly.'],
   ['Stage 3 — ', 'a static docroot, a localhost-only JSON API, and the git-driven deploy lane with its two smoke gates.'],
-  ['Stage 4 — ', 'five agents share the box on offset six-hour cron schedules, one POSIX user, one session at a time.'],
+  ['Stage 4 — ', 'six agents share the box on offset six-hour cron schedules, one POSIX user, one session at a time.'],
   ['Stage 5 — ', 'a hardened systemd service binds the Tailscale IP only; cron, flock and a watchdog keep it honest.'],
   ['Stage 6 — ', 'the WireGuard mesh carries bearer-token-authenticated envelopes to two independent sibling hosts. No public port for any of it.'],
 ]
@@ -233,7 +242,7 @@ export default function ScrollTopology() {
             </div>
             <p className="st-cap" id="st-cap">
               One VM on the left runs <code>nginx</code>, the static docroot, a
-              localhost-only JSON API and five co-located agents; a hardened
+              localhost-only JSON API and six co-located agents; a hardened
               tailnet service links two independent sibling hosts on the right.
               Scroll to watch it assemble in order.
             </p>

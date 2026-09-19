@@ -42,7 +42,7 @@ OUT = HERE / "observability.html"
 STORE = HERE / "data" / "observability.jsonl"
 SHARED_LOG = Path("/home/agent/shared/LOG.md")
 
-# Per-waking JSON envelope directories, one per on-box agent. All four now
+# Per-waking JSON envelope directories, one per on-box agent. All six now
 # write the opencode result envelope; the Claude Code ones (Beacon, Highbeam)
 # so the moment their wake.sh starts teeing one, it is picked up with no code
 # change here.
@@ -51,10 +51,15 @@ JSON_LOG_DIRS = {
     "Highbeam": Path("/home/agent/partner/logs"),
     "Lantern": Path("/home/agent/gemini-agent/logs"),
     "Lightning": Path("/home/agent/lightning/logs"),
-    # Radar (onboarded 2026-09-16): runs Claude Code, so its wake.sh tees the
-    # same result-envelope shape Beacon/Highbeam used to emit -- parseable as-is.
-    # Hand-fired, so its lane moves only when someone fires it.
+    # Radar (onboarded 2026-09-16): its wake.sh tees the same result-envelope
+    # shape -- parseable as-is. Hand-fired, so its lane moves only when
+    # someone fires it. (It ran Claude Code until its 2026-09-19 GLM switch;
+    # the envelope shape was kept through the move.)
     "Radar": Path("/home/agent/radar/logs"),
+    # Prism (sixth on-box agent, onboarded 2026-09-19 by josh's operator
+    # session, SRE/backup steward): same envelope convention (scaffold
+    # copied from Radar's pattern). Cron 55 */6.
+    "Prism": Path("/home/agent/prism/logs"),
 }
 
 TS_RE = re.compile(r"^(\d{8}T\d{6}Z)\.json$")
@@ -80,7 +85,7 @@ SLATE = "#5b6472"
 # Agent identity -> the canonical fleet palette (fleet_palette.py). Colour is
 # the model family; the agent name always sits next to the mark.
 AGENT_COLOR = {a: fleet_palette.agent_color(a)
-               for a in ("Beacon", "Highbeam", "Lantern", "Lightning", "Radar")}
+               for a in ("Beacon", "Highbeam", "Lantern", "Lightning", "Radar", "Prism")}
 CHART_W = 720
 
 # --- fleet-wide per-run feed (the "Cost, tokens & wall-clock -- interactive"
@@ -102,7 +107,7 @@ FLEET_RUN_FEED_TTL = 300  # seconds
 # active tab, so identity is never colour-alone. Replaces the ad-hoc 12-hue
 # set that failed CVD (Ridge<->Canyon deltaE 4.5).
 MM_FLEET_ORDER = list(fleet_palette.FLEET_ORDER)
-MM_LOCAL_AGENTS = {"Beacon", "Highbeam", "Lantern", "Lightning", "Radar"}
+MM_LOCAL_AGENTS = {"Beacon", "Highbeam", "Lantern", "Lightning", "Radar", "Prism"}
 MM_COLOR = dict(fleet_palette.AGENT)
 MM_KEEP = 14  # runs shown per agent -- matches Mountain's / Tidal's panel
 
@@ -595,7 +600,7 @@ def duration_chart(runs: list[dict], keep: int = DUR_WINDOW) -> str:
 HEAT_RAMP = ["#7a4a2a", "#a35c30", "#c8763a", "#e89444", "#ffb85c"]
 HEAT_EMPTY = "rgba(255,255,255,0.03)"
 HEAT_ERR = "#e08a6a"
-HEAT_ORDER = ["Beacon", "Highbeam", "Lantern", "Lightning", "Radar"]
+HEAT_ORDER = ["Beacon", "Highbeam", "Lantern", "Lightning", "Radar", "Prism"]
 
 
 def _heat_agents(rows: list[dict]) -> list[str]:

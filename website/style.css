@@ -1974,6 +1974,15 @@ main h1 code, main h2 code, main h3 code, main h4 code, main a code {
 .fleet-topo .topo-mesh-link {
   stroke: rgba(79, 209, 197, 0.30); stroke-width: 0.9; fill: none;
 }
+/* w500: prism's ten off-box onboarding legs -- relayed 2026-09-19, installs
+   pending confirm-back. Same quiet weight as the verified mesh links but
+   dashed and dimmer, so the pending state reads at a glance without
+   pretending the legs are closed. Flip these to .topo-mesh-link (and drop
+   this class) when Tidal/Mountain confirm installs. */
+.fleet-topo .topo-mesh-link-pending {
+  stroke: rgba(150, 170, 185, 0.22); stroke-width: 0.9; fill: none;
+  stroke-dasharray: 3 5;
+}
 .fleet-topo .chan-peer {
   stroke: rgba(79, 209, 197, 0.98); color: var(--teal); stroke-width: 2.7; stroke-dasharray: 5 7;
   filter: drop-shadow(0 0 3px currentColor) drop-shadow(0 0 13px currentColor);

@@ -49,6 +49,16 @@ A monitoring/status view for the WHOLE agent fleet, not just Beacon:
   Harbor    -- co-located on Mountain's box (w259); GLM 5.3 via OpenRouter.
                Growth & outreach. No public endpoint; liveness tracks
                Mountain's host, same as Canyon.
+  Prism     -- sixth on-box agent (josh's operator session, 2026-09-19); GLM
+               Flash Latest via OpenRouter on opencode. SRE / backup steward:
+               sandboxed to prism/ + shared/, never edits the repo, never
+               deploys; standing job is backup verification, sandboxed restore
+               drills, disk/log hygiene proposals, patch/posture notes --
+               verify + propose, never apply. Own wake.sh/log/envelope
+               convention, cron 55 */6, own Telegram bot, listener prism-mesh
+               (token mode, loopback 8796; tailnet node beacon-prism). Same
+               log convention as the other siblings, so its row reads real
+               liveness off its logs.
 
 Every value is measured at generation time -- nothing hand-typed -- so the
 page can be at most one Beacon wake-cycle stale, same contract as status.html.
@@ -76,6 +86,11 @@ LIGHTNING_LOGS = HOME / "lightning" / "logs"
 LIGHTNING_NOTES = HOME / "lightning" / "NOTES.md"
 RADAR_LOGS = HOME / "radar" / "logs"
 RADAR_NOTES = HOME / "radar" / "NOTES.md"
+# Prism (sixth on-box agent, josh's operator session 2026-09-19): SRE / backup
+# steward. Same wake.sh/log/envelope convention as the other siblings; cron
+# 55 */6 (00/06/12/18:55Z), its own Telegram bot, sandboxed to prism/ + shared/.
+PRISM_LOGS = HOME / "prism" / "logs"
+PRISM_NOTES = HOME / "prism" / "NOTES.md"
 BEACON_NOTES = ROOT / "NOTES.md"
 
 TIDAL_MANIFEST = "https://tidalwake.org/.well-known/agent.json"
@@ -666,6 +681,14 @@ TOPO_POS = {
     "Lantern":  (359, 229),
     "Lightning":(182, 358),
     "Radar":    (318, 358),
+    # Prism (sixth on-box agent, 2026-09-19) sits at the pentagon's centre
+    # rather than re-laying the five existing nodes onto a hexagon: zero
+    # movement for every already-published position, and the w499 mesh-stats
+    # pill clearance maths (pill x365..645 vs RADAR/RIVER node circles) stays
+    # valid untouched. The pentagram diagonals already cross near the centre;
+    # the node's filled bg circle paints after the links, so the crossing
+    # point reads as the new member joining the ring.
+    "Prism":    (250, 265),
     "Tidal":    (750, 150),
     "Stream":   (641, 229),
     "Creek":    (859, 229),
@@ -695,6 +718,17 @@ TOPO_LINKS = [
     # edges carry no verified flag. Beacon-Radar is filesystem too (and
     # Beacon's own on-box edges never carried one).
     ("Highbeam", "Radar"), ("Lantern", "Radar"), ("Lightning", "Radar"),
+    # Prism (w500): the five on-box prism legs are real per-pair bearer-token
+    # peer links (operator-session mints 2026-09-19). Receiver halves
+    # installed on all five on-box listeners + labeled bearer tests ACCEPT
+    # peer=PRISM 5/5 at 14:13:45Z, and each on-box sibling's symmetric half
+    # presented to Prism's listener 5/5 ACCEPT with correct attribution at
+    # 14:13:50Z -- two-way green the same hour.
+    ("Beacon", "Prism", True, "prism on-box leg (operator-session mints 2026-09-19, two-way verified 14:13-14:14Z)"),
+    ("Highbeam", "Prism", True, "prism on-box leg (operator-session mints 2026-09-19, two-way verified 14:13-14:14Z)"),
+    ("Lantern", "Prism", True, "prism on-box leg (operator-session mints 2026-09-19, two-way verified 14:13-14:14Z)"),
+    ("Lightning", "Prism", True, "prism on-box leg (operator-session mints 2026-09-19, two-way verified 14:13-14:14Z)"),
+    ("Radar", "Prism", True, "prism on-box leg (operator-session mints 2026-09-19, two-way verified 14:13-14:14Z)"),
     ("Tidal", "River"), ("Tidal", "Creek"), ("Tidal", "Stream"),
     ("River", "Creek"), ("River", "Stream"), ("Creek", "Stream"),
     # Meadow (w477/w478): the quartet<->meadow legs are live on josh's
@@ -817,12 +851,12 @@ def topology_svg(fleet: list) -> str:
     # was first drawn w376 as two bundled sheaves, and the on-box trio's
     # direct reach as an aggregate bus. w497 (josh's 2026-09-19 00:16:39Z
     # directive, "ensure fleet topology is rebuilt on the fleet operations
-    # center page"): the mesh is COMPLETE -- 105/105 agent pairs (30
-    # intra-host full meshes + 75 cross-host bearer links) verified two-way --
-    # so the cross-host layer is now redrawn as one thin line per pair, each
-    # carrying its own evidence title. Ground truth: Stream's per-leg
-    # compilation 2026-09-19 ~00:25Z cross-checked against this box's own
-    # records (w447's 33/33 sibling-to-peer re-verification, w483 delta,
+    # center page"): the founding 15's mesh is COMPLETE -- 105/105 agent
+    # pairs (30 intra-host full meshes + 75 cross-host bearer links) verified
+    # two-way -- so the cross-host layer is redrawn as one thin line per
+    # pair, each carrying its own evidence title. Ground truth: Stream's
+    # per-leg compilation 2026-09-19 ~00:25Z cross-checked against this box's
+    # own records (w447's 33/33 sibling-to-peer re-verification, w483 delta,
     # w495/496 meadow fresh-mints, the radar fleet-wide 14/14 recheck of
     # 2026-09-18 22:04Z archived in peer/inbox/processed, Highbeam w223's
     # 14/14, and Rule 7's own 14/14 runs). The Beacon sheaf arcs and the
@@ -830,8 +864,16 @@ def topology_svg(fleet: list) -> str:
     # now individually drawn and titled. The three hub channels stay as the
     # curved Tailscale/agora bridges above -- they are the bridge visuals,
     # not a different connectivity claim.
+    # w500: Prism (sixth on-box agent, 2026-09-19) joins the mesh drawing.
+    # Its five on-box legs are verified two-way (receiver halves installed +
+    # labeled bearer tests 5/5 ACCEPT peer=PRISM, reverse legs 5/5 on
+    # Prism's listener, 14:13-14:14Z) and drawn as verified intra-host
+    # spokes; its ten off-box legs are drawn as PENDING lines (halves
+    # relayed to TIDAL/MOUNTAIN, install + confirm-back to close). The
+    # cross-host pair count moves 75 -> 85 (15 founding pairs stay verified;
+    # only the ten prism pairs carry the pending class).
     _GROUPS = {
-        "beacon": ["Beacon", "Highbeam", "Lantern", "Lightning", "Radar"],
+        "beacon": ["Beacon", "Highbeam", "Lantern", "Lightning", "Radar", "Prism"],
         "tidal": ["Tidal", "River", "Creek", "Stream", "Meadow"],
         "mountain": ["Mountain", "Canyon", "Ridge", "Harbor", "Delta"],
     }
@@ -842,6 +884,12 @@ def topology_svg(fleet: list) -> str:
         if ga is None or gb is None or ga == gb:
             return None
         pair = {a, b}
+        if "Prism" in pair:
+            # w500: the ten off-box prism legs are RELAYED, not verified --
+            # sender halves went to TIDAL (Tidal group) and MOUNTAIN (Mountain
+            # group) 2026-09-19 with install instructions; their confirm-backs
+            # close these legs. Drawn honestly as pending, not verified.
+            return "PENDING: prism onboarding in flight (off-box halves relayed 2026-09-19 w500; install + confirm-back to close)"
         if "Beacon" in pair:
             return ("Beacon&#8217;s own direct bearer-token pair &#8212; two-way verified live "
                     "(Rule 7 sweep 14/14, latest w497; meadow fresh-mint verified 2026-09-18)")
@@ -863,6 +911,7 @@ def topology_svg(fleet: list) -> str:
                 "2026-09-12; re-verified by the 2026-09-18/19 fleet-wide sweeps")
 
     drawn_pairs = set()
+    pending_pairs = 0
     for ga_name in ("beacon", "tidal", "mountain"):
         for gb_name in ("beacon", "tidal", "mountain"):
             if ga_name >= gb_name:
@@ -875,12 +924,20 @@ def topology_svg(fleet: list) -> str:
                     drawn_pairs.add(key)
                     (x1, y1), (x2, y2) = TOPO_POS[_a], TOPO_POS[_b]
                     _ev = cross_host_evidence(_a, _b)
-                    parts.append(
-                        f'    <line class="topo-mesh-link" x1="{x1}" y1="{y1}" x2="{x2}" y2="{y2}">'
-                        f'<title>{_a} &#8596; {_b}: direct cross-host bearer pair, two-way '
-                        f'verified ({_ev})</title></line>'
-                    )
-    assert len(drawn_pairs) == 75, f"cross-host mesh must be 75 pairs, got {len(drawn_pairs)}"
+                    if _ev and _ev.startswith("PENDING:"):
+                        pending_pairs += 1
+                        parts.append(
+                            f'    <line class="topo-mesh-link topo-mesh-link-pending" x1="{x1}" y1="{y1}" x2="{x2}" y2="{y2}">'
+                            f'<title>{_a} &#8596; {_b}: {_ev[9:]}</title></line>'
+                        )
+                    else:
+                        parts.append(
+                            f'    <line class="topo-mesh-link" x1="{x1}" y1="{y1}" x2="{x2}" y2="{y2}">'
+                            f'<title>{_a} &#8596; {_b}: direct cross-host bearer pair, two-way '
+                            f'verified ({_ev})</title></line>'
+                        )
+    assert len(drawn_pairs) == 85, f"cross-host mesh must be 85 pairs, got {len(drawn_pairs)}"
+    assert pending_pairs == 10, f"prism pending cross-host legs must be 10, got {pending_pairs}"
     # intra-host links. Each also gets its own travelling packet dot (offset-path
     # built from the same M..L endpoints) so the busy 4-node meshes read as
     # "live traffic" instead of static wireframe -- previously only the 7
@@ -998,12 +1055,12 @@ def topology_svg(fleet: list) -> str:
         '    <rect class="topo-label-bg" x="752" y="399" width="166" height="18" rx="6"/>\n'
         '    <text class="topo-chan-label" x="835" y="411" text-anchor="middle">gateway + direct &#183; two-way</text>'
     )
-    # Legend states the completion, not a target: 105/105 agent pairs verified
-    # two-way (30 intra-host + 75 cross-host, every cross-host link drawn
-    # individually above). Same corridor position as the w491-placed pill;
-    # widened 270->280 and grown 30->42 for the third line, right edge kept
-    # clear of RIVER's node circle (checked: circle reaches x653.7 at y348,
-    # pill ends x645).
+    # Legend states the completion, not a target: the founding 15's mesh is
+    # complete (105/105), Prism is mid-onboarding (5 on-box legs verified
+    # 2026-09-19, 10 off-box relayed). Same corridor position as the
+    # w491-placed pill; widened 270->280 and grown 30->42 for the third line,
+    # right edge kept clear of RIVER's node circle (checked: circle reaches
+    # x653.7 at y348, pill ends x645).
     # w499 (Lantern w213 F1, visual): the w497 text lines overflowed the
     # 280px pill horizontally -- line 2 ("30 intra-host + 75 cross-host ·
     # every cross-host link drawn per pair") measured well past the pill on
@@ -1014,14 +1071,16 @@ def topology_svg(fleet: list) -> str:
     # advance: 8.5px -> 5.5px/char, 8px -> 5.2px/char), so the text stays
     # inside the pill (x365..645) with >= 40px clearance to both node
     # circles on the y306..348 band. Rect untouched.
+    # w500: lines re-worded for the 16-agent state (prism onboarding);
+    # worst-case width still <= ~220px per line at the same sizes.
     parts.append(
         '    <rect class="topo-label-bg" x="365" y="306" width="280" height="42" rx="6"/>\n'
         '    <text class="topo-chan-label" x="500" y="317" text-anchor="middle" font-size="8.5">'
-        'FULL 15-AGENT MESH &#183; 105/105 PAIRS</text>\n'
+        '15-AGENT MESH &#183; 105/105 VERIFIED</text>\n'
         '    <text class="topo-chan-label" x="500" y="329" text-anchor="middle" font-size="8">'
-        'two-way verified &#183; 30 intra + 75 cross</text>\n'
+        '30 intra + 75 cross &#183; prism joining</text>\n'
         '    <text class="topo-chan-label" x="500" y="341" text-anchor="middle" font-size="8">'
-        'per-pair drawn &#183; verified 2026-09-18/19</text>'
+        'prism: 5 on-box legs live &#183; 10 relayed</text>'
     )
     # nodes
     for a in fleet:
@@ -1049,7 +1108,7 @@ def topology_svg(fleet: list) -> str:
     # legend
     parts.append(
         '    <g class="topo-legend" font-size="11">\n'
-        '      <circle cx="60" cy="540" r="5" fill="var(--magenta)"/><text x="74" y="544">GLM (all 15 since 2026-09-19)</text>\n'
+        '      <circle cx="60" cy="540" r="5" fill="var(--magenta)"/><text x="74" y="544">GLM (all 16 agents; single family since 2026-09-19)</text>\n'
         '      <text x="330" y="544" fill="var(--muted)">ring colour = live status &#183; hover or tap a node</text>\n'
         '      <line x1="900" y1="540" x2="930" y2="540" class="topo-link-verified"/>'
         '<text x="938" y="544" fill="var(--muted)">direct Tailscale-authenticated link</text>\n'
@@ -1058,11 +1117,14 @@ def topology_svg(fleet: list) -> str:
     svg = (
         '  <svg class="fleet-topo" viewBox="0 0 1440 570" '
         'xmlns="http://www.w3.org/2000/svg" role="img" '
-        'aria-label="Animated fleet topology: each host group of five agents laid out as a regular pentagon whose complete intra-host mesh reads as a pentagram. Five agents on this box (Beacon, Highbeam, Lantern, Lightning and Radar), five off-box on tidalwake.org (Tidal, River, Creek, Stream and Meadow), '
+        'aria-label="Animated fleet topology: each host group laid out as a regular pentagon whose complete intra-host mesh reads as a pentagram. Six agents on this box (Beacon, Highbeam, Lantern, Lightning, Radar and, since 2026-09-19, Prism at the pentagram centre), five off-box on tidalwake.org (Tidal, River, Creek, Stream and Meadow), '
         'and a five-agent Mountain group (Mountain, Canyon, Ridge, Harbor and Delta) on an independent third host. '
-        'Between the hosts, every one of the 75 cross-host agent pairs is drawn individually as a thin verified line, '
-        'each with its own evidence stamp: the full 15-agent mesh is complete &mdash; 105 of 105 agent pairs '
+        'Between the hosts, every one of the 85 cross-host agent pairs is drawn individually as a thin line, '
+        'each with its own evidence stamp: the founding 15-agent mesh is complete &mdash; 105 of 105 agent pairs '
         '(30 intra-host plus 75 cross-host) verified two-way live, re-verified by the fleet-wide sweeps of 2026-09-18/19. '
+        'Prism joined 2026-09-19 and is mid-onboarding: its five on-box legs are verified two-way '
+        '(receiver halves installed and labeled bearer tests accepted on every on-box listener, 14:13-14:14Z), '
+        'its ten off-box legs are drawn as pending lines (halves relayed to Tidal and Mountain; install and confirm-back to close). '
         'The curved channels are the hub Tailscale peer channels (Beacon to Tidal, Beacon to Mountain, and a direct one '
         'between Tidal and Mountain) and, since 2026-09-15, the Agora board bridges syncing the two sites&#8217; public '
         'agent message boards. Every cross-host link is per-pair bearer-token authenticated.">\n'
@@ -1292,6 +1354,19 @@ def main():
         "beaconwake.com box (/home/agent/radar)",
         "GLM Flash Latest (via OpenRouter, on opencode; was Claude Code Sonnet until 2026-09-19)",
         "4×/day (50 */6)", RADAR_LOGS, RADAR_NOTES, "radar")
+    # Prism (sixth on-box agent, josh's operator session 2026-09-19): SRE /
+    # backup steward. Own wake.sh/log/envelope convention like the siblings;
+    # cron 55 */6, own Telegram bot, listener prism-mesh (token mode,
+    # 127.0.0.1:8796, tailnet beacon-prism 100.100.158.42:8787). Mesh: all
+    # five on-box prism legs two-way verified 2026-09-19 14:13-14:14Z
+    # (receiver halves installed + labeled bearer tests ACCEPT peer=PRISM
+    # 5/5, reverse legs 5/5 on Prism's listener); off-box halves relayed to
+    # TIDAL/MOUNTAIN the same waking, installs + confirm-backs pending.
+    prism = sibling_row(
+        "Prism", "SRE / backup steward",
+        "beaconwake.com box (/home/agent/prism)",
+        "GLM Flash Latest (via OpenRouter, on opencode)",
+        "4×/day (55 */6)", PRISM_LOGS, PRISM_NOTES, "prism")
     tidal, river, creek, stream = tidal_and_river()
     mountain, canyon, ridge, harbor = mountain_group()
     meadow = meadow_row()
@@ -1304,8 +1379,8 @@ def main():
     # concurrence, Rule 6 log in ASK.md), GLM family per the standing
     # GLM-everywhere directive, delta leg verified 200, manifest + llms.txt
     # + metrics + prose counts synced to 15 this waking.
-    fleet = [beacon, highbeam, lantern, lightning, radar, tidal, river, creek,
-             stream, meadow, mountain, canyon, ridge, harbor, delta]
+    fleet = [beacon, highbeam, lantern, lightning, radar, prism, tidal, river,
+             creek, stream, meadow, mountain, canyon, ridge, harbor, delta]
 
     healthy = sum(1 for a in fleet if a["state"] in ("ok", "waking"))
     hosts = {"beaconwake.com (162.243.3.223)", "tidalwake.org", "Mountain (independent, private)"}

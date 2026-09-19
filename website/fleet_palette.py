@@ -38,10 +38,12 @@ consistently, across ~45 pages.
 FAMILY = {
     "Claude":   "#ff8a3d",  # RETIRED 2026-09-15 when the last three Claude Code
                             # agents (Beacon, Highbeam, Mountain) moved to GLM
-                            # Flash Latest on opencode — then REACTIVATED
-                            # 2026-09-16 when Radar (Claude Code, Sonnet) joined
-                            # as the fleet's direct-escalation gate, the one
-                            # deliberate non-GLM member.
+                            # Flash Latest on opencode — REACTIVATED 2026-09-16
+                            # when Radar (Claude Code, Sonnet) joined as the
+                            # fleet's direct-escalation gate, then RETIRED for
+                            # good 2026-09-19: Radar moved to GLM too (josh's
+                            # switch), so no live agent runs Claude any more.
+                            # Kept so historical rows still resolve a colour.
     "DeepSeek": "#5aa9ff",
     "GLM":      "#f06fb0",
     "Gemini":   "#4fd1c5",  # RETIRED 2026-09-09 — no live agent; kept so
@@ -55,7 +57,11 @@ AGENT_FAMILY = {
     "Canyon": "GLM",
     "Highbeam": "GLM", "Lantern": "GLM", "Tidal": "GLM",
     "River": "GLM", "Ridge": "GLM", "Harbor": "GLM",
-    "Radar": "Claude",
+    # Radar: Claude until 2026-09-19, then GLM (josh-directed switch) -- the
+    # fleet's last non-GLM node.
+    "Radar": "GLM",
+    "Meadow": "GLM", "Delta": "GLM",
+    "Prism": "GLM",
 }
 
 # Per-agent shade for small identity marks where a family cluster needs a
@@ -65,12 +71,15 @@ AGENT = {
     "Beacon": "#a83a70", "Mountain": "#c94f8c",
     "Lightning": "#5aa9ff", "Creek": "#8cc3ff", "Stream": "#3f7fd6",
     "Canyon": "#6a86e6",
-    # GLM (magenta), stepped by lightness — six agents share the hue now.
+    # GLM (magenta), stepped by lightness — the whole fleet shares the hue.
     "Highbeam": "#b8447d",
     "River": "#c94f8c", "Tidal": "#e05fa0", "Ridge": "#f06fb0",
     "Harbor": "#f59ccb", "Lantern": "#fbc0e0",
-    # Radar: the amber family hue, slightly stepped for identity.
-    "Radar": "#ffb066",
+    # Radar moved to the GLM family 2026-09-19; its amber identity shade is
+    # retired with the family (historical amber rows resolve via the family
+    # colour, not this per-agent shade).
+    "Radar": "#e87fb4",
+    "Meadow": "#d25596", "Delta": "#8f2f60", "Prism": "#f8a9cf",
 }
 
 # ---- multi-series overlay ramp (series, not identity) --------------------
@@ -80,9 +89,9 @@ SERIES = ["#ff8a3d", "#4fd1c5", "#b98cff", "#f4c752", "#3fa9f5"]
 # Fleet render order (on-box agents first), shared by any surface that lists
 # every agent so the order never drifts between pages.
 FLEET_ORDER = [
-    "Beacon", "Highbeam", "Lantern", "Lightning", "Radar",
-    "Tidal", "River", "Creek", "Stream",
-    "Mountain", "Canyon", "Ridge", "Harbor",
+    "Beacon", "Highbeam", "Lantern", "Lightning", "Radar", "Prism",
+    "Tidal", "River", "Creek", "Stream", "Meadow",
+    "Mountain", "Canyon", "Ridge", "Harbor", "Delta",
 ]
 
 
