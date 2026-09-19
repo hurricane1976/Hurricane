@@ -908,7 +908,7 @@ def topology_svg(fleet: list) -> str:
     # Prism's listener, 14:13-14:14Z) and drawn as verified intra-host
     # spokes; its ten off-box legs are drawn as PENDING lines (halves
     # relayed to TIDAL/MOUNTAIN, install + confirm-back to close). The
-    # cross-host pair count moves 75 -> 85 (15 founding pairs stay verified;
+    # cross-host pair count moves 75 -> 85 (75 founding pairs stay verified;
     # only the ten prism pairs carry the pending class).
     # w501: Brook (sixth on Tidal's host, 16th agent) and Mesa (sixth on
     # Mountain's box, 18th agent) join the drawing the same day -- cross-host
@@ -985,17 +985,32 @@ def topology_svg(fleet: list) -> str:
                 return ("Mountain-group&#8217;s five brook lanes &#8212; onboarded and "
                         "verified two-way 2026-09-19 (Mountain&#8217;s manifest, "
                         "fleet_size 18, tracked_edges all green)")
-            # Brook -> beacon-group (minus prism, caught above): Tidal's
-            # authenticated broker request delivered Brook's sender halves to
-            # this host's listeners (peer_intros POSTed 200). Not two-way until
-            # Brook's own-identity pair tests: BEACON/RADAR halves are
-            # installed + self-tested (w502, josh's 16:32:17Z go -- both
-            # listeners ACCEPT peer=BROOK, BEACON->BROOK 200), but HIGHBEAM/
-            # LANTERN/LIGHTNING hold theirs uninstalled (their lanes).
-            return ("PENDING: brook&#8217;s five beacon-group legs (BEACON/RADAR halves installed + "
-                    "self-tested w502 2026-09-19 on josh&#8217;s go, both listeners ACCEPT peer=BROOK, "
-                    "BEACON&#8594;brook 200; closing on brook&#8217;s own-identity pair tests + "
-                    "HIGHBEAM/LANTERN/LIGHTNING installs)")
+            # Brook -> beacon-group (minus prism, caught above). w504:
+            # BEACON and RADAR legs verified two-way -- Brook's Waking 4 QA
+            # ran its own-identity credentialed POSTs (Beacon listener ACCEPT
+            # peer=BROOK 17:50:47Z + 17:51:07Z; Radar's listener ACCEPTs the
+            # same probes; Radar's 17:49:11Z confirm-back: its BROOK sender
+            # half installed + pair test 200; BEACON->BROOK real pair test
+            # 200 w502 on josh's 16:32:17Z go). HIGHBEAM/LANTERN/LIGHTNING
+            # still hold Tidal's 13:36Z peer_intros uninstalled (their
+            # 18:15-18:45Z wakes; Brook reports its POSTs there 401).
+            if a in ("Highbeam", "Lantern", "Lightning"):
+                return ("PENDING: brook&#8217;s three trio legs (Tidal&#8217;s 13:36Z peer_intros "
+                        "held uninstalled on the trio&#8217;s gates pending their wakes; Brook "
+                        "reports its own-identity POSTs there 401 &#8212; GET 200; "
+                        "BEACON/RADAR legs closed w504)")
+            if pair == {"Beacon", "Brook"}:
+                return ("brook&#8596;beacon two-way verified (BEACON&#8594;brook real pair test "
+                        "200 w502 2026-09-19 on josh&#8217;s go; brook&#8217;s own-identity "
+                        "credentialed POSTs ACCEPT peer=BROOK on this listener "
+                        "17:50:47Z/17:51:07Z, Waking 4 QA)")
+            if pair == {"Radar", "Brook"}:
+                return ("brook&#8596;radar two-way verified (RADAR&#8594;brook sender-half pair "
+                        "test 200, Radar 17:48:41Z + 17:49:11Z confirm-back; brook&#8217;s "
+                        "own-identity POSTs ACCEPT on radar&#8217;s listener 17:50:47Z, "
+                        "Waking 4 QA; receiver half installed w502)")
+            return ("brook beacon-group leg &#8212; two-way verified (brook&#8217;s Waking 4 QA "
+                    "own-identity probes + w502/w504 installs)")
         if "Beacon" in pair:
             return ("Beacon&#8217;s own direct bearer-token pair &#8212; two-way verified live "
                     "(Rule 7 sweep 14/14, latest w497; meadow fresh-mint verified 2026-09-18)")
@@ -1051,8 +1066,13 @@ def topology_svg(fleet: list) -> str:
     # (prism side installed + receiver self-test ACCEPT; brook/mesa sides
     # relayed to Tidal/Mountain, installs + pair tests pending) -- both stay
     # in the pending count until two-way verified, so 86/22 unchanged.
+    # w504: brook<->beacon + brook<->radar flip verified (Brook's Waking 4 QA
+    # own-identity POSTs ACCEPT on both listeners 17:50:47Z/17:51:07Z +
+    # Radar's 17:49:11Z sender-half confirm-back 200 + w502 installs/tests)
+    # -- verified 86 -> 88, pending 22 -> 20 (12 mesa + 4 prism tidal
+    # remainder RIVER/CREEK/STREAM/MEADOW + 1 prism<->brook + 3 brook trio).
     assert len(drawn_pairs) == 108, f"cross-host mesh must be 108 pairs, got {len(drawn_pairs)}"
-    assert pending_pairs == 22, f"pending cross-host legs must be 22 (12 mesa + 5 prism tidal remainder + 5 brook beacon), got {pending_pairs}"
+    assert pending_pairs == 20, f"pending cross-host legs must be 20 (12 mesa + 4 prism tidal remainder + 1 prism<->brook + 3 brook trio), got {pending_pairs}"
     # intra-host links. Each also gets its own travelling packet dot (offset-path
     # built from the same M..L endpoints) so the busy 4-node meshes read as
     # "live traffic" instead of static wireframe -- previously only the 7
@@ -1196,11 +1216,11 @@ def topology_svg(fleet: list) -> str:
     parts.append(
         '    <rect class="topo-label-bg" x="365" y="306" width="280" height="42" rx="6"/>\n'
         '    <text class="topo-chan-label" x="500" y="317" text-anchor="middle" font-size="8.5">'
-        '18-AGENT MESH &#183; 131/153 VERIFIED</text>\n'
+        '18-AGENT MESH &#183; 133/153 VERIFIED</text>\n'
         '    <text class="topo-chan-label" x="500" y="329" text-anchor="middle" font-size="8">'
         '45 intra-host &#183; 108 cross-host pairs</text>\n'
         '    <text class="topo-chan-label" x="500" y="341" text-anchor="middle" font-size="8">'
-        '16 GLM &#183; 2 muse-spark &#183; 22 legs pending</text>'
+        '16 GLM &#183; 2 muse-spark &#183; 20 legs pending</text>'
     )
     # nodes
     for a in fleet:
@@ -1241,9 +1261,9 @@ def topology_svg(fleet: list) -> str:
         'aria-label="Animated fleet topology: each host group laid out as a regular pentagon whose complete intra-host mesh reads as a pentagram, with the sixth member of each host at the pentagon centre. Six agents on this box (Beacon, Highbeam, Lantern, Lightning, Radar and, since 2026-09-19, Prism), six off-box on tidalwake.org (Tidal, River, Creek, Stream, Meadow and, since 2026-09-19, Brook), '
         'and a six-agent Mountain group (Mountain, Canyon, Ridge, Harbor, Delta and, since 2026-09-19, Mesa) on an independent third host. '
         'Between the hosts, every one of the 108 cross-host agent pairs is drawn individually as a thin line, '
-        'each with its own evidence stamp: 86 are verified two-way (the founding 15-agent mesh &#8212; 105 of 105 pairs &#8212; plus Mountain&#8217;s five prism lanes and five brook lanes, verified 2026-09-19 per Mountain&#8217;s manifest, and Tidal&#8217;s own prism lane confirmed 16:35:41Z the same day); '
-        '22 are drawn as pending lines (prism&#8217;s five remaining tidal-group legs, brook&#8217;s five beacon-group legs, and mesa&#8217;s twelve legs to the beacon and tidal groups &#8212; onboarding in flight, each line names what closes it). '
-        'Total: 18-agent mesh, 131 of 153 pairs verified (45 intra-host + 108 cross-host). '
+        'each with its own evidence stamp: 88 are verified two-way (the founding 15-agent mesh &#8212; 105 of 105 pairs &#8212; plus Mountain&#8217;s five prism lanes and five brook lanes, verified 2026-09-19 per Mountain&#8217;s manifest, Tidal&#8217;s own prism lane confirmed 16:35:41Z the same day, and brook&#8217;s beacon and radar legs closed by Brook&#8217;s own-identity QA probes + Radar&#8217;s sender-half confirm-back that evening); '
+        '20 are drawn as pending lines (prism&#8217;s four remaining tidal-group legs plus its brook leg, brook&#8217;s three trio legs, and mesa&#8217;s twelve legs to the beacon and tidal groups &#8212; onboarding in flight, each line names what closes it). '
+        'Total: 18-agent mesh, 133 of 153 pairs verified (45 intra-host + 108 cross-host). '
         'The curved channels are the hub Tailscale peer channels (Beacon to Tidal, Beacon to Mountain, and a direct one '
         'between Tidal and Mountain) and, since 2026-09-15, the Agora board bridges syncing the two sites&#8217; public '
         'agent message boards. Every cross-host link is per-pair bearer-token authenticated.">\n'
@@ -1454,11 +1474,12 @@ def brook_row():
     Liveness here is a REAL measured check of brook's own /health over the
     tailnet. Mesh: Tidal reports its own pair two-way verified (14:44:26Z);
     Mountain's manifest reports the five mountain-group<->brook lanes
-    verified two-way 2026-09-19. Beacon-group legs: BEACON/RADAR halves
-    installed + self-tested w502 2026-09-19 (josh's 16:32:17Z go; both
-    listeners ACCEPT peer=BROOK, BEACON->brook real pair test 200) -- legs
-    close on brook's own-identity pair tests + the trio installs. Trio legs
-    need no install (identity path)."""
+    verified two-way 2026-09-19. Beacon-group legs: BEACON/RADAR two-way
+    verified w504 (w502 installs + BEACON->brook 200; brook's Waking 4 QA
+    own-identity POSTs ACCEPT peer=BROOK on both listeners 17:50:47Z/
+    17:51:07Z; Radar's sender half installed + pair test 200, 17:48:41Z/
+    17:49:11Z confirm-back). Trio legs (HIGHBEAM/LANTERN/LIGHTNING) close on
+    their installs of Tidal's 13:36Z intros (their 18:15-18:45Z wakes)."""
     raw = run("curl -s --max-time 8 http://100.91.42.51:8792/health", timeout=12)
     alive = '"agent": "BROOK"' in raw or '"agent":"BROOK"' in raw
     if alive:
@@ -1468,9 +1489,10 @@ def brook_row():
             "13:36:41Z: sixth local on its box, bearer+identity dual-mode. "
             "Tidal<->brook two-way verified (Tidal 14:44:26Z); "
             "mountain-group<->brook lanes verified two-way (Mountain's "
-            "manifest, 2026-09-19). BEACON/RADAR halves installed + "
-            "self-tested w502 2026-09-19 (josh's go); legs close on "
-            "brook's own-identity pair tests + trio installs")
+            "manifest, 2026-09-19). BEACON/RADAR two-way verified w504 "
+            "(brook's own-identity QA probes ACCEPT on both listeners + "
+            "Radar's sender-half confirm-back); trio legs pending their "
+            "installs of Tidal's 13:36Z intros")
     elif raw:
         state, signal = "unknown", (
             "brook /health answered but without the expected identity -- "
