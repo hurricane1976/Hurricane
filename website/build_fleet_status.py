@@ -930,13 +930,25 @@ def topology_svg(fleet: list) -> str:
             return None
         pair = {a, b}
         if "Mesa" in pair:
+            if pair == {"Brook", "Mesa"}:
+                # w503: josh's 17:12:00Z go ("Ok ensure prism brook and brook
+                # mesa are stood up") -> Beacon minted this pair fresh
+                # 2026-09-19 ~17:2xZ. Brook half relayed to TIDAL, mesa half
+                # to MOUNTAIN (append-style installs + labeled pair tests +
+                # confirm-backs to close). Stays pending until both sides
+                # verify two-way.
+                return ("PENDING: brook&#8596;mesa leg &#8212; minted fresh w503 2026-09-19 "
+                        "on josh&#8217;s 17:12Z go (Beacon); brook half relayed to Tidal, "
+                        "mesa half to Mountain &#8212; installs + labeled pair tests + "
+                        "confirm-backs to close")
             # w501: Mesa joined Mountain's box AFTER the 2026-09-19 lane
             # verifications, so even its prism/brook neighbours are unproven
             # (Mountain's manifest covers Mountain/Canyon/Ridge/Harbor/Delta
-            # <-> prism/brook, not the mesa pairs). No cross-host credential
-            # staged in either direction to this side yet -- all 12 of its
-            # cross-host legs draw pending.
-            return "PENDING: mesa&#8217;s cross-host legs (joined Mountain&#8217;s box 2026-09-19, josh-set; its on-box K6 mesh is verified per Mountain&#8217;s manifest -- cross-host introduction to follow, incl. its prism/brook neighbours)"
+            # <-> prism/brook, not the mesa pairs). w503: the brook<->mesa
+            # pair is minted (sub-branch above); the other 11 cross-host legs
+            # still have no credential staged either direction -- all draw
+            # pending.
+            return "PENDING: mesa&#8217;s cross-host legs (joined Mountain&#8217;s box 2026-09-19, josh-set; its on-box K6 mesh is verified per Mountain&#8217;s manifest -- cross-host introduction to follow; brook&#8596;mesa minted w503, the rest unproven)"
         if "Prism" in pair:
             if "mountain" in (ga, gb):
                 return ("Mountain-group&#8217;s five prism lanes &#8212; onboarded and "
@@ -954,12 +966,17 @@ def topology_svg(fleet: list) -> str:
             # Five remaining tidal-group legs: RIVER/CREEK/STREAM/MEADOW --
             # Tidal relayed their prism halves one-labeled-token-per-message
             # 16:3xZ w502 (its wakes: creek 18:15Z, river 18:30Z, stream
-            # 18:45Z, meadow 22:07Z); PRISM<->BROOK -- pair never minted
-            # (brook joined after the prism staging run), needs a fresh
-            # josh-gated mint either side.
+            # 18:45Z, meadow 22:07Z); PRISM<->BROOK -- minted fresh w503
+            # 2026-09-19 on josh's 17:12Z go: prism side installed
+            # (.bak-pre-brook-w503 backups) + prism-mesh restarted, labeled
+            # receiver self-test ACCEPT peer=BROOK; prism->brook real-path
+            # probe 401 (expected -- brook's block pending); brook half
+            # relayed to Tidal w503.
             return ("PENDING: prism&#8217;s remaining tidal-group legs (RIVER/CREEK/STREAM/MEADOW: "
                     "halves relayed by Tidal w502, installs on their wakes + confirm-backs; "
-                    "PRISM&#8596;BROOK: pair never minted, needs a fresh josh-gated mint)")
+                    "PRISM&#8596;BROOK: minted w503 on josh&#8217;s 17:12Z go &#8212; prism side "
+                    "installed + receiver self-test ACCEPT, brook side relayed to Tidal, "
+                    "pair tests + confirm-back to close)")
         if "Brook" in pair:
             if "mountain" in (ga, gb):
                 # Mountain's manifest: "the five Mountain-group<->Brook lanes
@@ -1030,6 +1047,10 @@ def topology_svg(fleet: list) -> str:
     # + 1 prism<->tidal (Tidal 16:35:41Z confirm-back) = 86.
     # Pending: 12 mesa (all cross-host) + 5 prism tidal-group remainder
     # + 5 brook<->beacon = 22.
+    # w503: prism<->brook + brook<->mesa minted fresh on josh's 17:12Z go
+    # (prism side installed + receiver self-test ACCEPT; brook/mesa sides
+    # relayed to Tidal/Mountain, installs + pair tests pending) -- both stay
+    # in the pending count until two-way verified, so 86/22 unchanged.
     assert len(drawn_pairs) == 108, f"cross-host mesh must be 108 pairs, got {len(drawn_pairs)}"
     assert pending_pairs == 22, f"pending cross-host legs must be 22 (12 mesa + 5 prism tidal remainder + 5 brook beacon), got {pending_pairs}"
     # intra-host links. Each also gets its own travelling packet dot (offset-path
