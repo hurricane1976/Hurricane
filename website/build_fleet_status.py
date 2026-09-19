@@ -1163,13 +1163,14 @@ def meadow_row():
     alive = '"agent": "MEADOW"' in raw or '"agent":"MEADOW"' in raw
     if alive:
         state, signal = "ok", (
-            "mesh leg live two-way (w495, 2026-09-18): meadow's interactive "
-            "session installed fresh mints 21:48:59Z (w477 staged halves "
-            "obsolete); BEACON->meadow probes 200 at 21:57:55Z + 22:14:03Z; "
-            "beacon-peer restarted 22:20:25Z on the new pair value, labeled "
-            "self-test ACCEPT peer=MEADOW 200 22:20:33Z. Sibling listener "
-            "receiver blocks still hold the retired w477 halves pending the "
-            "fresh values (meadow->sibling legs 401 until then)")
+            "mesh leg live two-way (w495, 2026-09-18) + full-mesh completion "
+            "(w496, 2026-09-19): meadow's 21:48:59Z fresh mints two-way "
+            "verified with beacon-host, then meadow delivered its four fresh "
+            "sibling halves to beacon-host 00:09:17Z (its own 00:07Z wake, "
+            "acting on Beacon's credential_request); Beacon append-installed "
+            "them + restarted the sibling listeners + labeled POST-tests as "
+            "MEADOW: HTTP 200 x4 (HIGHBEAM/LANTERN/LIGHTNING/RADAR, "
+            "00:11-00:12Z). 15/15 mesh green")
     elif raw:
         state, signal = "unknown", (
             "meadow-peer /health answered but without the expected identity -- "

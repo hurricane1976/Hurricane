@@ -2,6 +2,46 @@
 
 ## Open
 
+- **(w496, 2026-09-18 ~22:29Z) 15-green directive — **EXECUTED w496
+  00:07–00:12Z, DONE** (meadow delivered the four halves itself at its
+  00:07Z wake; installed + self-tested 200 ×4 + confirm-backs; 15/15 mesh
+  green pending meadow's census re-run — full record in "Resolved /
+  answered directives"). Your 22:29:14Z Telegram (first-hand, my authenticated queue):
+  the 21:56:47Z peers.env edit **was yours** — hand-edit question
+  RESOLVED, all clean — and: "I want the entire 15 agent green — do what
+  is necessary." Scope found: the only non-green legs left in the mesh
+  are meadow→{HIGHBEAM, LANTERN, LIGHTNING, RADAR} (the four sibling
+  listeners still hold retired w477 MEADOW receiver halves; every other
+  leg, incl. meadow↔beacon-host, verified green tonight — Rule 7 14/14
+  from this box at 22:33Z). Execution: since BEACON↔MEADOW is green, the
+  four fresh halves were requested from MEADOW directly over the
+  authenticated channel at 22:36Z (subject `credential_request`); TIDAL
+  told 22:37Z the request is superseded-but-hand-relay-welcome (its
+  Waking-340 note says it holds no meadow halves, so the w495 relay ask
+  was unsatisfiable as stated; a Tidal verbatim relay is still
+  acceptable provenance per the 21:53:21Z precedent). On arrival:
+  append-style install into `peer/config/{highbeam,lantern,lightning}.env`
+  + radar's independent `/home/agent/radar/keys/inbound.env` (its 21:0xZ
+  cutover made that the live radar listener config; backups first,
+  `.bak-pre-meadowfresh-w496`), restart beacon-mesh-{highbeam,lantern,
+  lightning} + radar-mesh, labeled POST-tests presenting each fresh half,
+  confirm-back to meadow so it re-runs its sibling census, then a
+  full-mesh statement to you. Install authorized by this directive
+  (w490 precedent: your direct word covers adopting on the siblings'
+  behalf; siblings asleep until their 00:15–00:50Z wakes, no conflict).
+  **Timeline so far:** Tidal Waking-341 ack 23:01:26Z — holds no meadow
+  halves (removed its own w477 staged remnant as obsolete, hash-verified,
+  listener restarted healthy); declined to extract from meadow's on-box
+  config without your direct word on ITS channel (Rule 6 + W-330
+  channel-gate precedent — correct reading, concurred); DID relay my
+  credential_request to meadow over its authed pair (`{status:ok}`),
+  including the stale-census warning. **Meadow's crontab wake is 00:07Z**
+  (Tidal) — its action on my request + Tidal's FYI is the default path.
+  Asked you at 22:54Z for either faster path: (a) direct word to meadow
+  on @meadowagentbot, or (b) explicit authorization to Tidal on its
+  channel to extract + relay the four named halves. Either closes the
+  wait early; neither is needed if you let 00:07Z run.
+
 - **(w495, 2026-09-18 ~22:1x–22:4xZ) "Update fleet topology" (22:06:25Z) —
   EXECUTED same waking; meadow leg closed two-way (the real staleness).**
   Found on arrival: your directive landed 4 minutes before the waking; fresh
@@ -30,7 +70,9 @@
   retired w477 MEADOW receiver halves — meadow→sibling legs 401 until Tidal
   relays meadow's four fresh halves (I install append-style + labeled
   POST-tests + confirm-back, w493 delta precedent). No action needed from you
-  unless the 21:56:47Z edit wasn't yours.
+  unless the 21:56:47Z edit wasn't yours. → **w496 UPDATE:** edit confirmed
+  yours (22:29:14Z), question closed; Tidal-relay route superseded by the
+  direct MEADOW request (Tidal holds no meadow halves) — see the w496 item.
 
 - **RESOLVED (w494+w495): the on-box sibling→delta fix (your 17:05:57Z
   directive).** Mountain's 17:32:08Z confirm-back answered w493's dispatch —
@@ -491,6 +533,21 @@
   thing was the meadow leg (its install landed 21:48–21:57Z tonight); sheaf
   9/10→10/10 + all copy surfaces updated at source, deployed, live-verified;
   full story in the w495 Open item above.
+- **Telegram (2026-09-18, via /commands):** Yes it was my edit and yes I wa t the entire 15 agent green do what is necessary
+  — **Done w496 (00:07–00:12Z):** the default path ran — meadow's 00:07Z
+  wake acted on my 22:37:25Z credential_request + Tidal's FYI and delivered
+  all four fresh sibling halves to beacon-host /inbox itself (00:09:17Z,
+  subjects `credential_resend: MEADOW-><SIBLING> token`, 64-hex bodies = its
+  21:48:59Z mints, nothing re-minted; its confirm-back: "First direct
+  meadow->beacon-host delivery"). Installed all four append-style
+  (`.bak-pre-meadowfresh-w496` backups), restarted the four sibling
+  listeners, labeled POST-tests as MEADOW → **HTTP 200 ×4**
+  (HIGHBEAM/LANTERN/LIGHTNING/RADAR; receiver-side ACCEPTs in all four
+  listener logs, radar's landed in its own tree 00:11:21Z). Confirm-backs to
+  meadow (census re-run requested), Tidal, Mountain. No faster path needed;
+  Tidal's channel-gate stance vindicated — the clean path existed. 15/15
+  mesh green pending meadow's census re-run (its next wake).
+- **Telegram (2026-09-18, via /commands):** Update fleet topology (22:51:05Z queued copy — same directive as the 22:06:25Z one, Done w495)
 
 ## Resolved / answered directives
 
