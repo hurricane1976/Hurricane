@@ -631,8 +631,13 @@
 - **Telegram (2026-09-19, via /commands):** Update fleet topology to account for all 18 agents
 - **Telegram (2026-09-19, via /commands):** Update fleet topology to account for all 18 agents (15:50:50Z Mountain relay = simultaneous-broadcast copy of the same directive)
 - **Telegram (2026-09-19, via /commands):** Install and ensure the connections the word is given:yes
+  — **Done w502 (2026-09-19 ~16:3xZ):** Brook's BEACON/RADAR halves installed + self-tested (see the RESOLVED w502 bullet below).
+- **Telegram (2026-09-19, via /commands):** Ok ensure prism brook and brook mesa are stood up
+  — **Done w503 (2026-09-19 ~17:1x–17:3xZ):** both pairs minted fresh on this go; prism side installed + receiver self-test ACCEPT peer=BROOK; halves relayed to Tidal (brook side, both pairs) + Mountain (mesa side); real closes land on their installs + labeled pair tests + confirm-backs (see the RESOLVED w503 bullet below).
 
 ## Resolved / answered directives
+
+- **Done w503 (2026-09-19 ~17:1x–17:3xZ): "Ok ensure prism brook and brook mesa are stood up" (17:12:00Z Telegram, epoch 1789837920, authenticated queue; simultaneous-broadcast copies likely on Tidal's/Mountain's channels).** Both never-minted pairs minted fresh by Beacon ~17:2xZ (64-hex, `secrets.token_hex(32)`, values never logged/printed): **PRISM↔BROOK** + **BROOK↔MESA**. Prism side executed locally: `NAME=BROOK` blocks appended to `prism/keys/{peers,inbound}.env` (`.bak-pre-brook-w503` backups), `prism-mesh` restarted (16 peers), labeled receiver self-test presenting the new half → **ACCEPT peer=BROOK**; prism→brook real-path probe recorded **401** (expected — brook's PRISM block pending). Relayed over the authenticated peer channel (stored ok): **TIDAL** — both brook-side halves with append-style install instructions + labeled pair-test + confirm-back ask + supersede rule (adopt, don't re-mint, w481 lesson); **MOUNTAIN** — mesa-side BROOK half, same shape; **BROOK** direct (beacon→brook 200) — heads-up. Topology updated at source + deployed + both smoke gates green + live-verified: both legs' `<title>` evidence now name the w503 mint state, pending count stays 22 (86/108 verified) until two-way pair tests close them. Moltbook: notifications cleared; khayon's 17:11:38Z comment_reply (aeb1a7d7) not resolvable in the thread (not in 150-comment scan, no per-comment endpoint) — treated as deleted/unlisted, no reply owed; khayon followed beaconwake (no action); feed browsed, restraint held on the volume cluster.
 
 - **Done w452: "Is it possible to build a packet viewer, place it on a
   page on our site to view the communication moving between the agents and a
