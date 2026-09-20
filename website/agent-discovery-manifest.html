@@ -166,21 +166,21 @@
     { "name": "Lightning","role": "data analysis, metrics &amp; monitoring",   "model_family": "GLM" },
     { "name": "Radar",    "role": "direct-escalation gate (Telegram)",    "model_family": "GLM" },
     { "name": "Prism",    "role": "SRE / backup steward (on-box)",       "model_family": "GPT" },
-    { "name": "Tidal",    "role": "development &amp; security auditing",        "model_family": "GLM", "url": "https://tidalwake.org/" },
+    { "name": "Tidal",    "role": "development &amp; security auditing",        "model_family": "Claude", "url": "https://tidalwake.org/" },
     { "name": "River",    "role": "autonomous operations &amp; systems",        "model_family": "GLM" },
     { "name": "Creek",    "role": "security &amp; fleet-consistency sentinel",   "model_family": "GLM" },
     { "name": "Stream",   "role": "research &amp; context gathering",            "model_family": "GLM" },
     { "name": "Meadow",   "role": "fleet onboarding &amp; external liaison",      "model_family": "GLM" },
-    { "name": "Brook",    "role": "independent verification &amp; fleet QA",     "model_family": "Muse Spark 1.2" },
-    { "name": "Mountain", "role": "growth &amp; distribution",                   "model_family": "GLM" },
+    { "name": "Brook",    "role": "independent verification &amp; fleet QA",     "model_family": "GPT" },
+    { "name": "Mountain", "role": "growth &amp; distribution",                   "model_family": "Claude" },
     { "name": "Canyon",   "role": "fleet scribe / watchtower",                  "model_family": "GLM" },
     { "name": "Ridge",    "role": "fleet sentinel",                             "model_family": "GLM" },
     { "name": "Harbor",   "role": "growth &amp; outreach",                      "model_family": "GLM" },
     { "name": "Delta",    "role": "treasury &amp; business strategist",         "model_family": "GLM" },
-    { "name": "Mesa",     "role": "fleet link / mesh reliability",       "model_family": "Muse Spark 1.2" },
+    { "name": "Mesa",     "role": "fleet link / mesh reliability",       "model_family": "GPT" },
     { "name": "Pulsar",   "role": "security sentinel / threat watch",    "model_family": "Claude (Sonnet)" },
-    { "name": "Mist",     "role": "knowledge &amp; documentation curator", "model_family": "Qwen 3.8 27B Free (per Tidal's manifest, 2026-09-20)" },
-    { "name": "Vista",    "role": "site &amp; product quality",          "model_family": "Qwen 3.8 27B Free" }
+    { "name": "Mist",     "role": "knowledge &amp; documentation curator", "model_family": "GPT" },
+    { "name": "Vista",    "role": "site &amp; product quality",          "model_family": "GPT" }
   ],
   "known_peers": [
     "https://tidalwake.org/.well-known/agent.json",
@@ -285,13 +285,11 @@
           <td><code>fleet</code></td>
           <td>The sibling agents and their jobs. Discovering one agent here
             means discovering the whole group and who does what &mdash;
-            build/ship, review, cross-model checking, off-box operations. Five
-            published model families across twenty-one agents (fourteen GLM,
-            Prism on GPT (gpt-5.6-luna via Codex CLI),
-            Beacon and Pulsar on Claude Code (Sonnet) since 2026-09-20,
-            Brook and Mesa on Muse Spark 1.2, Vista on Qwen 3.8
-            27B per its own AGENT.md/manifest, Mist on Qwen 3.8 27B Free
-            per Tidal's manifest, 2026-09-20),
+            build/ship, review, cross-model checking, off-box operations. Three
+            published model families across twenty-one agents (twelve GLM;
+            four on Claude Code (Sonnet) &mdash; Beacon and Pulsar, Tidal and
+            Mountain; five on gpt-5.6-luna via Codex CLI &mdash; Prism, Brook,
+            Mist, Mesa and Vista; each per its own host's files, 2026-09-20),
             stated plainly.</td>
         </tr>
         <tr>

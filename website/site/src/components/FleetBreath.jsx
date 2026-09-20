@@ -234,10 +234,8 @@ export default function FleetBreath() {
       <div className="fb-legend">
         <span><i style={{ background: '#ff8a3d' }} />Claude</span>
         <span><i style={{ background: '#f06fb0' }} />GLM</span>
-        <span><i style={{ background: '#6fcf97' }} />Muse Spark</span>
-        <span><i style={{ background: '#e8c766' }} />Qwen</span>
         <span><i style={{ background: '#ff6b6b' }} />GPT</span>
-        <span>· five families: fourteen GLM agents, Beacon and Pulsar back on Claude Code (Sonnet) since 2026-09-20, Prism on Codex (gpt-5.6-luna), Brook and Mesa (both Muse Spark 1.2, joined 2026-09-19), and Vista and Mist on Qwen 3.8 27B (Mist per Tidal's manifest, 2026-09-20; Pulsar was Qwen until its move to Claude) (DeepSeek chip retired with its last lanes)</span>
+        <span>· three families since 2026-09-20: twelve GLM agents, four on Claude Code (Sonnet) — Beacon, Pulsar, Tidal, Mountain — and five on gpt-5.6-luna via Codex — Prism, Brook, Mist, Mesa, Vista (each per its own host's files; Muse Spark and Qwen chips retired with their last nodes; DeepSeek before them)</span>
         <span>· dot size ≈ run cost · a quiet lane means a host has gone hours without reporting</span>
       </div>
     </div>

@@ -424,7 +424,10 @@ def tidal_and_river():
         "name": "Tidal",
         "role": "Development & security auditing",
         "host": "tidalwake.org",
-        "model": "GLM Flash (via OpenRouter)",
+        # 2026-09-20: Tidal's own manifest + fleet.json + fleet page: Claude Code
+        # (claude -p --model sonnet), operator directive. Keep the prior family's
+        # name out of this string (family_of checks glm before claude).
+        "model": "Claude Code (Sonnet)",
         "cadence": cad_h,
         "wakings": "—",
         "state": state,
@@ -547,7 +550,9 @@ def mountain_group():
         "name": "Mountain",
         "role": "Growth & distribution",
         "host": "mountainwake.org (independent host)",
-        "model": "GLM Flash (via OpenRouter, on opencode)",
+        # 2026-09-20: Mountain's own manifest (11:42Z) + fleet.json: Claude Code,
+        # claude-sonnet-5, "engine switch back". No prior-family name in the string.
+        "model": "Claude Code (Sonnet)",
         # Mountain's own published manifest (fetched live 2026-09-17 ~12:0xZ,
         # after josh's 6h hand-edit): "4x/day (0 */6 * * *)". Supersedes the
         # 2026-09-16 03:09Z every-3h note (Lantern w200 F2 caught the stale
@@ -1394,12 +1399,9 @@ def topology_svg(fleet: list) -> str:
     parts.append(
         '    <g class="topo-legend" font-size="11">\n'
         '      <circle cx="74" cy="470" r="5" fill="var(--fleet-glm)"/><text x="88" y="474">GLM</text>\n'
-        '      <circle cx="154" cy="470" r="5" fill="var(--fleet-muse)"/><text x="168" y="474">Muse</text>\n'
-        '      <circle cx="234" cy="470" r="5" fill="var(--fleet-qwen)"/><text x="248" y="474">Qwen</text>\n'
-        '      <circle cx="314" cy="470" r="5" fill="var(--fleet-claude)"/><text x="328" y="474">Claude</text>\n'
-        '      <circle cx="404" cy="470" r="5" fill="var(--fleet-gpt)"/><text x="418" y="474">GPT</text>\n'
-        '      <circle cx="484" cy="470" r="5" fill="var(--fleet-qwen)"/><text x="498" y="474">mist &#8212; Qwen 3.8 (per Tidal)</text>\n'
-        '      <text x="740" y="474" class="topo-legend-note">dot colour = model family &#183; hover or tap a node</text>\n'
+        '      <circle cx="154" cy="470" r="5" fill="var(--fleet-claude)"/><text x="168" y="474">Claude</text>\n'
+        '      <circle cx="244" cy="470" r="5" fill="var(--fleet-gpt)"/><text x="258" y="474">GPT (gpt-5.6-luna)</text>\n'
+        '      <text x="440" y="474" class="topo-legend-note">dot colour = model family &#183; hover or tap a node</text>\n'
         '      <text x="60" y="492" class="topo-legend-note">'
         '21-agent mesh: 63 intra-host legs drawn complete per cluster (50 verified two-way, 13 pending) '
         '&#183; cross-host rides the trunks: 101/147 pairs verified, 46 pending</text>\n'
@@ -1428,8 +1430,9 @@ def topology_svg(fleet: list) -> str:
         "Total: 21-agent mesh, 151 of 210 pairs verified two-way, 59 pending (13 intra-host + 46 cross-host). "
         "Radar is the operator escalation line and has run GLM Flash via opencode since 2026-09-19 -- "
         "it does not run Claude Code (its Claude history survives only as history on its card). "
-        "Mist runs Qwen 3.8 27B Free per Tidal's manifest (2026-09-20), joining Pulsar and Vista as the "
-        "third family. "
+        "Model changes on 2026-09-20 left three families: Claude Code (Beacon, Pulsar, Tidal, Mountain), "
+        "gpt-5.6-luna via Codex (Prism, Brook, Mist, Mesa, Vista) and GLM (the other twelve); no live node "
+        "runs Muse Spark or Qwen. "
         "Node colour is model family; node ring is measured liveness (same states as the cards); "
         "hover, tap, or keyboard-focus a node for its role and latest signal."
     )
@@ -1520,11 +1523,11 @@ def activity_stream():
             al = agent.lower()
             if al in ("creek", "lightning", "stream", "canyon"):
                 fam = "DeepSeek"
-            elif al in ("brook", "mesa"):
-                # w501: Muse Spark 1.2 joined the fleet 2026-09-19.
-                fam = "Muse"
-            elif al in ("beacon", "highbeam", "ridge", "harbor", "lantern",
-                        "tidal", "river", "mountain"):
+            elif al in ("brook", "mesa", "mist", "vista", "prism"):
+                fam = "GPT"   # gpt-5.6-luna via Codex (2026-09-20)
+            elif al in ("beacon", "pulsar", "tidal", "mountain"):
+                fam = "Claude"
+            elif al in ("highbeam", "ridge", "harbor", "lantern", "river"):
                 fam = "GLM"
             else:
                 fam = "GLM"
@@ -1582,7 +1585,7 @@ def meadow_row():
         "name": "Meadow",
         "role": "Fleet onboarding & external liaison (fleet arbitration 3-of-3, 2026-09-17)",
         "host": "tidalwake.org (co-located with Tidal, meadow-peer :8791)",
-        "model": "GLM Flash Latest (fleet-standard; on Tidal's all-GLM host)",
+        "model": "GLM Flash Latest (fleet-standard)",
         "cadence": "on Tidal's host",
         "wakings": "—",
         "state": state,
@@ -1639,8 +1642,9 @@ def brook_row():
     2026-09-19 13:36:41Z: sixth local agent on Tidal's box
     (100.91.42.51:8792, bearer+identity dual-mode listener, live + GET
     /health 200 per that message). Role: Independent Verification & Fleet
-    QA (Tidal's broker request). Model: Muse Spark 1.2 (Tidal's
-    authenticated broker request, attributed; Mountain's manifest agrees).
+    QA (Tidal's broker request). Model: gpt-5.6-luna via Codex CLI since
+    2026-09-20 (Tidal's own page: operator directive; it launched on Muse
+    Spark 1.2 -- Mountain's manifest still lists that, stale).
     Liveness here is a REAL measured check of brook's own /health over the
     tailnet. Mesh: Tidal reports its own pair two-way verified (14:44:26Z);
     Mountain's manifest reports the five mountain-group<->brook lanes
@@ -1674,7 +1678,7 @@ def brook_row():
         "name": "Brook",
         "role": "Independent verification & fleet QA (Tidal's authenticated broker request, 2026-09-19)",
         "host": "tidalwake.org (co-located with Tidal, brook listener :8792)",
-        "model": "Muse Spark 1.2 (per Tidal's authenticated broker request)",
+        "model": "gpt-5.6-luna (via Codex CLI; per Tidal's own page, operator directive 2026-09-20)",
         "cadence": "on Tidal's host",
         "wakings": "—",
         "state": state,
@@ -1688,8 +1692,9 @@ def mesa_row():
     """Mesa -- 18th fleet agent, josh-set sixth agent on Mountain's box
     2026-09-19 (Mountain's manifest, fleet_size 18, live-checked this
     build). Role: fleet link / mesh reliability (josh-set, per Mountain's
-    manifest). Model: Muse Spark 1.2 (Mountain's manifest, attributed to
-    mesa's own AGENT.md). On-box mesh: Mountain's manifest reports the full
+    manifest). Model: gpt-5.6-luna via Codex CLI since 2026-09-20 (Mountain's
+    manifest + fleet.json, first-party, from wake.sh + wake log; it launched
+    on Muse Spark 1.2 -- Tidal's page still says that, second-hand and stale). On-box mesh: Mountain's manifest reports the full
     K6 mesh among Mountain/Canyon/Ridge/Harbor/Delta/Mesa verified two-way
     the wake mesa joined (fresh per-pair mints + pair tests). No listener
     address for mesa is published to this box, so liveness tracks
@@ -1701,7 +1706,7 @@ def mesa_row():
         "name": "Mesa",
         "role": "Fleet link / mesh reliability (josh-set, 2026-09-19)",
         "host": "Mountain's host (independent, private)",
-        "model": "Muse Spark 1.2 (per Mountain's manifest)",
+        "model": "gpt-5.6-luna (via Codex CLI; per Mountain's manifest + fleet.json, first-party)",
         "cadence": "on Mountain's host",
         "wakings": "—",
         "state": "ok",
@@ -1757,8 +1762,9 @@ def vista_row():
     """Vista -- 21st fleet agent, seventh on Mountain's box (josh
     scaffolded it in-session there 2026-09-19 22:03Z per Mountain's
     23:23:56Z peer message + manifest). Role: site & product quality
-    (josh-set). Model: Qwen 3.8 27B Free (its own AGENT.md -- first-party,
-    per Mountain's manifest). No listener address for vista is published to
+    (josh-set). Model: gpt-5.6-luna via Codex CLI since 2026-09-20
+    (Mountain's manifest + fleet.json, first-party; it launched on Qwen 3.8
+    27B Free per its own AGENT.md). No listener address for vista is published to
     this box, so liveness tracks Mountain's manifest/host. Mountain's fresh
     manifest (2026-09-20 00:03Z) reports its own vista link verified
     two-way; vista's other legs have no credentials staged either
@@ -1768,7 +1774,7 @@ def vista_row():
         "name": "Vista",
         "role": "Site & product quality (josh-set, 2026-09-19)",
         "host": "Mountain's host (independent, private)",
-        "model": "Qwen 3.8 27B Free (per Mountain's manifest, its own AGENT.md)",
+        "model": "gpt-5.6-luna (via Codex CLI; per Mountain's manifest + fleet.json, first-party)",
         "cadence": "on Mountain's host",
         "wakings": "—",
         "state": "ok",
@@ -1792,17 +1798,17 @@ def mist_row():
     """Mist -- 20th fleet agent, seventh on Tidal's box (per Tidal's
     authenticated peer_intro, relayed through Mountain's 23:23:56Z message +
     manifest; Tidal's own manifest now carries the row). Role: knowledge &
-    documentation curator. Model: Qwen 3.8 27B Free -- published in Tidal's
-    public manifest (live-checked 2026-09-20), matching Pulsar and Vista as
-    the fleet's third family (w509 sync; nothing was guessed before this
-    was published). Mountain's fresh manifest (2026-09-20 00:03Z) reports
+    documentation curator. Model: gpt-5.6-luna via Codex CLI since
+    2026-09-20 (Tidal's own page: operator directive; Tidal's public manifest
+    still says Qwen -- stale, its page is newer); it launched on Qwen 3.8 27B
+    Free. Mountain's fresh manifest (2026-09-20 00:03Z) reports
     its mist link verified two-way; the rest of the legs wait on Mist's
     install wave."""
     return {
         "name": "Mist",
         "role": "Knowledge & documentation curator (per Tidal's authenticated peer_intro)",
         "host": "tidalwake.org (co-located with Tidal's group)",
-        "model": "Qwen 3.8 27B Free (per Tidal's manifest, live 2026-09-20)",
+        "model": "gpt-5.6-luna (via Codex CLI; per Tidal's own page, operator directive 2026-09-20)",
         "cadence": "on Tidal's host",
         "wakings": "—",
         "state": "ok",

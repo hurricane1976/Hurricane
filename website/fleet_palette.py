@@ -52,19 +52,22 @@ FAMILY = {
                             # historical Gemini rows in observability.jsonl
                             # still resolve a colour.
     "Muse":     "#6fcf97",  # 2026-09-19: Muse Spark 1.2 joined the fleet
-                            # (Brook on Tidal's host, Mesa on Mountain's box;
-                            # both per the manifests). Green sits well apart
-                            # from the GLM magenta cluster on the dark surface.
-    "GPT":      "#ff6b6b",  # 2026-09-20: Prism (this box, SRE / backup steward)
-                            # runs Codex CLI + gpt-5.6-luna per its own
-                            # AGENT.md/wake.sh and its 10:16Z run envelope --
-                            # the fleet's only GPT-family node. Coral sits apart
-                            # from the amber Claude hue by hue + label.
-    "Qwen":     "#e8c766",  # 2026-09-19 (late): Qwen joined as the third live
-                            # family -- Pulsar (this box, security sentinel) and
-                            # Vista (Mountain's box, site & product quality),
-                            # both per their own AGENT.md/manifests. Gold sits
-                            # apart from the magenta/green/blue cluster.
+                            # (Brook on Tidal's host, Mesa on Mountain's box).
+                            # RETIRED 2026-09-20: both moved to gpt-5.6-luna
+                            # (Tidal's own page; Mountain's manifest + fleet.json)
+                            # -- no live Muse node; kept so historical rows
+                            # still resolve a colour.
+    "GPT":      "#ff6b6b",  # 2026-09-20: gpt-5.6-luna via Codex CLI -- Prism
+                            # (per its own AGENT.md/wake.sh + 10:16Z run), then
+                            # Brook + Mist (Tidal's own page: operator directive
+                            # 2026-09-20) and Mesa + Vista (Mountain's manifest
+                            # + fleet.json, first-party). Coral sits apart from
+                            # the amber Claude hue by hue + label.
+    "Qwen":     "#e8c766",  # 2026-09-19 (late): Qwen joined (Pulsar, Vista,
+                            # Mist). RETIRED 2026-09-20: Pulsar -> Claude, Mist
+                            # and Vista -> gpt-5.6-luna -- no live Qwen node;
+                            # kept so historical rows still resolve a colour.
+                            # Gold sat apart from the magenta/green/blue cluster.
                             # Identity stays composite (family hue + adjacent
                             # text label everywhere), which covers the CVD
                             # proximity between gold and Muse-green.
@@ -73,23 +76,23 @@ FAMILY = {
 AGENT_FAMILY = {
     # Beacon: GLM 2026-09-15 -> 2026-09-20, then back to Claude Code / Sonnet
     # (josh-directed switch back) -- see fleet_palette.py FAMILY comment.
-    "Beacon": "Claude", "Mountain": "GLM",
+    "Beacon": "Claude", "Mountain": "Claude",   # Mountain: own manifest 2026-09-20 "engine switch back"
     "Lightning": "GLM", "Creek": "GLM", "Stream": "GLM",
     "Canyon": "GLM",
-    "Highbeam": "GLM", "Lantern": "GLM", "Tidal": "GLM",
+    "Highbeam": "GLM", "Lantern": "GLM",
+    "Tidal": "Claude",   # Tidal's own manifest/fleet.json: claude -p --model sonnet, operator directive 2026-09-20
     "River": "GLM", "Ridge": "GLM", "Harbor": "GLM",
     # Radar: Claude until 2026-09-19, then GLM (josh-directed switch) -- the
     # fleet's last non-GLM node until Brook + Mesa joined the same day.
     "Radar": "GLM",
     "Meadow": "GLM", "Delta": "GLM",
     "Prism": "GPT",
-    "Brook": "Muse", "Mesa": "Muse",
-    # w505 (2026-09-20): the three seventh members. Pulsar + Vista run Qwen
-    # 3.8 27B (third live family). w509: Mist's model is published too --
-    # Qwen 3.8 27B Free per Tidal's public manifest (live-checked
-    # 2026-09-20) -- so all three paint gold; nothing was guessed before
-    # Tidal published it.
-    "Vista": "Qwen", "Mist": "Qwen",
+    # 2026-09-20: Brook + Mist (Tidal's own page: gpt-5.6-luna via Codex, operator
+    # directive) and Mesa + Vista (Mountain's manifest + fleet.json, first-party:
+    # gpt-5.6-luna via Codex) all left Muse Spark / Qwen for GPT. Tidal's page still
+    # lists Mesa/Vista under their old families -- second-hand from Mountain's feed;
+    # the host that runs them is authoritative.
+    "Brook": "GPT", "Mist": "GPT", "Mesa": "GPT", "Vista": "GPT",
     # Pulsar ran Qwen 3.8 27B Free 2026-09-19 -> 2026-09-20, then moved to
     # Claude Code / Sonnet (josh-directed, ~09:37Z; first Claude run 09:39Z).
     "Pulsar": "Claude",
@@ -99,34 +102,25 @@ AGENT_FAMILY = {
 # "which one" hint. Same hue as the family, stepped by lightness. Chart FILLS
 # use FAMILY[...]; only dots / swatches / row markers use these.
 AGENT = {
-    # Claude (amber), stepped by lightness — Beacon takes the family hue,
-    # Pulsar (moved to Claude 2026-09-20) the lighter step.
+    # Claude (amber), stepped by lightness — Beacon takes the family hue; Pulsar,
+    # Tidal and Mountain (all Claude Code from 2026-09-20) take the other steps.
     "Beacon": "#ff8a3d", "Pulsar": "#ffb27a",
-    "Mountain": "#c94f8c",
+    "Tidal": "#d9722a", "Mountain": "#ffc9a0",
     "Lightning": "#5aa9ff", "Creek": "#8cc3ff", "Stream": "#3f7fd6",
     "Canyon": "#6a86e6",
     # GLM (magenta), stepped by lightness — the whole fleet shares the hue.
     "Highbeam": "#b8447d",
-    "River": "#c94f8c", "Tidal": "#e05fa0", "Ridge": "#f06fb0",
+    "River": "#c94f8c", "Ridge": "#f06fb0",
     "Harbor": "#f59ccb", "Lantern": "#fbc0e0",
     # Radar moved to the GLM family 2026-09-19; its amber identity shade is
     # retired with the family (historical amber rows resolve via the family
     # colour, not this per-agent shade).
     "Radar": "#e87fb4",
     "Meadow": "#d25596", "Delta": "#8f2f60",
-    # Prism left the GLM family (Codex + gpt-5.6-luna); sole GPT member, so it
-    # takes the family hue itself.
-    "Prism": "#ff6b6b",
-    # Muse Spark (green), stepped by lightness — Brook (darker) and Mesa
-    # (the family hue) joined 2026-09-19.
-    "Brook": "#3f9d6a", "Mesa": "#6fcf97",
-    # Qwen (gold), stepped by lightness — Pulsar (darker, "#c9a63d") and
-    # Vista (the family hue) joined late 2026-09-19; Mist joined the same
-    # evening and published its Qwen family via Tidal's manifest 2026-09-20
-    # (w509), so it takes the lightest gold step. Pulsar left the family for
-    # Claude 2026-09-20 (its amber shade is in the Claude block above); the
-    # gold step is retired with it, so Qwen is now Vista + Mist.
-    "Vista": "#e8c766", "Mist": "#f2d780",
+    # GPT (coral), stepped by lightness — Prism takes the family hue; Brook, Mist,
+    # Mesa and Vista (gpt-5.6-luna via Codex from 2026-09-20) take the other steps.
+    "Prism": "#ff6b6b", "Brook": "#ff9494", "Mist": "#d94f4f",
+    "Mesa": "#ffb8b8", "Vista": "#b83c3c",
 }
 
 # ---- multi-series overlay ramp (series, not identity) --------------------
