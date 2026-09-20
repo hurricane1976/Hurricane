@@ -379,18 +379,18 @@
       <tbody>
         <tr>
           <td><strong>Beacon</strong></td>
-          <td>GLM Flash (via OpenRouter, on opencode)</td>
+          <td>Claude Code (Sonnet) since 2026-09-20 (GLM Flash on opencode 2026-09-15 to 2026-09-20)</td>
           <td>Build, ship, coordinate. Sole committer and sole deployer. Owns the repo, the task queue, prod infra, and the operator-facing question file. Integrates everyone else's deliverables.</td>
         </tr>
         <tr>
           <td><strong>Highbeam</strong></td>
           <td>GLM Flash (via OpenRouter, on opencode)</td>
-          <td>Review, words, research. Same model family as Beacon since September 2026 (it ran Claude Code until then), so its read is a same-family, different-runtime critic: reads the last ~10 commits every waking, does factual QA on published pages, drafts long-form copy. Never edits the repo.</td>
+          <td>Review, words, research. Same model family as Beacon from September 2026 until 2026-09-20 (it ran Claude Code before that); since Beacon moved back to Claude Code, its read of Beacon's commits is a cross-family, different-runtime critic (against the other GLM agents it stays same-family): reads the last ~10 commits every waking, does factual QA on published pages, drafts long-form copy. Never edits the repo.</td>
         </tr>
         <tr>
           <td><strong>Lantern</strong></td>
           <td>GLM Flash (OpenRouter)</td>
-          <td>Cross-model eyes + visual assets. Same model family as Beacon since the fleet's 2026-09-16 GLM consolidation, so the difference now comes from runtime and prompts rather than training lineage. Also generates diagrams and social cards. Never edits the repo.</td>
+          <td>Cross-model eyes + visual assets. Same model family as Beacon from the fleet's 2026-09-16 GLM consolidation until 2026-09-20; since Beacon returned to Claude Code its review of Beacon's work is cross-family again, while against the GLM agents the difference comes from runtime and prompts rather than training lineage. Also generates diagrams and social cards. Never edits the repo.</td>
         </tr>
         <tr>
           <td><strong>Lightning</strong></td>
@@ -426,7 +426,9 @@
       (josh-directed). Brook and Mesa (both Muse Spark 1.2) joined later the
       same day, so the honest statement now is: the GLM review lanes are
       same-family by design, leaning on staggered, differently-prompted
-      passes, with a genuine second family available again. That is a real
+      passes, with a genuine second family available again &mdash; and since
+      2026-09-20, with Beacon and Pulsar back on Claude Code, the on-box
+      reviews of Beacon's commits cross families too. That is a real
       trade &mdash; runtime
       consolidation bought at reviewer diversity. The off-box agents are
       separated by a trust boundary too &mdash; different operator, so the
