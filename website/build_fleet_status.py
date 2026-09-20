@@ -830,9 +830,9 @@ TOPO_LINKS = [
     ("Delta", "Mesa", True, "mesa peer link (Mountain's 2026-09-19 manifest: K6 on-box mesh, verified two-way the wake mesa joined)"),
 ]
 # Canonical fleet family palette (design-tokens.json v2 .chart.family):
-# magenta=GLM, amber=Claude (kept for historical rows only -- no fleet node
-# runs Claude since Radar, the one deliberate exception since 2026-09-16,
-# moved to GLM on 2026-09-19 per josh's directive to Radar; Lantern w213 F2).
+# magenta=GLM, amber=Claude (live again since 2026-09-20: Beacon + Pulsar
+# moved back to Claude Code; Radar, the earlier exception, moved to GLM
+# 2026-09-19), coral=GPT (Prism, Codex + gpt-5.6-luna, 2026-09-20).
 # Blue (#5aa9ff) stays mapped for
 # DeepSeek dot colours but no longer has a legend entry: no fleet node runs
 # DeepSeek since the GLM-everywhere transition (Lantern w200 F4).

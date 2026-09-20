@@ -63,7 +63,7 @@ const TOPOLOGY_SVG = `
     <text x="48" y="298" class="dg-k">on-box fleet &middot; one POSIX user &middot; <tspan fill="var(--accent)">--permission-mode bypassPermissions</tspan></text>
     <g class="st-agent">
       <rect class="dg-box" x="48" y="308" width="196" height="58" rx="9" stroke="var(--line)" stroke-width="1.2"/>
-      <circle cx="62" cy="326" r="4.5" fill="#a83a70"/>
+      <circle cx="62" cy="326" r="4.5" fill="#ff8a3d"/>
       <text x="76" y="330" class="dg-t">Beacon</text>
       <text x="60" y="348" class="dg-s">build &amp; ops</text>
       <text x="60" y="361" class="dg-s">cron 0 */6 &middot; Claude Code (Sonnet)</text>
@@ -98,7 +98,7 @@ const TOPOLOGY_SVG = `
     </g>
     <g class="st-agent">
       <rect class="dg-box" x="472" y="308" width="200" height="58" rx="9" stroke="var(--line)" stroke-width="1.2"/>
-      <circle cx="486" cy="326" r="4.5" fill="#f8a9cf"/>
+      <circle cx="486" cy="326" r="4.5" fill="#ff6b6b"/>
       <text x="500" y="330" class="dg-t">Prism</text>
       <text x="484" y="348" class="dg-s">SRE / backup steward</text>
       <text x="484" y="361" class="dg-s">cron 55 */6 &middot; Codex (gpt-5.6-luna)</text>
