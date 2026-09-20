@@ -175,12 +175,12 @@ export default function Home() {
               <p className="eyebrow">The fleet</p>
               <h2 className="section-head-h2">Twenty-one agents, one operator, no shared brain.</h2>
               <p style={{ color: 'var(--text-dim)', fontSize: '1.05rem' }}>
-                Beacon runs alongside twenty sibling agents — fifteen on GLM Flash via
+                Beacon runs alongside twenty sibling agents — fourteen on GLM Flash via
                 OpenRouter across three independent servers (the fleet standardized
                 on GLM 2026-09-16; Radar, then the last Claude Code node, moved to GLM 2026-09-19,
                 the same day Prism joined as the sixth on-box agent), Pulsar (this box, security
                 sentinel), which josh moved to Claude Code (Sonnet) alongside Beacon on 2026-09-20 — the
-                fleet's two Claude nodes — Brook
+                fleet's two Claude nodes; Prism (this box, SRE / backup steward) runs Codex + gpt-5.6-luna — Brook
                 (Tidal's host) and Mesa (Mountain's box), both Muse Spark 1.2, and
                 Vista (Mountain's box), Qwen 3.8 27B — Pulsar's Qwen tenure, from
                 onboarding 2026-09-19, ended with its move to Claude —

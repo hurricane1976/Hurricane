@@ -839,7 +839,7 @@ TOPO_LINKS = [
 FAMILY_COLOR = {
     "Claude": "var(--amber)", "DeepSeek": "#5aa9ff", "GLM": "var(--magenta)",
     "Gemini": "var(--teal)", "Muse": "#6fcf97", "Qwen": "#e8c766",
-    "Unconfirmed": "var(--muted)",
+    "GPT": "#ff6b6b", "Unconfirmed": "var(--muted)",
 }
 STATE_RING = {
     "ok": "var(--teal)", "waking": "var(--amber)", "stale": "var(--amber)",
@@ -872,6 +872,10 @@ def family_of(model: str) -> str:
     # unstated model can't silently paint as GLM.
     if "qwen" in m:
         return "Qwen"
+    # 2026-09-20: Prism runs Codex CLI + gpt-5.6-luna. Checked before glm/claude
+    # so a historical clause in a model string can't mis-paint it.
+    if "gpt" in m or "codex" in m:
+        return "GPT"
     if "unknown" in m:
         return "Unconfirmed"
     # w499: check "glm" FIRST -- since 2026-09-19 model strings may carry a
@@ -1246,6 +1250,8 @@ def topology_svg(fleet: list) -> str:
         "GLM": "var(--fleet-glm)",
         "Muse": "var(--fleet-muse)",
         "Qwen": "var(--fleet-qwen)",
+        "Claude": "var(--fleet-claude)",
+        "GPT": "var(--fleet-gpt)",
         "Unconfirmed": "var(--fleet-unconfirmed)",
     }
 
@@ -1388,10 +1394,12 @@ def topology_svg(fleet: list) -> str:
     parts.append(
         '    <g class="topo-legend" font-size="11">\n'
         '      <circle cx="74" cy="470" r="5" fill="var(--fleet-glm)"/><text x="88" y="474">GLM</text>\n'
-        '      <circle cx="164" cy="470" r="5" fill="var(--fleet-muse)"/><text x="178" y="474">Muse</text>\n'
-        '      <circle cx="254" cy="470" r="5" fill="var(--fleet-qwen)"/><text x="268" y="474">Qwen</text>\n'
-        '      <circle cx="354" cy="470" r="5" fill="var(--fleet-qwen)"/><text x="368" y="474">mist &#8212; Qwen 3.8 (per Tidal)</text>\n'
-        '      <text x="560" y="474" class="topo-legend-note">dot colour = model family &#183; hover or tap a node</text>\n'
+        '      <circle cx="154" cy="470" r="5" fill="var(--fleet-muse)"/><text x="168" y="474">Muse</text>\n'
+        '      <circle cx="234" cy="470" r="5" fill="var(--fleet-qwen)"/><text x="248" y="474">Qwen</text>\n'
+        '      <circle cx="314" cy="470" r="5" fill="var(--fleet-claude)"/><text x="328" y="474">Claude</text>\n'
+        '      <circle cx="404" cy="470" r="5" fill="var(--fleet-gpt)"/><text x="418" y="474">GPT</text>\n'
+        '      <circle cx="484" cy="470" r="5" fill="var(--fleet-qwen)"/><text x="498" y="474">mist &#8212; Qwen 3.8 (per Tidal)</text>\n'
+        '      <text x="740" y="474" class="topo-legend-note">dot colour = model family &#183; hover or tap a node</text>\n'
         '      <text x="60" y="492" class="topo-legend-note">'
         '21-agent mesh: 63 intra-host legs drawn complete per cluster (50 verified two-way, 13 pending) '
         '&#183; cross-host rides the trunks: 101/147 pairs verified, 46 pending</text>\n'
@@ -1856,7 +1864,10 @@ def main():
     prism = sibling_row(
         "Prism", "SRE / backup steward",
         "beaconwake.com box (/home/agent/prism)",
-        "GLM Flash Latest (via OpenRouter, on opencode)",
+        # 2026-09-20: Codex CLI + gpt-5.6-luna per prism/AGENT.md + wake.sh and
+        # its 10:16Z run envelope (was listed here as GLM Flash Latest on
+        # opencode -- stale). Keep prior-family names out of this string.
+        "Codex CLI + gpt-5.6-luna",
         "4×/day (55 */6)", PRISM_LOGS, PRISM_NOTES, "prism")
     tidal, river, creek, stream = tidal_and_river()
     mountain, canyon, ridge, harbor = mountain_group()

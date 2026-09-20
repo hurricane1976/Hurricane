@@ -1957,6 +1957,8 @@ main h1 code, main h2 code, main h3 code, main h4 code, main a code {
   --fleet-glm: #ff2ec4;
   --fleet-muse: #9dff3d;
   --fleet-qwen: #a78bfa;
+  --fleet-claude: #ffc233;
+  --fleet-gpt: #ff5a5f;
   --fleet-unconfirmed: #8b93a1;
   --fleet-chan-tailscale: #22e6ff;
   --fleet-chan-agora: #c084fc;

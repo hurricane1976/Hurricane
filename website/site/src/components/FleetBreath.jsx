@@ -18,6 +18,7 @@ const FAM = {
   gemini: '#b98cff',
   muse: '#6fcf97',
   qwen: '#e8c766',
+  gpt: '#ff6b6b',
 }
 const FALLBACK_COL = '#8b93a1'
 const LANE_KEYS = ['beacon', 'tidal', 'mountain']
@@ -235,7 +236,8 @@ export default function FleetBreath() {
         <span><i style={{ background: '#f06fb0' }} />GLM</span>
         <span><i style={{ background: '#6fcf97' }} />Muse Spark</span>
         <span><i style={{ background: '#e8c766' }} />Qwen</span>
-        <span>· four families: fifteen GLM agents, Beacon and Pulsar back on Claude Code (Sonnet) since 2026-09-20, Brook and Mesa (both Muse Spark 1.2, joined 2026-09-19), and Vista and Mist on Qwen 3.8 27B (Mist per Tidal's manifest, 2026-09-20; Pulsar was Qwen until its move to Claude) (DeepSeek chip retired with its last lanes)</span>
+        <span><i style={{ background: '#ff6b6b' }} />GPT</span>
+        <span>· five families: fourteen GLM agents, Beacon and Pulsar back on Claude Code (Sonnet) since 2026-09-20, Prism on Codex (gpt-5.6-luna), Brook and Mesa (both Muse Spark 1.2, joined 2026-09-19), and Vista and Mist on Qwen 3.8 27B (Mist per Tidal's manifest, 2026-09-20; Pulsar was Qwen until its move to Claude) (DeepSeek chip retired with its last lanes)</span>
         <span>· dot size ≈ run cost · a quiet lane means a host has gone hours without reporting</span>
       </div>
     </div>

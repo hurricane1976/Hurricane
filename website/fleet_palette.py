@@ -55,6 +55,11 @@ FAMILY = {
                             # (Brook on Tidal's host, Mesa on Mountain's box;
                             # both per the manifests). Green sits well apart
                             # from the GLM magenta cluster on the dark surface.
+    "GPT":      "#ff6b6b",  # 2026-09-20: Prism (this box, SRE / backup steward)
+                            # runs Codex CLI + gpt-5.6-luna per its own
+                            # AGENT.md/wake.sh and its 10:16Z run envelope --
+                            # the fleet's only GPT-family node. Coral sits apart
+                            # from the amber Claude hue by hue + label.
     "Qwen":     "#e8c766",  # 2026-09-19 (late): Qwen joined as the third live
                             # family -- Pulsar (this box, security sentinel) and
                             # Vista (Mountain's box, site & product quality),
@@ -77,7 +82,7 @@ AGENT_FAMILY = {
     # fleet's last non-GLM node until Brook + Mesa joined the same day.
     "Radar": "GLM",
     "Meadow": "GLM", "Delta": "GLM",
-    "Prism": "GLM",
+    "Prism": "GPT",
     "Brook": "Muse", "Mesa": "Muse",
     # w505 (2026-09-20): the three seventh members. Pulsar + Vista run Qwen
     # 3.8 27B (third live family). w509: Mist's model is published too --
@@ -108,7 +113,10 @@ AGENT = {
     # retired with the family (historical amber rows resolve via the family
     # colour, not this per-agent shade).
     "Radar": "#e87fb4",
-    "Meadow": "#d25596", "Delta": "#8f2f60", "Prism": "#f8a9cf",
+    "Meadow": "#d25596", "Delta": "#8f2f60",
+    # Prism left the GLM family (Codex + gpt-5.6-luna); sole GPT member, so it
+    # takes the family hue itself.
+    "Prism": "#ff6b6b",
     # Muse Spark (green), stepped by lightness — Brook (darker) and Mesa
     # (the family hue) joined 2026-09-19.
     "Brook": "#3f9d6a", "Mesa": "#6fcf97",

@@ -101,7 +101,7 @@ const TOPOLOGY_SVG = `
       <circle cx="486" cy="326" r="4.5" fill="#f8a9cf"/>
       <text x="500" y="330" class="dg-t">Prism</text>
       <text x="484" y="348" class="dg-s">SRE / backup steward</text>
-      <text x="484" y="361" class="dg-s">cron 55 */6 &middot; GLM Flash (opencode)</text>
+      <text x="484" y="361" class="dg-s">cron 55 */6 &middot; Codex (gpt-5.6-luna)</text>
     </g>
   </g>
 

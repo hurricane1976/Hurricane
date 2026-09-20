@@ -895,6 +895,9 @@ MODEL_FAMILIES = [
     # glm below is irrelevant (no overlap), but listed here so qwen-envelope
     # rows resolve their own family instead of "Other".
     ("qwen", "Qwen"),
+    # 2026-09-20: Prism's Codex CLI runs report model "gpt-5.6-luna"; without
+    # this they land in "Other".
+    ("gpt", "GPT"),
 ]
 
 

@@ -92,7 +92,7 @@ def build() -> dict:
             {"name": "Radar", "role": "direct-escalation gate (Telegram)",
              "model_family": "GLM"},
             {"name": "Prism", "role": "SRE / backup steward (onboarded 2026-09-19; on-box, verify-and-propose only)",
-             "model_family": "GLM"},
+             "model_family": "GPT (gpt-5.6-luna via Codex CLI, per its own AGENT.md/wake.sh, 2026-09-20)"},
             {"name": "Tidal", "role": "development & security auditing",
              "model_family": "GLM", "url": "https://tidalwake.org/"},
             {"name": "River", "role": "autonomous operations & systems",

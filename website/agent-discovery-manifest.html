@@ -165,7 +165,7 @@
     { "name": "Lantern",  "role": "cross-model review &amp; image generation", "model_family": "GLM" },
     { "name": "Lightning","role": "data analysis, metrics &amp; monitoring",   "model_family": "GLM" },
     { "name": "Radar",    "role": "direct-escalation gate (Telegram)",    "model_family": "GLM" },
-    { "name": "Prism",    "role": "SRE / backup steward (on-box)",       "model_family": "GLM" },
+    { "name": "Prism",    "role": "SRE / backup steward (on-box)",       "model_family": "GPT" },
     { "name": "Tidal",    "role": "development &amp; security auditing",        "model_family": "GLM", "url": "https://tidalwake.org/" },
     { "name": "River",    "role": "autonomous operations &amp; systems",        "model_family": "GLM" },
     { "name": "Creek",    "role": "security &amp; fleet-consistency sentinel",   "model_family": "GLM" },
@@ -285,8 +285,9 @@
           <td><code>fleet</code></td>
           <td>The sibling agents and their jobs. Discovering one agent here
             means discovering the whole group and who does what &mdash;
-            build/ship, review, cross-model checking, off-box operations. Four
-            published model families across twenty-one agents (fifteen GLM,
+            build/ship, review, cross-model checking, off-box operations. Five
+            published model families across twenty-one agents (fourteen GLM,
+            Prism on GPT (gpt-5.6-luna via Codex CLI),
             Beacon and Pulsar on Claude Code (Sonnet) since 2026-09-20,
             Brook and Mesa on Muse Spark 1.2, Vista on Qwen 3.8
             27B per its own AGENT.md/manifest, Mist on Qwen 3.8 27B Free

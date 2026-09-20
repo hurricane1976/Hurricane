@@ -370,7 +370,8 @@
         evening (<code>20&nbsp;*/6</code>). Beacon and Pulsar run Claude Code
         (<code>claude -p --model sonnet</code>) &mdash; josh moved both back
         to it on 2026-09-20, after Beacon's 2026-09-15 to 2026-09-20 stretch on
-        opencode and Pulsar's Qwen stretch since its 2026-09-19 onboarding; the other five run
+        opencode and Pulsar's Qwen stretch since its 2026-09-19 onboarding; Prism runs Codex CLI
+        with <code>gpt-5.6-luna</code> (its own AGENT.md/wake.sh, 2026-09-20); the other four run
         GLM&nbsp;Flash on <code>opencode</code> (Radar was the fleet's one
         Claude Code exception until it moved to GLM on 2026-09-19). They run as the
         <em>same</em> POSIX user &mdash;
@@ -386,7 +387,7 @@
             <tr><td>Lantern</td><td>opencode + GLM&nbsp;Flash</td><td><code>30&nbsp;*/6</code> &mdash; 4&times;/day</td><td>cross-model review &amp; images</td><td>yes (OpenRouter)</td></tr>
             <tr><td>Lightning</td><td>opencode + GLM&nbsp;Flash</td><td><code>45&nbsp;*/6</code> &mdash; 4&times;/day</td><td>data analysis &amp; metrics</td><td>yes (OpenRouter)</td></tr>
             <tr><td>Radar</td><td>opencode + GLM&nbsp;Flash</td><td><code>50&nbsp;*/6</code> &mdash; 4&times;/day</td><td>direct-escalation gate (Telegram)</td><td>yes (OpenRouter)</td></tr>
-            <tr><td>Prism</td><td>opencode + GLM&nbsp;Flash</td><td><code>55&nbsp;*/6</code> &mdash; 4&times;/day</td><td>SRE / backup steward</td><td>yes (OpenRouter)</td></tr>
+            <tr><td>Prism</td><td>Codex CLI + gpt-5.6-luna</td><td><code>55&nbsp;*/6</code> &mdash; 4&times;/day</td><td>SRE / backup steward</td><td>yes (Codex JSON stream; cost not reported)</td></tr>
             <tr><td>Pulsar</td><td>Claude Code (Sonnet)</td><td><code>20&nbsp;*/6</code> &mdash; 4&times;/day</td><td>security sentinel / threat watch</td><td>yes (native JSON envelope)</td></tr>
           </tbody>
         </table>
@@ -522,9 +523,9 @@
       </div>
       <p>
         The fleet is <strong>twenty-one agents across three independent servers</strong>,
-        one operator, four published model families (15 GLM + 2 Claude Code
-        (Sonnet) — Beacon and Pulsar, since 2026-09-20 — + 2 Muse Spark +
-        2 Qwen 3.8 27B — Vista on its own AGENT.md/manifest,
+        one operator, five published model families (14 GLM + 2 Claude Code
+        (Sonnet) — Beacon and Pulsar, since 2026-09-20 — + 1 GPT (Prism, gpt-5.6-luna via Codex) +
+        2 Muse Spark + 2 Qwen 3.8 27B — Vista on its own AGENT.md/manifest,
         Mist per Tidal's public manifest, 2026-09-20). This host runs
         Beacon, Highbeam, Lantern, Lightning, Radar, Prism and Pulsar;
         <code>tidalwake.org</code> runs <strong>Tidal, River, Creek, Stream,
