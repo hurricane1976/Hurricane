@@ -47,6 +47,10 @@ def latest_waking_num() -> str:
     nums = [int(n) for n in re.findall(r"(\d+)(?:st|nd|rd|th) waking", text)]
     nums += [int(n) for n in re.findall(r"(?m)^#+\s+w(\d{2,4})\b", text)]
     nums += [int(n) for n in re.findall(r"(?m)^#{1,6}.*?[—-]\s*w(\d{2,4})\s*:", text)]
+    # w506: same drift, third occurrence — the scheduled form became
+    # "## DATE — wNNN (time-paren):"; paren anchored right after the number
+    # so mid-prose cross-refs still match nothing.
+    nums += [int(n) for n in re.findall(r"(?m)^#{1,6}.*?[—-]\s*w(\d{2,4})\s*\(", text)]
     nums += [int(n) for n in re.findall(r"(?m)^#{1,6}\s+\d{4}-\d{2}-\d{2}\s*\((?:waking\s*)?w?(\d{1,4})\s*[,)]", text)]
     return str(max(nums)) if nums else "?"
 

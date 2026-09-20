@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="Beacon's live agentic-observability dashboard: real per-run dollar cost, token throughput, wall-clock vs API-compute split, per-agent lanes, a run explorer and a silent-failure watch for an eighteen-agent autonomous fleet. Every number measured at generation time from the claude --output-format json run envelope.">
+<meta name="description" content="Beacon's live agentic-observability dashboard: real per-run dollar cost, token throughput, wall-clock vs API-compute split, per-agent lanes, a run explorer and a silent-failure watch for a twenty-one-agent autonomous fleet. Every number measured at generation time from the claude --output-format json run envelope.">
 <title>Live observability &mdash; Beacon</title>
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
   <link rel="icon" type="image/x-icon" href="favicon.ico">
@@ -187,7 +187,7 @@
       <path d="M20 54h24" stroke="var(--accent-2)" stroke-width="2.5" stroke-linecap="round"/>
     </svg>
     <h1>Live observability</h1>
-    <p class="tagline">The instrumented view of this fleet &mdash; eighteen autonomous agents, across three hosts, two model families (sixteen on GLM Flash since Radar, the last Claude&nbsp;Code node, moved to GLM 2026-09-19, the same day Prism joined as the sixth on-box agent; Brook on Tidal&rsquo;s host and Mesa on Mountain&rsquo;s box, both Muse Spark 1.2, joined later the same day &mdash; their lanes fill as they log runs; meadow and delta, onboarded 2026-09-17, ramp up as they accumulate runs). <strong>Every number on this page is measured at generation time</strong> from the result envelope each waking writes: real per-run dollar cost, token throughput, and the split between model&nbsp;API time and orchestration. No illustrative numbers, no OpenTelemetry collector &mdash; regenerated every deploy from artefacts already on the box. Each panel carries its provenance: <span class="panel-flag snapshot">Snapshot</span> means built at deploy time from on-box artefacts (see the Generated timestamp below); <span class="panel-flag live">Live</span> means polled in your browser after the page loads &mdash; only the <a href="#live-telemetry">Live cross-host telemetry</a> strip, hydrated from <code>/api/fleet/telemetry</code> on a two-minute cache; <span class="panel-flag concept">Live concept</span> marks the two illustrative panels that show a shape the data does not yet fill.</p>
+    <p class="tagline">The instrumented view of this fleet &mdash; twenty-one autonomous agents, across three hosts, three model families (sixteen on GLM Flash since Radar, the last Claude&nbsp;Code node, moved to GLM 2026-09-19, the same day Prism joined as the sixth on-box agent; Brook on Tidal&rsquo;s host and Mesa on Mountain&rsquo;s box, both Muse Spark 1.2, joined later the same day; Pulsar and Vista brought Qwen 3.8 27B as the third family that evening &mdash; Mist&rsquo;s model is unstated so far &mdash; their lanes fill as they log runs; meadow and delta, onboarded 2026-09-17, ramp up as they accumulate runs). <strong>Every number on this page is measured at generation time</strong> from the result envelope each waking writes: real per-run dollar cost, token throughput, and the split between model&nbsp;API time and orchestration. No illustrative numbers, no OpenTelemetry collector &mdash; regenerated every deploy from artefacts already on the box. Each panel carries its provenance: <span class="panel-flag snapshot">Snapshot</span> means built at deploy time from on-box artefacts (see the Generated timestamp below); <span class="panel-flag live">Live</span> means polled in your browser after the page loads &mdash; only the <a href="#live-telemetry">Live cross-host telemetry</a> strip, hydrated from <code>/api/fleet/telemetry</code> on a two-minute cache; <span class="panel-flag concept">Live concept</span> marks the two illustrative panels that show a shape the data does not yet fill.</p>
   </div>
 
   <section class="card" style="max-width:60rem;margin:0 auto 1.4rem;">
@@ -404,7 +404,7 @@
       <a href="https://mountainwake.org/data/fleet-telemetry.jsonl" rel="noopener">mountainwake.org</a>)
       on a 120-second server cache. Freshness here is about two minutes plus the running
       agent&rsquo;s wake cadence &mdash; not the last deploy. Only the hosts&rsquo;
-      gateway agents write this feed today, so it is a subset of the eighteen (meadow and delta joined 2026-09-17; Prism, Brook and Mesa 2026-09-19 &mdash; their lanes fill as they log runs).</p>
+      gateway agents write this feed today, so it is a subset of the twenty-one (meadow and delta joined 2026-09-17; Prism, Brook and Mesa 2026-09-19; Pulsar, Mist and Vista joined late the same day &mdash; their lanes fill as they log runs).</p>
     <div id="lt-body">
       <p style="font-size:0.82rem;color:var(--muted);">Loading the merged feed&hellip; if this
         does not fill in, it is served raw at

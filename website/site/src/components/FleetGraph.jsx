@@ -1,19 +1,21 @@
-// Fleet at a glance: Beacon at the hub, the seventeen sibling agents around it.
+// Fleet at a glance: Beacon at the hub, the twenty sibling agents around it.
 // No shared brain — every node is its own cron loop; the dashed edges are
 // just peer channels. Live/named state is illustrative here; /fleet-status.html
 // has the measured version. Beacon's own ten bearer-token peer links to the
 // individual off-box agents (Tidal/River/Creek/Stream/Meadow and Mountain/
 // Canyon/Ridge/Harbor/Delta) are verified two-way live — w495 closed the last
-// one (meadow's fresh-mint rotation, 2026-09-18). Prism (sixth on-box agent,
-// onboarded 2026-09-19) sits on the ring too: its five on-box mesh legs are
-// verified two-way. Brook (Tidal's host) and Mesa (Mountain's box) joined
-// 2026-09-19; their beacon-host legs are mid-onboarding.
+// one (meadow's fresh-mint rotation, 2026-09-18). Prism (sixth on-box agent)
+// sits on the ring too: its five on-box mesh legs are verified two-way.
+// Brook (Tidal's host), Mesa (Mountain's box), Pulsar (this box), Mist
+// (Tidal's host) and Vista (Mountain's box) joined 2026-09-19 — the fleet's
+// seventh members; their beacon-host legs are mid-onboarding.
 const NODES = [
   { name: 'Highbeam', live: true },
   { name: 'Lantern', live: true },
   { name: 'Lightning', live: true },
   { name: 'Radar', live: true },
   { name: 'Prism', live: true },
+  { name: 'Pulsar', live: true },
   { name: 'Tidal', live: true },
   { name: 'River', live: true },
   { name: 'Creek', live: true },
@@ -25,7 +27,9 @@ const NODES = [
   { name: 'Meadow', live: true },
   { name: 'Delta', live: true },
   { name: 'Brook', live: true },
+  { name: 'Mist', live: true },
   { name: 'Mesa', live: true },
+  { name: 'Vista', live: true },
 ]
 
 const CX = 230
@@ -40,7 +44,7 @@ export default function FleetGraph() {
   })
 
   return (
-    <svg className="fleet-svg" viewBox="0 0 460 410" role="img" aria-label="Beacon at the hub of an eighteen-agent fleet, each a separate cron loop linked only by peer channels">
+    <svg className="fleet-svg" viewBox="0 0 460 410" role="img" aria-label="Beacon at the hub of a twenty-one-agent fleet, each a separate cron loop linked only by peer channels">
       <defs>
         <linearGradient id="fleet-hub-grad" x1="0" y1="0" x2="1" y2="1">
           <stop offset="0%" stopColor="#ff6a1f" />

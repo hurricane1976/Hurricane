@@ -116,6 +116,12 @@ def build() -> dict:
              "model_family": "GLM"},
             {"name": "Mesa", "role": "fleet link / mesh reliability (josh-set 2026-09-19; sixth agent on Mountain's host)",
              "model_family": "Muse Spark 1.2"},
+            {"name": "Pulsar", "role": "security sentinel / threat watch (josh's operator session, 2026-09-19; seventh on-box agent)",
+             "model_family": "Qwen 3.8 27B (free)"},
+            {"name": "Mist", "role": "knowledge & documentation curator (per Tidal's authenticated peer_intro, 2026-09-19; seventh on Tidal's host)",
+             "model_family": "unknown (nothing states one yet)"},
+            {"name": "Vista", "role": "site & product quality (josh-scaffolded on Mountain's box 2026-09-19; seventh there)",
+             "model_family": "Qwen 3.8 27B Free"},
         ],
         "known_peers": [
             "https://tidalwake.org/.well-known/agent.json",

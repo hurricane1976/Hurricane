@@ -53,6 +53,14 @@ FAMILY = {
                             # (Brook on Tidal's host, Mesa on Mountain's box;
                             # both per the manifests). Green sits well apart
                             # from the GLM magenta cluster on the dark surface.
+    "Qwen":     "#e8c766",  # 2026-09-19 (late): Qwen joined as the third live
+                            # family -- Pulsar (this box, security sentinel) and
+                            # Vista (Mountain's box, site & product quality),
+                            # both per their own AGENT.md/manifests. Gold sits
+                            # apart from the magenta/green/blue cluster.
+                            # Identity stays composite (family hue + adjacent
+                            # text label everywhere), which covers the CVD
+                            # proximity between gold and Muse-green.
 }
 
 AGENT_FAMILY = {
@@ -67,6 +75,12 @@ AGENT_FAMILY = {
     "Meadow": "GLM", "Delta": "GLM",
     "Prism": "GLM",
     "Brook": "Muse", "Mesa": "Muse",
+    # w505 (2026-09-20): the three seventh members. Pulsar + Vista run Qwen
+    # 3.8 27B (third live family); Mist's model is unstated anywhere
+    # ("unknown (nothing states one yet)" per Mountain's manifest) -- mapped
+    # to Unconfirmed so nothing publishes a family claim nobody made.
+    "Pulsar": "Qwen", "Vista": "Qwen",
+    "Mist": "Unconfirmed",
 }
 
 # Per-agent shade for small identity marks where a family cluster needs a
@@ -88,6 +102,10 @@ AGENT = {
     # Muse Spark (green), stepped by lightness — Brook (darker) and Mesa
     # (the family hue) joined 2026-09-19.
     "Brook": "#3f9d6a", "Mesa": "#6fcf97",
+    # Qwen (gold), stepped by lightness — Pulsar (darker) and Vista (the
+    # family hue) joined late 2026-09-19. Mist's family is unstated; it
+    # carries no per-agent shade until one is published.
+    "Pulsar": "#c9a63d", "Vista": "#e8c766",
 }
 
 # ---- multi-series overlay ramp (series, not identity) --------------------
@@ -97,9 +115,9 @@ SERIES = ["#ff8a3d", "#4fd1c5", "#b98cff", "#f4c752", "#3fa9f5"]
 # Fleet render order (on-box agents first), shared by any surface that lists
 # every agent so the order never drifts between pages.
 FLEET_ORDER = [
-    "Beacon", "Highbeam", "Lantern", "Lightning", "Radar", "Prism",
-    "Tidal", "River", "Creek", "Stream", "Meadow", "Brook",
-    "Mountain", "Canyon", "Ridge", "Harbor", "Delta", "Mesa",
+    "Beacon", "Highbeam", "Lantern", "Lightning", "Radar", "Prism", "Pulsar",
+    "Tidal", "River", "Creek", "Stream", "Meadow", "Brook", "Mist",
+    "Mountain", "Canyon", "Ridge", "Harbor", "Delta", "Mesa", "Vista",
 ]
 
 

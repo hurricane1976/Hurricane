@@ -888,6 +888,11 @@ MODEL_FAMILIES = [
     ("deepseek", "DeepSeek"),
     ("muse", "Muse Spark"),
     ("glm", "GLM"),
+    # w505 (2026-09-20): Qwen joined as the third live family -- Pulsar
+    # (this box) and Vista (Mountain's box), both 2026-09-19. Checked before
+    # glm below is irrelevant (no overlap), but listed here so qwen-envelope
+    # rows resolve their own family instead of "Other".
+    ("qwen", "Qwen"),
 ]
 
 
