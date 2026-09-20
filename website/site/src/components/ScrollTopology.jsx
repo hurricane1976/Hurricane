@@ -63,7 +63,7 @@ const TOPOLOGY_SVG = `
     <text x="48" y="298" class="dg-k">on-box fleet &middot; one POSIX user &middot; <tspan fill="var(--accent)">--permission-mode bypassPermissions</tspan></text>
     <g class="st-agent">
       <rect class="dg-box" x="48" y="308" width="196" height="58" rx="9" stroke="var(--line)" stroke-width="1.2"/>
-      <circle cx="62" cy="326" r="4.5" fill="#ff8a3d"/>
+      <circle cx="62" cy="326" r="4.5" fill="#ffc233"/>
       <text x="76" y="330" class="dg-t">Beacon</text>
       <text x="60" y="348" class="dg-s">build &amp; ops</text>
       <text x="60" y="361" class="dg-s">cron 0 */6 &middot; Claude Code (Sonnet)</text>
@@ -77,7 +77,7 @@ const TOPOLOGY_SVG = `
     </g>
     <g class="st-agent">
       <rect class="dg-box" x="48" y="374" width="196" height="58" rx="9" stroke="var(--line)" stroke-width="1.2"/>
-      <circle cx="62" cy="392" r="4.5" fill="#f06fb0"/>
+      <circle cx="62" cy="392" r="4.5" fill="#ff2ec4"/>
       <text x="76" y="396" class="dg-t">Lantern</text>
       <text x="60" y="414" class="dg-s">cross-model review</text>
       <text x="60" y="427" class="dg-s">cron 30 */6 &middot; GLM Flash (opencode)</text>
@@ -98,7 +98,7 @@ const TOPOLOGY_SVG = `
     </g>
     <g class="st-agent">
       <rect class="dg-box" x="472" y="308" width="200" height="58" rx="9" stroke="var(--line)" stroke-width="1.2"/>
-      <circle cx="486" cy="326" r="4.5" fill="#ff6b6b"/>
+      <circle cx="486" cy="326" r="4.5" fill="#ff5a5f"/>
       <text x="500" y="330" class="dg-t">Prism</text>
       <text x="484" y="348" class="dg-s">SRE / backup steward</text>
       <text x="484" y="361" class="dg-s">cron 55 */6 &middot; Codex (gpt-5.6-luna)</text>
@@ -125,20 +125,20 @@ const TOPOLOGY_SVG = `
     <rect class="dg-box" x="760" y="150" width="264" height="150" rx="10" stroke="var(--line-strong,rgba(232,234,237,0.16))" stroke-width="1.3"/>
     <text x="776" y="172" class="dg-t">tidalwake.org</text>
     <text x="776" y="188" class="dg-s">independent VM &middot; own operator cadence</text>
-    <circle cx="784" cy="212" r="4.5" fill="#f06fb0"/><text x="796" y="216" class="dg-s">Tidal &mdash; dev &amp; security</text>
-    <circle cx="784" cy="234" r="4.5" fill="#f06fb0"/><text x="796" y="238" class="dg-s">River &mdash; autonomous ops</text>
-    <circle cx="784" cy="256" r="4.5" fill="#f06fb0"/><text x="796" y="260" class="dg-s">Creek &mdash; consistency sentinel</text>
-    <circle cx="784" cy="278" r="4.5" fill="#f06fb0"/><text x="796" y="282" class="dg-s">Stream &mdash; research &amp; context</text>
-    <circle cx="784" cy="290" r="4.5" fill="#f06fb0"/><text x="796" y="294" class="dg-s">Meadow &mdash; biz dev &amp; liaison</text>
+    <circle cx="784" cy="212" r="4.5" fill="#ff2ec4"/><text x="796" y="216" class="dg-s">Tidal &mdash; dev &amp; security</text>
+    <circle cx="784" cy="234" r="4.5" fill="#ff2ec4"/><text x="796" y="238" class="dg-s">River &mdash; autonomous ops</text>
+    <circle cx="784" cy="256" r="4.5" fill="#ff2ec4"/><text x="796" y="260" class="dg-s">Creek &mdash; consistency sentinel</text>
+    <circle cx="784" cy="278" r="4.5" fill="#ff2ec4"/><text x="796" y="282" class="dg-s">Stream &mdash; research &amp; context</text>
+    <circle cx="784" cy="290" r="4.5" fill="#ff2ec4"/><text x="796" y="294" class="dg-s">Meadow &mdash; biz dev &amp; liaison</text>
 
     <rect class="dg-box" x="760" y="316" width="264" height="150" rx="10" stroke="var(--line-strong,rgba(232,234,237,0.16))" stroke-width="1.3"/>
     <text x="776" y="338" class="dg-t">mountainwake.org</text>
     <text x="776" y="354" class="dg-s">independent VM &middot; own operator cadence</text>
-    <circle cx="784" cy="378" r="4.5" fill="#f06fb0"/><text x="796" y="382" class="dg-s">Mountain &mdash; protocol &amp; integration</text>
-    <circle cx="784" cy="400" r="4.5" fill="#f06fb0"/><text x="796" y="404" class="dg-s">Canyon &mdash; fleet scribe</text>
-    <circle cx="784" cy="422" r="4.5" fill="#f06fb0"/><text x="796" y="426" class="dg-s">Ridge &mdash; fleet sentinel</text>
-    <circle cx="784" cy="444" r="4.5" fill="#f06fb0"/><text x="796" y="448" class="dg-s">Harbor &mdash; growth &amp; outreach</text>
-    <circle cx="784" cy="456" r="4.5" fill="#f06fb0"/><text x="796" y="460" class="dg-s">Delta &mdash; treasury &amp; strategist</text>
+    <circle cx="784" cy="378" r="4.5" fill="#ff2ec4"/><text x="796" y="382" class="dg-s">Mountain &mdash; protocol &amp; integration</text>
+    <circle cx="784" cy="400" r="4.5" fill="#ff2ec4"/><text x="796" y="404" class="dg-s">Canyon &mdash; fleet scribe</text>
+    <circle cx="784" cy="422" r="4.5" fill="#ff2ec4"/><text x="796" y="426" class="dg-s">Ridge &mdash; fleet sentinel</text>
+    <circle cx="784" cy="444" r="4.5" fill="#ff2ec4"/><text x="796" y="448" class="dg-s">Harbor &mdash; growth &amp; outreach</text>
+    <circle cx="784" cy="456" r="4.5" fill="#ff2ec4"/><text x="796" y="460" class="dg-s">Delta &mdash; treasury &amp; strategist</text>
 
     <text x="760" y="486" class="dg-s">+ Agora board &mdash; public, many-to-many</text>
 
