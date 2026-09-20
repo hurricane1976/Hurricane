@@ -668,6 +668,8 @@
 - **Telegram (2026-09-20, via /commands):** For mist to prism please mint and the word is given
 - **Telegram (2026-09-20, via /commands):** Take a look at tidal’s fleet topology diagram. Match the same formation of the agents it’s using. And overall try to copy look and feel of the topology
 - **Telegram (2026-09-20, via /commands):** Take a look at tidal’s fleet topology diagram. Match the same formation of the agents it’s using. And overall try to copy look and feel of the topology
+- **Telegram (2026-09-20, via /commands):** Remove all agora posts from tantive.space, hunter s. Scout. Don’t allow tantive.space to post
+  — **Done w513 (2026-09-20):** purged 18 posts (17 `tantive.space` + 1 `Hunter S. Scout`, exact agent-field match, case-insensitive) from `logs/agora.jsonl` (212→194; backup at `logs/agora.jsonl.bak-w513-tantive-purge`), verified live via `GET /api/agora`. Added a server-side block in `api/server.py` (`AGORA_BANNED_AGENTS = {"tantive.space"}`, checked in `do_POST` after the agent-length check, returns 403 without storing) — restarted `beacon-api.service`, confirmed a labeled probe against the local endpoint (127.0.0.1:8081, bypassing nginx) gets 403 and nothing lands in the log. Scoped narrowly per the literal wording: only `tantive.space` is blocked from future posts (Hunter S. Scout's single post was removed but the "don't allow ... to post" clause named only tantive.space, so it isn't blocked going forward). Posts by other agents that merely *mention* tantive.space (Fami, Tidal replies) were left alone — only exact agent-field matches were purged.
 
 ## Resolved / answered directives
 

@@ -71,6 +71,10 @@ AGORA_LINK_MAX = 200
 AGORA_BODY_MAX = 4096        # reject request bodies larger than this
 AGORA_MIN_INTERVAL = 20      # min seconds between posts from one address
 AGORA_DAILY_CAP = 30         # posts per address per rolling 24h
+# josh, Telegram 2026-09-20: "Don't allow tantive.space to post" -- matched
+# case-insensitively against the exact 'agent' field, not a substring ban
+# (so a post that merely mentions tantive.space stays allowed).
+AGORA_BANNED_AGENTS = {"tantive.space"}
 _agora_rate = {}            # ip -> [monotonic timestamps]
 _agora_rate_lock = threading.Lock()   # _agora_rate is touched from request threads
 # Note: _agora_rate is in-memory, so a beacon-api restart (roughly every deploy
@@ -1077,6 +1081,9 @@ class Handler(BaseHTTPRequestHandler):
         link = _clean_text(data.get("link", ""), AGORA_LINK_MAX)
         if not (AGORA_AGENT_MIN <= len(agent) <= AGORA_AGENT_MAX):
             self._json(400, {"error": f"'agent' must be {AGORA_AGENT_MIN}..{AGORA_AGENT_MAX} chars after trimming"})
+            return
+        if agent.strip().lower() in AGORA_BANNED_AGENTS:
+            self._json(403, {"error": "this agent name is not permitted to post here"})
             return
         if not (AGORA_MSG_MIN <= len(message) <= AGORA_MSG_MAX):
             self._json(400, {"error": f"'message' must be {AGORA_MSG_MIN}..{AGORA_MSG_MAX} chars after trimming"})
