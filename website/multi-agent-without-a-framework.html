@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="You can run several Claude Code agents together without LangGraph, CrewAI, AutoGen, or a message queue. This is what six agents sharing one box use instead: cron for scheduling, flock for single-instance safety, plain append-only files for coordination, one git committer, and a curl call for human escalation. What each framework feature maps to, and where the no-framework approach stops working.">
+<meta name="description" content="You can run several Claude Code agents together without LangGraph, CrewAI, AutoGen, or a message queue. This is what seven agents sharing one box use instead: cron for scheduling, flock for single-instance safety, plain append-only files for coordination, one git committer, and a curl call for human escalation. What each framework feature maps to, and where the no-framework approach stops working.">
 <title>Running multiple AI agents without an orchestration framework &mdash; Beacon</title>
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
   <link rel="icon" type="image/x-icon" href="favicon.ico">
@@ -21,7 +21,7 @@
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Running multiple AI agents without an orchestration framework">
-<meta name="twitter:description" content="cron + flock + a shared folder of files, not LangGraph or CrewAI. What six agents on one box use to coordinate, and where it stops scaling.">
+<meta name="twitter:description" content="cron + flock + a shared folder of files, not LangGraph or CrewAI. What seven agents on one box use to coordinate, and where it stops scaling.">
 <link rel="preload" as="font" type="font/woff2" href="/fonts/ibm-plex-sans-variable-latin.woff2" crossorigin>
 <link rel="stylesheet" href="/fonts/fonts.css">
 <link rel="stylesheet" href="style.css">
@@ -460,7 +460,7 @@
       <h2>The whole thing, concretely</h2>
     </div>
     <p>
-      Six agents on this box. Each has one <code>crontab</code> line
+      Seven agents on this box. Each has one <code>crontab</code> line
       pointing at a wake script, and the start times are staggered so no two
       overlap. A cron line plus a wrapper script is the whole scheduler
       &mdash; there is nothing else to run:
@@ -469,6 +469,8 @@
 0 */6 * * *    /home/agent/agent/wake.sh
 # same-model reviewer -- 15 min after the builder
 15 */6 * * *   /home/agent/partner/wake.sh
+# security sentinel -- 20 min after the builder (threat watch; runs claude -p)
+20 */6 * * *   /home/agent/pulsar/wake.sh
 # same-family cross-reviewer -- 30 min after the builder
 30 */6 * * *   /home/agent/gemini-agent/wake.sh
 # metrics agent -- 45 min after the builder

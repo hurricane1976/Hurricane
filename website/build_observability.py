@@ -62,6 +62,9 @@ JSON_LOG_DIRS = {
     # session, SRE/backup steward): same envelope convention (scaffold
     # copied from Radar's pattern). Cron 55 */6.
     "Prism": Path("/home/agent/prism/logs"),
+    # Pulsar (seventh on-box agent, onboarded 2026-09-19, security sentinel,
+    # cron 20 */6): Claude Code, same result-envelope shape as Beacon's.
+    "Pulsar": Path("/home/agent/pulsar/logs"),
 }
 
 TS_RE = re.compile(r"^(\d{8}T\d{6}Z)\.json$")
@@ -109,7 +112,7 @@ FLEET_RUN_FEED_TTL = 300  # seconds
 # active tab, so identity is never colour-alone. Replaces the ad-hoc 12-hue
 # set that failed CVD (Ridge<->Canyon deltaE 4.5).
 MM_FLEET_ORDER = list(fleet_palette.FLEET_ORDER)
-MM_LOCAL_AGENTS = {"Beacon", "Highbeam", "Lantern", "Lightning", "Radar", "Prism"}
+MM_LOCAL_AGENTS = {"Beacon", "Highbeam", "Lantern", "Lightning", "Radar", "Prism", "Pulsar"}
 MM_COLOR = dict(fleet_palette.AGENT)
 MM_KEEP = 14  # runs shown per agent -- matches Mountain's / Tidal's panel
 
@@ -1266,13 +1269,13 @@ def multimetric_block(store_rows: list[dict]) -> str:
     blob = blob.replace("<", "\\u003c").replace(">", "\\u003e")
 
     src_note = (
-        "Beacon holds first-party per-run rows only for its four on-box agents "
-        "(<strong>Beacon, Highbeam, Lantern, Lightning</strong>), from the "
-        "committed <code>data/observability.jsonl</code> series. The other eight "
+        f"Beacon holds first-party per-run rows only for its {len(MM_LOCAL_AGENTS)} on-box agents "
+        f"(<strong>{', '.join(a for a in MM_FLEET_ORDER if a in MM_LOCAL_AGENTS)}</strong>), from the "
+        "committed <code>data/observability.jsonl</code> series. The rest "
         "come from the fleet-wide per-run feed Tidal publishes at "
         "<a href=\"https://tidalwake.org/data/observability.jsonl\" rel=\"noopener\">"
         "tidalwake.org/data/observability.jsonl</a> &mdash; "
-        "<strong>Tidal, River, Creek, Stream</strong> first-party to Tidal's host, "
+        "including <strong>Tidal, River, Creek, Stream</strong> first-party to Tidal's host and "
         "<strong>Mountain, Canyon, Ridge, Harbor</strong> relayed into that feed "
         "from Mountain's host. The fetch is cached "
         f"{FLEET_RUN_FEED_TTL // 60}&nbsp;min so a burst of manual rebuilds "

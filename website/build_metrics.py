@@ -8,7 +8,7 @@ way a hand-drawn chart would. Run standalone or via deploy.sh.
 Charts are inline SVG in the site's own palette (amber #ff8a3d for wakings,
 teal #4fd1c5 for commits, plus one fixed accent per sibling agent). Most are
 single-series bars; one -- the fleet overview -- is a multi-series overlaid
-area chart, all five agents on one time axis and value scale. No JS, no
+area chart, the agents Beacon can count wakings for on one time axis and value scale. No JS, no
 external assets; a <details> data table under each single-series chart is the
 non-visual view and a per-point <title> gives a native hover tooltip. Each
 data point also carries a `data-tip` string so chart-tooltip.js can layer an
@@ -54,6 +54,9 @@ LOG_DIRS = {
     # Included in the last-24h count only -- it has no per-day NOTES waking
     # numbers to chart yet.
     "Radar": Path("/home/agent/radar/logs"),
+    # Pulsar: cron'd 20 */6, same log convention; not in the observability
+    # store yet, so its per-agent panel is counted from these logs.
+    "Pulsar": Path("/home/agent/pulsar/logs"),
 }
 
 WINDOW_DAYS = 14
@@ -383,6 +386,16 @@ _AREA_ORDER = ("Beacon", "Highbeam", "Lantern", "Lightning", "Tidal")
 _AREA_COLORS = dict(zip(_AREA_ORDER, fleet_palette.SERIES))
 
 
+def fleet_total() -> int:
+    """Agents in the whole fleet, from fleet.json (written by
+    build_fleet_status.py, which deploy.sh runs first) so the KPI tile can't
+    go stale the way a hardcoded number did (15 while the fleet was 21)."""
+    try:
+        return int(json.loads((HERE / "fleet.json").read_text())["total"])
+    except (OSError, ValueError, KeyError, TypeError):
+        raise SystemExit("fleet.json missing/unreadable -- run build_fleet_status.py first")
+
+
 def multi_area_chart(series, days, unit="wakings", height=280):
     """Overlaid multi-series area chart: one translucent fill + drawn line per
     agent, sharing a single time axis and value scale. Built from the same
@@ -676,6 +689,82 @@ def hbar_chart(rows, color, unit):
     return "\n".join(out)
 
 
+# --- Per-agent panels: every agent that has per-run data, not just the 5 whose
+# wake logs live on this box. Sources: Beacon's local per-run store for the
+# agents on this host, Tidal's fleet-wide feed for the rest (fetched + disk-
+# cached by build_observability). Agents with neither get an honest "no
+# per-run feed" tile rather than a fabricated flat line.
+LOCAL_STORE = HERE / "data" / "observability.jsonl"
+
+
+def per_run_days() -> dict:
+    """{agent: Counter(YYYYMMDD -> wakings)} for every agent with per-run rows."""
+    def tally(rows_by_agent, agent, ts):
+        try:
+            dt = datetime.strptime(ts, "%Y-%m-%dT%H:%M:%SZ")
+        except (TypeError, ValueError):
+            return
+        rows_by_agent.setdefault(agent, Counter())[dt.strftime("%Y%m%d")] += 1
+
+    out: dict = {}
+    try:
+        for ln in LOCAL_STORE.read_text().splitlines():
+            if ln.strip():
+                r = json.loads(ln)
+                tally(out, r.get("agent"), r.get("ts"))
+    except (OSError, ValueError):
+        pass
+    for name, log_dir in LOG_DIRS.items():  # on-box agents the store doesn't cover
+        if name not in out:
+            c = wakings_by_day(log_dir)
+            if c:
+                out[name] = c
+    local = set(out)  # fresher than Tidal's copy of the same agents
+    try:
+        import build_observability
+        for r in build_observability.fetch_fleet_run_feed():
+            if r.get("agent") not in local:
+                tally(out, r["agent"], r.get("ts"))
+    except Exception:
+        pass  # feed unreachable: those agents fall through to "no feed" tiles
+    return out
+
+
+def agent_panels(by_agent: dict, days) -> str:
+    """Small multiples: one mini bar chart per agent, all on ONE shared value
+    scale so cadence differences read at a glance (independent scales would
+    make a 1-a-day agent look as busy as a 20-a-day one). Fleet order + the
+    canonical per-agent colours; the name is on every tile, so colour is
+    never the only cue."""
+    keys = [d.strftime("%Y%m%d") for d in days]
+    vmax = max([max((c.get(k, 0) for k in keys), default=0)
+                for c in by_agent.values()] + [1])
+    W, H = 200, 46
+    tiles = []
+    for name in fleet_palette.FLEET_ORDER:
+        color = fleet_palette.AGENT[name]
+        c = by_agent.get(name)
+        dot = f'<span class="ap-dot" style="background:{color}"></span>'
+        if c is None:
+            tiles.append(
+                f'<div class="agent-panel ap-empty"><div class="ap-head">{dot}'
+                f'<span class="ap-name">{name}</span></div>'
+                f'<div class="ap-none">no per-run feed</div></div>')
+            continue
+        total = sum(c.get(k, 0) for k in keys)
+        cid = _next_cid()
+        svg = (f'<svg viewBox="0 0 {W} {H}" class="chart ap-chart" role="img" '
+               f'preserveAspectRatio="none" '
+               f'aria-label="{name}: {total} wakings over the last {len(days)} days">'
+               f'{_defs(cid, color)}'
+               f'{_bars(c, days, 0, W, 2, H - 4, vmax, color, name + " wakings", cid)}</svg>')
+        tiles.append(
+            f'<div class="agent-panel"><div class="ap-head">{dot}'
+            f'<span class="ap-name">{name}</span>'
+            f'<span class="ap-total">{total}</span></div>{svg}</div>')
+    return "\n".join(tiles)
+
+
 def sparkline(counts: Counter, days, color, unit):
     """Tiny axis-free trend line for a KPI tile. Fixed 140x34 viewBox, stretched
     to tile width by CSS; stroke kept crisp with non-scaling-stroke."""
@@ -729,6 +818,7 @@ def main():
     highbeam = wakings_by_day(LOG_DIRS["Highbeam"])
     lantern = wakings_by_day(LOG_DIRS["Lantern"])
     lightning = wakings_by_day(LOG_DIRS["Lightning"])
+    by_agent = per_run_days()
     commits = commits_by_day()
     punch = commits_punchcard()
     ins_churn, del_churn = churn_by_day()
@@ -776,7 +866,9 @@ def main():
         "{{KPI_COMMITS}}": (run(f"git -C {ROOT} rev-list --count HEAD").strip() or "?"),
         "{{KPI_COMMITS_7D}}": str(last_n(commits, 7)),
         "{{KPI_DAYS}}": str(days_autonomous()),
-        "{{KPI_AGENTS}}": "15",
+        "{{KPI_AGENTS}}": str(fleet_total()),
+        "{{FLEET_PANELS}}": agent_panels(by_agent, days),
+        "{{PANEL_AGENTS}}": str(sum(1 for n in fleet_palette.FLEET_ORDER if n in by_agent)),
         "{{SPARK_FLEET}}": sparkline(fleet_day, days, AMBER, "fleet wakings"),
         "{{SPARK_COMMITS}}": sparkline(commits, days, TEAL, "commits"),
         "{{SPARK_TIDAL}}": sparkline(tidal, days, AMBER, "Tidal wakings"),

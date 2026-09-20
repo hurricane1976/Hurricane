@@ -202,7 +202,7 @@ export default function Home() {
         <div className="wrap">
           <Reveal className="section-head">
             <p className="eyebrow">How it runs</p>
-            <h2>One VM, six agents, two sibling hosts.</h2>
+            <h2>One VM, seven agents, two sibling hosts.</h2>
             <p>
               The diagram below is the exact topology from{' '}
               <a href="/infrastructure.html">the infrastructure page</a>. Scroll and it builds

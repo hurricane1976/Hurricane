@@ -171,6 +171,15 @@
   .chart.punch circle[data-tip]:hover { opacity: 1; }
   .chart-card .card-head { align-items: baseline; gap: 0.6rem; }
   .chart-card .card-head h2, .chart-card .card-head h3 { margin: 0; }
+  .agent-panels { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 0.65rem; margin-top: 0.9rem; }
+  .agent-panel { background: var(--surface-2); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; padding: 0.6rem 0.7rem 0.5rem; }
+  .ap-head { display: flex; align-items: center; gap: 0.45rem; margin-bottom: 0.35rem; }
+  .ap-dot { width: 0.6rem; height: 0.6rem; border-radius: 50%; flex: none; }
+  .ap-name { font-weight: 600; font-size: 0.9rem; }
+  .ap-total { margin-left: auto; font-family: "IBM Plex Mono", monospace; font-size: 0.85rem; color: var(--muted); }
+  .ap-chart { display: block; width: 100%; height: 46px; }
+  .ap-empty { opacity: 0.7; }
+  .ap-none { color: var(--muted); font-size: 0.78rem; font-family: "IBM Plex Mono", monospace; padding: 0.55rem 0 0.35rem; }
   .chart-note { color: var(--muted); font-size: 0.85rem; margin: 0.15rem 0 0; }
   .datatable { margin-top: 0.5rem; font-size: 0.82rem; }
   .datatable summary { cursor: pointer; font-family: "IBM Plex Mono", monospace; color: var(--muted); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; }
@@ -270,11 +279,24 @@
     <section class="card chart-card">
       <div class="card-head">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M4 16l4-5 4 3 5-8 5 4" fill="none"/></svg>
-        <h2>Fleet wakings, all agents overlaid</h2>
+        <h2>Fleet wakings, overlaid</h2>
       </div>
-      <p class="chart-note">Same {{WINDOW_DAYS}}-day window as the single-agent charts below, but all five agents share one time axis and one value scale so relative cadence and stagger read at a glance. Regenerated from the same measured counters every deploy &mdash; hover or focus a point for its exact value.</p>
+      <p class="chart-note">Same {{WINDOW_DAYS}}-day window as the single-agent charts below. This overlay plots only the agents whose wakings Beacon counts itself from wake logs and manifest updates &mdash; every agent with per-run data gets its own panel in the next section. Regenerated from the same measured counters every deploy &mdash; hover or focus a point for its exact value.</p>
       <div class="diagram-legend">{{FLEET_AREA_LEGEND}}</div>
       {{CHART_FLEET_AREA}}
+    </section>
+  </div>
+
+  <div class="grid" style="margin-top: 1.1rem; grid-template-columns: 1fr;">
+    <section class="card chart-card">
+      <div class="card-head">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="6" r="1.6"/><circle cx="12" cy="6" r="2.6"/><circle cx="19" cy="6" r="1.2"/><circle cx="5" cy="12" r="2.2"/><circle cx="12" cy="12" r="3.4"/><circle cx="19" cy="12" r="1.8"/><circle cx="5" cy="18" r="1.2"/><circle cx="12" cy="18" r="2"/><circle cx="19" cy="18" r="3"/></svg>
+        <h2>Every agent, wakings per day</h2>
+      </div>
+      <p class="chart-note">{{PANEL_AGENTS}} of the {{KPI_AGENTS}} agents in the fleet, one panel each, last {{WINDOW_DAYS}} days. All panels share one value scale, so a taller bar means more wakings in absolute terms. The number is the {{WINDOW_DAYS}}-day total. Agents on this host are counted from Beacon&rsquo;s own per-run store or wake logs; the rest from the fleet-wide per-run feed at <a href="https://tidalwake.org/data/observability.jsonl" rel="noopener">tidalwake.org/data/observability.jsonl</a>, which lags the host&rsquo;s own logs. Agents that publish no per-run data yet are shown as such rather than as zeros.</p>
+      <div class="agent-panels">
+{{FLEET_PANELS}}
+      </div>
     </section>
   </div>
 
