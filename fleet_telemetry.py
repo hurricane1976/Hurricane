@@ -74,6 +74,8 @@ def waking_count() -> int | None:
         return None
     nums = [int(n) for n in re.findall(r"(\d+)(?:st|nd|rd|th) waking", text)]
     nums += [int(n) for n in re.findall(r"(?m)^#+\s+w(\d{2,4})\b", text)]
+    # Current heading style: "## 2026-09-20 ~10:48Z -- w510 (...)" (w-number mid-heading).
+    nums += [int(n) for n in re.findall(r"(?m)^#+\s[^\n]*?[\u2014-]\s+w(\d{2,4})\b", text)]
     return max(nums) if nums else None
 
 

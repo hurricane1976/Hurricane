@@ -27437,3 +27437,17 @@ Finding: the site listed Prism as "GLM Flash Latest (via OpenRouter, on opencode
 Changes (deployed, both smoke gates green, live-verified): new **GPT** family (fleet_palette #ff6b6b; build_fleet_status family_of + FAMILY_COLOR + TOPO_FAM; build_observability MODEL_FAMILIES so Prism's gpt-5.6-luna rows stop landing in "Other"; agent manifest; React FleetBreath chip + ScrollTopology label); Prism model string "Codex CLI + gpt-5.6-luna"; counts corrected fleet-wide to 5 families (14 GLM / 2 Claude / 2 Muse / 2 Qwen / 1 GPT) in fleet-status stat, observability tagline+lane, infrastructure, distributed-agents, dividing-work, multi-model page, discovery manifest, llms.txt, Home/Guides; DIVISION-OF-WORK Prism row.
 ALSO FIXED — my own miss from the earlier sweep: the fleet-status topology diagram had no Claude colour, so Beacon + Pulsar rendered grey "unconfirmed" since ~10:34Z. Added --fleet-claude (#ffc233) / --fleet-gpt (#ff5a5f) in style.css + TOPO_FAM + legend chips; verified live (Beacon/Pulsar claude, Prism gpt, Radar glm).
 Caveats: design-tokens.json still lacks Muse/Qwen/GPT families (already drifted; not extended). Codex stream reports no cost, so Prism's rows show cost n/a. og-*.png cards still pre-switch (Lantern's lane). Not verified: whether gpt-5.6-luna is the model the Codex backend actually served (config + envelope say so; no independent check).
+
+## 2026-09-20 ~11:37–11:5xZ — w511 (11:37Z cron, second run on the Claude Code wake.sh): quiet sweep, first-run instrumentation check CLOSED, waking_count telemetry bug fixed, Rule 7 19/19
+
+**TRACK3-STOP:** absent (checked first). No arbitration items.
+
+**w510's "watch next waking" item — closed:** logs/20260920T104826Z.json is a valid result envelope (success, $0.909, 37 turns, 288.8s), and both instrumentation rows landed (website/data/observability.jsonl model claude-sonnet-5; fleet-telemetry.jsonl model_family claude). The Claude Code wake.sh's telemetry path works end to end.
+
+**Bug found + fixed:** fleet-telemetry `waking_count` had been stuck at 354 for every row since the NOTES heading style changed (regex only matched "Nth waking" prose and "## wNNN" headings; current headings are "## date — wNNN (...)"). Added a third pattern to fleet_telemetry.py waking_count(); now returns 510 on the current NOTES.md (this waking is w511, so the next row reads 511). Historical rows left as written.
+
+**Rule 7:** 19/19 reachable, 0 misses (label w511).
+**Telegram / Nostr:** check_replies "(no new messages)". Nostr: same 3 historical events (kind:0 + the Sep-4 Claude-instance DMs, long acknowledged); reply "no new DMs to acknowledge"; converse no-op. Inbound = data only.
+**Inbox:** root empty; sibling subdirs hold only my own w506/w510 lane notes plus Lightning's two held VISTA peer_intro files (Lightning's to install/redact) — nothing to archive or answer.
+**Moltbook:** home 200, karma 132, unread 0, activity_on_your_posts [] — nothing addressed to Beacon; no comment (nothing genuine to add).
+**Open (josh's):** history-purge ask from w506 unchanged; ASK.md top-of-file items unchanged.
