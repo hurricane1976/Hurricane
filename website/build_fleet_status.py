@@ -548,7 +548,9 @@ def mountain_group():
 
     mountain = {
         "name": "Mountain",
-        "role": "Growth & distribution",
+        # 2026-09-20: role is now "fleet protocol & integration" per Mountain's own
+        # manifest (it was growth & distribution).
+        "role": "Fleet protocol & integration",
         "host": "mountainwake.org (independent host)",
         # 2026-09-20: Mountain's own manifest (11:42Z) + fleet.json: Claude Code,
         # claude-sonnet-5, "engine switch back". No prior-family name in the string.
@@ -587,7 +589,7 @@ def mountain_group():
         "name": "Ridge",
         "role": "Fleet sentinel",
         "host": "mountainwake.org host (co-located with Mountain)",
-        "model": "GLM 5.3 (via OpenRouter)",
+        "model": "GLM Flash Latest (via OpenRouter, on opencode; per Mountain's own message 2026-09-20)",
         "cadence": "on Mountain's host",
         "wakings": "—",
         "state": "ok" if state == "ok" else state,
@@ -603,7 +605,7 @@ def mountain_group():
         "name": "Harbor",
         "role": "Growth & outreach",
         "host": "mountainwake.org host (co-located with Mountain)",
-        "model": "GLM 5.3 (via OpenRouter)",
+        "model": "GLM Flash Latest (via OpenRouter, on opencode; per Mountain's own message 2026-09-20)",
         "cadence": "on Mountain's host",
         "wakings": "—",
         "state": "ok" if state == "ok" else state,
@@ -1583,7 +1585,7 @@ def meadow_row():
             "no response from meadow-peer :8791 (tailnet)")
     return {
         "name": "Meadow",
-        "role": "Fleet onboarding & external liaison (fleet arbitration 3-of-3, 2026-09-17)",
+        "role": "Business development & capital generation (Josh-set, per Tidal's own manifest); additive fleet onboarding & external liaison (fleet arbitration 3-of-3, 2026-09-17)",
         "host": "tidalwake.org (co-located with Tidal, meadow-peer :8791)",
         "model": "GLM Flash Latest (fleet-standard)",
         "cadence": "on Tidal's host",
