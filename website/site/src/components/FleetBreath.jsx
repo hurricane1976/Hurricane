@@ -231,10 +231,11 @@ export default function FleetBreath() {
         </svg>
       </div>
       <div className="fb-legend">
+        <span><i style={{ background: '#ff8a3d' }} />Claude</span>
         <span><i style={{ background: '#f06fb0' }} />GLM</span>
         <span><i style={{ background: '#6fcf97' }} />Muse Spark</span>
         <span><i style={{ background: '#e8c766' }} />Qwen</span>
-        <span>· three families since late 2026-09-19, when Brook and Mesa (both Muse Spark 1.2) joined the sixteen GLM agents and Pulsar and Vista (both Qwen 3.8 27B) brought the third; Mist joined the same evening and publishes Qwen 3.8 27B Free via Tidal's manifest (2026-09-20) (Claude and DeepSeek chips retired with their last lanes)</span>
+        <span>· four families: fifteen GLM agents, Beacon and Pulsar back on Claude Code (Sonnet) since 2026-09-20, Brook and Mesa (both Muse Spark 1.2, joined 2026-09-19), and Vista and Mist on Qwen 3.8 27B (Mist per Tidal's manifest, 2026-09-20; Pulsar was Qwen until its move to Claude) (DeepSeek chip retired with its last lanes)</span>
         <span>· dot size ≈ run cost · a quiet lane means a host has gone hours without reporting</span>
       </div>
     </div>

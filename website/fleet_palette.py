@@ -40,10 +40,12 @@ FAMILY = {
                             # agents (Beacon, Highbeam, Mountain) moved to GLM
                             # Flash Latest on opencode — REACTIVATED 2026-09-16
                             # when Radar (Claude Code, Sonnet) joined as the
-                            # fleet's direct-escalation gate, then RETIRED for
-                            # good 2026-09-19: Radar moved to GLM too (josh's
-                            # switch), so no live agent runs Claude any more.
-                            # Kept so historical rows still resolve a colour.
+                            # fleet's direct-escalation gate, RETIRED again
+                            # 2026-09-19 (Radar moved to GLM too), then
+                            # REACTIVATED 2026-09-20 when Beacon itself moved
+                            # back to Claude Code / Sonnet (josh-directed);
+                            # Pulsar (this box) moved to Claude Code / Sonnet
+                            # the same morning (josh-directed, ~09:37Z).
     "DeepSeek": "#5aa9ff",
     "GLM":      "#f06fb0",
     "Gemini":   "#4fd1c5",  # RETIRED 2026-09-09 — no live agent; kept so
@@ -64,7 +66,9 @@ FAMILY = {
 }
 
 AGENT_FAMILY = {
-    "Beacon": "GLM", "Mountain": "GLM",
+    # Beacon: GLM 2026-09-15 -> 2026-09-20, then back to Claude Code / Sonnet
+    # (josh-directed switch back) -- see fleet_palette.py FAMILY comment.
+    "Beacon": "Claude", "Mountain": "GLM",
     "Lightning": "GLM", "Creek": "GLM", "Stream": "GLM",
     "Canyon": "GLM",
     "Highbeam": "GLM", "Lantern": "GLM", "Tidal": "GLM",
@@ -80,14 +84,20 @@ AGENT_FAMILY = {
     # Qwen 3.8 27B Free per Tidal's public manifest (live-checked
     # 2026-09-20) -- so all three paint gold; nothing was guessed before
     # Tidal published it.
-    "Pulsar": "Qwen", "Vista": "Qwen", "Mist": "Qwen",
+    "Vista": "Qwen", "Mist": "Qwen",
+    # Pulsar ran Qwen 3.8 27B Free 2026-09-19 -> 2026-09-20, then moved to
+    # Claude Code / Sonnet (josh-directed, ~09:37Z; first Claude run 09:39Z).
+    "Pulsar": "Claude",
 }
 
 # Per-agent shade for small identity marks where a family cluster needs a
 # "which one" hint. Same hue as the family, stepped by lightness. Chart FILLS
 # use FAMILY[...]; only dots / swatches / row markers use these.
 AGENT = {
-    "Beacon": "#a83a70", "Mountain": "#c94f8c",
+    # Claude (amber), stepped by lightness — Beacon takes the family hue,
+    # Pulsar (moved to Claude 2026-09-20) the lighter step.
+    "Beacon": "#ff8a3d", "Pulsar": "#ffb27a",
+    "Mountain": "#c94f8c",
     "Lightning": "#5aa9ff", "Creek": "#8cc3ff", "Stream": "#3f7fd6",
     "Canyon": "#6a86e6",
     # GLM (magenta), stepped by lightness — the whole fleet shares the hue.
@@ -102,11 +112,13 @@ AGENT = {
     # Muse Spark (green), stepped by lightness — Brook (darker) and Mesa
     # (the family hue) joined 2026-09-19.
     "Brook": "#3f9d6a", "Mesa": "#6fcf97",
-    # Qwen (gold), stepped by lightness — Pulsar (darker) and Vista (the
-    # family hue) joined late 2026-09-19; Mist joined the same evening and
-    # published its Qwen family via Tidal's manifest 2026-09-20 (w509), so
-    # it takes the lightest gold step.
-    "Pulsar": "#c9a63d", "Vista": "#e8c766", "Mist": "#f2d780",
+    # Qwen (gold), stepped by lightness — Pulsar (darker, "#c9a63d") and
+    # Vista (the family hue) joined late 2026-09-19; Mist joined the same
+    # evening and published its Qwen family via Tidal's manifest 2026-09-20
+    # (w509), so it takes the lightest gold step. Pulsar left the family for
+    # Claude 2026-09-20 (its amber shade is in the Claude block above); the
+    # gold step is retired with it, so Qwen is now Vista + Mist.
+    "Vista": "#e8c766", "Mist": "#f2d780",
 }
 
 # ---- multi-series overlay ramp (series, not identity) --------------------

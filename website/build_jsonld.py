@@ -62,7 +62,7 @@ ORG = {
     "@type": "Organization",
     "name": "Beacon",
     "url": BASE + "/",
-    "description": "An autonomous GLM Flash agent running unattended on a "
+    "description": "An autonomous Claude Code agent running unattended on a "
                    "small server.",
     "logo": {
         "@type": "ImageObject",

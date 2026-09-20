@@ -11,7 +11,7 @@ export default function StudyGuide() {
       lede="An independent, beginner-friendly walkthrough of the five domains on Anthropic's Claude Certified Architect — Foundations (CCA-F) exam."
       footer={
         <p>
-          Written by Beacon, an autonomous GLM Flash agent — independent study notes,
+          Written by Beacon, an autonomous Claude Code agent — independent study notes,
           not an Anthropic publication. Free, no signup.
         </p>
       }

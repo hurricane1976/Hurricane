@@ -1,28 +1,25 @@
 #!/usr/bin/env bash
 # Cron entry point. Wakes the agent, hands it AGENT.md, logs the run.
 #
-# RUNTIME (as of Beacon's waking on 2026-09-20): back on Claude Code
-# (`claude --model sonnet`), per josh's direct instruction. Beacon had run
-# opencode + GLM Flash Latest (via OpenRouter) since ~355th waking
-# (2026-09-15, fleet-wide cost-driven switch); that wake.sh is kept
-# verbatim at `wake.sh.opencode-bak` in case of a future revert. The
-# original Claude Code wake.sh this reinstates the runtime portion of is at
-# `wake.sh.claude-bak` -- this file has since diverged from that backup with
-# features added under opencode (Track 3 freeze check, Moltbook base-URL
-# migration, the Agora/Mountain board bridge), all carried forward below.
+# RUNTIME (as of Beacon's ~355th waking, 2026-09-15): opencode + GLM Flash
+# Latest via OpenRouter (`openrouter/~z-ai/glm-flash-latest`). Prior: Claude
+# Code (`claude --model sonnet`); that older wake.sh is kept verbatim at
+# `wake.sh.claude-bak`.
 #
-# `claude -p` flags used below:
-#   --add-dir /home/agent           root dir Claude Code may read/write
-#   --output-format json            single result envelope on stdout, incl.
-#                                   total_cost_usd / usage / modelUsage --
-#                                   the schema fleet_telemetry.py,
-#                                   spend_check.py, and
-#                                   record_observability_row.py already
-#                                   expect natively (opencode's wake.sh had
-#                                   to synthesize this same schema via
-#                                   format_envelope.py; not needed here)
-#   --permission-mode bypassPermissions   unattended run, no prompts
-#   --model sonnet
+# opencode auth: the OpenRouter API key lives in the shared opencode
+# credential store `~/.local/share/opencode/auth.json`. opencode reads it
+# automatically; no env var needed here.
+#
+# `opencode run` flags used below:
+#   --model 'openrouter/~z-ai/glm-flash-latest'   provider/model id
+#   --auto                            auto-approve tool calls (analogue of
+#                                     Claude Code's bypassPermissions)
+#   --dir /home/agent                 root dir opencode may read/write
+#   --format json                     stream structured JSON events to
+#                                     stdout so the observability envelope
+#                                     is built from this run's own session
+#                                     id (no `session list` race with other
+#                                     agents sharing the store)
 # Wall-clock guard (fleet-security option C1): `timeout` sends TERM at 45m,
 # then KILL 60s later. On timeout the exit is 124/137.
 set -u
@@ -31,8 +28,13 @@ cd /home/agent/agent || exit 1
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 
-if ! command -v claude >/dev/null 2>&1; then
-    ./notify.sh "wake.sh: claude not on PATH -- Beacon cannot run. Skipping." 2>/dev/null
+# cron runs this with a bare PATH and does not source ~/.bashrc, so the
+# opencode standalone binary in ~/.opencode/bin is invisible -> exit 127.
+# Put it (and ~/.local/bin) on PATH here.
+export PATH="$HOME/.opencode/bin:$HOME/.local/bin:$PATH"
+
+if ! command -v opencode >/dev/null 2>&1; then
+    ./notify.sh "wake.sh: opencode not on PATH -- Beacon cannot run. Skipping." 2>/dev/null
     exit 1
 fi
 
@@ -65,9 +67,10 @@ fi
 TS="$(date -u +%Y%m%dT%H%M%SZ)"
 LOG_FILE="logs/${TS}.log"
 JSON_FILE="logs/${TS}.json"
+RAW_JSON="logs/.${TS}.raw.json"
 
 PROMPT="You are waking up on your regular schedule as Beacon -- now running \
-on Claude Code (Sonnet). Read /home/agent/AGENT.md \
+on opencode + GLM Flash Latest (via OpenRouter). Read /home/agent/AGENT.md \
 first -- it has your operating rules; follow them. Check NOTES.md, ASK.md, \
 memory/, and peer/inbox/ in this directory (/home/agent/agent) -- including \
 any peer/inbox/<name>/ sibling subdirs, whose handled messages you archive \
@@ -99,21 +102,36 @@ and execute the track3-guardrails.md §4 freeze bookkeeping (access \
 inventory to josh via Telegram, LOG.md freeze note) in place of any \
 Track 3 work this waking."
 
-claude_run() {
-    timeout --kill-after=60 45m \
-        claude -p "$PROMPT" \
-            --add-dir /home/agent \
-            --output-format json \
-            --permission-mode bypassPermissions \
-            --model sonnet
-}
-claude_run >"$JSON_FILE" 2>"$LOG_FILE"
-CLAUDE_EXIT=$?
+START_NS="$(date +%s%N 2>/dev/null || echo "")"
 
-echo "exit code: $CLAUDE_EXIT" >>"$LOG_FILE"
-if [ "$CLAUDE_EXIT" -eq 124 ] || [ "$CLAUDE_EXIT" -eq 137 ]; then
+opencode_run() {
+    timeout --kill-after=60 45m \
+        opencode run "$PROMPT" \
+            --model 'openrouter/~z-ai/glm-flash-latest' \
+            --auto \
+            --dir /home/agent \
+            --format json
+}
+opencode_run >"$RAW_JSON" 2>"$LOG_FILE"
+OPENCODE_EXIT=$?
+
+END_NS="$(date +%s%N 2>/dev/null || echo "")"
+DURATION_MS=0
+if [ -n "$START_NS" ] && [ -n "$END_NS" ]; then
+    DURATION_MS=$(( (END_NS - START_NS) / 1000000 ))
+fi
+
+echo "exit code: $OPENCODE_EXIT" >>"$LOG_FILE"
+if [ "$OPENCODE_EXIT" -eq 124 ] || [ "$OPENCODE_EXIT" -eq 137 ]; then
     echo "wake.sh: run hit the 45m wall-clock timeout (C1 guard)" >>"$LOG_FILE"
 fi
+
+# Build the observability result envelope (logs/<ts>.json) + fold a readable
+# transcript into logs/<ts>.log. format_envelope.py reads this run's raw
+# JSON event stream, pulls the session id, and asks `opencode export` for
+# the authoritative per-session cost/token totals.
+./format_envelope.py "$RAW_JSON" "$JSON_FILE" "$LOG_FILE" "$OPENCODE_EXIT" "$DURATION_MS" || true
+rm -f "$RAW_JSON"
 
 # Per-run spend alert + rolling daily total (fleet-security option C2).
 # Alert-only, never blocks: records total_cost_usd into logs/spend-daily.jsonl
@@ -128,7 +146,7 @@ fi
 # /data/fleet-telemetry.jsonl and merged by /api/fleet/telemetry across the
 # three operator hosts. Runs unconditionally (incl. a crashed / timed-out run,
 # which still gets an is_error row); never fatal.
-python3 fleet_telemetry.py "$JSON_FILE" "$TS" "$CLAUDE_EXIT" >>"$LOG_FILE" 2>&1 || true
+python3 fleet_telemetry.py "$JSON_FILE" "$TS" "$OPENCODE_EXIT" >>"$LOG_FILE" 2>&1 || true
 
 # Counterpart for website/data/observability.jsonl (the richer per-run store
 # /observability.html itself reads) against the same crash-silence gap
@@ -138,35 +156,7 @@ python3 fleet_telemetry.py "$JSON_FILE" "$TS" "$CLAUDE_EXIT" >>"$LOG_FILE" 2>&1 
 # won't re-render it until the next successful deploy. Never fatal. Agent
 # name is explicit (4th arg) since w420 -- Highbeam/Lantern/Lightning can
 # wire this same call, with their own name, into their own wake.sh.
-python3 record_observability_row.py "$JSON_FILE" "$TS" "$CLAUDE_EXIT" "Beacon" >>"$LOG_FILE" 2>&1 || true
-
-# Fold the assistant transcript + a one-line metrics summary out of the JSON
-# envelope and into the .log, so a reader (or the crash-alert tail below) sees
-# what happened without parsing JSON. Never fatal -- a malformed/absent
-# envelope just leaves the stderr already in the .log.
-if [ -s "$JSON_FILE" ]; then
-    python3 - "$JSON_FILE" >>"$LOG_FILE" 2>>"$LOG_FILE" <<'PYEOF' || true
-import json, sys
-try:
-    d = json.load(open(sys.argv[1]))
-except Exception as e:
-    print(f"(observability: could not parse JSON envelope: {e})")
-    sys.exit(0)
-print(d.get("result", "") or "(no result text in envelope)")
-u = d.get("usage", {}) or {}
-print()
-print("--- run metrics (claude --output-format json) ---")
-print(
-    "cost_usd={} turns={} duration_ms={} api_ms={} "
-    "in_tok={} out_tok={} cache_read={} cache_create={} is_error={} subtype={}".format(
-        d.get("total_cost_usd"), d.get("num_turns"), d.get("duration_ms"),
-        d.get("duration_api_ms"), u.get("input_tokens"), u.get("output_tokens"),
-        u.get("cache_read_input_tokens"), u.get("cache_creation_input_tokens"),
-        d.get("is_error"), d.get("subtype"),
-    )
-)
-PYEOF
-fi
+python3 record_observability_row.py "$JSON_FILE" "$TS" "$OPENCODE_EXIT" "Beacon" >>"$LOG_FILE" 2>&1 || true
 
 # Agora bridge: Beacon's board <-> Mountain's board (josh go-ahead 2026-09-15,
 # "Yes can you sync mountain board"). Direction-split with Mountain's own
@@ -177,7 +167,7 @@ python3 agora_mountain_sync.py >>"$LOG_FILE" 2>&1 || true
 # Republish the website's activity log from the fresh NOTES.md entry this
 # session just wrote, so the public log page reflects reality without
 # depending on the session remembering to redeploy manually.
-if [ "$CLAUDE_EXIT" -eq 0 ]; then
+if [ "$OPENCODE_EXIT" -eq 0 ]; then
     ./website/deploy.sh >>"$LOG_FILE" 2>&1 || echo "website deploy failed" >>"$LOG_FILE"
 fi
 
@@ -185,8 +175,18 @@ fi
 # end-of-session notify.sh call -- that path only fires if the session runs
 # to completion. Send a failure alert directly from the shell so a crash
 # doesn't go silent until someone happens to check logs/.
-if [ "$CLAUDE_EXIT" -ne 0 ]; then
-    TAIL="$(tail -c 1500 "$LOG_FILE")"
-    ./notify.sh "wake.sh: claude session exited with code $CLAUDE_EXIT ($TS). Log tail:
+if [ "$OPENCODE_EXIT" -ne 0 ]; then
+    if grep -qiE '401|invalid api key|no auth|credit balance is too low|insufficient_quota|quota' "$LOG_FILE"; then
+        TODAY="$(date -u +%F)"
+        if [ "$(cat .quota_notice_date 2>/dev/null)" != "$TODAY" ]; then
+            echo "$TODAY" > .quota_notice_date
+            ./notify.sh "wake.sh: Beacon skipped ($TS) -- opencode/OpenRouter auth or credit problem. Check ~/.local/share/opencode/auth.json and the OpenRouter balance. (Silencing repeat notices until tomorrow.)" >>"$LOG_FILE" 2>&1
+        else
+            echo "auth/credit notice already sent for $TODAY; staying quiet" >>"$LOG_FILE" 2>&1
+        fi
+    else
+        TAIL="$(tail -c 1500 "$LOG_FILE")"
+        ./notify.sh "wake.sh: Beacon session exited with code $OPENCODE_EXIT ($TS). Log tail:
 $TAIL" >>"$LOG_FILE" 2>&1
+    fi
 fi

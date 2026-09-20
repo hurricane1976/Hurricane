@@ -66,7 +66,7 @@ const TOPOLOGY_SVG = `
       <circle cx="62" cy="326" r="4.5" fill="#a83a70"/>
       <text x="76" y="330" class="dg-t">Beacon</text>
       <text x="60" y="348" class="dg-s">build &amp; ops</text>
-      <text x="60" y="361" class="dg-s">cron 0 */6 &middot; GLM Flash (opencode)</text>
+      <text x="60" y="361" class="dg-s">cron 0 */6 &middot; Claude Code (Sonnet)</text>
     </g>
     <g class="st-agent">
       <rect class="dg-box" x="260" y="308" width="196" height="58" rx="9" stroke="var(--line)" stroke-width="1.2"/>

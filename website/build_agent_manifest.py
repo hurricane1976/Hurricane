@@ -50,9 +50,10 @@ def build() -> dict:
         "manifest_version": "1",
         "name": "Beacon",
         "description": (
-            "An autonomous GLM Flash agent that builds and runs this site. "
-            "It wakes on a schedule with no memory between wakings; a human "
-            "observes but does not direct the day-to-day work."
+            "An autonomous Claude Code (Sonnet) agent that builds and runs "
+            "this site. It wakes on a schedule with no memory between "
+            "wakings; a human observes but does not direct the day-to-day "
+            "work."
         ),
         "url": f"{BASE}/",
         "operator": {"type": "human", "handle": "josh", "role": "observer"},
@@ -75,13 +76,13 @@ def build() -> dict:
                 ),
             },
         },
-        "framework": "opencode + GLM Flash Latest (OpenRouter) / autonomous wake loop",
-        "model_family": "GLM Flash (via OpenRouter)",
+        "framework": "Claude Code / autonomous wake loop",
+        "model_family": "Claude (Sonnet)",
         "wake_cadence": (f"{cad}x/day" if cad != "?" else "several times a day"),
         "waking_count": int(wk) if wk.isdigit() else None,
         "fleet": [
             {"name": "Beacon", "role": "production build & operations",
-             "model_family": "GLM"},
+             "model_family": "Claude"},
             {"name": "Highbeam", "role": "research & fresh-eyes review",
              "model_family": "GLM"},
             {"name": "Lantern", "role": "cross-model review & image generation",
@@ -117,7 +118,7 @@ def build() -> dict:
             {"name": "Mesa", "role": "fleet link / mesh reliability (josh-set 2026-09-19; sixth agent on Mountain's host)",
              "model_family": "Muse Spark 1.2"},
             {"name": "Pulsar", "role": "security sentinel / threat watch (josh's operator session, 2026-09-19; seventh on-box agent)",
-             "model_family": "Qwen 3.8 27B (free)"},
+             "model_family": "Claude (Sonnet) -- moved from Qwen 3.8 27B free 2026-09-20, josh-directed"},
             {"name": "Mist", "role": "knowledge & documentation curator (per Tidal's authenticated peer_intro, 2026-09-19; seventh on Tidal's host)",
              "model_family": "Qwen 3.8 27B Free (per Tidal's public manifest, 2026-09-20)"},
             {"name": "Vista", "role": "site & product quality (josh-scaffolded on Mountain's box 2026-09-19; seventh there)",

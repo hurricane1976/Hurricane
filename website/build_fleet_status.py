@@ -306,7 +306,11 @@ def beacon_row():
         "name": "Beacon",
         "role": "Production build & operations",
         "host": "beaconwake.com · 162.243.3.223",
-        "model": "GLM Flash (via OpenRouter, on opencode)",
+        # 2026-09-20: back on Claude Code / Sonnet (josh-directed; wake.sh
+        # now `claude -p --model sonnet`). Was GLM Flash on opencode
+        # 2026-09-15 -> 2026-09-20. Keep the string free of the prior
+        # family's name: family_of() would resolve a "GLM" mention first.
+        "model": "Claude Code (Sonnet)",
         "cadence": "4×/day (0 */6)",
         "wakings": "?",  # filled in by beacon_wakings() in main()
         "state": "ok",
@@ -1707,9 +1711,9 @@ def mesa_row():
 
 def pulsar_row():
     """Pulsar -- 19th fleet agent, seventh on-box (josh's operator session
-    2026-09-19 ~22:26Z): security sentinel / threat watch. Model: Qwen 3.8
-    27B (free) via OpenRouter on opencode (openrouter/qwen/qwen3.8-27b:free)
-    in its own isolated opencode store -- the fleet's third model family.
+    2026-09-19 ~22:26Z): security sentinel / threat watch. Model: Claude
+    Code / Sonnet since 2026-09-20 ~09:37Z (josh-directed); before that Qwen
+    3.8 27B (free) via OpenRouter on opencode, the fleet's third family.
     Cadence 20 */6 + */5 poller. Liveness here reads its own wake logs like
     the other siblings. Mesh: 18 per-pair pairs minted at scaffold; all six
     on-box legs verified two-way the same waking (labeled self-tests ACCEPT
@@ -1733,7 +1737,11 @@ def pulsar_row():
     return sibling_row(
         "Pulsar", "Security sentinel / threat watch",
         "beaconwake.com box (/home/agent/pulsar)",
-        "Qwen 3.8 27B (free) via OpenRouter, on opencode",
+        # 2026-09-20 ~09:37Z: moved from Qwen 3.8 27B (free) on opencode to
+        # Claude Code / Sonnet (josh-directed; first Claude run 09:39Z). The
+        # string omits the old family's name on purpose -- family_of() checks
+        # "qwen" before "claude", so a historical clause would mis-paint it.
+        "Claude Code (Sonnet)",
         "4×/day (20 */6)", logs_dir, notes, "Pulsar")
 
 

@@ -42,10 +42,12 @@ OUT = HERE / "observability.html"
 STORE = HERE / "data" / "observability.jsonl"
 SHARED_LOG = Path("/home/agent/shared/LOG.md")
 
-# Per-waking JSON envelope directories, one per on-box agent. All six now
-# write the opencode result envelope; the Claude Code ones (Beacon, Highbeam)
-# so the moment their wake.sh starts teeing one, it is picked up with no code
-# change here.
+# Per-waking JSON envelope directories, one per on-box agent. Beacon writes
+# the native Claude Code result envelope again as of 2026-09-20 (josh-
+# directed switch back); the rest still write opencode's (synthesized into
+# the same schema by their own format_envelope.py). Either way, the schema
+# on disk is the same, so nothing here needs to know which is which -- the
+# moment any wake.sh starts teeing one, it's picked up with no code change.
 JSON_LOG_DIRS = {
     "Beacon": ROOT / "logs",
     "Highbeam": Path("/home/agent/partner/logs"),

@@ -96,7 +96,7 @@
   .lane-ring.warn { color:#e08a6a; }
   .lane-meta { font-size:0.75rem; color:var(--muted); margin-top:0.25rem; line-height:1.5; }
   /* model-family dots — canonical fleet palette (design-tokens.json v2 .chart.family) */
-  .fam-claude { background:#ff8a3d; } /* Claude family -- historical rows only (Radar, the last Claude node, moved to GLM 2026-09-19) */
+  .fam-claude { background:#ff8a3d; } /* Claude family -- live again since 2026-09-20 (Beacon, Pulsar); Radar, the previous Claude node, moved to GLM 2026-09-19 */
   .fam-deepseek { background:#5aa9ff; } .fam-glm { background:#f06fb0; }
 
   .attr-list { font-family:"IBM Plex Mono",monospace; font-size:0.78rem; line-height:1.7; color:var(--muted); background:rgba(255,255,255,0.02); border:1px solid var(--line); border-radius:6px; padding:0.8rem 0.95rem; overflow-x:auto; }
@@ -187,7 +187,7 @@
       <path d="M20 54h24" stroke="var(--accent-2)" stroke-width="2.5" stroke-linecap="round"/>
     </svg>
     <h1>Live observability</h1>
-    <p class="tagline">The instrumented view of this fleet &mdash; twenty-one autonomous agents, across three hosts, three model families (sixteen on GLM Flash since Radar, the last Claude&nbsp;Code node, moved to GLM 2026-09-19, the same day Prism joined as the sixth on-box agent; Brook on Tidal&rsquo;s host and Mesa on Mountain&rsquo;s box, both Muse Spark 1.2, joined later the same day; Pulsar and Vista brought Qwen 3.8 27B as the third family that evening &mdash; Mist publishes Qwen 3.8 27B Free via Tidal&rsquo;s manifest (2026-09-20), making it three members &mdash; their lanes fill as they log runs; meadow and delta, onboarded 2026-09-17, ramp up as they accumulate runs). <strong>Every number on this page is measured at generation time</strong> from the result envelope each waking writes: real per-run dollar cost, token throughput, and the split between model&nbsp;API time and orchestration. No illustrative numbers, no OpenTelemetry collector &mdash; regenerated every deploy from artefacts already on the box. Each panel carries its provenance: <span class="panel-flag snapshot">Snapshot</span> means built at deploy time from on-box artefacts (see the Generated timestamp below); <span class="panel-flag live">Live</span> means polled in your browser after the page loads &mdash; only the <a href="#live-telemetry">Live cross-host telemetry</a> strip, hydrated from <code>/api/fleet/telemetry</code> on a two-minute cache; <span class="panel-flag concept">Live concept</span> marks the two illustrative panels that show a shape the data does not yet fill.</p>
+    <p class="tagline">The instrumented view of this fleet &mdash; twenty-one autonomous agents, across three hosts, four model families (fifteen on GLM Flash; Claude&nbsp;Code / Sonnet is back with Beacon and Pulsar, both moved onto it 2026-09-20 at josh&rsquo;s direction, after Radar, the previous Claude node, had moved to GLM 2026-09-19, the same day Prism joined as the sixth on-box agent; Brook on Tidal&rsquo;s host and Mesa on Mountain&rsquo;s box, both Muse Spark 1.2, joined later the same day; Pulsar and Vista brought Qwen 3.8 27B as the third family that evening &mdash; Pulsar left it for Claude&nbsp;Code on 2026-09-20, and Mist publishes Qwen 3.8 27B Free via Tidal&rsquo;s manifest (2026-09-20), so Qwen now stands at two members, Vista and Mist &mdash; their lanes fill as they log runs; meadow and delta, onboarded 2026-09-17, ramp up as they accumulate runs). <strong>Every number on this page is measured at generation time</strong> from the result envelope each waking writes: real per-run dollar cost, token throughput, and the split between model&nbsp;API time and orchestration. No illustrative numbers, no OpenTelemetry collector &mdash; regenerated every deploy from artefacts already on the box. Each panel carries its provenance: <span class="panel-flag snapshot">Snapshot</span> means built at deploy time from on-box artefacts (see the Generated timestamp below); <span class="panel-flag live">Live</span> means polled in your browser after the page loads &mdash; only the <a href="#live-telemetry">Live cross-host telemetry</a> strip, hydrated from <code>/api/fleet/telemetry</code> on a two-minute cache; <span class="panel-flag concept">Live concept</span> marks the two illustrative panels that show a shape the data does not yet fill.</p>
   </div>
 
   <section class="card" style="max-width:60rem;margin:0 auto 1.4rem;">
@@ -508,7 +508,7 @@
       <div class="mock-titlebar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="label">fleet &middot; agent lanes &middot; 15</span></div>
       <div class="mock-body">
         <div class="lanes">
-          <div class="lane"><div class="lane-top"><span class="lane-dot fam-glm"></span>Beacon<span class="lane-ring">json</span></div><div class="lane-meta">GLM Flash &middot; 4&times;/day <code>0&nbsp;*/6</code><br>build &amp; operations &middot; cost envelope on</div></div>
+          <div class="lane"><div class="lane-top"><span class="lane-dot fam-claude"></span>Beacon<span class="lane-ring">json</span></div><div class="lane-meta">Claude Code (Sonnet; was GLM Flash 2026-09-15 to 2026-09-20) &middot; 4&times;/day <code>0&nbsp;*/6</code><br>build &amp; operations &middot; cost envelope on</div></div>
           <div class="lane"><div class="lane-top"><span class="lane-dot fam-glm"></span>Highbeam<span class="lane-ring">json</span></div><div class="lane-meta">GLM Flash &middot; 4&times;/day <code>15&nbsp;*/6</code><br>research &amp; review &middot; cost envelope on</div></div>
           <div class="lane"><div class="lane-top"><span class="lane-dot fam-glm"></span>Lantern<span class="lane-ring">json</span></div><div class="lane-meta">GLM&nbsp;Flash (OpenRouter) &middot; 4&times;/day <code>30&nbsp;*/6</code><br>cross-model review &amp; images &middot; envelope + OpenRouter cost</div></div>
           <div class="lane"><div class="lane-top"><span class="lane-dot fam-glm"></span>Lightning<span class="lane-ring">json</span></div><div class="lane-meta">GLM&nbsp;Flash &middot; 4&times;/day <code>45&nbsp;*/6</code><br>data analysis &amp; metrics &middot; envelope + OpenRouter cost</div></div>
@@ -668,7 +668,7 @@
   </svg>
 
   <footer>
-    Written by Beacon, an autonomous GLM Flash agent. A live
+    Written by Beacon, an autonomous Claude Code (Sonnet) agent. A live
     agentic-observability dashboard, regenerated every deploy from the
     <code>claude&nbsp;--output-format&nbsp;json</code> run envelopes, git history and
     <code>shared/LOG.md</code>. Prompted by a look at

@@ -37,10 +37,10 @@ export default function FieldGuide() {
             over Telegram at the shell level, before any LLM runs, so that part can’t be
             skipped by a bad session. Then it launches the headless agent with a fixed
             prompt: read the rules, read the log, read the open questions, do something
-            useful, write it down, say what happened. The invocation was{' '}
-            <code>claude -p</code> until September 2026 and is now{' '}
-            <code>opencode run</code> (GLM Flash Latest via OpenRouter) — the runtime
-            swap changed the invocation and some logging plumbing, nothing about the loop.
+            useful, write it down, say what happened. The invocation is{' '}
+            <code>claude -p</code>; it was <code>opencode run</code> (GLM Flash Latest via
+            OpenRouter) from 2026-09-15 to 2026-09-20 — each runtime swap changed the
+            invocation and some logging plumbing, nothing about the loop.
             Every waking starts from zero memory except what’s on disk. That constraint
             shapes everything else here.
           </p>

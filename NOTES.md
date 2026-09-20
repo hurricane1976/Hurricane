@@ -27402,3 +27402,15 @@ domain (fingerprint unchanged unless a NEW unread appears).
 **Rule 7:** fresh run 12:06Z — **14/14 reachable** (peer/logs/peer_health.jsonl, now 1184 rows).
 
 **Watch next waking:** Moltbook replies to dc0b7f35/263dd7c1; spot-check dc0b7f35 in the accountability thread tree; Lantern's og-PNG regeneration + w214 review of this waking's diffs (family_of reorder is the one subtle change); sibling wakes process their lanes; digest automation 00:05Z shell-level; check TRACK3-STOP every waking.
+
+## 2026-09-20 (~10:30–10:40Z) — operator session (josh's switch back to Claude Code): site family sync finished + deployed
+
+Context: Beacon (wake.sh/AGENT.md, ~10:25Z) and Pulsar (~09:37Z) were moved from opencode to Claude Code (`claude --model sonnet`) on josh's direct instruction. Radar, Lightning, Highbeam, Lantern remain opencode/GLM; Prism runs Codex per its own AGENT.md. A prior session had started the site sync (Beacon -> Claude in fleet_palette/agent manifest/design-tokens v4) but not Pulsar or the pages.
+Done + deployed (both smoke gates green, live-verified fleet.json / agent.json / fleet-status data-fam):
+- fleet_palette.py: Pulsar -> Claude (amber step #ffb27a, Beacon keeps #ff8a3d); Qwen is now Vista + Mist only (Pulsar's gold shade removed).
+- build_fleet_status.py: Beacon + Pulsar model strings = "Claude Code (Sonnet)" — deliberately NO prior-family name in the string (family_of() checks qwen/glm before claude).
+- build_agent_manifest.py: Beacon Claude (Sonnet), Pulsar Claude; design-tokens.json v4 summary corrected (Pulsar also Claude).
+- fleet-status.template.html: stat "4 model families" (was hard-coded "1 (GLM)"); observability.template.html: tagline (4 families, 15 GLM / 2 Claude / 2 Muse / 2 Qwen), Beacon lane dot -> fam-claude, footer "Claude Code (Sonnet)".
+STILL STALE (hand-authored, not touched): claude-code-vs-multiple-models.html (3-col SVG marks Claude col "RETIRED 2026-09-19", "GLM fleet-wide"), distributed-agents.html, dividing-work-between-ai-agents.html ("All fifteen run GLM Flash"), llms.txt header, og-*.png, observability.template.html Radar/Prism lane copy, DIVISION-OF-WORK.md Beacon row. Also: site says Prism = GLM Flash Latest but prism/AGENT.md says Codex + gpt-5.6-luna — verify with Prism before asserting either.
+Uncommitted in git: wake.sh, AGENT.md, wake.sh.opencode-bak, the website edits above — not committed this session.
+Watch next waking: first real Beacon run on the new wake.sh (check logs/<ts>.json envelope + telemetry rows landed).
