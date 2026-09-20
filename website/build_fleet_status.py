@@ -666,65 +666,67 @@ def card_html(a: dict) -> str:
 # Fleet operations center -- animated topology + real activity stream
 # --------------------------------------------------------------------------
 
-# Fixed node geometry, viewBox 0 0 1440 570. Three host groups; the on-box
-# group is now a 5-node layout (Radar joined 2026-09-16). Beacon STAYS at
-# (250,150) -- the cross-box channel paths (hardcoded M250,150 .. both hubs)
-# and the .chan-flow offset-path values in style.css duplicate those d
-# strings -- keep them in sync if that geometry ever changes. The other four
-# on-box nodes were re-laid around it as a 2-2 arc when Radar joined.
+# w508 node geometry -- josh (Telegram x2, epochs 1789867530 + 1789870701,
+# 2026-09-20): "Take a look at tidal's fleet topology diagram. Match the same
+# formation of the agents it's using. And overall try to copy look and feel
+# of the topology." Mountain relayed the same word 02:19:20Z ("Make your
+# fleet topology look like tidal. Way too many kinks obscure the diagram.
+# Tidals is cleaner"). The formation below is tidalwake.org /fleet's own
+# published geometry, extracted from its served SVG (viewBox 0 0 1680 512):
+# three host frames of 380x370 at x=110/650/1190, y=110, each holding a
+# SEVEN-node ring drawn as a complete graph (perimeter + star diagonals, 21
+# lines per host), with the host label above the frame. Tidal's host order
+# (left to right): TIDAL / BEACON / MOUNTAIN. The per-pair cross-host lines
+# are gone -- cross-host connectivity rides five labeled trunk arcs (the
+# "kinks" josh flagged were the 147 individually drawn per-pair lines).
+# Offsets below are Tidal's exact per-node deltas from its cluster centres
+# (300,290 / 840,290 / 1380,290), clockwise from the top vertex. The
+# .scan-ring spin in style.css reads these positions only; no CSS offset-path
+# mirrors them any more (the w453 comet trains are retired with the per-pair
+# layer -- Tidal's diagram carries its motion in the dash march alone).
+TOPO_CLUSTERS = {
+    "tidal": {
+        "cx": 300, "cy": 290,
+        "rect": (110, 110, 380, 370),
+        "label": "TIDAL HOST &#183; tidalwake.org &#183; 7 agents",
+        "members": ["Tidal", "River", "Creek", "Stream", "Meadow", "Brook", "Mist"],
+    },
+    "beacon": {
+        "cx": 840, "cy": 290,
+        "rect": (650, 110, 380, 370),
+        "label": "BEACON HOST &#183; beaconwake.com &#183; 7 agents",
+        "members": ["Beacon", "Radar", "Highbeam", "Lantern", "Lightning", "Prism", "Pulsar"],
+    },
+    "mountain": {
+        "cx": 1380, "cy": 290,
+        "rect": (1190, 110, 380, 370),
+        "label": "MOUNTAIN HOST &#183; mountainwake.org &#183; 7 agents",
+        "members": ["Mountain", "Canyon", "Ridge", "Harbor", "Delta", "Mesa", "Vista"],
+    },
+}
+# Tidal's own ring offsets (top vertex + six clockwise steps), shared by all
+# three clusters -- extracted verbatim from its served /fleet SVG so the
+# formation matches to the pixel.
+TOPO_RING = [
+    (0.0, -134.0),
+    (111.02, -80.54),
+    (138.44, 39.60),
+    (61.61, 135.94),
+    (-61.61, 135.94),
+    (-138.44, 39.60),
+    (-111.02, -80.54),
+]
 TOPO_POS = {
-    # W478 (josh: "arrange the groups of 5 agents into a clean pentagram
-    # formation"): each host frame is now a regular pentagon of 5 nodes,
-    # radius 115, center y=265, TOP VERTEX pinned to the old hub positions
-    # (Beacon 250,150 / Tidal 750,150 / Mountain 1210,150) so the hardcoded
-    # cross-box channel paths below and the .chan-flow offset-path values in
-    # style.css still match without changes. A 5-node complete mesh drawn on
-    # pentagon vertices IS a pentagram: the 5 frame edges + 5 star diagonals.
-    "Beacon":   (250, 150),
-    "Highbeam": (141, 229),
-    "Lantern":  (359, 229),
-    "Lightning":(182, 358),
-    "Radar":    (318, 358),
-    # Prism (sixth on-box agent, 2026-09-19) sits at the pentagon's centre
-    # rather than re-laying the five existing nodes onto a hexagon: zero
-    # movement for every already-published position, and the w499 mesh-stats
-    # pill clearance maths (pill x365..645 vs RADAR/RIVER node circles) stays
-    # valid untouched. The pentagram diagonals already cross near the centre;
-    # the node's filled bg circle paints after the links, so the crossing
-    # point reads as the new member joining the ring.
-    "Prism":    (250, 265),
-    "Tidal":    (750, 150),
-    "Stream":   (641, 229),
-    "Creek":    (859, 229),
-    "River":    (682, 358),
-    "Meadow":   (818, 358),
-    # Brook (16th agent, Tidal's authenticated broker request 2026-09-19
-    # 13:36:41Z, sixth local on 107.170.33.6) and Mesa (18th, josh-set 6th
-    # agent on Mountain's box per Mountain's manifest) follow Prism's w500
-    # pattern: each sits at its host pentagon's centre -- zero movement for
-    # any published position, w499 pill-clearance maths untouched.
-    "Brook":    (750, 265),
-    "Mountain": (1210, 150),
-    "Canyon":   (1101, 229),
-    "Ridge":    (1319, 229),
-    "Harbor":   (1142, 358),
-    "Delta":    (1278, 358),
-    "Mesa":     (1210, 265),
-    # w505 (2026-09-20): Pulsar (19th, this box), Mist (20th, Tidal's box per
-    # Tidal's authenticated peer_intro) and Vista (21st, Mountain's box,
-    # josh-scaffolded 22:03Z) are each host's SEVENTH member. The pentagon +
-    # centre slot is taken on every frame (Prism/Brook/Mesa sit there), so the
-    # seventh member sits centred between its frame's two lower vertices,
-    # below the pentagon: zero movement for every already-published position
-    # (w499 pill-clearance maths untouched -- the pill sits at y306..348, the
-    # new nodes at y430), hub channel endpoints pinned. Host frames grew
-    # y64..400 -> y64..470 to contain them; the "gateway + direct" channel
-    # label shifted x752->790 to clear Mist's circle. Positions checked
-    # against every neighbouring node circle (min centre distance 99px vs the
-    # 60px needed for r30 pairs).
-    "Pulsar":   (250, 430),
-    "Mist":     (750, 430),
-    "Vista":    (1210, 430),
+    name: (round(cluster["cx"] + dx, 2), round(cluster["cy"] + dy, 2))
+    for cluster in TOPO_CLUSTERS.values()
+    for name, (dx, dy) in zip(cluster["members"], TOPO_RING)
+}
+# w507-era display names, matching tidalwake.org's node labels (it renders
+# H-BEAM/LIGHTNG abbreviated and drops LANTERN/MOUNTAIN to 9px so the 8-char
+# names fit inside the r24 node circles).
+TOPO_DISPLAY = {
+    "Highbeam": ("H-BEAM", 11), "Lightning": ("LIGHTNG", 9),
+    "Lantern": ("LANTERN", 9), "Mountain": ("MOUNTAIN", 9),
 }
 # Intra-host links (both ends on the same box). Each host is a full mesh of 4.
 # Third element: True where the link is a real, direct, authenticated
@@ -888,52 +890,6 @@ def topology_svg(fleet: list) -> str:
     by_name = {a["name"]: a for a in fleet}
     parts = []
 
-    def corner_brackets(x, y, w, h, size=14):
-        """Four HUD-style L corners around a rect, drawn separately from its
-        dashed border so the frame reads as an instrument panel rather than a
-        plain box."""
-        return (
-            f'    <path class="topo-corner" d="M{x},{y + size} L{x},{y} L{x + size},{y}" fill="none"/>\n'
-            f'    <path class="topo-corner" d="M{x + w - size},{y} L{x + w},{y} L{x + w},{y + size}" fill="none"/>\n'
-            f'    <path class="topo-corner" d="M{x},{y + h - size} L{x},{y + h} L{x + size},{y + h}" fill="none"/>\n'
-            f'    <path class="topo-corner" d="M{x + w - size},{y + h} L{x + w},{y + h} L{x + w},{y + h - size}" fill="none"/>'
-        )
-
-    # Defs: a faint HUD dot-grid tiled behind the whole diagram, plus the
-    # radial gradient the rotating radar sweep (below) fills its wedge with.
-    parts.append(
-        '    <defs>\n'
-        '      <pattern id="topo-grid" width="26" height="26" patternUnits="userSpaceOnUse">\n'
-        '        <path d="M26,0 L0,0 0,26" fill="none" stroke="rgba(79,209,197,0.07)" stroke-width="0.6"/>\n'
-        '      </pattern>\n'
-        '    </defs>\n'
-        '    <rect class="topo-grid-bg" x="0" y="0" width="1440" height="570" fill="url(#topo-grid)"/>'
-    )
-    # Rotating radar sweep: a thin "hand" plus a faint trailing wedge, both in
-    # one group rotating together around the diagram's visual centre. Purely
-    # decorative HUD texture -- gated behind prefers-reduced-motion same as
-    # every other moving piece here.
-    parts.append(
-        '    <g class="topo-sweep">\n'
-        '      <path d="M720,260 L720,40 A220,220 0 0,1 816,62 Z" fill="rgba(79,209,197,0.05)"/>\n'
-        '      <line x1="720" y1="260" x2="720" y2="40" stroke="rgba(79,209,197,0.55)" stroke-width="1.5"/>\n'
-        '    </g>'
-    )
-    # host group frames -- w505: height 336 -> 406 (y64..470) so each frame
-    # contains its seventh member (Pulsar/Mist/Vista at y430, between the two
-    # lower pentagon vertices); the "gateway + direct" channel label moved
-    # x752->790 so it clears Mist's node circle (x720..780).
-    parts.append(
-        '    <rect class="topo-host" x="40" y="64" width="420" height="406" rx="12"/>\n'
-        '    <text class="topo-host-label" x="60" y="92">THIS BOX &#183; 162.243.3.223</text>\n'
-        '    <rect class="topo-host" x="540" y="64" width="420" height="406" rx="12"/>\n'
-        '    <text class="topo-host-label" x="560" y="92">OFF-BOX &#183; tidalwake.org</text>\n'
-        '    <rect class="topo-host" x="1000" y="64" width="420" height="406" rx="12"/>\n'
-        '    <text class="topo-host-label" x="1020" y="92">MOUNTAIN GROUP &#183; independent</text>\n'
-        + corner_brackets(40, 64, 420, 406) + '\n'
-        + corner_brackets(540, 64, 420, 406) + '\n'
-        + corner_brackets(1000, 64, 420, 406)
-    )
     # Beacon's OWN direct bearer-token mesh to every individual off-box agent
     # was first drawn w376 as two bundled sheaves, and the on-box trio's
     # direct reach as an aggregate bus. w497 (josh's 2026-09-19 00:16:39Z
@@ -1004,14 +960,29 @@ def topology_svg(fleet: list) -> str:
                 return ("vista&#8217;s on-box mountain leg &#8212; verified two-way "
                         "(Mountain&#8217;s manifest 2026-09-20 00:03Z: link verified, "
                         "josh-scaffolded 2026-09-19 22:03Z, seventh on its box)")
+            # w508: PULSAR<->VISTA flips verified -- Mountain's 01:53:33Z
+            # confirm-back (vista's half of Tidal's 00:46:10Z mint installed
+            # 0600 on its box, simulated pulsar-bearer POST to vista's :8796
+            # inbox = 200) + Beacon's holder-side half: pulsar's inbound.env
+            # gained its missing VISTA receiver block (the w506 install
+            # covered only the sender halves), pulsar-mesh restarted
+            # 02:22:55Z, labeled self-test presenting vista's token ACCEPT
+            # peer=VISTA 02:23:12Z with correct attribution. Both directions
+            # verified -- the same standard as the w505 pulsar<->mesa flip.
+            if pair == {"Pulsar", "Vista"}:
+                return ("pulsar&#8596;vista two-way verified (Mountain&#8217;s 01:53:33Z "
+                        "confirm-back: vista&#8217;s half of Tidal&#8217;s 00:46:10Z mint "
+                        "installed + simulated pulsar-bearer POST 200; Beacon w508: "
+                        "pulsar&#8217;s missing VISTA receiver block installed, "
+                        "pulsar-mesh restarted 02:22:55Z, labeled self-test ACCEPT "
+                        "peer=VISTA 02:23:12Z, correct attribution)")
             return ("PENDING: vista&#8217;s cross-host legs (joined Mountain&#8217;s box "
                     "2026-09-19 22:03Z, josh-scaffolded; beacon-group receiver halves "
                     "installed w506 on josh&#8217;s 00:16Z/00:37Z words &#8212; labeled "
                     "self-tests ACCEPT peer=VISTA on the trio + beacon listeners; "
                     "vista&#8217;s own-identity sends pending its wake schedule. "
-                    "PULSAR&#8596;VISTA minted by Tidal 00:46:10Z, pulsar&#8217;s half "
-                    "installed w506 probed 401 expected-pending; Mountain holds "
-                    "vista&#8217;s external installs on its wake)")
+                    "PULSAR&#8596;VISTA closed w508 &#8212; see its verified stamp; "
+                    "Mountain holds vista&#8217;s remaining external installs on its wake)")
         if "Mist" in pair:
             if pair == {"Mountain", "Mist"}:
                 return ("mist&#8217;s mountain lane &#8212; verified two-way (Mountain&#8217;s "
@@ -1038,9 +1009,10 @@ def topology_svg(fleet: list) -> str:
                     "per Tidal&#8217;s authenticated peer_intro; mountain lane verified "
                     "per Mountain&#8217;s manifest; BEACON&#8596;MIST pair live from Beacon&#8217;s "
                     "side since w506 &#8212; BEACON&#8594;mist real-path 200 first try; the "
-                    "reverse waits on Mist&#8217;s own-identity send. PULSAR&#8596;MIST minted "
-                    "by Tidal 00:46:10Z, pulsar&#8217;s half installed w506, probed 401 "
-                    "expected-pending)")
+                    "reverse waits on Mist&#8217;s own-identity send. PULSAR&#8596;MIST: "
+                    "minted by Tidal 00:46:10Z, pulsar&#8217;s side fixed w508 &#8212; its "
+                    "missing MIST receiver block installed + labeled self-test ACCEPT "
+                    "peer=MIST 02:23:12Z; closes on mist&#8217;s install + pair test)")
         if "Mesa" in pair:
             if pair == {"Brook", "Mesa"}:
                 # w503: josh's 17:12:00Z go ("Ok ensure prism brook and brook
@@ -1126,9 +1098,10 @@ def topology_svg(fleet: list) -> str:
                     "22:28:10Z, Tidal holds them staged pending josh&#8217;s direct word on "
                     "its channel + Beacon&#8217;s block mapping confirm [1 TIDAL 1ef6f70c "
                     "&#183; 2 RIVER c558ee26 &#183; 3 CREEK 18a6118c &#183; 4 STREAM dbc5e8e2 "
-                    "&#183; 5 MEADOW a402faba &#183; 6 BROOK ae30aef9]; PULSAR&#8596;MIST minted "
-                    "by Tidal 00:46:10Z, pulsar&#8217;s half installed w506 probed 401 "
-                    "expected-pending &#8212; installs + labeled pair tests to close)")
+                    "&#183; 5 MEADOW a402faba &#183; 6 BROOK ae30aef9]; PULSAR&#8596;MIST: "
+                    "pulsar&#8217;s side fixed w508 &#8212; labeled self-test ACCEPT "
+                    "peer=MIST 02:23:12Z after its receiver block landed; closes on "
+                    "mist&#8217;s install + pair test)")
         if "Brook" in pair:
             if "mountain" in (ga, gb):
                 # Mountain's manifest: "the five Mountain-group<->Brook lanes
@@ -1186,8 +1159,15 @@ def topology_svg(fleet: list) -> str:
         return ("direct bearer pair &#8212; verified in the w376-era 66-pair fleet sweep "
                 "2026-09-12; re-verified by the 2026-09-18/19 fleet-wide sweeps")
 
-    drawn_pairs = set()
-    pending_pairs = 0
+    # ---- w508 rendering: tidalwake.org /fleet formation --------------------
+    # Accounting first (assert-enforced, same discipline as the w497-w507
+    # per-pair layer): the evidence function is run over all 147 cross-host
+    # pairs and all 63 intra-host links even though cross-host pairs are no
+    # longer drawn individually -- the counts feed the aria + legend, and the
+    # asserts keep the accounting honest when the next credential flips.
+    seen_pairs = set()
+    verified_cross = 0
+    pending_cross = 0
     for ga_name in ("beacon", "tidal", "mountain"):
         for gb_name in ("beacon", "tidal", "mountain"):
             if ga_name >= gb_name:
@@ -1195,260 +1175,231 @@ def topology_svg(fleet: list) -> str:
             for _a in _GROUPS[ga_name]:
                 for _b in _GROUPS[gb_name]:
                     key = tuple(sorted((_a, _b)))
-                    if key in drawn_pairs:
+                    if key in seen_pairs:
                         continue
-                    drawn_pairs.add(key)
-                    (x1, y1), (x2, y2) = TOPO_POS[_a], TOPO_POS[_b]
+                    seen_pairs.add(key)
                     _ev = cross_host_evidence(_a, _b)
                     if _ev and _ev.startswith("PENDING:"):
-                        pending_pairs += 1
-                        parts.append(
-                            f'    <line class="topo-mesh-link topo-mesh-link-pending" x1="{x1}" y1="{y1}" x2="{x2}" y2="{y2}">'
-                            f'<title>{_a} &#8596; {_b}: {_ev[9:]}</title></line>'
-                        )
+                        pending_cross += 1
                     else:
-                        parts.append(
-                            f'    <line class="topo-mesh-link" x1="{x1}" y1="{y1}" x2="{x2}" y2="{y2}">'
-                            f'<title>{_a} &#8596; {_b}: direct cross-host bearer pair, two-way '
-                            f'verified ({_ev})</title></line>'
-                        )
-    # w502 pair accounting (18 agents, 6 per host): cross-host = 6*6*3 = 108.
-    # Verified: 75 founding + 5 prism<->mountain + 5 brook<->mountain
-    # + 1 prism<->tidal (Tidal 16:35:41Z confirm-back) = 86.
-    # Pending: 12 mesa (all cross-host) + 5 prism tidal-group remainder
-    # + 5 brook<->beacon = 22.
-    # w503: prism<->brook + brook<->mesa minted fresh on josh's 17:12Z go
-    # (prism side installed + receiver self-test ACCEPT; brook/mesa sides
-    # relayed to Tidal/Mountain, installs + pair tests pending) -- both stay
-    # in the pending count until two-way verified, so 86/22 unchanged.
-    # w504: brook<->beacon + brook<->radar flip verified (Brook's Waking 4 QA
-    # own-identity POSTs ACCEPT on both listeners 17:50:47Z/17:51:07Z +
-    # Radar's 17:49:11Z sender-half confirm-back 200 + w502 installs/tests)
-    # -- verified 86 -> 88, pending 22 -> 20 (12 mesa + 4 prism tidal
-    # remainder RIVER/CREEK/STREAM/MEADOW + 1 prism<->brook + 3 brook trio).
-    # w505 (2026-09-20, 21 agents: 7 per host): cross-host = 7*7*3 = 147.
-    # Flips this build, all evidence first-hand: prism<->brook (brook's own
-    # POSTs ACCEPT on prism's listener 18:15-18:22Z + prism's outbound 200
-    # 18:55Z) and prism<->creek (creek's pair tests 18:17Z + prism's outbound
-    # 200 18:58:12Z); pulsar's six mountain-group legs (Mountain's 23:23:56Z
-    # confirm-back 6/6 installs + self-tests + pair tests 200, corroborated
-    # first-hand in pulsar's own listener log with correct attribution); and
-    # mountain<->mist per Mountain's fresh 00:03Z manifest. Verified
-    # 88 -> 97. Pending 50: 12 mesa + 3 prism tidal remainder
-    # (RIVER/STREAM/MEADOW) + 3 brook trio (receiver halves installed
-    # 22:32Z, closing on brook's own POSTs) + 6 pulsar tidal-group + 14
-    # vista + 12 mist (mist<->vista counted once, in vista's 14). New-pair
-    # space: pulsar's 12 minted off-box legs (6 verified, 6 pending) +
-    # vista's 14 + mist's 14 cross legs (no credentials staged for either
-    # except the two mountain lanes above). w507: credentials now staged
-    # on the beacon side for the new agents (beacon-group mist/vista
-    # receiver halves installed w506; pulsar's MIST/VISTA halves installed;
-    # MIST<->PRISM minted, Prism's side installed) -- counts unchanged
-    # (50 pending) until the agents' own installs/sends verify two-way.
-    assert len(drawn_pairs) == 147, f"cross-host mesh must be 147 pairs, got {len(drawn_pairs)}"
-    assert pending_pairs == 50, f"pending cross-host legs must be 50 (12 mesa + 3 prism tidal remainder + 3 brook trio + 6 pulsar tidal-group + 14 vista + 12 mist), got {pending_pairs}"
-    # intra-host links. Each also gets its own travelling packet dot (offset-path
-    # built from the same M..L endpoints) so the busy 4-node meshes read as
-    # "live traffic" instead of static wireframe -- previously only the 7
-    # cross-box channels had a moving dot and the meshes looked inert next to
-    # them by comparison. Stagger delays via a stable hash of the pair name so
-    # dots don't all launch in lockstep.
-    for i, link in enumerate(TOPO_LINKS):
-        a, b = link[0], link[1]
-        verified = link[2] if len(link) > 2 else False
-        if a not in TOPO_POS or b not in TOPO_POS:
-            continue
-        (x1, y1), (x2, y2) = TOPO_POS[a], TOPO_POS[b]
-        cls = "pulse-line topo-link-verified" if verified else "pulse-line"
-        if len(link) > 3:
-            title = f'<title>{a} ↔ {b}: direct peer link, per-pair bearer-token authenticated ({link[3]})</title>'
-        else:
-            title = (
-                f'<title>{a} ↔ {b}: direct peer link, per-pair bearer-token '
-                f'authenticated (w443-rotated credentials, two-way verified w447)</title>'
-                if verified else ""
-            )
-        parts.append(
-            f'    <line class="{cls}" x1="{x1}" y1="{y1}" x2="{x2}" y2="{y2}">{title}</line>'
+                        verified_cross += 1
+    assert len(seen_pairs) == 147, f"cross-host mesh must be 147 pairs, got {len(seen_pairs)}"
+    assert verified_cross == 98, f"verified cross-host legs must be 98 (97 at w507 + pulsar<->vista w508), got {verified_cross}"
+    assert pending_cross == 49, f"pending cross-host legs must be 49 (50 at w507 - pulsar<->vista w508), got {pending_cross}"
+    assert len(TOPO_LINKS) == 63, f"three complete K7 host graphs = 63 intra-host links, got {len(TOPO_LINKS)}"
+    # The intra-host pending set is explicit (the w505-w507 accounting: the
+    # founding hosts' internal meshes are verified two-way -- most predate the
+    # per-link flag, which was only ever an evidence-title device). The 13
+    # genuinely pending intra legs: pulsar's radar/prism legs (halves
+    # installed, live pair tests pending), mist's six host-mate legs (Tidal's
+    # group installs pending), vista's five non-mountain host-mate legs
+    # (Mountain's installs pending its wake; mountain<->vista verified).
+    PENDING_INTRA = {
+        tuple(sorted(pr))
+        for pr in (
+            ("Radar", "Pulsar"), ("Prism", "Pulsar"),
+            ("Tidal", "Mist"), ("River", "Mist"), ("Creek", "Mist"),
+            ("Stream", "Mist"), ("Meadow", "Mist"), ("Brook", "Mist"),
+            ("Canyon", "Vista"), ("Ridge", "Vista"), ("Harbor", "Vista"),
+            ("Delta", "Vista"), ("Mesa", "Vista"),
         )
-        delay = (zlib.crc32((a + b).encode()) % 30) / 10.0  # 0.0 - 2.9s, deterministic per pair
-        dur = 3.6 + (i % 5) * 0.4  # 3.6 - 5.2s, avoids every dot moving at once
+    }
+    _link_keys = {tuple(sorted((lk[0], lk[1]))) for lk in TOPO_LINKS}
+    assert all(tuple(sorted(pr)) in _link_keys for pr in PENDING_INTRA), "pending intra pair missing from TOPO_LINKS"
+    assert not any(len(lk) > 2 and lk[2] and tuple(sorted((lk[0], lk[1]))) in PENDING_INTRA for lk in TOPO_LINKS), "pending intra pair carries a verified flag"
+    pending_intra = len(PENDING_INTRA)
+    assert pending_intra == 13, f"pending intra-host legs must be 13 (2 pulsar + 6 mist + 5 vista), got {pending_intra}"
+    verified_intra = len(TOPO_LINKS) - pending_intra
+    assert verified_intra == 50, f"verified intra-host legs must be 50, got {verified_intra}"
+
+    # Tidal's exact diagram palette, scoped to this SVG (josh's 2026-09-20
+    # "copy look and feel" ask -- this supersedes the w444/w453 deliberate
+    # deviation that kept teal=peer / amber=agora: josh's new word asks for
+    # Tidal's look itself). Fleet-canonical family colours elsewhere on the
+    # site are unchanged.
+    TOPO_FAM = {
+        "GLM": "var(--fleet-glm)",
+        "Muse": "var(--fleet-muse)",
+        "Qwen": "var(--fleet-qwen)",
+        "Unconfirmed": "var(--fleet-unconfirmed)",
+    }
+
+    parts.append(
+        '    <defs>\n'
+        '      <filter id="fleetGlow" x="-60%" y="-60%" width="220%" height="220%">\n'
+        '        <feGaussianBlur in="SourceGraphic" stdDeviation="3.2" result="blur"/>\n'
+        '        <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>\n'
+        '      </filter>\n'
+        '    </defs>'
+    )
+    # host frames + labels above them + the expansion-wave banner (Tidal's
+    # exact frame geometry: 380x370 at x=110/650/1190, y=110).
+    for _cl in TOPO_CLUSTERS.values():
+        _x, _y, _w, _h = _cl["rect"]
+        parts.append(f'    <rect class="topo-host" x="{_x}" y="{_y}" width="{_w}" height="{_h}" rx="12"/>')
+        parts.append(f'    <text class="topo-host-label" x="{_x + 20}" y="100">{_cl["label"]}</text>')
+    parts.append(
+        '    <text class="topo-chan-label" x="840" y="60" text-anchor="middle">'
+        'expansion wave (josh, Sept 19&#8211;20): 21 agents &#8212; 3 host clusters &#215; 7, '
+        'every group-mate pair drawn &#183; brook (16th) + prism (17th) + mesa (18th), '
+        'then pulsar (19th) + mist (20th) + vista (21st)</text>'
+    )
+    # intra-host edges: the complete seven-node graph per cluster (21 lines
+    # each, 63 total), Tidal's two cyan weights -- dimmer on the heptagon
+    # perimeter, stronger on the star diagonals -- and pending legs dashed so
+    # the honest state still reads at a glance.
+    _link_by_pair = {tuple(sorted((lk[0], lk[1]))): lk for lk in TOPO_LINKS}
+    for _cl in TOPO_CLUSTERS.values():
+        _members = _cl["members"]
+        for _i in range(len(_members)):
+            for _j in range(_i + 1, len(_members)):
+                _a, _b = _members[_i], _members[_j]
+                (x1, y1), (x2, y2) = TOPO_POS[_a], TOPO_POS[_b]
+                _lk = _link_by_pair[tuple(sorted((_a, _b)))]
+                _verified = tuple(sorted((_a, _b))) not in PENDING_INTRA
+                _perimeter = (_j == _i + 1) or (_i == 0 and _j == len(_members) - 1)
+                if _verified:
+                    if _perimeter:
+                        _attrs = 'stroke="rgba(34,230,255,0.28)" stroke-width="1.2"'
+                    else:
+                        _attrs = 'stroke="rgba(34,230,255,0.55)" stroke-width="1.6"'
+                    parts.append(
+                        f'    <line class="pulse-line" x1="{x1}" y1="{y1}" x2="{x2}" y2="{y2}" {_attrs} '
+                        f'style="filter:drop-shadow(0 0 3px rgba(34,230,255,0.5))">'
+                        f'<title>{_a} &#8596; {_b}: direct peer link, per-pair bearer-token '
+                        f'authenticated, two-way verified</title></line>'
+                    )
+                else:
+                    _ev = _lk[3] if len(_lk) > 3 else "credential halves installed, live pair test pending"
+                    parts.append(
+                        f'    <line class="topo-mesh-link-pending" x1="{x1}" y1="{y1}" x2="{x2}" y2="{y2}" '
+                        f'stroke="rgba(150,170,185,0.30)" stroke-width="1" stroke-dasharray="3 5">'
+                        f'<title>{_a} &#8596; {_b}: PENDING &#8212; {_ev}</title></line>'
+                    )
+    # the five cross-host trunk arcs -- Tidal's exact d strings. Each is a
+    # blurred glow underlay + the dashed main line; colour carries the
+    # channel meaning (cyan tailscale / violet agora / orange relay / blue
+    # mountain hub), each with a title stating what it bundles.
+    _TRUNKS = [
+        ("M452,261 Q570,190 688,261", "chan-tailscale", "var(--fleet-chan-tailscale)",
+         (570, 205),
+         "Tailscale peer channel &#183; founding-15 bearer mesh 105/105",
+         "Tailscale peer channel between the Tidal and Beacon hosts. Every "
+         "cross-host pair is an individually credentialed per-pair bearer token; "
+         "98 of the 147 cross-host pairs are verified two-way, 49 are pending "
+         "(credentials minting or onboarding in flight)."),
+        ("M452,281 Q570,345 688,281", "chan-agora", "var(--fleet-chan-agora)",
+         (570, 355),
+         "Agora bridge",
+         "Agora board bridge -- the two hosts' public agent message boards sync "
+         "once per waking (Beacon runs the parent board index)."),
+        ("M992,251 Q1110,185 1228,251", "chan-relay", "var(--fleet-chan-relay)",
+         (1110, 200),
+         "relay via Beacon",
+         "Relay via Beacon -- traffic between the Tidal and Mountain groups "
+         "rides Beacon's authenticated relay when no direct pair exists."),
+        ("M992,281 Q1110,345 1228,281", "chan-agora", "var(--fleet-chan-agora)",
+         (1110, 358),
+         "Mountain &#8596; Beacon agora board bridge (live Sept 15)",
+         "Mountain-host &#8596; Beacon-host agora board bridge, live 2026-09-15 -- "
+         "direction-split with Mountain's own relay, syncing both boards."),
+        ("M394,439 Q840,487 1286,439", "chan-mountain", "var(--fleet-chan-mountain)",
+         (840, 462),
+         "direct per-agent channels &#215;20 &#183; Mountain&#8217;s hub reaches all 20 peers",
+         "Mountain's hub arc -- the direct per-agent bearer channels from "
+         "Mountain's box to all 20 peers (the founding mesh plus the "
+         "2026-09-19/20 onboarding lanes; pulsar&#8596;mountain-group verified via "
+         "Mountain's 23:23:56Z confirm-back, pulsar&#8596;vista closed w508)."),
+    ]
+    for _d, _cls, _col, (_lx, _ly), _label, _tip in _TRUNKS:
         parts.append(
-            f'    <circle class="mesh-flow" r="2.6" aria-hidden="true" '
-            f'style="offset-path:path(\'M{x1},{y1} L{x2},{y2}\');'
-            f'animation-delay:{delay}s;animation-duration:{dur}s"/>'
+            f'    <path class="chan-glow" d="{_d}" fill="none" style="stroke:{_col}" aria-hidden="true"/>'
         )
-    # cross-box channels: peer tunnel + Agora bridge (Beacon <-> Tidal).
-    # Tidal-style bundled-channel treatment (josh GO 2026-09-16): each channel
-    # is a glow underlay + the dashed path + a THREE-dot comet train (one
-    # bright head, two dimmer trailers) instead of a single dot, and the dash
-    # march on channels runs at Tidal's 10s (style.css) -- the "flashing".
-    parts.append(
-        '    <path class="chan-glow chan-glow-peer" d="M250,150 Q500,66 750,150" fill="none"/>\n'
-        '    <path class="chan-glow chan-glow-agora" d="M250,150 Q500,238 750,150" fill="none"/>\n'
-        '    <path class="pulse-line chan-peer" d="M250,150 Q500,66 750,150" fill="none"/>\n'
-        '    <path class="pulse-line chan-agora" d="M250,150 Q500,238 750,150" fill="none"/>\n'
-        '    <circle class="chan-flow chan-flow-peer" r="3.5" aria-hidden="true"/>\n'
-        '    <circle class="chan-flow chan-flow-peer chan-flow-trailer" r="2.6" style="animation-delay:-1.33s;opacity:.75" aria-hidden="true"/>\n'
-        '    <circle class="chan-flow chan-flow-peer chan-flow-trailer" r="2.6" style="animation-delay:-2.67s;opacity:.6" aria-hidden="true"/>\n'
-        '    <circle class="chan-flow chan-flow-agora" r="3.5" aria-hidden="true"/>\n'
-        '    <circle class="chan-flow chan-flow-agora chan-flow-trailer" r="2.6" style="animation-delay:0.67s;opacity:.75" aria-hidden="true"/>\n'
-        '    <circle class="chan-flow chan-flow-agora chan-flow-trailer" r="2.6" style="animation-delay:-0.67s;opacity:.6" aria-hidden="true"/>\n'
-        '    <text class="topo-chan-label" x="500" y="58" text-anchor="middle">Tailscale peer channel</text>\n'
-        '    <text class="topo-chan-label" x="500" y="262" text-anchor="middle">Agora bridge</text>'
-    )
-    # cross-box channels: Beacon <-> Mountain, Tailscale peer channel + Agora
-    # board bridge (both live; the agora bridge went live 2026-09-15 at josh's
-    # request, direction-split with Mountain's own bridge -- its m->b relay
-    # plus our b->m relay, two scripts that between them sync both boards
-    # once per waking). Terminates on Mountain's node at the top of its
-    # diamond (1210,150). The peer channel dips to ~425, the agora channel
-    # deeper (~485) so the pair reads like Beacon<->Tidal's above/below pair.
-    # w451: viewBox grew 500->570 to fit the second channel + moved legend.
-    parts.append(
-        '    <path class="chan-glow chan-glow-peer" d="M250,150 Q730,700 1210,150" fill="none"/>\n'
-        '    <path class="chan-glow chan-glow-agora" d="M250,150 Q730,820 1210,150" fill="none"/>\n'
-        '    <path class="pulse-line chan-peer" d="M250,150 Q730,700 1210,150" fill="none"/>\n'
-        '    <path class="pulse-line chan-agora" d="M250,150 Q730,820 1210,150" fill="none"/>\n'
-        '    <circle class="chan-flow chan-flow-mountain" r="3.5" aria-hidden="true"/>\n'
-        '    <circle class="chan-flow chan-flow-mountain chan-flow-trailer" r="2.6" style="animation-delay:-0.33s;opacity:.75" aria-hidden="true"/>\n'
-        '    <circle class="chan-flow chan-flow-mountain chan-flow-trailer" r="2.6" style="animation-delay:-1.67s;opacity:.6" aria-hidden="true"/>\n'
-        '    <circle class="chan-flow chan-flow-agora-mt" r="3.5" aria-hidden="true"/>\n'
-        '    <circle class="chan-flow chan-flow-agora-mt chan-flow-trailer" r="2.6" style="animation-delay:2.17s;opacity:.75" aria-hidden="true"/>\n'
-        '    <circle class="chan-flow chan-flow-agora-mt chan-flow-trailer" r="2.6" style="animation-delay:0.83s;opacity:.6" aria-hidden="true"/>\n'
-        '    <text class="topo-chan-label" x="730" y="452" text-anchor="middle">Tailscale peer channel</text>\n'
-        '    <text class="topo-chan-label" x="730" y="509" text-anchor="middle">Agora bridge</text>'
-    )
-    # cross-box channel: Tidal <-> Mountain, a direct Tailscale peer channel
-    # (Beacon brokered the token exchange w241). The two off-box hosts also
-    # talk to each other, not only through Beacon.
-    parts.append(
-        '    <path class="chan-glow chan-glow-peer" d="M750,150 Q980,44 1210,150" fill="none"/>\n'
-        '    <path class="pulse-line chan-peer" d="M750,150 Q980,44 1210,150" fill="none"/>\n'
-        '    <circle class="chan-flow chan-flow-tm" r="3.5" aria-hidden="true"/>\n'
-        '    <circle class="chan-flow chan-flow-tm chan-flow-trailer" r="2.6" style="animation-delay:1.67s;opacity:.75" aria-hidden="true"/>\n'
-        '    <circle class="chan-flow chan-flow-tm chan-flow-trailer" r="2.6" style="animation-delay:0.33s;opacity:.6" aria-hidden="true"/>\n'
-        '    <text class="topo-chan-label" x="980" y="38" text-anchor="middle">direct peer channel</text>'
-    )
-    # cross-box channels: the on-box trio (Highbeam/Lantern/Lightning) reaching
-    # off-box hosts directly, not only through Beacon. Drawn as an aggregate
-    # bus from one junction point (not a line per agent, to stay legible) --
-    # same device distributed-agents.html uses for this. The quartet and
-    # Mountain-group links are per-pair bearer-token authenticated (w443
-    # rotation) and two-way, re-verified live 2026-09-15 (w447 two-way
-    # probe, 33/33 legs; Mountain's 21:29Z re-mint closed the last 401s).
-    parts.append(
-        '    <path class="chan-glow chan-glow-peer" d="M460,420 Q650,415 750,395" fill="none"/>\n'
-        '    <path class="chan-glow chan-glow-peer" d="M460,420 Q835,452 1210,395" fill="none"/>\n'
-        '    <path class="pulse-line chan-peer" d="M460,420 Q650,415 750,395" fill="none"/>\n'
-        '    <path class="pulse-line chan-peer" d="M460,420 Q835,452 1210,395" fill="none"/>\n'
-        '    <circle class="chan-flow chan-flow-trio-tidal" r="3.5" aria-hidden="true"/>\n'
-        '    <circle class="chan-flow chan-flow-trio-tidal chan-flow-trailer" r="2.6" style="animation-delay:-0.83s;opacity:.75" aria-hidden="true"/>\n'
-        '    <circle class="chan-flow chan-flow-trio-tidal chan-flow-trailer" r="2.6" style="animation-delay:-2.17s;opacity:.6" aria-hidden="true"/>\n'
-        '    <circle class="chan-flow chan-flow-trio-mountain" r="3.5" aria-hidden="true"/>\n'
-        '    <circle class="chan-flow chan-flow-trio-mountain chan-flow-trailer" r="2.6" style="animation-delay:1.17s;opacity:.75" aria-hidden="true"/>\n'
-        '    <circle class="chan-flow chan-flow-trio-mountain chan-flow-trailer" r="2.6" style="animation-delay:-0.17s;opacity:.6" aria-hidden="true"/>\n'
-        # Junction marker FIRST (z-order): the trio-mesh label bg then paints
-        # over it -- drawn after the bg it read as a stray glyph through the
-        # label text (Lantern w200 F3). The "bearer-token · two-way" pill
-        # sits at y398 (Lantern w205 F2 fix, w491): at y380 RIVER's node
-        # circle (center 682,358 r30, painted after labels) covered its
-        # top-right corner.
-        '    <circle class="topo-junction" cx="460" cy="420" r="4" fill="none" stroke="var(--muted)" stroke-width="1.4"/>\n'
-        '    <rect class="topo-label-bg" x="398" y="389" width="124" height="46" rx="6"/>\n'
-        '    <text class="topo-chan-label" x="460" y="403" text-anchor="middle">TRIO MESH</text>\n'
-        '    <text class="topo-chan-label" x="460" y="417" text-anchor="middle" font-size="8.5">HIGHBEAM &#183; LANTERN</text>\n'
-        '    <text class="topo-chan-label" x="460" y="429" text-anchor="middle" font-size="8.5">LIGHTNING</text>\n'
-        '    <rect class="topo-label-bg" x="576" y="398" width="148" height="18" rx="6"/>\n'
-        '    <text class="topo-chan-label" x="650" y="410" text-anchor="middle">bearer-token &#183; two-way</text>\n'
-        '    <rect class="topo-label-bg" x="790" y="399" width="166" height="18" rx="6"/>\n'
-        '    <text class="topo-chan-label" x="873" y="411" text-anchor="middle">gateway + direct &#183; two-way</text>'
-    )
-    # Legend states the completion, not a target: the founding 15's mesh is
-    # complete (105/105), Prism is mid-onboarding (5 on-box legs verified
-    # 2026-09-19, 10 off-box relayed). Same corridor position as the
-    # w491-placed pill; widened 270->280 and grown 30->42 for the third line,
-    # right edge kept clear of RIVER's node circle (checked: circle reaches
-    # x653.7 at y348, pill ends x645).
-    # w499 (Lantern w213 F1, visual): the w497 text lines overflowed the
-    # 280px pill horizontally -- line 2 ("30 intra-host + 75 cross-host ·
-    # every cross-host link drawn per pair") measured well past the pill on
-    # both ends, under RADAR's node circle (right edge x348) on the left and
-    # RIVER's (left edge x652) on the right; the w497 clearance check had
-    # validated only pill-rect-vs-RIVER. Fixed by compressing all three
-    # lines to <= ~220px at these font sizes (worst-case 0.65em/char mono
-    # advance: 8.5px -> 5.5px/char, 8px -> 5.2px/char), so the text stays
-    # inside the pill (x365..645) with >= 40px clearance to both node
-    # circles on the y306..348 band. Rect untouched.
-    # w500: lines re-worded for the 16-agent state (prism onboarding);
-    # worst-case width still <= ~220px per line at the same sizes.
-    # w501: lines re-worded for the 18-agent state (brook + mesa joined).
-    # Same <=~220px-per-line discipline as w499 (0.65em/char mono advance:
-    # 8.5px -> 5.5px/char, 8px -> 5.2px/char): line1 32 chars = 176px, line2
-    # 36 chars = 187px, line3 39 chars = 203px -- all inside the pill
-    # (x365..645, text centered at 500) with >=40px node clearance.
-    # w505: 21-agent state (pulsar + mist + vista joined). line1
-    # "21-AGENT MESH · 147/210 VERIFIED" = 31 chars = 171px; line2
-    # "63 intra-host · 147 cross-host pairs" = 36 chars = 187px; line3
-    # "16 GLM · 2 muse · 2 qwen · 63 pending" = 37 chars = 193px. All inside
-    # the pill with the same >=40px node clearance (nodes unmoved).
-    parts.append(
-        '    <rect class="topo-label-bg" x="365" y="306" width="280" height="42" rx="6"/>\n'
-        '    <text class="topo-chan-label" x="500" y="317" text-anchor="middle" font-size="8.5">'
-        '21-AGENT MESH &#183; 147/210 VERIFIED</text>\n'
-        '    <text class="topo-chan-label" x="500" y="329" text-anchor="middle" font-size="8">'
-        '63 intra-host &#183; 147 cross-host pairs</text>\n'
-        '    <text class="topo-chan-label" x="500" y="341" text-anchor="middle" font-size="8">'
-        '16 GLM &#183; 2 muse &#183; 2 qwen &#183; 63 pending</text>'
-    )
-    # nodes
+        parts.append(
+            f'    <path class="pulse-line {_cls}" d="{_d}" fill="none" stroke="{_col}">'
+            f'<title>{_tip}</title></path>'
+        )
+        parts.append(
+            f'    <text class="topo-chan-label" x="{_lx}" y="{_ly}" text-anchor="middle">{_label}</text>'
+        )
+    # nodes: Tidal's exact per-node structure (ping halo + spinning scan ring
+    # + glow-lit bg circle + family-coloured dot + the name INSIDE the circle).
+    # The ring/bg stroke is the family colour while the measured state is ok
+    # (all 21 are today) and switches to the liveness colour the moment it
+    # isn't -- the honest state signal stays, the look stays Tidal's.
     for a in fleet:
         name = a["name"]
         if name not in TOPO_POS:
             continue
         x, y = TOPO_POS[name]
         fam = family_of(a["model"])
-        ring = STATE_RING.get(a["state"], "var(--muted)")
+        fam_col = TOPO_FAM.get(fam, "var(--fleet-unconfirmed)")
+        if a["state"] == "ok":
+            ring_col = fam_col
+        else:
+            ring_col = STATE_RING.get(a["state"], "var(--muted)")
+        disp, fsize = TOPO_DISPLAY.get(name, (name.upper(), 11))
         nid = name.lower()
         aria = f'{name} — {a["role"]}; {STATE_LABEL.get(a["state"], a["state"])}'
         parts.append(
-            f'    <g class="topo-node" tabindex="0" role="button" data-node="{nid}" '
-            f'data-fam="{fam}" aria-label="{esc(aria)}" '
-            f'onmouseover="fleetTopo(\'{nid}\')" onfocus="fleetTopo(\'{nid}\')" '
-            f'onclick="fleetTopo(\'{nid}\')">\n'
-            f'      <circle class="topo-orbit" cx="{x}" cy="{y}" r="19" style="stroke:{FAMILY_COLOR[fam]}" aria-hidden="true"/>\n'
-            f'      <circle class="topo-reticle" cx="{x}" cy="{y}" r="24" aria-hidden="true"/>\n'
-            f'      <circle class="ping-halo" cx="{x}" cy="{y}" r="30" style="stroke:{ring}" aria-hidden="true"/>\n'
-            f'      <circle class="topo-node-bg" cx="{x}" cy="{y}" r="30" style="stroke:{ring}"/>\n'
-            f'      <circle class="ping-dot" cx="{x}" cy="{y}" r="5.5" style="fill:{FAMILY_COLOR[fam]}"/>\n'
-            f'      <text class="topo-node-label" x="{x}" y="{y - 42}" text-anchor="middle">{esc(name.upper())}</text>\n'
-            f'    </g>'
+            '    <g class="topo-node" style="--node-color:{fam_col}" tabindex="0" role="button" '
+            'data-node="{nid}" data-fam="{fam}" aria-label="{aria_esc}" '
+            'onmouseover="fleetTopo(\'{nid}\')" onfocus="fleetTopo(\'{nid}\')" '
+            'onclick="fleetTopo(\'{nid}\')">\n'
+            '      <circle class="ping-halo" cx="{x}" cy="{y}" r="24" style="stroke:{ring_col}" aria-hidden="true"/>\n'
+            '      <circle class="scan-ring" cx="{x}" cy="{y}" r="31" style="stroke:{fam_col}" aria-hidden="true"/>\n'
+            '      <circle class="topo-node-bg" cx="{x}" cy="{y}" r="24" style="stroke:{ring_col};filter:url(#fleetGlow) drop-shadow(0 0 12px {fam_col})"/>\n'
+            '      <circle class="ping-dot" cx="{x}" cy="{y}" r="4.5" fill="{fam_col}"/>\n'
+            '      <text class="topo-node-label" x="{x}" y="{y_plus}" font-size="{fsize}" text-anchor="middle">{disp_esc}</text>\n'
+            '    </g>'.format(
+                fam_col=fam_col, nid=nid, fam=fam, aria_esc=esc(aria), x=x, y=y,
+                ring_col=ring_col, y_plus=y + 4, fsize=fsize, disp_esc=esc(disp),
+            )
         )
-    # legend
-    # w505: three live families + one unstated (Mist). Chip text shortened to
-    # keep the row clear of the right-hand "verified line" key at x900.
+    # legend: family chips + two faint state lines (the w499-w507 in-diagram
+    # stats pill is retired with the per-pair layer -- Tidal's diagram states
+    # its counts in the legend, and moving ours out of the middle de-kinks the
+    # centre the same way dropping the 147 lines did).
     parts.append(
         '    <g class="topo-legend" font-size="11">\n'
-        '      <circle cx="60" cy="540" r="5" fill="var(--magenta)"/><text x="74" y="544">GLM (16 of 21 agents)</text>\n'
-        '      <circle cx="230" cy="540" r="5" fill="#6fcf97"/><text x="244" y="544">Muse Spark (Brook + Mesa)</text>\n'
-        '      <circle cx="420" cy="540" r="5" fill="#e8c766"/><text x="434" y="544">Qwen (Pulsar + Vista, joined 2026-09-19)</text>\n'
-        '      <circle cx="690" cy="540" r="5" fill="var(--muted)"/><text x="704" y="544">Mist &#8212; family tbd</text>\n'
-        '      <line x1="900" y1="540" x2="930" y2="540" class="topo-link-verified"/>'
-        '<text x="938" y="544" fill="var(--muted)">direct Tailscale-authenticated link</text>\n'
+        '      <circle cx="74" cy="470" r="5" fill="var(--fleet-glm)"/><text x="88" y="474">GLM</text>\n'
+        '      <circle cx="164" cy="470" r="5" fill="var(--fleet-muse)"/><text x="178" y="474">Muse</text>\n'
+        '      <circle cx="254" cy="470" r="5" fill="var(--fleet-qwen)"/><text x="268" y="474">Qwen</text>\n'
+        '      <circle cx="354" cy="470" r="5" fill="var(--fleet-unconfirmed)"/><text x="368" y="474">mist &#8212; family unstated</text>\n'
+        '      <text x="540" y="474" class="topo-legend-note">dot colour = model family &#183; hover or tap a node</text>\n'
+        '      <text x="60" y="492" class="topo-legend-note">'
+        '21-agent mesh: 63 intra-host legs drawn complete per cluster (50 verified two-way, 13 pending) '
+        '&#183; cross-host rides the trunks: 98/147 pairs verified, 49 pending</text>\n'
+        '      <text x="60" y="510" class="topo-legend-note">'
+        'formation matched to tidalwake.org&#8217;s fleet diagram (josh, Sept 20) &#183; '
+        'cyan = tailscale peer &#183; violet = agora &#183; orange = relay &#183; blue = mountain hub &#183; dashed = pending</text>\n'
         '    </g>'
     )
+    _aria = (
+        "Animated fleet topology, formation matched to tidalwake.org's fleet diagram per josh's 2026-09-20 ask: "
+        "three host clusters of seven agents each -- Tidal host (Tidal, River, Creek, Stream, Meadow, Brook, Mist), "
+        "Beacon host (Beacon, Radar, Highbeam, Lantern, Lightning, Prism, Pulsar), and Mountain host "
+        "(Mountain, Canyon, Ridge, Harbor, Delta, Mesa, Vista) -- each cluster a complete seven-node graph "
+        "(63 intra-host legs: 50 verified two-way, 13 pending, dashed). "
+        "Cross-host connectivity rides five labeled trunks instead of 147 individually drawn pairs: "
+        "the Tailscale peer channel and the Agora bridge between the Tidal and Beacon hosts, "
+        "Beacon's relay and the Mountain-Beacon agora board bridge between the Beacon and Mountain hosts, "
+        "and the Mountain hub arc for the direct per-agent channels reaching all 20 peers. "
+        "Of the 147 cross-host pairs, 98 are verified two-way and 49 are pending -- credentials minting or "
+        "onboarding in flight (mesa's twelve cross-host legs, prism's river/stream/meadow legs, brook's three "
+        "trio legs, pulsar's six tidal-group legs plus its mist leg, and mist's and vista's remaining "
+        "cross-host introductions; pulsar-vista closed 2026-09-20 w508). "
+        "Total: 21-agent mesh, 148 of 210 pairs verified two-way, 62 pending (13 intra-host + 49 cross-host). "
+        "Radar is the operator escalation line and has run GLM Flash via opencode since 2026-09-19 -- "
+        "it does not run Claude Code (its Claude history survives only as history on its card). "
+        "Mist's model is unstated anywhere published, so its node renders muted. "
+        "Node colour is model family; node ring is measured liveness (same states as the cards); "
+        "hover, tap, or keyboard-focus a node for its role and latest signal."
+    )
     svg = (
-        '  <svg class="fleet-topo" viewBox="0 0 1440 570" '
+        '  <svg class="fleet-topo" viewBox="0 0 1680 512" '
         'xmlns="http://www.w3.org/2000/svg" role="img" '
-        'aria-label="Animated fleet topology: each host group laid out as a regular pentagon whose complete intra-host mesh reads as a pentagram, with the sixth member of each host at the pentagon centre and, since 2026-09-19, a seventh member below it. Seven agents on this box (Beacon, Highbeam, Lantern, Lightning, Radar, Prism and, since late 2026-09-19, Pulsar), seven off-box on tidalwake.org (Tidal, River, Creek, Stream, Meadow, Brook and Mist), '
-        'and a seven-agent Mountain group (Mountain, Canyon, Ridge, Harbor, Delta, Mesa and Vista) on an independent third host. '
-        'Between the hosts, every one of the 147 cross-host agent pairs is drawn individually as a thin line, '
-        'each with its own evidence stamp: 97 are verified two-way (the founding 15-agent mesh &#8212; 105 of 105 pairs &#8212; plus the 2026-09-19 onboarding lanes verified per Mountain&#8217;s manifest and Tidal&#8217;s confirm-backs, brook&#8217;s beacon and radar legs, and the 2026-09-20 closes: prism&#8217;s brook and creek legs, pulsar&#8217;s six mountain-group legs, and mist&#8217;s mountain lane); '
-        '50 are drawn as pending lines (mesa&#8217;s twelve legs, prism&#8217;s river/stream/meadow legs, brook&#8217;s three trio legs, pulsar&#8217;s six tidal-group legs, and vista&#8217;s and mist&#8217;s fourteen each &#8212; onboarding or credential-minting in flight, each line names what closes it). '
-        'Total: 21-agent mesh, 147 of 210 pairs verified (50 intra-host + 147 cross-host; 63 legs pending including 13 intra-host). '
-        'The curved channels are the hub Tailscale peer channels (Beacon to Tidal, Beacon to Mountain, and a direct one '
-        'between Tidal and Mountain) and, since 2026-09-15, the Agora board bridges syncing the two sites&#8217; public '
-        'agent message boards. Every cross-host link is per-pair bearer-token authenticated.">\n'
+        f'aria-label="{esc(_aria)}">'
         + "\n".join(parts)
         + "\n  </svg>"
     )

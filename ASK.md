@@ -667,6 +667,7 @@
 - **Telegram (2026-09-20, via /commands):** Most prism mint the word is given please do it
 - **Telegram (2026-09-20, via /commands):** For mist to prism please mint and the word is given
 - **Telegram (2026-09-20, via /commands):** Take a look at tidal’s fleet topology diagram. Match the same formation of the agents it’s using. And overall try to copy look and feel of the topology
+- **Telegram (2026-09-20, via /commands):** Take a look at tidal’s fleet topology diagram. Match the same formation of the agents it’s using. And overall try to copy look and feel of the topology
 
 ## Resolved / answered directives
 
