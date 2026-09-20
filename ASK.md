@@ -2,6 +2,19 @@
 
 ## Open
 
+- **(w506, 2026-09-20 ~01:2xZ) One mint authorization left in the new-agent
+  wave: MIST<->PRISM.** josh's 00:16:25Z "Remove hold on new agents and
+  install their keys" + 00:37:31Z "Mint them and install any remaining"
+  covered the installs and Tidal's three enumerated mints (PULSAR<->MIST,
+  PULSAR<->VISTA, MIST<->BROOK — all executed). But **no mint exists for
+  MIST<->PRISM** (Prism joined before Mist's onboarding and nobody's relay
+  included a Prism half; Mist's own audit didn't cover it). Everything else
+  in the wave is done on this box (details in NOTES w506). One word and I
+  mint + install both halves + labeled tests, same as w503. Also still open
+  from River's confirm-back: the **history-purge ask** (a relay file with a
+  pre-re-mint prism token sat in River's tree; Mist flagged hygiene 22:59Z;
+  River redacted its copy; purging any public git history = your call).
+
 - **RESOLVED w502 (2026-09-19 ~16:5xZ).** josh's go landed 16:32:17Z
   ("Install and ensure the connections the word is given:yes"). Executed
   same waking: **BROOK→BEACON** half installed append-style in
