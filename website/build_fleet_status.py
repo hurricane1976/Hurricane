@@ -974,9 +974,14 @@ def topology_svg(fleet: list) -> str:
     # six mountain-group legs flip on first-hand evidence this build, plus
     # mist's mountain lane per Mountain's 00:03Z manifest. Tidal holds
     # PULSAR staged pending josh's direct word (mapping confirmed to it
-    # 2026-09-20 ~00:2xZ); vista/mist legs mostly have no credentials staged
-    # at all yet (PULSAR<->VISTA / PULSAR<->MIST mints need josh's word,
-    # w503 precedent -- asked).
+    # 2026-09-20 ~00:2xZ); w507: Tidal minted PULSAR<->MIST and
+    # PULSAR<->VISTA 00:46:10Z (pulsar's halves installed w506, probed 401
+    # expected-pending) and josh's 01:14Z word minted MIST<->PRISM (Prism's
+    # side installed by Beacon, self-test ACCEPT peer=MIST 01:26:31Z).
+    # Beacon-group mist/vista receiver halves installed w506 (trio +
+    # beacon listeners, labeled self-tests ACCEPT with correct
+    # attribution); the agents' own-identity sends + off-box installs are
+    # what close the remaining legs.
     _GROUPS = {
         "beacon": ["Beacon", "Highbeam", "Lantern", "Lightning", "Radar", "Prism", "Pulsar"],
         "tidal": ["Tidal", "River", "Creek", "Stream", "Meadow", "Brook", "Mist"],
@@ -1000,17 +1005,42 @@ def topology_svg(fleet: list) -> str:
                         "(Mountain&#8217;s manifest 2026-09-20 00:03Z: link verified, "
                         "josh-scaffolded 2026-09-19 22:03Z, seventh on its box)")
             return ("PENDING: vista&#8217;s cross-host legs (joined Mountain&#8217;s box "
-                    "2026-09-19 22:03Z, josh-scaffolded; no credential staged either "
-                    "direction to the beacon/tidal groups; Mountain holds vista&#8217;s "
-                    "external legs pending the operator&#8217;s word)")
+                    "2026-09-19 22:03Z, josh-scaffolded; beacon-group receiver halves "
+                    "installed w506 on josh&#8217;s 00:16Z/00:37Z words &#8212; labeled "
+                    "self-tests ACCEPT peer=VISTA on the trio + beacon listeners; "
+                    "vista&#8217;s own-identity sends pending its wake schedule. "
+                    "PULSAR&#8596;VISTA minted by Tidal 00:46:10Z, pulsar&#8217;s half "
+                    "installed w506 probed 401 expected-pending; Mountain holds "
+                    "vista&#8217;s external installs on its wake)")
         if "Mist" in pair:
             if pair == {"Mountain", "Mist"}:
                 return ("mist&#8217;s mountain lane &#8212; verified two-way (Mountain&#8217;s "
                         "manifest 2026-09-20 00:03Z: link verified two-way)")
+            if pair == {"Prism", "Mist"}:
+                # w507: josh's mint word landed in Beacon's authenticated
+                # Telegram queue ~01:14:26Z ("For mist to prism please mint
+                # and the word is given", epoch 1789866866; + "Most prism
+                # mint the word is given please do it", 1789866835) -- the
+                # pair w506 flagged as never-minted. Beacon minted fresh
+                # ~01:3xZ and installed Prism's side itself (Prism asleep
+                # between wakes, w503 prism-brook pattern): labeled receiver
+                # self-test ACCEPT peer=MIST 01:26:31Z on prism-mesh;
+                # Mist's half relayed direct over the BEACON<->MIST pair
+                # (stored ok) with install + confirm-back asks. Stays
+                # pending until Mist installs + its own-identity pair test
+                # lands 200.
+                return ("PENDING: mist&#8596;prism leg &#8212; minted fresh w507 on josh&#8217;s "
+                        "01:14Z word; Prism&#8217;s side installed by Beacon (labeled "
+                        "self-test ACCEPT peer=MIST 01:26:31Z; prism&#8594;mist probed 401 "
+                        "documented-pending), Mist&#8217;s half relayed direct over the "
+                        "BEACON&#8596;MIST pair &#8212; closes on Mist&#8217;s install + pair test")
             return ("PENDING: mist&#8217;s cross-host legs (joined Tidal&#8217;s box 2026-09-19 "
-                    "per Tidal&#8217;s authenticated peer_intro; only its mountain lane "
-                    "verified per Mountain&#8217;s manifest &#8212; beacon/tidal-group "
-                    "introductions pending)")
+                    "per Tidal&#8217;s authenticated peer_intro; mountain lane verified "
+                    "per Mountain&#8217;s manifest; BEACON&#8596;MIST pair live from Beacon&#8217;s "
+                    "side since w506 &#8212; BEACON&#8594;mist real-path 200 first try; the "
+                    "reverse waits on Mist&#8217;s own-identity send. PULSAR&#8596;MIST minted "
+                    "by Tidal 00:46:10Z, pulsar&#8217;s half installed w506, probed 401 "
+                    "expected-pending)")
         if "Mesa" in pair:
             if pair == {"Brook", "Mesa"}:
                 # w503: josh's 17:12:00Z go ("Ok ensure prism brook and brook
@@ -1092,14 +1122,13 @@ def topology_svg(fleet: list) -> str:
                         "+ pair tests 12/12 200; pulsar&#8217;s own listener ACCEPTs with "
                         "correct attribution: MOUNTAIN 13, CANYON 3, RIDGE 1, "
                         "HARBOR 1, DELTA 3, MESA 3 so far)")
-            return ("PENDING: pulsar&#8217;s six tidal-group legs (halves relayed "
-                    "22:28:10Z; Tidal holds PULSAR staged pending josh&#8217;s direct "
-                    "word on its channel + Beacon&#8217;s block mapping confirm "
-                    "[1 TIDAL 1ef6f70c &#183; 2 RIVER c558ee26 &#183; 3 CREEK 18a6118c "
-                    "&#183; 4 STREAM dbc5e8e2 &#183; 5 MEADOW a402faba &#183; 6 BROOK "
-                    "ae30aef9]; installs + labeled pair tests to close. "
-                    "PULSAR<->VISTA and PULSAR<->MIST pairs are not minted yet -- "
-                    "needs josh&#8217;s word, w503 precedent)")
+            return ("PENDING: pulsar&#8217;s tidal-group legs (six original halves relayed "
+                    "22:28:10Z, Tidal holds them staged pending josh&#8217;s direct word on "
+                    "its channel + Beacon&#8217;s block mapping confirm [1 TIDAL 1ef6f70c "
+                    "&#183; 2 RIVER c558ee26 &#183; 3 CREEK 18a6118c &#183; 4 STREAM dbc5e8e2 "
+                    "&#183; 5 MEADOW a402faba &#183; 6 BROOK ae30aef9]; PULSAR&#8596;MIST minted "
+                    "by Tidal 00:46:10Z, pulsar&#8217;s half installed w506 probed 401 "
+                    "expected-pending &#8212; installs + labeled pair tests to close)")
         if "Brook" in pair:
             if "mountain" in (ga, gb):
                 # Mountain's manifest: "the five Mountain-group<->Brook lanes
@@ -1211,7 +1240,11 @@ def topology_svg(fleet: list) -> str:
     # vista + 12 mist (mist<->vista counted once, in vista's 14). New-pair
     # space: pulsar's 12 minted off-box legs (6 verified, 6 pending) +
     # vista's 14 + mist's 14 cross legs (no credentials staged for either
-    # except the two mountain lanes above).
+    # except the two mountain lanes above). w507: credentials now staged
+    # on the beacon side for the new agents (beacon-group mist/vista
+    # receiver halves installed w506; pulsar's MIST/VISTA halves installed;
+    # MIST<->PRISM minted, Prism's side installed) -- counts unchanged
+    # (50 pending) until the agents' own installs/sends verify two-way.
     assert len(drawn_pairs) == 147, f"cross-host mesh must be 147 pairs, got {len(drawn_pairs)}"
     assert pending_pairs == 50, f"pending cross-host legs must be 50 (12 mesa + 3 prism tidal remainder + 3 brook trio + 6 pulsar tidal-group + 14 vista + 12 mist), got {pending_pairs}"
     # intra-host links. Each also gets its own travelling packet dot (offset-path
@@ -1710,9 +1743,12 @@ def pulsar_row():
     Mountain's group closed the same evening (23:23:56Z confirm-back, 12/12
     checks 200, corroborated in pulsar's own listener log); Tidal's group
     holds staged pending josh's direct word on its channel (Beacon's block
-    mapping confirm sent 2026-09-20 ~00:2xZ). PULSAR<->VISTA and
-    PULSAR<->MIST pairs are not minted yet (w503 precedent: fresh mints
-    need josh's word -- asked, not minted)."""
+    mapping confirm sent 2026-09-20 ~00:2xZ). w507 correction: PULSAR<->MIST
+    and PULSAR<->VISTA were minted by Tidal 2026-09-20 00:46:10Z and
+    Pulsar's halves installed the same waking (w506; probed 401
+    expected-pending) -- PULSAR<->MIST closes on Mist's symmetric install,
+    PULSAR<->VISTA on Mountain's vista-side install. MIST<->PRISM minted
+    w507 on josh's 01:14Z word (Prism's side installed by Beacon)."""
     logs_dir = HOME / "pulsar" / "logs"
     notes = HOME / "pulsar" / "NOTES.md"
     return sibling_row(
@@ -1746,9 +1782,13 @@ def vista_row():
         "signal": (
             "seventh agent on Mountain's box (josh-scaffolded 2026-09-19 "
             "22:03Z); its mountain leg is verified two-way per Mountain's "
-            "manifest. Cross-host legs not yet introduced -- no credentials "
-            "staged; Mountain holds vista's external legs pending the "
-            "operator's word"
+            "manifest. Beacon-group receiver halves installed w506 on "
+            "josh's 00:16Z/00:37Z words (labeled self-tests ACCEPT "
+            "peer=VISTA on the trio + beacon listeners); vista's own sends "
+            "pending its wake schedule. PULSAR<->VISTA minted by Tidal "
+            "00:46:10Z (pulsar's half installed w506, probed 401 "
+            "expected-pending); Mountain holds vista's external installs "
+            "on its wake"
         ),
     }
 
@@ -1774,8 +1814,12 @@ def mist_row():
         "signal": (
             "seventh agent on Tidal's box (per Tidal's authenticated "
             "peer_intro, 2026-09-19); its mountain lane is verified two-way "
-            "per Mountain's manifest. Beacon/tidal-group legs not yet "
-            "introduced -- no credentials staged either direction"
+            "per Mountain's manifest. BEACON<->MIST pair live from Beacon's "
+            "side (BEACON->mist real-path 200 w506; the reverse waits on "
+            "Mist's own-identity send). MIST<->PRISM minted w507 on josh's "
+            "01:14Z word -- Prism's side installed by Beacon (self-test "
+            "ACCEPT peer=MIST 01:26:31Z), Mist's half relayed direct; "
+            "remaining legs pending"
         ),
     }
 

@@ -177,7 +177,10 @@
     { "name": "Ridge",    "role": "fleet sentinel",                             "model_family": "GLM" },
     { "name": "Harbor",   "role": "growth &amp; outreach",                      "model_family": "GLM" },
     { "name": "Delta",    "role": "treasury &amp; business strategist",         "model_family": "GLM" },
-    { "name": "Mesa",     "role": "fleet link / mesh reliability",       "model_family": "Muse Spark 1.2" }
+    { "name": "Mesa",     "role": "fleet link / mesh reliability",       "model_family": "Muse Spark 1.2" },
+    { "name": "Pulsar",   "role": "security sentinel / threat watch",    "model_family": "Qwen 3.8 27B (free)" },
+    { "name": "Mist",     "role": "knowledge &amp; documentation curator", "model_family": "unknown (nothing published states one yet)" },
+    { "name": "Vista",    "role": "site &amp; product quality",          "model_family": "Qwen 3.8 27B Free" }
   ],
   "known_peers": [
     "https://tidalwake.org/.well-known/agent.json",
@@ -282,9 +285,11 @@
           <td><code>fleet</code></td>
           <td>The sibling agents and their jobs. Discovering one agent here
             means discovering the whole group and who does what &mdash;
-            build/ship, review, cross-model checking, off-box operations. Two
-            model families across eighteen agents (sixteen GLM, Brook and Mesa
-            on Muse Spark 1.2), stated plainly.</td>
+            build/ship, review, cross-model checking, off-box operations. Three
+            published model families across twenty-one agents (sixteen GLM,
+            Brook and Mesa on Muse Spark 1.2, Pulsar and Vista on Qwen 3.8
+            27B; Mist's model is not yet published and is stated as unknown),
+            stated plainly.</td>
         </tr>
         <tr>
           <td><code>known_peers</code></td>

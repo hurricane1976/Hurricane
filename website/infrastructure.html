@@ -318,8 +318,9 @@
       <span style="color:var(--accent)">Amber dashes</span>: the
       <code>beacon-peer</code> systemd service, bound to the Tailscale
       interface only, carrying bearer-token-authenticated envelopes over a
-      WireGuard mesh to two independent sibling hosts &mdash; eight more
-      agents, two model families, no shared filesystem, no public port.
+      WireGuard mesh to two independent sibling hosts &mdash; fourteen more
+      agents, three published model families (plus one agent whose model
+      isn't published), no shared filesystem, no public port.
     </p>
     <div class="diagram-legend">
       <span style="--sw: var(--accent-2);">serving path</span>
@@ -389,7 +390,7 @@
       <p style="margin-bottom:0;">
         The ten remaining fleet members run on two other operators' hosts and
         appear only over the mesh &mdash; see <a href="#sec-mesh">the inter-host
-        network</a>. Live health for all eighteen is on
+        network</a>. Live health for all twenty-one is on
         <a href="/fleet-status.html">the fleet operations center</a>; per-run
         cost and tokens are on <a href="/observability.html">observability</a>.
       </p>
@@ -516,12 +517,13 @@
         <h2>The inter-host network</h2>
       </div>
       <p>
-        The fleet is <strong>eighteen agents across three independent servers</strong>,
-        one operator, two model families (16 GLM + 2 Muse Spark). This host runs
-        Beacon, Highbeam, Lantern, Lightning, Radar and Prism;
+        The fleet is <strong>twenty-one agents across three independent servers</strong>,
+        one operator, three published model families (16 GLM + 2 Muse Spark +
+        2 Qwen 3.8 27B; Mist's model is not published anywhere yet). This host runs
+        Beacon, Highbeam, Lantern, Lightning, Radar, Prism and Pulsar;
         <code>tidalwake.org</code> runs <strong>Tidal, River, Creek, Stream,
-        Meadow and Brook</strong>; <code>mountainwake.org</code> runs
-        <strong>Mountain, Canyon, Ridge, Harbor, Delta and Mesa</strong>. They
+        Meadow, Brook and Mist</strong>; <code>mountainwake.org</code> runs
+        <strong>Mountain, Canyon, Ridge, Harbor, Delta, Mesa and Vista</strong>. They
         share no filesystem and no database.
       </p>
       <p>

@@ -2,18 +2,35 @@
 
 ## Open
 
-- **(w506, 2026-09-20 ~01:2xZ) One mint authorization left in the new-agent
-  wave: MIST<->PRISM.** josh's 00:16:25Z "Remove hold on new agents and
-  install their keys" + 00:37:31Z "Mint them and install any remaining"
-  covered the installs and Tidal's three enumerated mints (PULSAR<->MIST,
-  PULSAR<->VISTA, MIST<->BROOK — all executed). But **no mint exists for
-  MIST<->PRISM** (Prism joined before Mist's onboarding and nobody's relay
-  included a Prism half; Mist's own audit didn't cover it). Everything else
-  in the wave is done on this box (details in NOTES w506). One word and I
-  mint + install both halves + labeled tests, same as w503. Also still open
-  from River's confirm-back: the **history-purge ask** (a relay file with a
-  pre-re-mint prism token sat in River's tree; Mist flagged hygiene 22:59Z;
-  River redacted its copy; purging any public git history = your call).
+- **(still open from River's confirm-back, carried from w506) The
+  history-purge ask:** a relay file with a pre-re-mint prism token sat in
+  River's tree; Mist flagged hygiene 22:59Z; River redacted its copy; purging
+  any public git history = your call.
+
+- **RESOLVED w507 (2026-09-20 ~01:2x–01:4xZ) — the MIST<->PRISM mint.** josh's
+  word landed in my authenticated Telegram queue ~01:14:26Z: "For mist to
+  prism please mint and the word is given" + "Most prism mint the word is
+  given please do it" (epochs 1789866835 + 1789866866). Executed same waking,
+  w503 prism↔brook pattern: minted fresh (never logged/printed); **prism
+  side installed** (NAME=MIST sender + receiver blocks appended to
+  prism/keys/{peers,inbound}.env, backups `.bak-pre-mist-w507`), prism-mesh
+  restarted active, **labeled receiver self-test ACCEPT peer=MIST 01:26:31Z**
+  (correct attribution), real-path prism->mist **401 documented-pending**
+  (Mist hasn't installed). MIST-side half **relayed direct to Mist over the
+  BEACON<->MIST pair (stored ok)** with install instructions + confirm-back
+  ask; TIDAL FYI'd for its host credential records. Prism's 06:55Z wake gets
+  a follow-up note (supersedes w506's "do not install anything for MIST").
+  Leg flips to verified on Mist's install + pair test.
+
+- **(w506, original ask kept for the record) One mint authorization left in
+  the new-agent wave: MIST<->PRISM.** josh's 00:16:25Z "Remove hold on new
+  agents and install their keys" + 00:37:31Z "Mint them and install any
+  remaining" covered the installs and Tidal's three enumerated mints
+  (PULSAR<->MIST, PULSAR<->VISTA, MIST<->BROOK — all executed). But **no
+  mint existed for MIST<->PRISM** (Prism joined before Mist's onboarding and
+  nobody's relay included a Prism half; Mist's own audit didn't cover it).
+  Everything else in the wave was done on that box (details in NOTES w506).
+  → **ANSWERED + EXECUTED w507 — see the RESOLVED bullet above.**
 
 - **RESOLVED w502 (2026-09-19 ~16:5xZ).** josh's go landed 16:32:17Z
   ("Install and ensure the connections the word is given:yes"). Executed
@@ -647,6 +664,9 @@
   — **Done w502 (2026-09-19 ~16:3xZ):** Brook's BEACON/RADAR halves installed + self-tested (see the RESOLVED w502 bullet below).
 - **Telegram (2026-09-19, via /commands):** Ok ensure prism brook and brook mesa are stood up
   — **Done w503 (2026-09-19 ~17:1x–17:3xZ):** both pairs minted fresh on this go; prism side installed + receiver self-test ACCEPT peer=BROOK; halves relayed to Tidal (brook side, both pairs) + Mountain (mesa side); real closes land on their installs + labeled pair tests + confirm-backs (see the RESOLVED w503 bullet below).
+- **Telegram (2026-09-20, via /commands):** Most prism mint the word is given please do it
+- **Telegram (2026-09-20, via /commands):** For mist to prism please mint and the word is given
+- **Telegram (2026-09-20, via /commands):** Take a look at tidal’s fleet topology diagram. Match the same formation of the agents it’s using. And overall try to copy look and feel of the topology
 
 ## Resolved / answered directives
 
