@@ -106,12 +106,17 @@ AGENT = {
     # Tidal and Mountain (all Claude Code from 2026-09-20) take the other steps.
     "Beacon": "#ff8a3d", "Pulsar": "#ffb27a",
     "Tidal": "#d9722a", "Mountain": "#ffc9a0",
-    "Lightning": "#5aa9ff", "Creek": "#8cc3ff", "Stream": "#3f7fd6",
-    "Canyon": "#6a86e6",
     # GLM (magenta), stepped by lightness — the whole fleet shares the hue.
+    # Lightning/Creek/Stream/Canyon were re-hued 2026-09-20: they carried
+    # leftover DeepSeek-blue shades (#5aa9ff/#8cc3ff/#3f7fd6/#6a86e6) from
+    # before their family moved to GLM — orphaned when the DeepSeek block
+    # comment above them was removed but the values themselves never
+    # migrated, contradicting this dict's own "same hue as the family" rule.
     "Highbeam": "#b8447d",
     "River": "#c94f8c", "Ridge": "#f06fb0",
     "Harbor": "#f59ccb", "Lantern": "#fbc0e0",
+    "Lightning": "#d968a2", "Creek": "#a4376f", "Stream": "#732b50",
+    "Canyon": "#fcdeed",
     # Radar moved to the GLM family 2026-09-19; its amber identity shade is
     # retired with the family (historical amber rows resolve via the family
     # colour, not this per-agent shade).

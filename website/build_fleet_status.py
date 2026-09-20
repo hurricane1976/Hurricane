@@ -65,6 +65,7 @@ page can be at most one Beacon wake-cycle stale, same contract as status.html.
 Run standalone or via deploy.sh.
 """
 import json
+import math
 import re
 import subprocess
 import zlib
@@ -1262,13 +1263,36 @@ def topology_svg(fleet: list) -> str:
         "Unconfirmed": "var(--fleet-unconfirmed)",
     }
 
+    # Beacon's own ambient "lighthouse sweep" -- a slow-rotating wedge of
+    # amber light, centred on Beacon's own node (this page's host), the same
+    # motif as the homepage hero (LighthouseScene.jsx .lh-beam). Screened
+    # (mix-blend-mode) so it only ever brightens, never redraws the fleet-
+    # voted line/node colours it passes over -- w515 "moving colors" pass.
+    _bx, _by = TOPO_POS["Beacon"]
+    _sweep_r = 1500
+    _sweep_half_deg = 9
+    _t1 = math.radians(90 - _sweep_half_deg)
+    _t2 = math.radians(90 + _sweep_half_deg)
+    _sx1, _sy1 = _bx + _sweep_r * math.cos(_t1), _by + _sweep_r * math.sin(_t1)
+    _sx2, _sy2 = _bx + _sweep_r * math.cos(_t2), _by + _sweep_r * math.sin(_t2)
+
     parts.append(
         '    <defs>\n'
         '      <filter id="fleetGlow" x="-60%" y="-60%" width="220%" height="220%">\n'
         '        <feGaussianBlur in="SourceGraphic" stdDeviation="3.2" result="blur"/>\n'
         '        <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>\n'
         '      </filter>\n'
+        f'      <linearGradient id="beaconSweepGrad" x1="{_bx}" y1="{_by}" x2="{_bx}" y2="{_by + _sweep_r}" gradientUnits="userSpaceOnUse">\n'
+        '        <stop offset="0%" stop-color="#ff8a3d" stop-opacity="0.12"/>\n'
+        '        <stop offset="45%" stop-color="#ff8a3d" stop-opacity="0.04"/>\n'
+        '        <stop offset="100%" stop-color="#ff8a3d" stop-opacity="0"/>\n'
+        '      </linearGradient>\n'
         '    </defs>'
+    )
+    parts.append(
+        f'    <g class="beacon-sweep" style="transform-origin:{_bx}px {_by}px" aria-hidden="true">\n'
+        f'      <path d="M{_bx},{_by} L{_sx1:.1f},{_sy1:.1f} L{_sx2:.1f},{_sy2:.1f} Z" fill="url(#beaconSweepGrad)"/>\n'
+        '    </g>'
     )
     # host frames + labels above them + the expansion-wave banner (Tidal's
     # exact frame geometry: 380x370 at x=110/650/1190, y=110).
@@ -1356,6 +1380,12 @@ def topology_svg(fleet: list) -> str:
         parts.append(
             f'    <path class="pulse-line {_cls}" d="{_d}" fill="none" stroke="{_col}">'
             f'<title>{_tip}</title></path>'
+        )
+        # w515: a travelling bright pulse of the channel's own colour riding
+        # the same curve -- literal "moving colors", additive over the
+        # existing dim dash-march line above (unchanged).
+        parts.append(
+            f'    <path class="chan-photon" d="{_d}" fill="none" style="stroke:{_col};color:{_col}" aria-hidden="true"/>'
         )
         parts.append(
             f'    <text class="topo-chan-label" x="{_lx}" y="{_ly}" text-anchor="middle">{_label}</text>'

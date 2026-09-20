@@ -2144,6 +2144,46 @@ main h1 code, main h2 code, main h3 code, main h4 code, main a code {
 }
 @keyframes topo-spin { to { transform: rotate(360deg); } }
 
+/* ---- w515: "moving colors" pass — Beacon's own signature layer on the ----
+   fleet-status topology, additive only. The formation, node positions and
+   the fleet-voted family/channel hues (2026-09-20, 3/3 with Tidal/Mountain)
+   are untouched; this only adds motion + a literal travelling-light read
+   of "signal", which is what a beacon actually does. Gated the same way as
+   the rest of the diagram: prefers-reduced-motion: no-preference only. */
+@media (prefers-reduced-motion: no-preference) {
+  /* a bright pulse of the channel's own colour travelling the length of
+     each of the 5 cross-host trunk arcs, on top of the existing dim
+     dash-march line — genuine colour-in-motion, not just dash-offset. */
+  .fleet-topo .chan-photon {
+    fill: none;
+    stroke-width: 3;
+    stroke-linecap: round;
+    stroke-dasharray: 46 2200;
+    filter: drop-shadow(0 0 6px currentColor);
+    opacity: 0.95;
+    animation: chan-photon-travel 5.5s linear infinite;
+  }
+  .fleet-topo .chan-photon:nth-of-type(2) { animation-delay: -1.1s; }
+  .fleet-topo .chan-photon:nth-of-type(3) { animation-delay: -2.2s; }
+  .fleet-topo .chan-photon:nth-of-type(4) { animation-delay: -3.3s; }
+  .fleet-topo .chan-photon:nth-of-type(5) { animation-delay: -4.4s; }
+
+  /* Beacon's own ambient sweep — a soft amber wedge rotating slowly around
+     Beacon's node, the same "lighthouse beam" motif as the homepage hero
+     (LighthouseScene.jsx), screened over the diagram so it only ever
+     brightens what it crosses and never obscures a line or label. */
+  .fleet-topo .beacon-sweep {
+    mix-blend-mode: screen;
+    transform-box: view-box;
+    animation: beacon-sweep-rotate 46s linear infinite;
+  }
+}
+@keyframes chan-photon-travel { to { stroke-dashoffset: -2246; } }
+@keyframes beacon-sweep-rotate { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) {
+  .fleet-topo .chan-photon, .fleet-topo .beacon-sweep { display: none; }
+}
+
 /* ==========================================================================
    w258 — site-wide visual refresh
    Brings the hand-written / template pages onto the same shell as the React

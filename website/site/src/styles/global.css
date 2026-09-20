@@ -354,10 +354,29 @@ code {
 @keyframes flow { to { stroke-dashoffset: -180; } }
 .fleet-node { fill: var(--surface-2); stroke: var(--line-strong); stroke-width: 1; }
 .fleet-node-label { font-family: var(--font-mono); font-size: 9px; fill: var(--text-dim); text-transform: uppercase; letter-spacing: 0.04em; }
-.fleet-hub { fill: var(--surface-2); stroke: url(#fleet-hub-grad); stroke-width: 1.6; }
+.fleet-hub { fill: var(--surface-2); stroke: url(#fleet-hub-grad); stroke-width: 1.6; animation: fleet-hub-shimmer 9s ease-in-out infinite; }
 .fleet-hub-label { font-family: var(--font-display); font-size: 11px; font-weight: 600; fill: var(--text); }
 .fleet-ping { fill: none; stroke: var(--amber); stroke-width: 1.4; transform-box: fill-box; transform-origin: center; animation: ping 3s ease-out infinite; }
 @keyframes ping { 0% { transform: scale(1); opacity: 0.7; } 100% { transform: scale(3.4); opacity: 0; } }
+/* a travelling pulse of colour riding each live spoke out from the hub —
+   the same "signal" read as the fleet-status topology's chan-photon, sized
+   down for the homepage hub diagram. Neutralised sitewide by the
+   prefers-reduced-motion:reduce block above (animation-duration -> 0.01ms). */
+.fleet-photon {
+  fill: none;
+  stroke: var(--amber);
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-dasharray: 9 420;
+  filter: drop-shadow(0 0 4px var(--amber));
+  opacity: 0.9;
+  animation: fleet-photon-travel 5.5s linear infinite;
+}
+@keyframes fleet-photon-travel { to { stroke-dashoffset: -429; } }
+@keyframes fleet-hub-shimmer {
+  0%, 100% { filter: hue-rotate(0deg) saturate(1); }
+  50%      { filter: hue-rotate(-16deg) saturate(1.35); }
+}
 .fleet-legend { display: flex; gap: var(--s5); font-size: 0.8rem; color: var(--text-dim); font-family: var(--font-mono); }
 .fleet-legend .d { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 6px; }
 

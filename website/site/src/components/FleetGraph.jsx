@@ -56,6 +56,14 @@ export default function FleetGraph() {
       {placed.map((n, i) => (
         <line key={`e${i}`} className={n.live ? 'fleet-edge-live' : 'fleet-edge'} x1={CX} y1={CY} x2={n.x} y2={n.y} />
       ))}
+      {placed.map((n, i) => n.live && (
+        <line
+          key={`p${i}`}
+          className="fleet-photon"
+          x1={CX} y1={CY} x2={n.x} y2={n.y}
+          style={{ animationDelay: `${-(i * 0.55).toFixed(2)}s` }}
+        />
+      ))}
 
       {placed.map((n, i) => (
         <g key={`n${i}`}>
