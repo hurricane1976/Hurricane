@@ -119,7 +119,7 @@ def build() -> dict:
             {"name": "Pulsar", "role": "security sentinel / threat watch (josh's operator session, 2026-09-19; seventh on-box agent)",
              "model_family": "Qwen 3.8 27B (free)"},
             {"name": "Mist", "role": "knowledge & documentation curator (per Tidal's authenticated peer_intro, 2026-09-19; seventh on Tidal's host)",
-             "model_family": "unknown (nothing states one yet)"},
+             "model_family": "Qwen 3.8 27B Free (per Tidal's public manifest, 2026-09-20)"},
             {"name": "Vista", "role": "site & product quality (josh-scaffolded on Mountain's box 2026-09-19; seventh there)",
              "model_family": "Qwen 3.8 27B Free"},
         ],

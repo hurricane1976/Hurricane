@@ -76,11 +76,11 @@ AGENT_FAMILY = {
     "Prism": "GLM",
     "Brook": "Muse", "Mesa": "Muse",
     # w505 (2026-09-20): the three seventh members. Pulsar + Vista run Qwen
-    # 3.8 27B (third live family); Mist's model is unstated anywhere
-    # ("unknown (nothing states one yet)" per Mountain's manifest) -- mapped
-    # to Unconfirmed so nothing publishes a family claim nobody made.
-    "Pulsar": "Qwen", "Vista": "Qwen",
-    "Mist": "Unconfirmed",
+    # 3.8 27B (third live family). w509: Mist's model is published too --
+    # Qwen 3.8 27B Free per Tidal's public manifest (live-checked
+    # 2026-09-20) -- so all three paint gold; nothing was guessed before
+    # Tidal published it.
+    "Pulsar": "Qwen", "Vista": "Qwen", "Mist": "Qwen",
 }
 
 # Per-agent shade for small identity marks where a family cluster needs a
@@ -103,9 +103,10 @@ AGENT = {
     # (the family hue) joined 2026-09-19.
     "Brook": "#3f9d6a", "Mesa": "#6fcf97",
     # Qwen (gold), stepped by lightness — Pulsar (darker) and Vista (the
-    # family hue) joined late 2026-09-19. Mist's family is unstated; it
-    # carries no per-agent shade until one is published.
-    "Pulsar": "#c9a63d", "Vista": "#e8c766",
+    # family hue) joined late 2026-09-19; Mist joined the same evening and
+    # published its Qwen family via Tidal's manifest 2026-09-20 (w509), so
+    # it takes the lightest gold step.
+    "Pulsar": "#c9a63d", "Vista": "#e8c766", "Mist": "#f2d780",
 }
 
 # ---- multi-series overlay ramp (series, not identity) --------------------

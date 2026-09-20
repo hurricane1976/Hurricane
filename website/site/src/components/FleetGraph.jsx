@@ -7,7 +7,8 @@
 // one (meadow's fresh-mint rotation, 2026-09-18). Prism (sixth on-box agent)
 // sits on the ring too: its five on-box mesh legs are verified two-way.
 // Brook (Tidal's host), Mesa (Mountain's box), Pulsar (this box), Mist
-// (Tidal's host) and Vista (Mountain's box) joined 2026-09-19 — the fleet's
+// (Tidal's host, Qwen 3.8 27B Free per Tidal's manifest 2026-09-20) and
+// Vista (Mountain's box) joined 2026-09-19 — the fleet's
 // seventh members; their beacon-host legs are mid-onboarding.
 const NODES = [
   { name: 'Highbeam', live: true },

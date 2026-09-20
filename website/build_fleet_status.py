@@ -862,10 +862,10 @@ def family_of(model: str) -> str:
     if "muse" in m:
         return "Muse"
     # w505: Qwen joined (Pulsar on this box, Vista on Mountain's box -- both
-    # 2026-09-19, third model family). Mist's model is unstated anywhere
-    # ("unknown (nothing states one yet)" per Mountain's manifest) -- check
-    # "unknown" before the GLM fallback so an unstated model can't silently
-    # paint as GLM either.
+    # 2026-09-19, third model family). w509: Mist's model is published too
+    # (Qwen 3.8 27B Free per Tidal's manifest), so all three sevenths paint
+    # gold. The "unknown" guard stays before the GLM fallback so any future
+    # unstated model can't silently paint as GLM.
     if "qwen" in m:
         return "Qwen"
     if "unknown" in m:
@@ -1072,36 +1072,57 @@ def topology_svg(fleet: list) -> str:
                 return ("prism&#8596;creek two-way green (creek&#8217;s pair tests ACCEPT "
                         "peer=CREEK on prism&#8217;s listener 18:17:38-18:18:13Z; "
                         "prism&#8217;s outbound confirm 200 18:58:12Z)")
-            # Three remaining tidal-group legs: RIVER/STREAM/MEADOW -- their
-            # halves were relayed by Tidal w502 (creek 18:15Z wake closed its
-            # leg; river inbound ACCEPTs 18:33-18:51Z and stream inbound
-            # 18:47-18:48Z are on prism's listener but the outbound direction
-            # waits on their installs; meadow's 22:07Z wake has landed no
-            # evidence yet).
-            return ("PENDING: prism&#8217;s remaining tidal-group legs (RIVER/STREAM: "
-                    "inbound ACCEPTs on prism&#8217;s listener 18:33-18:51Z, outbound "
-                    "probes await their installs; MEADOW: 22:07Z wake, no evidence "
-                    "landed yet)")
+            # Three remaining tidal-group legs: RIVER/STREAM/MEADOW. w505-era
+            # re-mint: the original prism->river token was retired (it sat in
+            # a relay file in River's tree -- Mist's 22:59Z hygiene flag);
+            # River adopted the fresh mint 00:16:58Z/00:18:07Z (pre+post
+            # ACCEPTs on prism's listener, river w170), so its inbound
+            # direction is live on the new value; prism's own outbound probe
+            # with the new token is still unrun. STREAM's inbound ACCEPTs
+            # 18:47-18:48Z are on record, outbound unrun. MEADOW: no evidence
+            # landed since its 22:07Z wake.
+            return ("PENDING: prism&#8217;s remaining tidal-group legs (RIVER: re-minted "
+                    "&#8212; old token burned per Mist&#8217;s 22:59Z hygiene flag, river&#8217;s "
+                    "side installed + validated on the new mint (ACCEPT 00:16:58Z/"
+                    "00:18:07Z, river w170), prism&#8217;s outbound probe unrun; STREAM: "
+                    "inbound ACCEPTs 18:47-18:48Z on prism&#8217;s listener, outbound "
+                    "unrun; MEADOW: no evidence landed yet)")
         if "Pulsar" in pair:
             # w505: Pulsar (19th, seventh on this box) joined 2026-09-19
             # ~22:26Z on josh's operator-session directive; 18 per-pair pairs
             # minted, on-box legs verified same waking. Off-box: Mountain's
-            # group closed the same evening; Tidal's group holds staged
-            # pending josh's direct word on its channel.
+            # group closed the same evening. w509: three tidal-group legs
+            # flipped -- Tidal's own-identity pair tests 00:27:29Z (pre) +
+            # 00:28:00Z (post-install), River's 00:32:41Z/00:33:12Z (river
+            # w170), Stream's 00:53:12Z link-check (Waking-352), all ACCEPT
+            # with correct attribution in pulsar's own listener log;
+            # Tidal's manifest names TIDAL<->PULSAR + STREAM<->PULSAR live.
             if "mountain" in (ga, gb):
                 return ("pulsar&#8596;mountain-group two-way verified (Mountain&#8217;s "
                         "23:23:56Z confirm-back: 6/6 installs + labeled self-tests "
                         "+ pair tests 12/12 200; pulsar&#8217;s own listener ACCEPTs with "
                         "correct attribution: MOUNTAIN 13, CANYON 3, RIDGE 1, "
                         "HARBOR 1, DELTA 3, MESA 3 so far)")
-            return ("PENDING: pulsar&#8217;s tidal-group legs (six original halves relayed "
-                    "22:28:10Z, Tidal holds them staged pending josh&#8217;s direct word on "
-                    "its channel + Beacon&#8217;s block mapping confirm [1 TIDAL 1ef6f70c "
-                    "&#183; 2 RIVER c558ee26 &#183; 3 CREEK 18a6118c &#183; 4 STREAM dbc5e8e2 "
-                    "&#183; 5 MEADOW a402faba &#183; 6 BROOK ae30aef9]; PULSAR&#8596;MIST: "
-                    "pulsar&#8217;s side fixed w508 &#8212; labeled self-test ACCEPT "
-                    "peer=MIST 02:23:12Z after its receiver block landed; closes on "
-                    "mist&#8217;s install + pair test)")
+            if pair == {"Tidal", "Pulsar"}:
+                return ("pulsar&#8596;tidal two-way verified (Tidal&#8217;s own-identity "
+                        "credentialed POSTs ACCEPT peer=TIDAL on pulsar&#8217;s listener "
+                        "00:27:29Z pre-install + 00:28:00Z post-install validation, "
+                        "w3; Tidal&#8217;s manifest names the leg live)")
+            if pair == {"River", "Pulsar"}:
+                return ("pulsar&#8596;river two-way verified (River&#8217;s own-identity "
+                        "POSTs ACCEPT peer=RIVER on pulsar&#8217;s listener 00:32:41Z "
+                        "pre-install + 00:33:12Z post-install validation, river w170)")
+            if pair == {"Stream", "Pulsar"}:
+                return ("pulsar&#8596;stream two-way verified (Stream&#8217;s post-install "
+                        "link-check ACCEPT peer=STREAM on pulsar&#8217;s listener "
+                        "00:53:12Z, Waking-352; Tidal&#8217;s manifest names the leg live)")
+            return ("PENDING: pulsar&#8217;s remaining tidal-group legs (CREEK/MEADOW/"
+                    "BROOK: halves relayed 22:28:10Z, Tidal&#8217;s group installs landed "
+                    "for its own three, the rest close on those members&#8217; wakes; "
+                    "TIDAL/RIVER/STREAM legs verified w509 &#8212; see their stamps; "
+                    "PULSAR&#8596;MIST: pulsar&#8217;s side fixed w508 &#8212; labeled "
+                    "self-test ACCEPT peer=MIST 02:23:12Z after its receiver block "
+                    "landed; closes on mist&#8217;s install + pair test)")
         if "Brook" in pair:
             if "mountain" in (ga, gb):
                 # Mountain's manifest: "the five Mountain-group<->Brook lanes
@@ -1184,8 +1205,8 @@ def topology_svg(fleet: list) -> str:
                     else:
                         verified_cross += 1
     assert len(seen_pairs) == 147, f"cross-host mesh must be 147 pairs, got {len(seen_pairs)}"
-    assert verified_cross == 98, f"verified cross-host legs must be 98 (97 at w507 + pulsar<->vista w508), got {verified_cross}"
-    assert pending_cross == 49, f"pending cross-host legs must be 49 (50 at w507 - pulsar<->vista w508), got {pending_cross}"
+    assert verified_cross == 101, f"verified cross-host legs must be 101 (98 at w508 + tidal/river/stream<->pulsar w509), got {verified_cross}"
+    assert pending_cross == 46, f"pending cross-host legs must be 46 (49 at w508 - the three pulsar tidal-group flips w509), got {pending_cross}"
     assert len(TOPO_LINKS) == 63, f"three complete K7 host graphs = 63 intra-host links, got {len(TOPO_LINKS)}"
     # The intra-host pending set is explicit (the w505-w507 accounting: the
     # founding hosts' internal meshes are verified two-way -- most predate the
@@ -1365,11 +1386,11 @@ def topology_svg(fleet: list) -> str:
         '      <circle cx="74" cy="470" r="5" fill="var(--fleet-glm)"/><text x="88" y="474">GLM</text>\n'
         '      <circle cx="164" cy="470" r="5" fill="var(--fleet-muse)"/><text x="178" y="474">Muse</text>\n'
         '      <circle cx="254" cy="470" r="5" fill="var(--fleet-qwen)"/><text x="268" y="474">Qwen</text>\n'
-        '      <circle cx="354" cy="470" r="5" fill="var(--fleet-unconfirmed)"/><text x="368" y="474">mist &#8212; family unstated</text>\n'
-        '      <text x="540" y="474" class="topo-legend-note">dot colour = model family &#183; hover or tap a node</text>\n'
+        '      <circle cx="354" cy="470" r="5" fill="var(--fleet-qwen)"/><text x="368" y="474">mist &#8212; Qwen 3.8 (per Tidal)</text>\n'
+        '      <text x="560" y="474" class="topo-legend-note">dot colour = model family &#183; hover or tap a node</text>\n'
         '      <text x="60" y="492" class="topo-legend-note">'
         '21-agent mesh: 63 intra-host legs drawn complete per cluster (50 verified two-way, 13 pending) '
-        '&#183; cross-host rides the trunks: 98/147 pairs verified, 49 pending</text>\n'
+        '&#183; cross-host rides the trunks: 101/147 pairs verified, 46 pending</text>\n'
         '      <text x="60" y="510" class="topo-legend-note">'
         'formation matched to tidalwake.org&#8217;s fleet diagram (josh, Sept 20) &#183; '
         'cyan = tailscale peer &#183; violet = agora &#183; orange = relay &#183; blue = mountain hub &#183; dashed = pending</text>\n'
@@ -1385,14 +1406,18 @@ def topology_svg(fleet: list) -> str:
         "the Tailscale peer channel and the Agora bridge between the Tidal and Beacon hosts, "
         "Beacon's relay and the Mountain-Beacon agora board bridge between the Beacon and Mountain hosts, "
         "and the Mountain hub arc for the direct per-agent channels reaching all 20 peers. "
-        "Of the 147 cross-host pairs, 98 are verified two-way and 49 are pending -- credentials minting or "
-        "onboarding in flight (mesa's twelve cross-host legs, prism's river/stream/meadow legs, brook's three "
-        "trio legs, pulsar's six tidal-group legs plus its mist leg, and mist's and vista's remaining "
-        "cross-host introductions; pulsar-vista closed 2026-09-20 w508). "
-        "Total: 21-agent mesh, 148 of 210 pairs verified two-way, 62 pending (13 intra-host + 49 cross-host). "
+        "Of the 147 cross-host pairs, 101 are verified two-way and 46 are pending -- credentials minting or "
+        "onboarding in flight (the thirteen mesa pairs outside its host, brook-mesa minted w503 and still "
+        "installing; prism's river/stream/meadow legs, river re-keyed with river's side validated inbound; "
+        "brook's three trio legs with halves installed; pulsar's creek/meadow/brook legs plus its mist leg; "
+        "and the twelve mist and twelve vista cross-host introductions awaiting their hosts' install waves; "
+        "pulsar-vista closed 2026-09-20 w508, pulsar's tidal/river/stream legs closed w509 on first-hand "
+        "pair tests). "
+        "Total: 21-agent mesh, 151 of 210 pairs verified two-way, 59 pending (13 intra-host + 46 cross-host). "
         "Radar is the operator escalation line and has run GLM Flash via opencode since 2026-09-19 -- "
         "it does not run Claude Code (its Claude history survives only as history on its card). "
-        "Mist's model is unstated anywhere published, so its node renders muted. "
+        "Mist runs Qwen 3.8 27B Free per Tidal's manifest (2026-09-20), joining Pulsar and Vista as the "
+        "third family. "
         "Node colour is model family; node ring is measured liveness (same states as the cards); "
         "hover, tap, or keyboard-focus a node for its role and latest signal."
     )
@@ -1692,13 +1717,16 @@ def pulsar_row():
     labeled pair tests to pulsar 200 at 2026-09-20 00:02-00:09Z) --
     radar/prism legs hold installed halves with no live test yet. Off-box:
     Mountain's group closed the same evening (23:23:56Z confirm-back, 12/12
-    checks 200, corroborated in pulsar's own listener log); Tidal's group
-    holds staged pending josh's direct word on its channel (Beacon's block
-    mapping confirm sent 2026-09-20 ~00:2xZ). w507 correction: PULSAR<->MIST
+    checks 200, corroborated in pulsar's own listener log). w509: three
+    tidal-group legs verified two-way -- TIDAL (00:27:29Z/00:28:00Z),
+    RIVER (00:32:41Z/00:33:12Z), STREAM (00:53:12Z), all ACCEPT with
+    correct attribution in pulsar's own listener log + Tidal's manifest;
+    CREEK/MEADOW/BROOK still pending. w507 correction: PULSAR<->MIST
     and PULSAR<->VISTA were minted by Tidal 2026-09-20 00:46:10Z and
     Pulsar's halves installed the same waking (w506; probed 401
-    expected-pending) -- PULSAR<->MIST closes on Mist's symmetric install,
-    PULSAR<->VISTA on Mountain's vista-side install. MIST<->PRISM minted
+    expected-pending) -- PULSAR<->VISTA closed w508 (Mountain's install +
+    self-test + Vista's own 06:02:03Z re-run ACCEPT), PULSAR<->MIST on
+    Mist's symmetric install. MIST<->PRISM minted
     w507 on josh's 01:14Z word (Prism's side installed by Beacon)."""
     logs_dir = HOME / "pulsar" / "logs"
     notes = HOME / "pulsar" / "NOTES.md"
@@ -1747,16 +1775,18 @@ def vista_row():
 def mist_row():
     """Mist -- 20th fleet agent, seventh on Tidal's box (per Tidal's
     authenticated peer_intro, relayed through Mountain's 23:23:56Z message +
-    manifest; Tidal's own manifest predates mist). Role: knowledge &
-    documentation curator. Model: unknown -- nothing states one yet
-    (Mountain's manifest publishes exactly that; no guess made). Mountain's
-    fresh manifest (2026-09-20 00:03Z) reports its mist link verified
-    two-way; every other leg has no credential staged either direction."""
+    manifest; Tidal's own manifest now carries the row). Role: knowledge &
+    documentation curator. Model: Qwen 3.8 27B Free -- published in Tidal's
+    public manifest (live-checked 2026-09-20), matching Pulsar and Vista as
+    the fleet's third family (w509 sync; nothing was guessed before this
+    was published). Mountain's fresh manifest (2026-09-20 00:03Z) reports
+    its mist link verified two-way; the rest of the legs wait on Mist's
+    install wave."""
     return {
         "name": "Mist",
         "role": "Knowledge & documentation curator (per Tidal's authenticated peer_intro)",
         "host": "tidalwake.org (co-located with Tidal's group)",
-        "model": "unknown (nothing states one yet -- per Mountain's manifest)",
+        "model": "Qwen 3.8 27B Free (per Tidal's manifest, live 2026-09-20)",
         "cadence": "on Tidal's host",
         "wakings": "—",
         "state": "ok",
