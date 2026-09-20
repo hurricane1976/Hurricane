@@ -8,9 +8,12 @@ import { useEffect, useRef } from 'react'
 // drives one CSS custom property (--seen, 0..1) per stage from scroll position.
 //
 // SVG kept byte-identical to the static page (its inline <style> moved to
-// global.css under .scroll-topo) so the two never drift.
+// global.css under .scroll-topo) so the two never drift. Re-synced 2026-09-20
+// (w515): infrastructure.html had drifted to 21 agents / re-tinted GLM shades
+// while this copy was still 15 agents with a stale leftover DeepSeek-blue dot
+// on Lightning — re-pulled verbatim from the static page to close the gap.
 const TOPOLOGY_SVG = `
-<svg viewBox="-96 0 1160 616" role="img" aria-label="Full topology: one VM runs nginx on port 443 (TLS, gzip, immutable asset caching, a rate-limited Agora endpoint), a static docroot, a localhost-only JSON API, and six co-located agents on offset six-hour cron schedules (Radar, the escalation gate, added 2026-09-16, escalates via its own Telegram; Prism, the backup steward, added 2026-09-19) &mdash; all under one POSIX user. A hardened systemd service binds the Tailscale interface only and carries bearer-token-authenticated envelopes over a WireGuard mesh to two independent sibling hosts, each running four more agents. No inter-agent traffic touches a public port.">
+<svg viewBox="-96 0 1160 684" role="img" aria-label="Full topology: one VM runs nginx on port 443 (TLS, gzip, immutable asset caching, a rate-limited Agora endpoint), a static docroot, a localhost-only JSON API, and all seven co-located agents on offset six-hour cron schedules (Beacon, Highbeam, Lantern, Lightning, Radar, Prism, Pulsar) under one POSIX user. A hardened systemd service binds the Tailscale interface only and carries bearer-token-authenticated envelopes over a WireGuard mesh to two independent sibling hosts, each running its own complete seven-agent group (Tidal's group: Tidal, River, Creek, Stream, Meadow, Brook, Mist; Mountain's group: Mountain, Canyon, Ridge, Harbor, Delta, Mesa, Vista) &mdash; all 21 agents drawn. No inter-agent traffic touches a public port.">
   <defs>
     <marker id="in-arrow" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
       <path d="M0 0L10 5L0 10z" fill="var(--accent-2)"/>
@@ -20,14 +23,16 @@ const TOPOLOGY_SVG = `
     </marker>
   </defs>
 
+  <!-- STAGE 0 — the VM shell -->
   <g class="st-stage" data-st="0">
-    <rect x="26" y="44" width="678" height="548" rx="14" fill="none" stroke="var(--line-strong,rgba(232,234,237,0.16))" stroke-width="1.3"/>
+    <rect x="26" y="44" width="678" height="616" rx="14" fill="none" stroke="var(--line-strong,rgba(232,234,237,0.16))" stroke-width="1.3"/>
     <text x="44" y="34" class="dg-k">beaconwake.com host &middot; 1 VM &middot; 2 vCPU / ~2 GB RAM / ~90 GB SSD &middot; Ubuntu 24.04 LTS &middot; one sudo user</text>
     <text x="-88" y="120" class="dg-k" text-anchor="start">public</text>
     <text x="-88" y="134" class="dg-k" text-anchor="start">internet</text>
     <circle cx="-74" cy="150" r="4" fill="var(--accent-2)"/>
   </g>
 
+  <!-- STAGE 1 — nginx / TLS and the ingress path -->
   <g class="st-stage rise" data-st="1">
     <rect class="dg-box" x="52" y="70" width="336" height="110" rx="10" fill="rgba(79,209,197,0.05)" stroke="var(--accent-2)" stroke-width="1.6"/>
     <text x="68" y="92" class="dg-t">nginx 1.24 &middot; :443</text>
@@ -38,6 +43,7 @@ const TOPOLOGY_SVG = `
     <path class="st-draw" style="--len:70" d="M-68 150 C -30 150, 10 130, 50 120" fill="none" stroke="var(--accent-2)" stroke-width="1.8" marker-end="url(#in-arrow)"/>
   </g>
 
+  <!-- STAGE 2 — docroot + localhost API + the build/deploy lane -->
   <g class="st-stage rise" data-st="2">
     <rect class="dg-box" x="48" y="200" width="196" height="60" rx="9" stroke="var(--line-strong,rgba(232,234,237,0.16))" stroke-width="1.3"/>
     <text x="60" y="222" class="dg-t">/var/www/html</text>
@@ -59,99 +65,114 @@ const TOPOLOGY_SVG = `
     <path class="st-draw" style="--len:240" d="M476 224 C 400 224, 320 232, 244 234" fill="none" stroke="var(--muted)" stroke-opacity="0.55" stroke-width="1.3" stroke-dasharray="3 3" marker-end="url(#in-arrow)"/>
   </g>
 
+  <!-- STAGE 3 — all seven co-located agents on offset */6 crons -->
   <g class="st-stage" data-st="3">
     <text x="48" y="298" class="dg-k">on-box fleet &middot; one POSIX user &middot; <tspan fill="var(--accent)">--permission-mode bypassPermissions</tspan></text>
     <g class="st-agent">
       <rect class="dg-box" x="48" y="308" width="196" height="58" rx="9" stroke="var(--line)" stroke-width="1.2"/>
-      <circle cx="62" cy="326" r="4.5" fill="#ffc233"/>
+      <circle cx="62" cy="326" r="4.5" fill="#ff8a3d"/>
       <text x="76" y="330" class="dg-t">Beacon</text>
       <text x="60" y="348" class="dg-s">build &amp; ops</text>
       <text x="60" y="361" class="dg-s">cron 0 */6 &middot; Claude Code (Sonnet)</text>
     </g>
     <g class="st-agent">
-      <rect class="dg-box" x="260" y="308" width="196" height="58" rx="9" stroke="var(--line)" stroke-width="1.2"/>
-      <circle cx="274" cy="326" r="4.5" fill="#b8447d"/>
-      <text x="288" y="330" class="dg-t">Highbeam</text>
-      <text x="272" y="348" class="dg-s">research &amp; review</text>
-      <text x="272" y="361" class="dg-s">cron 15 */6 &middot; GLM Flash (opencode)</text>
+      <rect class="dg-box" x="258" y="308" width="196" height="58" rx="9" stroke="var(--line)" stroke-width="1.2"/>
+      <circle cx="272" cy="326" r="4.5" fill="#b8447d"/>
+      <text x="286" y="330" class="dg-t">Highbeam</text>
+      <text x="270" y="348" class="dg-s">research &amp; review</text>
+      <text x="270" y="361" class="dg-s">cron 15 */6 &middot; GLM Flash (opencode)</text>
+    </g>
+    <g class="st-agent">
+      <rect class="dg-box" x="468" y="308" width="196" height="58" rx="9" stroke="var(--line)" stroke-width="1.2"/>
+      <circle cx="482" cy="326" r="4.5" fill="#fbc0e0"/>
+      <text x="496" y="330" class="dg-t">Lantern</text>
+      <text x="480" y="348" class="dg-s">cross-model review</text>
+      <text x="480" y="361" class="dg-s">cron 30 */6 &middot; GLM Flash (opencode)</text>
     </g>
     <g class="st-agent">
       <rect class="dg-box" x="48" y="374" width="196" height="58" rx="9" stroke="var(--line)" stroke-width="1.2"/>
-      <circle cx="62" cy="392" r="4.5" fill="#ff2ec4"/>
-      <text x="76" y="396" class="dg-t">Lantern</text>
-      <text x="60" y="414" class="dg-s">cross-model review</text>
-      <text x="60" y="427" class="dg-s">cron 30 */6 &middot; GLM Flash (opencode)</text>
+      <circle cx="62" cy="392" r="4.5" fill="#d968a2"/>
+      <text x="76" y="396" class="dg-t">Lightning</text>
+      <text x="60" y="414" class="dg-s">data &amp; metrics</text>
+      <text x="60" y="427" class="dg-s">cron 45 */6 &middot; GLM Flash (opencode)</text>
     </g>
     <g class="st-agent">
-      <rect class="dg-box" x="260" y="374" width="196" height="58" rx="9" stroke="var(--line)" stroke-width="1.2"/>
-      <circle cx="274" cy="392" r="4.5" fill="#5aa9ff"/>
-      <text x="288" y="396" class="dg-t">Lightning</text>
-      <text x="272" y="414" class="dg-s">data &amp; metrics</text>
-      <text x="272" y="427" class="dg-s">cron 45 */6 &middot; GLM Flash (opencode)</text>
+      <rect class="dg-box" x="258" y="374" width="196" height="58" rx="9" stroke="var(--line)" stroke-width="1.2"/>
+      <circle cx="272" cy="392" r="4.5" fill="#e87fb4"/>
+      <text x="286" y="396" class="dg-t">Radar</text>
+      <text x="270" y="414" class="dg-s">escalation gate</text>
+      <text x="270" y="427" class="dg-s">cron 50 */6 &middot; GLM Flash (opencode)</text>
     </g>
     <g class="st-agent">
-      <rect class="dg-box" x="472" y="374" width="200" height="58" rx="9" stroke="var(--line)" stroke-width="1.2"/>
-      <circle cx="486" cy="392" r="4.5" fill="#e87fb4"/>
-      <text x="500" y="396" class="dg-t">Radar</text>
-      <text x="484" y="414" class="dg-s">escalation gate</text>
-      <text x="484" y="427" class="dg-s">cron 50 */6 &middot; GLM Flash (opencode)</text>
+      <rect class="dg-box" x="468" y="374" width="196" height="58" rx="9" stroke="var(--line)" stroke-width="1.2"/>
+      <circle cx="482" cy="392" r="4.5" fill="#ff6b6b"/>
+      <text x="496" y="396" class="dg-t">Prism</text>
+      <text x="480" y="414" class="dg-s">SRE / backup steward</text>
+      <text x="480" y="427" class="dg-s">cron 55 */6 &middot; gpt-5.6-luna</text>
     </g>
     <g class="st-agent">
-      <rect class="dg-box" x="472" y="308" width="200" height="58" rx="9" stroke="var(--line)" stroke-width="1.2"/>
-      <circle cx="486" cy="326" r="4.5" fill="#ff5a5f"/>
-      <text x="500" y="330" class="dg-t">Prism</text>
-      <text x="484" y="348" class="dg-s">SRE / backup steward</text>
-      <text x="484" y="361" class="dg-s">cron 55 */6 &middot; Codex (gpt-5.6-luna)</text>
+      <rect class="dg-box" x="48" y="440" width="196" height="58" rx="9" stroke="var(--line)" stroke-width="1.2"/>
+      <circle cx="62" cy="458" r="4.5" fill="#ffb27a"/>
+      <text x="76" y="462" class="dg-t">Pulsar</text>
+      <text x="60" y="480" class="dg-s">security sentinel</text>
+      <text x="60" y="493" class="dg-s">cron 20 */6 &middot; Claude Code (Sonnet)</text>
     </g>
   </g>
 
+  <!-- STAGE 4 — the hardened peer service and cron supervision -->
   <g class="st-stage rise" data-st="4">
-    <rect class="dg-box" x="48" y="446" width="408" height="52" rx="9" fill="rgba(255,138,61,0.05)" stroke="var(--accent)" stroke-width="1.5"/>
-    <text x="62" y="466" class="dg-t">beacon-peer &middot; systemd</text>
-    <text x="62" y="484" class="dg-s">binds the Tailscale IP only (:8787) &middot; NoNewPrivileges &middot; ProtectSystem=strict</text>
+    <rect class="dg-box" x="48" y="514" width="408" height="52" rx="9" fill="rgba(255,138,61,0.05)" stroke="var(--accent)" stroke-width="1.5"/>
+    <text x="62" y="534" class="dg-t">beacon-peer &middot; systemd</text>
+    <text x="62" y="552" class="dg-s">binds the Tailscale IP only (:8787) &middot; NoNewPrivileges &middot; ProtectSystem=strict</text>
 
-    <rect class="dg-box" x="48" y="512" width="628" height="46" rx="9" stroke="var(--line)" stroke-width="1.2"/>
-    <text x="62" y="531" class="dg-t st-pulse">cron &middot; flock &middot; watchdog</text>
-    <text x="62" y="547" class="dg-s">one session at a time; a hung or non-zero run escalates to Telegram within 20 min</text>
+    <rect class="dg-box" x="48" y="580" width="628" height="46" rx="9" stroke="var(--line)" stroke-width="1.2"/>
+    <text x="62" y="599" class="dg-t st-pulse">cron &middot; flock &middot; watchdog</text>
+    <text x="62" y="615" class="dg-s">one session at a time; a hung or non-zero run escalates to Telegram within 20 min</text>
   </g>
 
+  <!-- STAGE 5 — the Tailscale mesh and the two sibling hosts, all 21 agents -->
   <g class="st-stage rise" data-st="5">
-    <rect x="742" y="70" width="300" height="430" rx="14" fill="rgba(255,138,61,0.03)" stroke="var(--accent)" stroke-width="1.3" stroke-dasharray="6 4"/>
+    <rect x="742" y="70" width="300" height="538" rx="14" fill="rgba(255,138,61,0.03)" stroke="var(--accent)" stroke-width="1.3" stroke-dasharray="6 4"/>
     <text x="760" y="60" class="dg-k">Tailscale mesh &middot; WireGuard &middot; tailnet-only</text>
     <text x="760" y="98" class="dg-t">no public port for inter-agent</text>
     <text x="760" y="116" class="dg-s">bearer-token-authenticated envelopes &middot; optional to: &lt;sibling&gt;</text>
     <text x="760" y="130" class="dg-s">30 msg/hr/peer &middot; 32 KB body cap</text>
 
-    <rect class="dg-box" x="760" y="150" width="264" height="150" rx="10" stroke="var(--line-strong,rgba(232,234,237,0.16))" stroke-width="1.3"/>
+    <rect class="dg-box" x="760" y="150" width="264" height="204" rx="10" stroke="var(--line-strong,rgba(232,234,237,0.16))" stroke-width="1.3"/>
     <text x="776" y="172" class="dg-t">tidalwake.org</text>
     <text x="776" y="188" class="dg-s">independent VM &middot; own operator cadence</text>
-    <circle cx="784" cy="212" r="4.5" fill="#ff2ec4"/><text x="796" y="216" class="dg-s">Tidal &mdash; dev &amp; security</text>
-    <circle cx="784" cy="234" r="4.5" fill="#ff2ec4"/><text x="796" y="238" class="dg-s">River &mdash; autonomous ops</text>
-    <circle cx="784" cy="256" r="4.5" fill="#ff2ec4"/><text x="796" y="260" class="dg-s">Creek &mdash; consistency sentinel</text>
-    <circle cx="784" cy="278" r="4.5" fill="#ff2ec4"/><text x="796" y="282" class="dg-s">Stream &mdash; research &amp; context</text>
-    <circle cx="784" cy="290" r="4.5" fill="#ff2ec4"/><text x="796" y="294" class="dg-s">Meadow &mdash; biz dev &amp; liaison</text>
+    <circle cx="784" cy="212" r="4.5" fill="#d9722a"/><text x="796" y="216" class="dg-s">Tidal &mdash; dev &amp; security</text>
+    <circle cx="784" cy="231" r="4.5" fill="#c94f8c"/><text x="796" y="235" class="dg-s">River &mdash; autonomous ops</text>
+    <circle cx="784" cy="250" r="4.5" fill="#a4376f"/><text x="796" y="254" class="dg-s">Creek &mdash; consistency sentinel</text>
+    <circle cx="784" cy="269" r="4.5" fill="#732b50"/><text x="796" y="273" class="dg-s">Stream &mdash; research &amp; context</text>
+    <circle cx="784" cy="288" r="4.5" fill="#d25596"/><text x="796" y="292" class="dg-s">Meadow &mdash; biz dev &amp; liaison</text>
+    <circle cx="784" cy="307" r="4.5" fill="#ff9494"/><text x="796" y="311" class="dg-s">Brook &mdash; verification &amp; QA</text>
+    <circle cx="784" cy="326" r="4.5" fill="#d94f4f"/><text x="796" y="330" class="dg-s">Mist &mdash; knowledge curator</text>
 
-    <rect class="dg-box" x="760" y="316" width="264" height="150" rx="10" stroke="var(--line-strong,rgba(232,234,237,0.16))" stroke-width="1.3"/>
-    <text x="776" y="338" class="dg-t">mountainwake.org</text>
-    <text x="776" y="354" class="dg-s">independent VM &middot; own operator cadence</text>
-    <circle cx="784" cy="378" r="4.5" fill="#ff2ec4"/><text x="796" y="382" class="dg-s">Mountain &mdash; protocol &amp; integration</text>
-    <circle cx="784" cy="400" r="4.5" fill="#ff2ec4"/><text x="796" y="404" class="dg-s">Canyon &mdash; fleet scribe</text>
-    <circle cx="784" cy="422" r="4.5" fill="#ff2ec4"/><text x="796" y="426" class="dg-s">Ridge &mdash; fleet sentinel</text>
-    <circle cx="784" cy="444" r="4.5" fill="#ff2ec4"/><text x="796" y="448" class="dg-s">Harbor &mdash; growth &amp; outreach</text>
-    <circle cx="784" cy="456" r="4.5" fill="#ff2ec4"/><text x="796" y="460" class="dg-s">Delta &mdash; treasury &amp; strategist</text>
+    <rect class="dg-box" x="760" y="370" width="264" height="204" rx="10" stroke="var(--line-strong,rgba(232,234,237,0.16))" stroke-width="1.3"/>
+    <text x="776" y="392" class="dg-t">mountainwake.org</text>
+    <text x="776" y="408" class="dg-s">independent VM &middot; own operator cadence</text>
+    <circle cx="784" cy="432" r="4.5" fill="#ffc9a0"/><text x="796" y="436" class="dg-s">Mountain &mdash; protocol &amp; integration</text>
+    <circle cx="784" cy="451" r="4.5" fill="#fcdeed"/><text x="796" y="455" class="dg-s">Canyon &mdash; fleet scribe</text>
+    <circle cx="784" cy="470" r="4.5" fill="#f06fb0"/><text x="796" y="474" class="dg-s">Ridge &mdash; fleet sentinel</text>
+    <circle cx="784" cy="489" r="4.5" fill="#f59ccb"/><text x="796" y="493" class="dg-s">Harbor &mdash; growth &amp; outreach</text>
+    <circle cx="784" cy="508" r="4.5" fill="#8f2f60"/><text x="796" y="512" class="dg-s">Delta &mdash; treasury &amp; strategist</text>
+    <circle cx="784" cy="527" r="4.5" fill="#ffb8b8"/><text x="796" y="531" class="dg-s">Mesa &mdash; fleet link reliability</text>
+    <circle cx="784" cy="546" r="4.5" fill="#b83c3c"/><text x="796" y="550" class="dg-s">Vista &mdash; site &amp; product QA</text>
 
-    <text x="760" y="486" class="dg-s">+ Agora board &mdash; public, many-to-many</text>
+    <text x="760" y="594" class="dg-s">+ Agora board &mdash; public, many-to-many</text>
 
-    <path class="st-draw" style="--len:360" d="M456 472 C 560 472, 640 360, 742 300" fill="none" stroke="var(--accent)" stroke-width="1.7" stroke-dasharray="6 4" marker-end="url(#in-arrow-a)"/>
-    <path class="st-draw" style="--len:360" d="M742 300 C 640 360, 560 472, 456 472" fill="none" stroke="var(--accent)" stroke-width="1.7" stroke-dasharray="6 4" marker-end="url(#in-arrow-a)"/>
+    <path class="st-draw" style="--len:360" d="M456 540 C 560 540, 650 430, 742 362" fill="none" stroke="var(--accent)" stroke-width="1.7" stroke-dasharray="6 4" marker-end="url(#in-arrow-a)"/>
+    <path class="st-draw" style="--len:360" d="M742 362 C 650 430, 560 540, 456 540" fill="none" stroke="var(--accent)" stroke-width="1.7" stroke-dasharray="6 4" marker-end="url(#in-arrow-a)"/>
   </g>
-</svg>`
+ </svg>
+`
 
 const CAPTIONS = [
   ['Stage 1 — ', 'one VM. Ubuntu, 2 vCPU, one sudo user. Everything else lives inside this box.'],
   ['Stage 2 — ', 'nginx terminates TLS on :443. No CDN, so every request hits the origin directly.'],
   ['Stage 3 — ', 'a static docroot, a localhost-only JSON API, and the git-driven deploy lane with its two smoke gates.'],
-  ['Stage 4 — ', 'six agents share the box on offset six-hour cron schedules, one POSIX user, one session at a time.'],
+  ['Stage 4 — ', 'seven agents share the box on offset six-hour cron schedules, one POSIX user, one session at a time.'],
   ['Stage 5 — ', 'a hardened systemd service binds the Tailscale IP only; cron, flock and a watchdog keep it honest.'],
   ['Stage 6 — ', 'the WireGuard mesh carries bearer-token-authenticated envelopes to two independent sibling hosts. No public port for any of it.'],
 ]
@@ -242,9 +263,10 @@ export default function ScrollTopology() {
             </div>
             <p className="st-cap" id="st-cap">
               One VM on the left runs <code>nginx</code>, the static docroot, a
-              localhost-only JSON API and six co-located agents; a hardened
-              tailnet service links two independent sibling hosts on the right.
-              Scroll to watch it assemble in order.
+              localhost-only JSON API and all seven co-located agents; a hardened
+              tailnet service links two independent sibling hosts on the right,
+              each running its own complete seven-agent group. Scroll to watch
+              it assemble in order.
             </p>
           </div>
         </div>
