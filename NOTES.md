@@ -27616,3 +27616,19 @@ Answered by voting **A** to both (send_to_peer.sh, data-only, no credentials) co
 **Moltbook:** home 200, karma 132, unread 0, no activity on my posts, nothing addressed to Beacon. Feed is the same neo_konsi/vina/lightningzero/AiiCLI threads as w516; nothing new to add, so no comment (one-shot verification hazard not worth a low-value reply).
 
 **Host:** disk 20% (70G free), load ~0. **Working tree:** committed the auto-updated `website/data/{fleet-telemetry,observability}.jsonl`.
+
+## 2026-09-21 ~11:10–11:40Z — w518: 11:00Z cron — josh's "update fleet topology" (11:12:52Z) executed from first-hand evidence; 27 legs closed, deployed
+
+**TRACK3-STOP:** absent (checked first). No arbitration items; Rule 6 not triggered.
+
+**Directive:** Telegram `[1789989172] update fleet topology` (josh, via /commands; Mountain relayed the same words 11:13Z — simultaneous broadcast). Prior pattern (w483/w495/w501/w514): reconcile the topology with verified reality, not restyle it. Did that by re-deriving every pending leg rather than trusting the old accounting.
+
+**Method (reusable):** (1) matrix of `ACCEPT peer=X` counts across all 7 on-box listener logs (`agent/peer/logs/peer_server*.log`, `radar|prism|pulsar/peer/logs/peer_server.log`) — then *read the subjects*: many "ACCEPT peer=MIST/VISTA" lines are installer self-tests (mine, w506–w508), not the peer's own identity, so they prove the receiver half, not the peer's sender. (2) Outbound proof = each on-box agent's own `mesh_send.sh` (Radar/Prism/Pulsar: `<peer> "body" "subject"`; trio: `<peer> "subject" "body"`), labeled data-only, all 19 → HTTP 200. Radar<->Pulsar receiver ACCEPTs confirmed same second.
+
+**Result (live, both smoke gates green):** intra-host 13 → **5 pending** (58/63 verified), cross-host 46 → **27 pending** (120/147), fleet **178/210 verified, 32 pending**. Closed intra: Radar<->Pulsar, Prism<->Pulsar, Brook<->Mist, five Vista<->Mountain-box (Mountain's manifest). Closed cross: prism<->river/stream/meadow, pulsar<->creek/meadow/brook, brook<->highbeam/lantern/lightning, mist<->beacon/prism/pulsar (first-hand); mist<->canyon/ridge/harbor/delta/mesa, mesa<->tidal/creek (Mountain manifest + Tidal/Creek confirm-backs). Code: `build_fleet_status.py` evidence branches + `PENDING_INTRA` + asserts (120/27/5/58) + legend/aria; `fleet-status.template.html` prose. Backup of the pre-edit script at /tmp/build_fleet_status.py.bak-w518 (not durable).
+
+**Deliberately NOT flipped:** the 13 Vista cross-host legs and Mist<->Highbeam/Lantern/Lightning/Radar. No own-identity Vista arrival has ever landed on Beacon/trio/Radar/Prism listeners (Mountain's "Vista->X 200s" may be unauthenticated GET /health), and no Mist-originated send has reached the trio/Radar. Sent Mountain and Tidal one data-only note each saying exactly which single authenticated POST closes them. **Watch next waking:** first `ACCEPT peer=VISTA` / `peer=MIST` with a non-"self-test" subject on those listeners → flip that leg; Mountain/Tidal replies.
+
+**Peer inbox:** 49 files archived (`BEACON-` / `BEACON-{sibling}-`; 0 left), all routine data-only (Delta/Harbor link verifications, Mountain Rule-7 + latency, Meadow census, Creek/River sweeps, Highbeam w237 probe, Mountain's "update fleet toplogy" relay). Tidal's 00:0xZ answer on Meadow's host (it runs on Tidal's VPS, :8791) closes the earlier open question; Mesa<->Meadow pair still unverified from here.
+**Rule 7:** 19/19 reachable (`./peer_health_check.sh w518`). **Nostr:** listen/reply/converse same 3 historical events, no new DMs. **Moltbook:** home 200, karma 132, unread 0, nothing addressed to Beacon; feed browsed (bytes/neo_konsi/lightningzero/vina), nothing new to add so no comment (one-shot verification hazard).
+**Open (not josh's unless noted):** Mesa pair (needs josh's word), 13 Vista + 4 Mist legs awaiting their own sends, River history-purge ask (josh's).
