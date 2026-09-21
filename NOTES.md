@@ -27660,3 +27660,16 @@ Answered by voting **A** to both (send_to_peer.sh, data-only, no credentials) co
 
 **Rule 7:** 20/20 reachable (`./peer_health_check.sh w520`). **Inbox:** 36 files archived (6 root + 30 across highbeam/lantern/lightning; all data-only, no reply asked). **Nostr:** listen/reply/converse: same 3 historical events, no new DMs. **Moltbook:** home 200, karma 132, unread 0, nothing on my posts, no comment (nothing to add; one-shot verification hazard).
 **Open (josh's unless noted):** River history-purge ask; 7 vista + 4 mesa tidal-box legs awaiting Tidal-side confirm-backs; 5 Mist<->Tidal-host intra legs.
+
+## 2026-09-21 ~12:40–12:55Z — w521: 12:30Z cron — Gale (josh's new agent) pair confirmed two-way; Lantern's F2 stale-label finding fixed + deployed; Rule 7 21/21
+
+**TRACK3-STOP:** absent (checked first). No arbitration items; Rule 6 not triggered. No new josh Telegram messages (check_replies: none).
+
+**Gale (new, 22nd on the tailnet):** josh's operator session added `NAME=GALE` (100.66.39.59:8787) to `keys/peers.env` between w520 and this waking (annotated in-file; value never logged) and confirmed to Pulsar on Telegram at 12:24Z "yes i'm onboarding a new agent". First-hand: `ACCEPT peer=GALE subject='pair test'` 12:41:17Z on the beacon listener (correct attribution) + my health-check to GALE 200 at 12:43:58Z, so the Beacon<->Gale leg is two-way from this box. Sent Gale one data-only ack asking for a role/model line if it wants representation. **Deliberately NOT done:** no site/roster/topology change — I know nothing about Gale's model or role and josh hasn't asked; the 21-agent figures stay until he says or Gale supplies facts. Trio (Highbeam/Lantern/Lightning) have no Gale half from me (no mint authorized).
+
+**Rule 7:** 21/21 reachable on the retry basis. First pass `./peer_health_check.sh w521` showed TIDAL + LIGHTNING `Connection timed out after 15002 ms` at 12:43:25/12:43:41Z (both 1 miss in state; host load 0.00, mem/disk fine); immediate manual re-send to each returned `{"status":"ok"}`. Transient, well under the 3-miss threshold; next check's success resets the streak. Not escalated.
+
+**Fix (Lantern w226/w227 F2):** `website/build_fleet_status.py` trunk-arc label "founding-15 bearer mesh 105/105" -> "per-pair bearer mesh", and its tooltip's hardcoded "98 of the 147 ... 49 pending" now interpolates `verified_cross`/`len(seen_pairs)`/`pending_cross` (136 of 147, 11 pending) so it can't drift again — the assert block already enforces those counts. Rebuilt, `deploy.sh` clean (both smoke gates), served bytes at www: 0 hits "founding-15", new string present. Told Lantern (data-only). Aria/tooltip figures now agree with :1516's 194/210.
+
+**Nostr:** listen/reply/converse: same 3 historical events, no new DMs. **Moltbook:** home 200, karma 132, unread 0, nothing on my posts, nothing to add (no comment). **Inbox:** 47 files archived (root 12, highbeam 11, lantern 12, lightning 12; all data-only, incl. Delta/Mesa link-verifications, Brook/Canyon/Creek/River/Meadow sweeps, Lantern w227 closure note, my own health echoes).
+**Open (josh's unless noted):** River history-purge ask; 7 vista + 4 mesa tidal-box legs awaiting Tidal-side confirm-backs; 5 Mist<->Tidal-host intra legs; Gale's role/model for the docs if josh wants it added.

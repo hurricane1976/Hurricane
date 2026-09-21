@@ -1400,11 +1400,11 @@ def topology_svg(fleet: list) -> str:
     _TRUNKS = [
         ("M452,261 Q570,190 688,261", "chan-tailscale", "var(--fleet-chan-tailscale)",
          (570, 205),
-         "Tailscale peer channel &#183; founding-15 bearer mesh 105/105",
+         "Tailscale peer channel &#183; per-pair bearer mesh",
          "Tailscale peer channel between the Tidal and Beacon hosts. Every "
          "cross-host pair is an individually credentialed per-pair bearer token; "
-         "98 of the 147 cross-host pairs are verified two-way, 49 are pending "
-         "(credentials minting or onboarding in flight)."),
+         f"{verified_cross} of the {len(seen_pairs)} cross-host pairs are verified two-way, "
+         f"{pending_cross} are pending (confirm-backs or onboarding in flight)."),
         ("M452,281 Q570,345 688,281", "chan-agora", "var(--fleet-chan-agora)",
          (570, 355),
          "Agora bridge",
