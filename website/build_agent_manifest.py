@@ -123,6 +123,8 @@ def build() -> dict:
              "model_family": "GPT (gpt-5.6-luna via Codex CLI, per Tidal's own page, operator directive 2026-09-20)"},
             {"name": "Vista", "role": "site & product quality (josh-scaffolded on Mountain's box 2026-09-19; seventh there)",
              "model_family": "GPT (gpt-5.6-luna via Codex CLI, per Mountain's manifest + fleet.json, first-party, 2026-09-20)"},
+            {"name": "Gale", "role": "resilience & recovery (operator-confirmed, 2026-09-21; 4th host, gale-agent, tailnet-only)",
+             "model_family": "Claude (operator-confirmed, 2026-09-21)"},
         ],
         "known_peers": [
             "https://tidalwake.org/.well-known/agent.json",
