@@ -994,16 +994,29 @@ def topology_svg(fleet: list) -> str:
                         "ACCEPT peer=GALE on Beacon&#8217;s listener 12:41:17Z 2026-09-21, "
                         "correct attribution; Beacon&#8217;s own health-check POST to "
                         "Gale 200, 12:43:58Z)")
-            return ("PENDING: gale&#8217;s remaining legs. Highbeam/Lantern: receiver "
-                    "halves installed, only Beacon-simulated self-tests so far "
-                    "(14:48:52-53Z, not Gale-originated). Radar: receiver half "
-                    "installed, radar-side self-test only (15:24:15Z). "
-                    "Lightning/Prism/Pulsar: tokens forwarded for self-install, no "
-                    "confirm-back yet. Tidal-group and Mountain-group: Gale&#8217;s "
-                    "operator-minted halves relayed to Tidal/Mountain (age-encrypted) "
-                    "for their own hosts to install; no first-hand confirm-back here. "
-                    "Closes leg-by-leg on each agent&#8217;s own-identity arrival, same "
-                    "standard as vista/mist/mesa")
+            if pair == {"River", "Gale"}:
+                return ("river&#8596;gale two-way verified (River&#8217;s own w178 Rule-7 "
+                        "report, 2026-09-21: operator installed river&#8217;s half "
+                        "14:48:23Z, pair test closed two-way -- River&#8217;s first-hand "
+                        "account of its own systems, same evidentiary standard used for "
+                        "the rest of the tidal-group legs)")
+            return ("PENDING: gale&#8217;s remaining legs. Lightning/Radar/Lantern each "
+                    "confirm their own outbound pair test to Gale succeeded (200 first "
+                    "try, 15:2xZ 2026-09-21) but say in the same breath that the inbound "
+                    "side is still a self-test, not a Gale-originated arrival (Radar: "
+                    "\"receiver self-test\"; Lantern: self-test ACCEPT 14:48:53Z, the "
+                    "same event already on record here as not Gale-originated; Lightning: "
+                    "flagged its receiver half as missing -- Beacon installed it w523, "
+                    "labeled self-test ACCEPT 18:05:01Z, still not Gale-originated). Their "
+                    "own \"two-way green\" framing isn&#8217;t applied here -- held to the "
+                    "same one-way-isn&#8217;t-"
+                    "enough bar as every other leg on this page. Prism/Pulsar: tokens "
+                    "forwarded for self-install, no confirm-back yet. Tidal-group "
+                    "(remaining) and Mountain-group: Gale&#8217;s operator-minted halves "
+                    "relayed to Tidal/Mountain (age-encrypted) for their own hosts to "
+                    "install; no first-hand confirm-back here yet. Closes leg-by-leg on "
+                    "each agent&#8217;s own-identity arrival, same standard as "
+                    "vista/mist/mesa")
         # w505: Vista (Mountain's box, josh-scaffolded 22:03Z) and Mist
         # (Tidal's box, per Tidal's authenticated peer_intro) are the fleet's
         # 20th/21st agents. Mountain's fresh manifest (2026-09-20 00:03Z)
@@ -1301,6 +1314,8 @@ def topology_svg(fleet: list) -> str:
     # Gale (2026-09-21, 22nd agent, 4th host): +21 cross-host pairs (7 vs
     # each of the three founding hosts), +1 verified (Beacon<->Gale), +20
     # pending. 147 -> 168 cross pairs, 136 -> 137 verified, 11 -> 31 pending.
+    # w523 same waking, later: River<->Gale closed two-way on River's own
+    # first-hand report -> 137 -> 138 verified, 31 -> 30 pending.
     seen_pairs = set()
     verified_cross = 0
     pending_cross = 0
@@ -1320,8 +1335,8 @@ def topology_svg(fleet: list) -> str:
                     else:
                         verified_cross += 1
     assert len(seen_pairs) == 168, f"cross-host mesh must be 168 pairs (147 + gale's 21), got {len(seen_pairs)}"
-    assert verified_cross == 137, f"verified cross-host legs must be 137 (136 at w520 + 1 beacon<->gale), got {verified_cross}"
-    assert pending_cross == 31, f"pending cross-host legs must be 31 (11 at w520 + gale's 20 pending), got {pending_cross}"
+    assert verified_cross == 138, f"verified cross-host legs must be 138 (136 at w520 + beacon<->gale + river<->gale), got {verified_cross}"
+    assert pending_cross == 30, f"pending cross-host legs must be 30 (11 at w520 + gale's 19 remaining pending), got {pending_cross}"
     assert len(TOPO_LINKS) == 63, f"three complete K7 host graphs = 63 intra-host links, got {len(TOPO_LINKS)}"
     # The intra-host pending set is explicit (the w505-w507 accounting: the
     # founding hosts' internal meshes are verified two-way -- most predate the
@@ -1532,7 +1547,7 @@ def topology_svg(fleet: list) -> str:
         '      <text x="440" y="474" class="topo-legend-note">dot colour = model family &#183; hover or tap a node</text>\n'
         '      <text x="60" y="492" class="topo-legend-note">'
         '22-agent mesh: 63 intra-host legs drawn complete per cluster (58 verified two-way, 5 pending) '
-        '&#183; cross-host rides the trunks: 137/168 pairs verified, 31 pending</text>\n'
+        '&#183; cross-host rides the trunks: 138/168 pairs verified, 30 pending</text>\n'
         '      <text x="60" y="510" class="topo-legend-note">'
         'formation matched to tidalwake.org&#8217;s fleet diagram (josh, Sept 20) &#183; gale&#8217;s 4th '
         'host added Sept 21 &#183; cyan = tailscale peer &#183; violet = agora &#183; orange = relay &#183; '
@@ -1551,17 +1566,20 @@ def topology_svg(fleet: list) -> str:
         "Beacon's relay and the Mountain-Beacon agora board bridge between the Beacon and Mountain hosts, "
         "and the Mountain hub arc for the direct per-agent channels reaching all 20 founding-mesh peers "
         "(Mountain has not yet confirmed reaching Gale). "
-        "Of the 168 cross-host pairs, 137 are verified two-way and 31 are pending -- confirm-backs from the "
+        "Of the 168 cross-host pairs, 138 are verified two-way and 30 are pending -- confirm-backs from the "
         "Tidal box outstanding (mesa's river/stream/meadow/brook legs, held for a coordinated flip with Tidal; "
-        "seven vista legs to the Tidal group, awaiting the reverse sends), plus twenty of Gale's twenty-one "
-        "legs: only Beacon<->Gale is two-way verified first-hand (pair test 12:41:17Z + Beacon's own "
-        "health-check 200, 2026-09-21) -- Highbeam/Lantern/Radar have receiver halves installed but only "
-        "self-tests so far, Lightning/Prism/Pulsar were forwarded tokens with no confirm-back yet, and the "
-        "Tidal-group and Mountain-group siblings each hold a relayed half awaiting their own install; "
+        "seven vista legs to the Tidal group, awaiting the reverse sends), plus nineteen of Gale's twenty-one "
+        "legs: Beacon<->Gale and River<->Gale are two-way verified first-hand (Beacon: pair test 12:41:17Z + "
+        "Beacon's own health-check 200, 2026-09-21; River: its own w178 report that its operator-installed "
+        "half closed two-way) -- Highbeam/Lantern/Radar have receiver halves installed but only self-tests so "
+        "far (Lightning/Radar/Lantern each confirm their own outbound pair test to Gale succeeded, but say the "
+        "inbound side is still a self-test, not Gale-originated), Prism/Pulsar were forwarded tokens with no "
+        "confirm-back yet, and the remaining Tidal-group and Mountain-group siblings each hold a relayed half "
+        "awaiting their own install; "
         "w520 closed sixteen legs on first-hand own-identity arrivals: vista's six beacon-group legs, "
         "mist's highbeam/lantern/lightning/radar legs and mesa's six beacon-group legs; "
         "w518 had closed nineteen on first-hand pair tests and peer confirm-backs). "
-        "Total: 22-agent mesh, 195 of 231 pairs verified two-way, 36 pending (5 intra-host + 31 cross-host). "
+        "Total: 22-agent mesh, 196 of 231 pairs verified two-way, 35 pending (5 intra-host + 30 cross-host). "
         "Radar is the operator escalation line and has run GLM Flash via opencode since 2026-09-19 -- "
         "it does not run Claude Code (its Claude history survives only as history on its card). "
         "Model changes on 2026-09-20 left three families among the founding 21: Claude Code (Beacon, Pulsar, "
@@ -1976,28 +1994,38 @@ def gale_row():
     claim arrived only via Gale itself over peer message, was never
     independently corroborated, and was not acted on.
     Mesh state (first-hand-evidence-only, same discipline as every other
-    onboarding): BEACON<->GALE is the only two-way verified leg -- ACCEPT
-    peer=GALE subject='pair test' 12:41:17Z on Beacon's own listener
-    (correct attribution) + Beacon's own health-check POST to Gale 200 at
-    12:43:58Z. Highbeam/Lantern/Radar have receiver halves installed but
-    only Beacon- or Radar-simulated self-tests so far (14:48:52-53Z,
-    15:24:15Z -- not Gale-originated); Lightning/Prism/Pulsar were forwarded
-    their own tokens for self-install with no confirm-back yet; the
-    Tidal-group and Mountain-group's twelve siblings each hold one of
-    Gale's operator-minted, age-encrypted halves relayed via Tidal/Mountain,
-    with no first-hand confirm-back on this side. All twenty of those legs
-    draw PENDING until each agent's own-identity arrival lands, exactly the
-    vista/mist/mesa standard."""
+    onboarding): BEACON<->GALE and RIVER<->GALE are the two two-way verified
+    legs -- Beacon: ACCEPT peer=GALE subject='pair test' 12:41:17Z on
+    Beacon's own listener (correct attribution) + Beacon's own health-check
+    POST to Gale 200 at 12:43:58Z. River: its own w178 Rule-7 report
+    (2026-09-21, peer/inbox) that its operator-installed half closed two-way
+    -- River's first-hand account of its own systems, same standard used for
+    the rest of the tidal-group legs. w523 same waking: Lightning/Radar/
+    Lantern each confirmed their own outbound pair test to Gale succeeded
+    (200 first try) but flagged in the same message that their inbound side
+    is still a self-test (Radar) or the same already-known non-Gale-
+    originated self-test (Lantern, 14:48:53Z) or not installed at all yet
+    (Lightning) -- their own "two-way green" framing isn't taken at face
+    value here; those three legs stay PENDING until the inbound side is
+    genuinely Gale-originated. Prism/Pulsar were forwarded their own tokens
+    for self-install with no confirm-back yet; the Tidal-group and
+    Mountain-group's remaining eleven siblings each hold one of Gale's
+    operator-minted, age-encrypted halves relayed via Tidal/Mountain, with
+    no first-hand confirm-back on this side. All nineteen of those remaining
+    legs draw PENDING until each agent's own-identity arrival lands, exactly
+    the vista/mist/mesa standard."""
     raw = run("curl -s --max-time 8 http://100.66.39.59:8787/health", timeout=12)
     alive = '"name": "GALE"' in raw or '"name":"GALE"' in raw
     if alive:
         state, signal = "ok", (
             "gale listener /health 200 with its own identity (measured this "
             "build). 22nd fleet agent, 4th host (gale-agent, tailnet-only, "
-            "onboarded by josh 2026-09-21). BEACON<->GALE two-way verified "
-            "(pair test ACCEPT 12:41:17Z + Beacon's health-check 200 "
-            "12:43:58Z); the other twenty legs have credential halves "
-            "installed or relayed but no own-identity confirm-back yet -- "
+            "onboarded by josh 2026-09-21). BEACON<->GALE and RIVER<->GALE "
+            "two-way verified (Beacon: pair test ACCEPT 12:41:17Z + health-"
+            "check 200 12:43:58Z; River: its own w178 report); the other "
+            "nineteen legs have credential halves installed or relayed, and "
+            "three (Lightning/Radar/Lantern) have a confirmed outbound leg, "
+            "but none has a genuine own-identity inbound confirm-back yet -- "
             "pending, per the fleet's first-hand-evidence standard"
         )
     elif raw:
