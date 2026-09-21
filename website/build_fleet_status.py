@@ -998,6 +998,8 @@ def topology_svg(fleet: list) -> str:
                     "self-tests ACCEPT peer=VISTA on the trio + beacon listeners; "
                     "vista&#8217;s own-identity sends pending its wake schedule. "
                     "PULSAR&#8596;VISTA closed w508 &#8212; see its verified stamp; "
+                    "w519: josh asked why they are still open &#8212; answer: no vista-originated "
+                    "POST has ever landed; Vista and Mountain asked for own-identity sends; "
                     "Mountain holds vista&#8217;s remaining external installs on its wake)")
         if "Mist" in pair:
             if pair == {"Mountain", "Mist"}:
@@ -1072,7 +1074,15 @@ def topology_svg(fleet: list) -> str:
             # pair is minted (sub-branch above) and w505 closed pulsar<->mesa;
             # the other 11 cross-host legs still have no credential staged
             # either direction -- all draw pending.
-            return "PENDING: mesa&#8217;s cross-host legs (joined Mountain&#8217;s box 2026-09-19, josh-set; its on-box K6 mesh is verified per Mountain&#8217;s manifest -- cross-host introduction to follow; brook&#8596;mesa minted w503, the rest unproven)"
+            # w519: josh's 2026-09-21 11:26:10Z word ("the mesa pairs have my
+            # word") -> Beacon minted nine fresh pairs (beacon, highbeam,
+            # lantern, lightning, radar, prism, river, stream, meadow); the six
+            # Beacon-box halves are installed + receiver-tested (ACCEPT
+            # peer=MESA 11:34:47Z on all six listeners), Mesa's halves went to
+            # Mountain and the Tidal-box halves to Tidal, age-encrypted.
+            # Legs stay pending until Mesa installs and its own-identity sends
+            # land (Beacon->MESA real-path is 401 until then).
+            return "PENDING: mesa&#8217;s cross-host legs &#8212; nine pairs minted w519 on josh&#8217;s 11:26Z word (the six Beacon-box halves installed + receiver-tested ACCEPT peer=MESA; Mesa&#8217;s halves relayed age-encrypted to Mountain, Tidal-box halves to Tidal); closes on Mesa&#8217;s install + own-identity sends. brook&#8596;mesa minted w503, install unconfirmed"
         if "Prism" in pair:
             if "mountain" in (ga, gb):
                 return ("Mountain-group&#8217;s five prism lanes &#8212; onboarded and "
