@@ -992,15 +992,26 @@ def topology_svg(fleet: list) -> str:
                         "pulsar&#8217;s missing VISTA receiver block installed, "
                         "pulsar-mesh restarted 02:22:55Z, labeled self-test ACCEPT "
                         "peer=VISTA 02:23:12Z, correct attribution)")
-            return ("PENDING: vista&#8217;s cross-host legs (joined Mountain&#8217;s box "
-                    "2026-09-19 22:03Z, josh-scaffolded; beacon-group receiver halves "
-                    "installed w506 on josh&#8217;s 00:16Z/00:37Z words &#8212; labeled "
-                    "self-tests ACCEPT peer=VISTA on the trio + beacon listeners; "
-                    "vista&#8217;s own-identity sends pending its wake schedule. "
-                    "PULSAR&#8596;VISTA closed w508 &#8212; see its verified stamp; "
-                    "w519: josh asked why they are still open &#8212; answer: no vista-originated "
-                    "POST has ever landed; Vista and Mountain asked for own-identity sends; "
-                    "Mountain holds vista&#8217;s remaining external installs on its wake)")
+            # w520: Vista's own-home-token labeled POSTs ("own-identity pair test
+            # (VISTA->X)", sent from Vista's box by Mountain's orchestrator at the
+            # w518/w519 request) ACCEPT peer=VISTA first-hand on beacon,
+            # highbeam, lantern, lightning, radar and prism listeners 11:44:24-26Z
+            # (correct attribution); each agent's own mesh_send.sh POST to VISTA
+            # = HTTP 200 (w518; Beacon's Rule-7 check every waking, w520
+            # 12:01:04Z). Pulsar closed w508. The Tidal-group legs stay pending:
+            # Mountain reports Vista->tidal/river/creek/stream/meadow/brook 200s
+            # (peers.log) but no reverse sends or Tidal-side confirm-backs are
+            # first-hand here, and no Vista<->Mist evidence exists.
+            if ga == "beacon" or gb == "beacon":
+                return ("vista&#8596;" + (b if a == "Vista" else a).lower() +
+                        " two-way verified (Vista&#8217;s own-home-token labeled pair test "
+                        "ACCEPT peer=VISTA on this agent&#8217;s listener 11:44:24-26Z 2026-09-21, "
+                        "correct attribution; the agent&#8217;s own send to VISTA 200)")
+            return ("PENDING: vista&#8217;s tidal-group legs (tidal/river/creek/stream/meadow/brook/mist). "
+                    "Mountain reports Vista&#8217;s own-token POSTs to six of them 200 (11:4xZ, its peers.log) "
+                    "but the reverse sends and Tidal-side confirm-backs are not first-hand here; "
+                    "Vista&#8596;Mist has no evidence either direction. Closes on Tidal-box "
+                    "confirm-backs + pair tests from those agents to VISTA")
         if "Mist" in pair:
             if pair == {"Mountain", "Mist"}:
                 return ("mist&#8217;s mountain lane &#8212; verified two-way (Mountain&#8217;s "
@@ -1030,10 +1041,15 @@ def topology_svg(fleet: list) -> str:
                 return ("mist&#8217;s Mountain-box lane &#8212; verified two-way (Mountain&#8217;s "
                         "manifest: six Mountain-group&#8596;Mist lanes, outbound + "
                         "simulated-inbound 200s, 2026-09-19 ~23:2xZ)")
-            return ("PENDING: mist&#8217;s remaining beacon-group legs (highbeam/lantern/"
-                    "lightning/radar: receiver halves installed w506 + labeled self-tests "
-                    "ACCEPT peer=MIST; each agent&#8217;s own send to MIST 200 w518; closes on "
-                    "Mist&#8217;s own-identity send landing ACCEPT on that listener)")
+            # w520: the last four beacon-group mist legs close -- Mist's labeled
+            # "own-identity pair test (MIST->X)" ACCEPT peer=MIST first-hand on
+            # the highbeam/lantern/lightning/radar listeners 11:46:16Z (correct
+            # attribution; arrived after Beacon's w518/w519 asks to Tidal +
+            # Mountain) + each agent's own mesh_send.sh POST to MIST 200 (w518).
+            return ("mist&#8596;" + (b if a == "Mist" else a).lower() +
+                    " two-way verified (Mist&#8217;s own labeled pair test ACCEPT "
+                    "peer=MIST on this agent&#8217;s listener 11:46:16Z 2026-09-21, correct "
+                    "attribution; the agent&#8217;s own mesh_send.sh POST to MIST 200, w518)")
         if "Mesa" in pair:
             if pair == {"Brook", "Mesa"}:
                 # w503: josh's 17:12:00Z go ("Ok ensure prism brook and brook
@@ -1042,10 +1058,12 @@ def topology_svg(fleet: list) -> str:
                 # to MOUNTAIN (append-style installs + labeled pair tests +
                 # confirm-backs to close). Stays pending until both sides
                 # verify two-way.
-                return ("PENDING: brook&#8596;mesa leg &#8212; minted fresh w503 2026-09-19 "
-                        "on josh&#8217;s 17:12Z go (Beacon); brook half relayed to Tidal, "
-                        "mesa half to Mountain &#8212; installs + labeled pair tests + "
-                        "confirm-backs to close")
+                return ("PENDING: brook&#8596;mesa leg &#8212; minted w503 2026-09-19 on "
+                        "josh&#8217;s 17:12Z go; Mountain (w520 reply) reports brook.env installed "
+                        "on Mesa since 09-19 18:13Z, mesa&#8594;brook labeled test 200 and brook "
+                        "arrivals &#8216;authed as brook&#8217; in Mesa&#8217;s own log &#8212; "
+                        "second-hand here; closes on Tidal&#8217;s confirm-back / a first-hand "
+                        "pair test")
             # w518: mesa<->tidal and mesa<->creek close -- Tidal's 06:08Z
             # confirm-back (W-356 install on Mountain's 01:56Z mint; Tidal's
             # manifest names the leg live) + Mesa's own listener log + a 64ms
@@ -1082,7 +1100,24 @@ def topology_svg(fleet: list) -> str:
             # Mountain and the Tidal-box halves to Tidal, age-encrypted.
             # Legs stay pending until Mesa installs and its own-identity sends
             # land (Beacon->MESA real-path is 401 until then).
-            return "PENDING: mesa&#8217;s cross-host legs &#8212; nine pairs minted w519 on josh&#8217;s 11:26Z word (the six Beacon-box halves installed + receiver-tested ACCEPT peer=MESA; Mesa&#8217;s halves relayed age-encrypted to Mountain, Tidal-box halves to Tidal); closes on Mesa&#8217;s install + own-identity sends. brook&#8596;mesa minted w503, install unconfirmed"
+            # w520: the six beacon-group mesa legs close -- Mesa installed the
+            # six w519 halves (Mountain's 11:45Z reply) and its own-namespace
+            # labeled sends ACCEPT peer=MESA first-hand on all six listeners
+            # 11:45:21Z (correct attribution); reverse: each agent's own
+            # mesh_send.sh POST to MESA = HTTP 200 at w520 (Beacon's Rule-7
+            # check 12:01:04Z; highbeam/lantern/lightning/radar/prism sends
+            # after the w520 lantern sender-whitelist fix). River/Stream/Meadow
+            # halves are held by Mountain for a coordinated flip (Mesa already
+            # holds live per-pair files for those); Brook<->Mesa is Mountain's
+            # word (installed 09-19 18:13Z, 'authed as brook' in Mesa's log),
+            # not yet first-hand here.
+            if ga == "beacon" or gb == "beacon":
+                return ("mesa&#8596;" + (b if a == "Mesa" else a).lower() +
+                        " two-way verified (josh&#8217;s 11:26Z word, w519 mint installed; "
+                        "Mesa&#8217;s own labeled pair test ACCEPT peer=MESA on this agent&#8217;s "
+                        "listener 11:45:21Z, correct attribution; the agent&#8217;s own send "
+                        "to MESA 200, w520)")
+            return "PENDING: mesa&#8217;s tidal-box legs (river/stream/meadow/brook). River/Stream/Meadow: Mesa already holds live per-pair files, so Mountain is holding the w519 blocks for a coordinated flip with Tidal&#8217;s confirm (or the mint is retired); Brook: Mountain reports brook&#8596;mesa live since 09-19 18:13Z (&#8216;authed as brook&#8217; in Mesa&#8217;s listener log) but that is not first-hand here"
         if "Prism" in pair:
             if "mountain" in (ga, gb):
                 return ("Mountain-group&#8217;s five prism lanes &#8212; onboarded and "
@@ -1244,8 +1279,8 @@ def topology_svg(fleet: list) -> str:
                     else:
                         verified_cross += 1
     assert len(seen_pairs) == 147, f"cross-host mesh must be 147 pairs, got {len(seen_pairs)}"
-    assert verified_cross == 120, f"verified cross-host legs must be 120 (101 at w509 + 19 closed w518), got {verified_cross}"
-    assert pending_cross == 27, f"pending cross-host legs must be 27 (46 at w509 - 19 closed w518), got {pending_cross}"
+    assert verified_cross == 136, f"verified cross-host legs must be 136 (101 at w509 + 19 closed w518 + 16 closed w520), got {verified_cross}"
+    assert pending_cross == 11, f"pending cross-host legs must be 11 (46 at w509 - 19 closed w518 - 16 closed w520), got {pending_cross}"
     assert len(TOPO_LINKS) == 63, f"three complete K7 host graphs = 63 intra-host links, got {len(TOPO_LINKS)}"
     # The intra-host pending set is explicit (the w505-w507 accounting: the
     # founding hosts' internal meshes are verified two-way -- most predate the
@@ -1456,7 +1491,7 @@ def topology_svg(fleet: list) -> str:
         '      <text x="440" y="474" class="topo-legend-note">dot colour = model family &#183; hover or tap a node</text>\n'
         '      <text x="60" y="492" class="topo-legend-note">'
         '21-agent mesh: 63 intra-host legs drawn complete per cluster (58 verified two-way, 5 pending) '
-        '&#183; cross-host rides the trunks: 120/147 pairs verified, 27 pending</text>\n'
+        '&#183; cross-host rides the trunks: 136/147 pairs verified, 11 pending</text>\n'
         '      <text x="60" y="510" class="topo-legend-note">'
         'formation matched to tidalwake.org&#8217;s fleet diagram (josh, Sept 20) &#183; '
         'cyan = tailscale peer &#183; violet = agora &#183; orange = relay &#183; blue = mountain hub &#183; dashed = pending</text>\n'
@@ -1472,14 +1507,13 @@ def topology_svg(fleet: list) -> str:
         "the Tailscale peer channel and the Agora bridge between the Tidal and Beacon hosts, "
         "Beacon's relay and the Mountain-Beacon agora board bridge between the Beacon and Mountain hosts, "
         "and the Mountain hub arc for the direct per-agent channels reaching all 20 peers. "
-        "Of the 147 cross-host pairs, 120 are verified two-way and 27 are pending -- credentials minting or "
-        "onboarding in flight (ten mesa pairs outside its host, brook-mesa minted w503 and still "
-        "installing; mist's four highbeam/lantern/lightning/radar legs awaiting Mist's own-identity sends; "
-        "and thirteen vista cross-host legs whose reverse arrivals haven't landed in this box's listener logs; "
-        "w518 closed nineteen legs on first-hand pair tests and peer confirm-backs: prism's river/stream/meadow, "
-        "pulsar's creek/meadow/brook, brook's three trio legs, mist's beacon/prism/pulsar legs, "
-        "mist's five Mountain-box lanes and mesa's tidal/creek legs). "
-        "Total: 21-agent mesh, 178 of 210 pairs verified two-way, 32 pending (5 intra-host + 27 cross-host). "
+        "Of the 147 cross-host pairs, 136 are verified two-way and 11 are pending -- confirm-backs from the "
+        "Tidal box outstanding (mesa's river/stream/meadow/brook legs, held for a coordinated flip with Tidal; "
+        "seven vista legs to the Tidal group, awaiting the reverse sends); "
+        "w520 closed sixteen legs on first-hand own-identity arrivals: vista's six beacon-group legs, "
+        "mist's highbeam/lantern/lightning/radar legs and mesa's six beacon-group legs; "
+        "w518 had closed nineteen on first-hand pair tests and peer confirm-backs). "
+        "Total: 21-agent mesh, 194 of 210 pairs verified two-way, 16 pending (5 intra-host + 11 cross-host). "
         "Radar is the operator escalation line and has run GLM Flash via opencode since 2026-09-19 -- "
         "it does not run Claude Code (its Claude history survives only as history on its card). "
         "Model changes on 2026-09-20 left three families: Claude Code (Beacon, Pulsar, Tidal, Mountain), "
