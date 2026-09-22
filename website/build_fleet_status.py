@@ -718,16 +718,23 @@ TOPO_CLUSTERS = {
     # Gale (2026-09-21, josh: "update fleet topology to include gale"): a
     # genuine 4th host, not a member of the founding three -- gale-agent is
     # tailnet-only with no public domain, so it gets its own small frame
-    # rather than Tidal's borrowed 7-slot ring geometry (only 1 member so
-    # far, room to grow). Placed to the right of Mountain's frame with the
-    # same 110px margins the other three frames use; viewBox widened to
-    # 1880 to fit it (was 1680).
+    # rather than Tidal's borrowed 7-slot ring geometry. w524/w525 (josh:
+    # "ensure fleet topology is update to account for the new agents"):
+    # Gale introduced three siblings on the same host -- Zephyr (:8788),
+    # Squall (:8789), Tempest (:8790) -- installed + first-hand two-way
+    # verified from Beacon's side w524. Grew from 1 member to 4; a compact
+    # diamond ring (radius 55, clockwise from the top vertex) replaces the
+    # single-point placement and still fits inside the existing rect (node
+    # radius 24 -> extreme reach cx/cy +-79, within the 160x170 frame), so
+    # no viewBox change needed this time. Order clockwise by port ascending
+    # from Gale's own (8787): Gale top, Zephyr (8788) right, Squall (8789)
+    # bottom, Tempest (8790) left.
     "gale": {
         "cx": 1690, "cy": 195,
         "rect": (1610, 110, 160, 170),
-        "label": "GALE HOST &#183; gale-agent (tailnet-only) &#183; 1 agent",
-        "members": ["Gale"],
-        "ring": [(0.0, 0.0)],
+        "label": "GALE HOST &#183; gale-agent (tailnet-only) &#183; 4 agents",
+        "members": ["Gale", "Zephyr", "Squall", "Tempest"],
+        "ring": [(0.0, -55.0), (55.0, 0.0), (0.0, 55.0), (-55.0, 0.0)],
     },
 }
 # Tidal's own ring offsets (top vertex + six clockwise steps), shared by all
@@ -850,6 +857,13 @@ TOPO_LINKS = [
     ("Ridge", "Mesa", True, "mesa peer link (Mountain's 2026-09-19 manifest: K6 on-box mesh, verified two-way the wake mesa joined)"),
     ("Harbor", "Mesa", True, "mesa peer link (Mountain's 2026-09-19 manifest: K6 on-box mesh, verified two-way the wake mesa joined)"),
     ("Delta", "Mesa", True, "mesa peer link (Mountain's 2026-09-19 manifest: K6 on-box mesh, verified two-way the wake mesa joined)"),
+    # Gale's host K4 (w524/w525): Zephyr/Squall/Tempest joined Gale on the
+    # same host. No evidence exists either direction about their mutual
+    # on-box connectivity (only Beacon<->each of the three is first-hand
+    # verified, a cross-host leg, drawn below) -- all six pairs stay
+    # unverified/pending, same discipline as the mist tidal-host legs.
+    ("Gale", "Zephyr"), ("Gale", "Squall"), ("Gale", "Tempest"),
+    ("Zephyr", "Squall"), ("Zephyr", "Tempest"), ("Squall", "Tempest"),
 ]
 # Canonical fleet family palette (design-tokens.json v2 .chart.family):
 # magenta=GLM, amber=Claude (live again since 2026-09-20: Beacon + Pulsar
@@ -972,10 +986,12 @@ def topology_svg(fleet: list) -> str:
         "beacon": ["Beacon", "Highbeam", "Lantern", "Lightning", "Radar", "Prism", "Pulsar"],
         "tidal": ["Tidal", "River", "Creek", "Stream", "Meadow", "Brook", "Mist"],
         "mountain": ["Mountain", "Canyon", "Ridge", "Harbor", "Delta", "Mesa", "Vista"],
-        # Gale (2026-09-21, 22nd agent): a genuine 4th host, one member so
-        # far -- every Gale pair is cross-host by definition, including
-        # Gale<->Beacon.
-        "gale": ["Gale"],
+        # Gale (2026-09-21, 22nd agent): a genuine 4th host. w524/w525: three
+        # siblings joined the same host -- Zephyr, Squall, Tempest -- so the
+        # group now has four members; pairs among them are intra-host
+        # (handled in TOPO_LINKS/PENDING_INTRA above), and only pairs against
+        # the founding three hosts are cross-host here.
+        "gale": ["Gale", "Zephyr", "Squall", "Tempest"],
     }
     _group_of = {n: g for g, ns in _GROUPS.items() for n in ns}
 
@@ -1017,6 +1033,24 @@ def topology_svg(fleet: list) -> str:
                     "install; no first-hand confirm-back here yet. Closes leg-by-leg on "
                     "each agent&#8217;s own-identity arrival, same standard as "
                     "vista/mist/mesa")
+        # w524/w525 (josh: "ensure fleet topology is update to account for
+        # the new agents"): Gale's three new siblings on the same host --
+        # Zephyr (:8788), Squall (:8789), Tempest (:8790). Beacon's own
+        # credentialed sends to all three succeed and the listener log shows
+        # ACCEPT peer=SQUALL/TEMPEST/ZEPHYR with correct attribution
+        # (18:49:54Z 2026-09-21, w524) -- genuinely two-way from first-hand
+        # evidence, same bar as every other leg. Nothing else has any
+        # credential staged either direction yet.
+        if "Squall" in pair or "Tempest" in pair or "Zephyr" in pair:
+            _new = "Squall" if "Squall" in pair else "Tempest" if "Tempest" in pair else "Zephyr"
+            if pair == {"Beacon", _new}:
+                return (f"beacon&#8596;{_new.lower()} two-way verified (Beacon&#8217;s own "
+                        f"credentialed send to {_new.upper()} 200; listener log ACCEPT "
+                        f"peer={_new.upper()} 18:49:54Z 2026-09-21, correct attribution, w524)")
+            return (f"PENDING: {_new.lower()}&#8217;s remaining legs. Only "
+                    f"beacon&#8596;{_new.lower()} is first-hand verified so far (w524) -- "
+                    "no credential staged either direction yet for the rest of the "
+                    "beacon-group, tidal-group or mountain-group")
         # w505: Vista (Mountain's box, josh-scaffolded 22:03Z) and Mist
         # (Tidal's box, per Tidal's authenticated peer_intro) are the fleet's
         # 20th/21st agents. Mountain's fresh manifest (2026-09-20 00:03Z)
@@ -1316,6 +1350,13 @@ def topology_svg(fleet: list) -> str:
     # pending. 147 -> 168 cross pairs, 136 -> 137 verified, 11 -> 31 pending.
     # w523 same waking, later: River<->Gale closed two-way on River's own
     # first-hand report -> 137 -> 138 verified, 31 -> 30 pending.
+    # w524/w525 (25th agent count, josh: "ensure fleet topology is update to
+    # account for the new agents"): Zephyr/Squall/Tempest join Gale's host,
+    # each with its own 21 cross-host pairs (7 per founding host) -- the
+    # gale group's cross total goes from 21 (1 member) to 84 (4 members),
+    # +63 pairs. 168 -> 231 cross pairs. Each of the three new agents has
+    # exactly one first-hand-verified leg (Beacon<->it, w524): +3 verified,
+    # +60 pending. 138 -> 141 verified, 30 -> 90 pending.
     seen_pairs = set()
     verified_cross = 0
     pending_cross = 0
@@ -1334,31 +1375,37 @@ def topology_svg(fleet: list) -> str:
                         pending_cross += 1
                     else:
                         verified_cross += 1
-    assert len(seen_pairs) == 168, f"cross-host mesh must be 168 pairs (147 + gale's 21), got {len(seen_pairs)}"
-    assert verified_cross == 138, f"verified cross-host legs must be 138 (136 at w520 + beacon<->gale + river<->gale), got {verified_cross}"
-    assert pending_cross == 30, f"pending cross-host legs must be 30 (11 at w520 + gale's 19 remaining pending), got {pending_cross}"
-    assert len(TOPO_LINKS) == 63, f"three complete K7 host graphs = 63 intra-host links, got {len(TOPO_LINKS)}"
+    assert len(seen_pairs) == 231, f"cross-host mesh must be 231 pairs (168 + zephyr/squall/tempest's 63), got {len(seen_pairs)}"
+    assert verified_cross == 141, f"verified cross-host legs must be 141 (138 at w523 + beacon<->squall/tempest/zephyr), got {verified_cross}"
+    assert pending_cross == 90, f"pending cross-host legs must be 90 (30 at w523 + 60 new pending from the three new agents), got {pending_cross}"
+    assert len(TOPO_LINKS) == 69, f"three complete K7 host graphs + gale's K4 = 69 intra-host links, got {len(TOPO_LINKS)}"
     # The intra-host pending set is explicit (the w505-w507 accounting: the
     # founding hosts' internal meshes are verified two-way -- most predate the
-    # per-link flag, which was only ever an evidence-title device). The 13
+    # per-link flag, which was only ever an evidence-title device). The
     # genuinely pending intra legs: pulsar's radar/prism legs (halves
     # installed, live pair tests pending), mist's six host-mate legs (Tidal's
     # group installs pending), vista's five non-mountain host-mate legs
-    # (Mountain's installs pending its wake; mountain<->vista verified).
+    # (Mountain's installs pending its wake; mountain<->vista verified), and
+    # (w524/w525) all six pairs among Gale/Zephyr/Squall/Tempest -- no
+    # evidence exists either direction about their mutual on-box
+    # connectivity, only about each one's own leg to Beacon (cross-host,
+    # handled above).
     PENDING_INTRA = {
         tuple(sorted(pr))
         for pr in (
             ("Tidal", "Mist"), ("River", "Mist"), ("Creek", "Mist"),
             ("Stream", "Mist"), ("Meadow", "Mist"),
+            ("Gale", "Zephyr"), ("Gale", "Squall"), ("Gale", "Tempest"),
+            ("Zephyr", "Squall"), ("Zephyr", "Tempest"), ("Squall", "Tempest"),
         )
     }
     _link_keys = {tuple(sorted((lk[0], lk[1]))) for lk in TOPO_LINKS}
     assert all(tuple(sorted(pr)) in _link_keys for pr in PENDING_INTRA), "pending intra pair missing from TOPO_LINKS"
     assert not any(len(lk) > 2 and lk[2] and tuple(sorted((lk[0], lk[1]))) in PENDING_INTRA for lk in TOPO_LINKS), "pending intra pair carries a verified flag"
     pending_intra = len(PENDING_INTRA)
-    assert pending_intra == 5, f"pending intra-host legs must be 5 (the five tidal-host mist legs), got {pending_intra}"
+    assert pending_intra == 11, f"pending intra-host legs must be 11 (5 mist legs + gale-cluster's 6 new unverified pairs), got {pending_intra}"
     verified_intra = len(TOPO_LINKS) - pending_intra
-    assert verified_intra == 58, f"verified intra-host legs must be 58, got {verified_intra}"
+    assert verified_intra == 58, f"verified intra-host legs must be 58 (unchanged -- the 6 new links are all pending), got {verified_intra}"
 
     # Tidal's exact diagram palette, scoped to this SVG (josh's 2026-09-20
     # "copy look and feel" ask -- this supersedes the w444/w453 deliberate
@@ -1544,14 +1591,15 @@ def topology_svg(fleet: list) -> str:
         '      <circle cx="74" cy="470" r="5" fill="var(--fleet-glm)"/><text x="88" y="474">GLM</text>\n'
         '      <circle cx="154" cy="470" r="5" fill="var(--fleet-claude)"/><text x="168" y="474">Claude</text>\n'
         '      <circle cx="244" cy="470" r="5" fill="var(--fleet-gpt)"/><text x="258" y="474">GPT (gpt-5.6-luna)</text>\n'
-        '      <text x="440" y="474" class="topo-legend-note">dot colour = model family &#183; hover or tap a node</text>\n'
+        '      <circle cx="380" cy="470" r="5" fill="var(--fleet-muse)"/><text x="394" y="474">Muse Spark 1.2</text>\n'
+        '      <text x="440" y="492" class="topo-legend-note">dot colour = model family &#183; hover or tap a node</text>\n'
         '      <text x="60" y="492" class="topo-legend-note">'
-        '22-agent mesh: 63 intra-host legs drawn complete per cluster (58 verified two-way, 5 pending) '
-        '&#183; cross-host rides the trunks: 138/168 pairs verified, 30 pending</text>\n'
+        '25-agent mesh: 69 intra-host legs drawn complete per cluster (58 verified two-way, 11 pending) '
+        '&#183; cross-host rides the trunks: 141/231 pairs verified, 90 pending</text>\n'
         '      <text x="60" y="510" class="topo-legend-note">'
         'formation matched to tidalwake.org&#8217;s fleet diagram (josh, Sept 20) &#183; gale&#8217;s 4th '
-        'host added Sept 21 &#183; cyan = tailscale peer &#183; violet = agora &#183; orange = relay &#183; '
-        'blue = mountain hub &#183; dashed = pending</text>\n'
+        'host added Sept 21, grew to 4 agents Sept 22 &#183; cyan = tailscale peer &#183; violet = agora &#183; '
+        'orange = relay &#183; blue = mountain hub &#183; dashed = pending</text>\n'
         '    </g>'
     )
     _aria = (
@@ -1560,32 +1608,31 @@ def topology_svg(fleet: list) -> str:
         "Beacon host (Beacon, Radar, Highbeam, Lantern, Lightning, Prism, Pulsar), and Mountain host "
         "(Mountain, Canyon, Ridge, Harbor, Delta, Mesa, Vista) -- each cluster a complete seven-node graph "
         "(63 intra-host legs: 58 verified two-way, 5 pending, dashed). Gale joined 2026-09-21 as a genuine "
-        "4th host (gale-agent, tailnet-only, one agent so far) rather than a member of the founding three. "
-        "Cross-host connectivity rides five labeled trunks instead of 168 individually drawn pairs: "
+        "4th host (gale-agent, tailnet-only), and on 2026-09-22 grew to four agents on the same host -- Gale, "
+        "Zephyr, Squall, Tempest -- forming its own small four-node graph (6 intra-host legs, all pending: no "
+        "evidence yet of their mutual on-box connectivity). "
+        "Cross-host connectivity rides five labeled trunks instead of 231 individually drawn pairs: "
         "the Tailscale peer channel and the Agora bridge between the Tidal and Beacon hosts, "
         "Beacon's relay and the Mountain-Beacon agora board bridge between the Beacon and Mountain hosts, "
         "and the Mountain hub arc for the direct per-agent channels reaching all 20 founding-mesh peers "
-        "(Mountain has not yet confirmed reaching Gale). "
-        "Of the 168 cross-host pairs, 138 are verified two-way and 30 are pending -- confirm-backs from the "
+        "(Mountain has not yet confirmed reaching Gale's host). "
+        "Of the 231 cross-host pairs, 141 are verified two-way and 90 are pending -- confirm-backs from the "
         "Tidal box outstanding (mesa's river/stream/meadow/brook legs, held for a coordinated flip with Tidal; "
-        "seven vista legs to the Tidal group, awaiting the reverse sends), plus nineteen of Gale's twenty-one "
-        "legs: Beacon<->Gale and River<->Gale are two-way verified first-hand (Beacon: pair test 12:41:17Z + "
-        "Beacon's own health-check 200, 2026-09-21; River: its own w178 report that its operator-installed "
-        "half closed two-way) -- Highbeam/Lantern/Radar have receiver halves installed but only self-tests so "
-        "far (Lightning/Radar/Lantern each confirm their own outbound pair test to Gale succeeded, but say the "
-        "inbound side is still a self-test, not Gale-originated), Prism/Pulsar were forwarded tokens with no "
-        "confirm-back yet, and the remaining Tidal-group and Mountain-group siblings each hold a relayed half "
-        "awaiting their own install; "
+        "seven vista legs to the Tidal group, awaiting the reverse sends), plus Gale's remaining legs "
+        "(Beacon<->Gale and River<->Gale are two-way verified first-hand; the other nineteen have halves "
+        "installed or relayed with no genuine own-identity confirm-back yet), and sixty of Zephyr/Squall/"
+        "Tempest's sixty-three legs (each has exactly one first-hand-verified leg so far: Beacon's own "
+        "credentialed send + listener ACCEPT with correct attribution, 18:49:54Z 2026-09-21, w524). "
         "w520 closed sixteen legs on first-hand own-identity arrivals: vista's six beacon-group legs, "
         "mist's highbeam/lantern/lightning/radar legs and mesa's six beacon-group legs; "
         "w518 had closed nineteen on first-hand pair tests and peer confirm-backs). "
-        "Total: 22-agent mesh, 196 of 231 pairs verified two-way, 35 pending (5 intra-host + 30 cross-host). "
+        "Total: 25-agent mesh, 199 of 300 pairs verified two-way, 101 pending (11 intra-host + 90 cross-host). "
         "Radar is the operator escalation line and has run GLM Flash via opencode since 2026-09-19 -- "
         "it does not run Claude Code (its Claude history survives only as history on its card). "
         "Model changes on 2026-09-20 left three families among the founding 21: Claude Code (Beacon, Pulsar, "
         "Tidal, Mountain), gpt-5.6-luna via Codex (Prism, Brook, Mist, Mesa, Vista) and GLM (the other "
-        "twelve); no live node in that group runs Muse Spark or Qwen. Gale (22nd) is Claude, "
-        "operator-confirmed 2026-09-21. "
+        "twelve). Gale (22nd) is Claude, operator-confirmed 2026-09-21; Zephyr, Squall and Tempest (23rd-25th, "
+        "2026-09-22) run opencode + Muse Spark 1.2, per Gale's own introduction. "
         "Node colour is model family; node ring is measured liveness (same states as the cards); "
         "hover, tap, or keyboard-focus a node for its role and latest signal."
     )
@@ -2049,6 +2096,74 @@ def gale_row():
     }
 
 
+def _gale_sibling_row(name: str, port: int, role: str):
+    """Shared shape for Gale's three new siblings (2026-09-21 ~17:49-18:46Z,
+    introduced over Gale's own peer message and installed the same day per
+    NOTES w523/w524; josh's 2026-09-22 02:03:44Z directive -- "ensure fleet
+    topology is update to account for the new agents" -- authorizes adding
+    them here, the same pattern as josh's 2026-09-21 Gale-topology ask).
+    Role/model per Gale's own 17:49:18Z peer message (data, not verified
+    independently, same standard used for Gale's own role/model at
+    onboarding): opencode + Muse Spark 1.2, same wake-cadence pattern as
+    Gale. Liveness is a real measured /health check on the agent's own
+    port (100.66.39.59), same as gale_row(). Mesh: Beacon's own
+    credentialed send succeeds and the listener log shows ACCEPT with
+    correct attribution 18:49:54Z 2026-09-21 (w524, re-verified live this
+    build) -- the only first-hand-verified leg so far; every other pair
+    (including this agent's own host-mates) has no evidence either
+    direction yet."""
+    upper = name.upper()
+    raw = run(f"curl -s --max-time 8 http://100.66.39.59:{port}/health", timeout=12)
+    alive = f'"name": "{upper}"' in raw or f'"name":"{upper}"' in raw
+    if alive:
+        state, signal = "ok", (
+            f"{name.lower()} listener /health 200 with its own identity (measured "
+            f"this build). Introduced by Gale on its own host 2026-09-21, installed "
+            f"+ first-hand re-verified w524. Beacon&#8596;{name.lower()} is the only "
+            f"two-way verified leg so far (Beacon&#8217;s own credentialed send 200; "
+            f"listener ACCEPT peer={upper} 18:49:54Z 2026-09-21, correct "
+            f"attribution) -- every other pair, including its own Gale/Zephyr/"
+            f"Squall/Tempest host-mates, has no evidence either direction yet"
+        )
+    elif raw:
+        state, signal = "unknown", (
+            f"{name.lower()} /health answered but without the expected identity -- "
+            "endpoint up, content unexpected")
+    else:
+        state, signal = "unreachable", (
+            f"no response from {name.lower()} listener :{port} (tailnet)")
+    return {
+        "name": name,
+        "role": f"{role} (per Gale's own introduction, 2026-09-21)",
+        "host": f"gale-agent (independent, tailnet-only, no public domain; {name.lower()} listener :{port})",
+        "model": "opencode + Muse Spark 1.2 (per Gale's own introduction, 2026-09-21)",
+        "cadence": "on Gale's own host",
+        "wakings": "—",
+        "state": state,
+        "last_wake": None,
+        "last_wake_human": "no wake logs (not co-located here); peer /health is the liveness source",
+        "signal": signal,
+    }
+
+
+def zephyr_row():
+    """Zephyr -- 23rd fleet agent, second on Gale's host (100.66.39.59:8788).
+    See _gale_sibling_row for the shared evidence discipline."""
+    return _gale_sibling_row("Zephyr", 8788, "Continuous Watch & Telemetry")
+
+
+def squall_row():
+    """Squall -- 24th fleet agent, third on Gale's host (100.66.39.59:8789).
+    See _gale_sibling_row for the shared evidence discipline."""
+    return _gale_sibling_row("Squall", 8789, "Adversarial Verification & Recovery Drills")
+
+
+def tempest_row():
+    """Tempest -- 25th fleet agent, fourth on Gale's host (100.66.39.59:8790).
+    See _gale_sibling_row for the shared evidence discipline."""
+    return _gale_sibling_row("Tempest", 8790, "Open-Stack Portability & Fleet Interop")
+
+
 def main():
     beacon = beacon_row()
     beacon["wakings"] = beacon_wakings()
@@ -2120,6 +2235,14 @@ def main():
     # like mesa/vista/mist but with a real measured /health check like
     # brook/delta -- gale's host is directly curlable over the tailnet.
     gale = gale_row()
+    # w524/w525 (2026-09-22, josh's 02:03:44Z Telegram: "Ensure fleet
+    # topology is update to account for the new agents"): Gale's three new
+    # siblings -- Zephyr (23rd), Squall (24th), Tempest (25th) -- join the
+    # rows. Same manifest-derived-plus-real-health-check pattern as
+    # gale_row(); only their Beacon leg is first-hand verified so far.
+    zephyr = zephyr_row()
+    squall = squall_row()
+    tempest = tempest_row()
 
     # W483 (josh's "Update fleet topology" repeat, 22:24:01Z relay + 22:25:09Z
     # "figure out a role for delta"): the two-stage W478 pass is COMPLETE --
@@ -2130,7 +2253,8 @@ def main():
     # + metrics + prose counts synced to 15 this waking.
     fleet = [beacon, highbeam, lantern, lightning, radar, prism, pulsar,
              tidal, river, creek, stream, meadow, brook, mist, mountain,
-             canyon, ridge, harbor, delta, mesa, vista, gale]
+             canyon, ridge, harbor, delta, mesa, vista, gale,
+             zephyr, squall, tempest]
 
     healthy = sum(1 for a in fleet if a["state"] in ("ok", "waking"))
     hosts = {"beaconwake.com (162.243.3.223)", "tidalwake.org",

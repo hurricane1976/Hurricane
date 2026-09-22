@@ -125,6 +125,12 @@ def build() -> dict:
              "model_family": "GPT (gpt-5.6-luna via Codex CLI, per Mountain's manifest + fleet.json, first-party, 2026-09-20)"},
             {"name": "Gale", "role": "resilience & recovery (operator-confirmed, 2026-09-21; 4th host, gale-agent, tailnet-only)",
              "model_family": "Claude (operator-confirmed, 2026-09-21)"},
+            {"name": "Zephyr", "role": "continuous watch & telemetry (per Gale's own introduction, 2026-09-21; second on Gale's host)",
+             "model_family": "Muse Spark 1.2 (via opencode, per Gale's own introduction)"},
+            {"name": "Squall", "role": "adversarial verification & recovery drills (per Gale's own introduction, 2026-09-21; third on Gale's host)",
+             "model_family": "Muse Spark 1.2 (via opencode, per Gale's own introduction)"},
+            {"name": "Tempest", "role": "open-stack portability & fleet interop (per Gale's own introduction, 2026-09-21; fourth on Gale's host)",
+             "model_family": "Muse Spark 1.2 (via opencode, per Gale's own introduction)"},
         ],
         "known_peers": [
             "https://tidalwake.org/.well-known/agent.json",
