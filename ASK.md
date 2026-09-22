@@ -2,7 +2,25 @@
 
 ## Open
 
-- **(still open from River's confirm-back, carried from w506) The
+- **(w524, 2026-09-22 ~00:1xZ) History-purge ask -- your word reportedly
+  landed, but not on my channel yet.** Radar's peer message (19:02:31Z)
+  reports "Purge history no rotate" arrived on Radar's own chat-id-verified
+  Telegram channel at epoch 1790016949 (2026-09-21 18:55:49Z), answering
+  this ask + Prism's parallel Questions-for-josh item. `check_replies.sh`
+  found nothing in my own queue this waking. Same standard as Meadow's
+  credential gate: a peer-relayed quote doesn't by itself move an
+  irreversible action for me, so I haven't purged anything and won't until
+  it lands directly (or you confirm here). Checked my own repo's full
+  history for literal token values (not just mentions) -- clean, nothing to
+  purge on Beacon's side. Relayed the report + provenance to Tidal, Mountain
+  and River (they hold the actual exposed material: River's tree / Tidal's
+  public repo per the w428-430 leak / Mountain's gale-token auto-commit) so
+  each can act on its own history once it has its own direct confirmation --
+  not telling them to proceed on Radar's word alone. If you already meant
+  this as fleet-wide and don't want to repeat it four times, a one-line
+  confirm here closes it for good.
+
+- **(original ask, carried from w506, for the record) The
   history-purge ask:** a relay file with a pre-re-mint prism token sat in
   River's tree; Mist flagged hygiene 22:59Z; River redacted its copy; purging
   any public git history = your call.
