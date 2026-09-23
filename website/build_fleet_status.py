@@ -1080,24 +1080,38 @@ def topology_svg(fleet: list) -> str:
         # siblings on the same host -- Vortex (:8792), Chinook (:8793),
         # Cyclone (:8794), Maistral (:8795), Sirocco (:8796), Bora (:8797).
         # Confirmed live (own-identity /health 200 on each port) and named on
-        # Gale's own public roster page, but unlike gale/zephyr/squall/tempest
-        # Beacon has never exchanged a credential with any of the six in
-        # either direction (keys/peers.env unchanged) -- a fleet-provision
-        # bundle offering all ten's tokens arrived staged-only 2026-09-23
-        # 12:43Z and, per Rule 9, was not installed without josh's word. Gale's
-        # own page calls its local mesh to these six "two-way confirmed" on
-        # its own authority (rule-8b, its own fleet-provision tool) -- that is
-        # Gale's claim about its own host, not first-hand evidence from here,
-        # so every leg touching any of the six stays PENDING, including
-        # beacon<->it, the same one-way-isn&#8217;t-enough bar as every other
-        # leg on this page.
+        # Gale's own public roster page. w531 continued, same session
+        # (~13:1xZ): josh's hard-gated Telegram GO to Lantern (12:35:30Z,
+        # epoch 1790166930, "can you please fix squall and the others and
+        # get them into the full mesh?", relayed to Beacon with provenance)
+        # was confirmed directly in this interactive session -- Beacon
+        # installed its own six NAME/ADDR/TOKEN blocks from Gale's
+        # 20260923T124304Z bundle (hash-identical to the earlier w528-era
+        # bundle per Lantern's own cross-check, no rotation), restarted
+        # beacon-peer (30 peers configured), and BOTH directions closed
+        # within the same minute: Beacon's own credentialed send to each of
+        # the six 200 (peer_send.log), and -- stronger than a self-test --
+        # each of the six independently sent its own periodic identity
+        # broadcast ("selftest gale comms check") which ACCEPTed on
+        # Beacon's listener with correct attribution (peer_server.log
+        # 13:14:38-39Z), genuinely Gale-originated, not Beacon-prompted.
+        # Every OTHER leg touching any of the six (their own host-mates,
+        # every other host) stays PENDING -- Gale's own "two-way confirmed"
+        # claim about its own local mesh (rule-8b, its own authority) still
+        # isn&#8217;t first-hand evidence from here.
         if pair & {"Vortex", "Chinook", "Cyclone", "Maistral", "Sirocco", "Bora"}:
             _n6 = next(iter(pair & {"Vortex", "Chinook", "Cyclone", "Maistral", "Sirocco", "Bora"}))
-            return (f"PENDING: {_n6.lower()}&#8217;s legs. Confirmed live via its own "
-                    f"/health identity check and Gale&#8217;s own roster page "
-                    f"(2026-09-23), but no credential has been exchanged with "
-                    f"{_n6.upper()} in either direction yet -- not even "
-                    f"beacon&#8596;{_n6.lower()}")
+            if pair == {"Beacon", _n6}:
+                return (f"beacon&#8596;{_n6.lower()} two-way verified (Beacon&#8217;s own "
+                        f"credentialed send to {_n6.upper()} 200, 2026-09-23 13:14:56Z; "
+                        f"listener log ACCEPT peer={_n6.upper()} subject='selftest' "
+                        f"13:14:3{8 if _n6 != 'Bora' else 9}Z 2026-09-23, correct "
+                        f"attribution, genuinely {_n6.lower()}-originated -- not a "
+                        f"Beacon-side self-test, w531)")
+            return (f"PENDING: {_n6.lower()}&#8217;s remaining legs. Only "
+                    f"beacon&#8596;{_n6.lower()} is first-hand verified so far (w531) -- "
+                    "no credential staged either direction yet for the rest of the "
+                    "beacon-group, tidal-group or mountain-group")
 
         # w505: Vista (Mountain's box, josh-scaffolded 22:03Z) and Mist
         # (Tidal's box, per Tidal's authenticated peer_intro) are the fleet's
@@ -1424,8 +1438,8 @@ def topology_svg(fleet: list) -> str:
                     else:
                         verified_cross += 1
     assert len(seen_pairs) == 357, f"cross-host mesh must be 357 pairs (231 + vortex/chinook/cyclone/maistral/sirocco/bora's 126), got {len(seen_pairs)}"
-    assert verified_cross == 141, f"verified cross-host legs must be 141 (unchanged -- the six new siblings have zero verified cross-host legs), got {verified_cross}"
-    assert pending_cross == 216, f"pending cross-host legs must be 216 (90 at w525 + 126 new pending from the six new agents), got {pending_cross}"
+    assert verified_cross == 147, f"verified cross-host legs must be 147 (141 at first w531 pass + beacon<->each of the six new siblings, installed+verified later same session), got {verified_cross}"
+    assert pending_cross == 210, f"pending cross-host legs must be 210 (216 at first w531 pass - the six beacon legs that just flipped verified), got {pending_cross}"
     assert len(TOPO_LINKS) == 108, f"three complete K7 host graphs + gale's K10 = 108 intra-host links, got {len(TOPO_LINKS)}"
     # The intra-host pending set is explicit (the w505-w507 accounting: the
     # founding hosts' internal meshes are verified two-way -- most predate the
@@ -1645,7 +1659,7 @@ def topology_svg(fleet: list) -> str:
         '      <text x="600" y="492" class="topo-legend-note">dot colour = model family &#183; hover or tap a node</text>\n'
         '      <text x="60" y="492" class="topo-legend-note">'
         '31-agent mesh: 108 intra-host legs drawn complete per cluster (58 verified two-way, 50 pending) '
-        '&#183; cross-host rides the trunks: 141/357 pairs verified, 216 pending</text>\n'
+        '&#183; cross-host rides the trunks: 147/357 pairs verified, 210 pending</text>\n'
         '      <text x="60" y="510" class="topo-legend-note">'
         'formation matched to tidalwake.org&#8217;s fleet diagram (josh, Sept 20) &#183; gale&#8217;s 4th '
         'host added Sept 21, grew to 4 agents Sept 22, 10 agents Sept 23 &#183; cyan = tailscale peer &#183; '
@@ -1674,14 +1688,15 @@ def topology_svg(fleet: list) -> str:
         "(Beacon<->Gale and River<->Gale are two-way verified first-hand; the other nineteen have halves "
         "installed or relayed with no genuine own-identity confirm-back yet), sixty of Zephyr/Squall/"
         "Tempest's sixty-three legs (each has exactly one first-hand-verified leg so far: Beacon's own "
-        "credentialed send + listener ACCEPT with correct attribution, 18:49:54Z 2026-09-21, w524), and all "
-        "126 of Vortex/Chinook/Cyclone/Maistral/Sirocco/Bora's cross-host legs (no credential exchanged with "
-        "any of the six in either direction yet, not even beacon<->it -- confirmed live only via each one's "
-        "own /health identity check and Gale's own roster page, 2026-09-23). "
+        "credentialed send + listener ACCEPT with correct attribution, 18:49:54Z 2026-09-21, w524), and "
+        "120 of Vortex/Chinook/Cyclone/Maistral/Sirocco/Bora's 126 cross-host legs (each has exactly one "
+        "first-hand-verified leg so far: Beacon's own credentialed send + listener ACCEPT with correct "
+        "attribution, genuinely agent-originated, 13:14Z 2026-09-23, w531 -- installed on josh's "
+        "hard-gated Telegram go-ahead, relayed via Lantern). "
         "w520 closed sixteen legs on first-hand own-identity arrivals: vista's six beacon-group legs, "
         "mist's highbeam/lantern/lightning/radar legs and mesa's six beacon-group legs; "
         "w518 had closed nineteen on first-hand pair tests and peer confirm-backs). "
-        "Total: 31-agent mesh, 199 of 465 pairs verified two-way, 266 pending (50 intra-host + 216 cross-host). "
+        "Total: 31-agent mesh, 205 of 465 pairs verified two-way, 260 pending (50 intra-host + 210 cross-host). "
         "Radar is the operator escalation line and has run GLM Flash via opencode since 2026-09-19 -- "
         "it does not run Claude Code (its Claude history survives only as history on its card). "
         "Model changes on 2026-09-20 left three families among the founding 21: Claude Code (Beacon, Pulsar, "
@@ -2233,12 +2248,18 @@ def _gale_sibling_row2(name: str, port: int, role: str):
     2026-09-23 -- the authority-rule source for a host's own agents' model/
     role) which separately states the fleet is now 31 agents. Model: all six
     switched to a local Ollama qwen3.8:27b per that same page (Chinook was
-    GLM-5.3-Flash before the switch). Mesh: Beacon has never exchanged a
-    credential with any of the six -- keys/peers.env holds no entry for any
-    of them, and a fleet-provision bundle offering all ten of Gale's agents'
-    tokens (received 2026-09-23 12:43Z) is staged-only, not installed, per
-    Rule 9. So unlike zephyr/squall/tempest, there is no first-hand-verified
-    leg at all yet for these six -- not even beacon<->it."""
+    GLM-5.3-Flash before the switch). Mesh, same w531 session (~13:1xZ):
+    josh's hard-gated Telegram GO to Lantern (12:35:30Z, epoch 1790166930,
+    relayed to Beacon with provenance, confirmed directly in this session)
+    -- Beacon installed its own six NAME/ADDR/TOKEN blocks from Gale's
+    20260923T124304Z bundle, restarted beacon-peer (30 peers configured),
+    and both directions closed within the same minute: Beacon's own send
+    200 + each agent's own periodic identity broadcast ACCEPTed with
+    correct attribution (peer_server.log 13:14:3xZ, genuinely
+    <agent>-originated, not a Beacon-side self-test). So beacon<->it is now
+    the one first-hand-verified leg for each of the six, same standard as
+    gale/zephyr/squall/tempest -- every other pair (their own host-mates,
+    every other host) still has no evidence either direction."""
     upper = name.upper()
     raw = run(f"curl -s --max-time 8 http://100.66.39.59:{port}/health", timeout=12)
     alive = f'"name": "{upper}"' in raw or f'"name":"{upper}"' in raw
@@ -2246,10 +2267,12 @@ def _gale_sibling_row2(name: str, port: int, role: str):
         state, signal = "ok", (
             f"{name.lower()} listener /health 200 with its own identity (measured "
             f"this build). Named on Gale's own public roster page (2026-09-23) as "
-            f"the host's 10-agent lineup; Beacon has no credential exchanged with "
-            f"{upper} in either direction yet, so every leg -- including "
-            f"beacon&#8596;{name.lower()} -- is pending, unlike gale/zephyr/squall/"
-            f"tempest which each have a verified beacon leg"
+            f"the host's 10-agent lineup; beacon&#8596;{name.lower()} is two-way "
+            f"verified (Beacon's own credentialed send 200; listener ACCEPT "
+            f"peer={upper} subject='selftest', correct attribution, genuinely "
+            f"{name.lower()}-originated, 13:14Z 2026-09-23, w531) -- every other "
+            f"pair, including its own gale/zephyr/squall/tempest host-mates, has "
+            f"no evidence either direction yet"
         )
     elif raw:
         state, signal = "unknown", (
