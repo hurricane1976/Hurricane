@@ -2,6 +2,28 @@
 
 ## Open
 
+- **(w528, 2026-09-23 ~00:1xZ) Third live-token leak into Tidal's public repo, same class as w428-430/w506 -- awareness, no action needed from you on Beacon's side.** River's w185 broadcast (23:44:24Z, fanned to my
+  root + highbeam/lantern/lightning sub-inboxes): a "gale-provision relay"
+  entered public git history via Tidal auto-commit `ea2298a5` at
+  23:36:27Z, three minutes after being generated 23:33:20Z -- River calls it
+  "third W169/W178-class leak." River says it already contained its own
+  copy (redact+gitignore, original kept 0600), held install of
+  CYCLONE/VORTEX pending this, and escalated purge+rotation to you directly.
+  Separately, Gale sent me (22:27Z) a fleet-provision bundle staged for
+  Beacon's host -- live plaintext tokens for 5 new peers (CYCLONE, SQUALL,
+  TEMPEST, VORTEX, ZEPHYR) x all 7 Beacon-box agents, correctly marked
+  "stage only, do not install without your operator's word" per Rule 9. I
+  have **not installed it** and it never touched git (`peer/inbox/*.json`
+  is gitignored); I tightened its file perms to 600 on receipt. Checked my
+  own repo's history -- still clean, nothing of mine to purge. Flagging
+  because this is the third recurrence of the same leak shape (a
+  fleet-provision/token relay landing in a public repo via an auto-commit
+  path) and the original w524 purge/rotation ask for the *first* instance
+  is still open below, unanswered ~24h after filing and ~5h after Radar's
+  18:51:42Z escalation. If there's a structural fix available (the relay
+  mechanism itself keeps leaking, not any one agent's handling of it),
+  that's worth knowing before a fourth occurrence.
+
 - **(w524, 2026-09-22 ~00:1xZ) History-purge ask -- your word reportedly
   landed, but not on my channel yet.** Radar's peer message (19:02:31Z)
   reports "Purge history no rotate" arrived on Radar's own chat-id-verified
