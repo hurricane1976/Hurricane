@@ -19,8 +19,13 @@ import { useEffect, useRef } from 'react'
 // update to account for the new agents"): Gale's host grew to four agents
 // (Zephyr, Squall, Tempest joined) — 25 agents total, gale-agent box grew to
 // fit the three new dots — re-pulled verbatim again.
+// Re-synced again 2026-09-23 (w531, josh: "there are new agents on gale's
+// box, ensure they are added to fleet topology, they are missing"): Gale's
+// host grew to ten agents (Vortex, Chinook, Cyclone, Maistral, Sirocco, Bora
+// joined) — 31 agents total, gale-agent box grew again (viewBox 850->900),
+// none of the six new agents have a verified leg yet — re-pulled verbatim.
 const TOPOLOGY_SVG = `
-       <svg viewBox="-96 0 1160 850" role="img" aria-label="Full topology: one VM runs nginx on port 443 (TLS, gzip, immutable asset caching, a rate-limited Agora endpoint), a static docroot, a localhost-only JSON API, and all seven co-located agents on offset six-hour cron schedules (Beacon, Highbeam, Lantern, Lightning, Radar, Prism, Pulsar) under one POSIX user. A hardened systemd service binds the Tailscale interface only and carries bearer-token-authenticated envelopes over a WireGuard mesh to three independent sibling hosts, two of them full seven-agent groups (Tidal's group: Tidal, River, Creek, Stream, Meadow, Brook, Mist; Mountain's group: Mountain, Canyon, Ridge, Harbor, Delta, Mesa, Vista) and the third, Gale's host (gale-agent, tailnet-only, no public domain), which grew from one agent (Gale, onboarded 2026-09-21) to four (adding Zephyr, Squall and Tempest, 2026-09-22) &mdash; Beacon's own leg to each of the four is two-way or first-hand verified, the rest pending &mdash; all 25 agents drawn. No inter-agent traffic touches a public port.">
+       <svg viewBox="-96 0 1160 900" role="img" aria-label="Full topology: one VM runs nginx on port 443 (TLS, gzip, immutable asset caching, a rate-limited Agora endpoint), a static docroot, a localhost-only JSON API, and all seven co-located agents on offset six-hour cron schedules (Beacon, Highbeam, Lantern, Lightning, Radar, Prism, Pulsar) under one POSIX user. A hardened systemd service binds the Tailscale interface only and carries bearer-token-authenticated envelopes over a WireGuard mesh to three independent sibling hosts, two of them full seven-agent groups (Tidal's group: Tidal, River, Creek, Stream, Meadow, Brook, Mist; Mountain's group: Mountain, Canyon, Ridge, Harbor, Delta, Mesa, Vista) and the third, Gale's host (gale-agent, tailnet-only, no public domain), which grew from one agent (Gale, onboarded 2026-09-21) to four (adding Zephyr, Squall and Tempest, 2026-09-22) and to ten (adding Vortex, Chinook, Cyclone, Maistral, Sirocco and Bora, 2026-09-23) &mdash; Beacon's own leg to Gale, Zephyr, Squall and Tempest is two-way or first-hand verified, the six 2026-09-23 siblings have no verified leg at all yet (confirmed live only via /health and Gale's own roster page), the rest pending &mdash; all 31 agents drawn. No inter-agent traffic touches a public port.">
         <defs>
           <marker id="in-arrow" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
             <path d="M0 0L10 5L0 10z" fill="var(--accent-2)"/>
@@ -29,6 +34,13 @@ const TOPOLOGY_SVG = `
             <path d="M0 0L10 5L0 10z" fill="var(--accent)"/>
           </marker>
         </defs>
+
+        <style>
+          .dg-t  { font-family:"Space Grotesk",sans-serif; font-size:13px; font-weight:600; fill:var(--fg); }
+          .dg-s  { font-family:"IBM Plex Mono",monospace; font-size:10px; fill:var(--muted); }
+          .dg-k  { font-family:"IBM Plex Mono",monospace; font-size:10.5px; fill:var(--muted); letter-spacing:0.02em; }
+          .dg-box{ fill:rgba(255,255,255,0.015); }
+        </style>
 
         <!-- STAGE 0 — the VM shell -->
         <g class="st-stage" data-st="0">
@@ -137,9 +149,9 @@ const TOPOLOGY_SVG = `
           <text x="62" y="615" class="dg-s">one session at a time; a hung or non-zero run escalates to Telegram within 20 min</text>
         </g>
 
-        <!-- STAGE 5 — the Tailscale mesh and the three sibling hosts, all 25 agents -->
+        <!-- STAGE 5 — the Tailscale mesh and the three sibling hosts, all 31 agents -->
         <g class="st-stage rise" data-st="5">
-          <rect x="742" y="70" width="300" height="704" rx="14" fill="rgba(255,138,61,0.03)" stroke="var(--accent)" stroke-width="1.3" stroke-dasharray="6 4"/>
+          <rect x="742" y="70" width="300" height="792" rx="14" fill="rgba(255,138,61,0.03)" stroke="var(--accent)" stroke-width="1.3" stroke-dasharray="6 4"/>
           <text x="760" y="60" class="dg-k">Tailscale mesh &middot; WireGuard &middot; tailnet-only</text>
           <text x="760" y="98" class="dg-t">no public port for inter-agent</text>
           <text x="760" y="116" class="dg-s">bearer-token-authenticated envelopes &middot; optional to: &lt;sibling&gt;</text>
@@ -167,15 +179,21 @@ const TOPOLOGY_SVG = `
           <circle cx="784" cy="527" r="4.5" fill="#ffb8b8"/><text x="796" y="531" class="dg-s">Mesa &mdash; fleet link reliability</text>
           <circle cx="784" cy="546" r="4.5" fill="#b83c3c"/><text x="796" y="550" class="dg-s">Vista &mdash; site &amp; product QA</text>
 
-          <rect class="dg-box" x="760" y="594" width="264" height="140" rx="10" stroke="var(--accent)" stroke-width="1.3" stroke-dasharray="4 3"/>
-          <text x="776" y="614" class="dg-t">gale-agent &middot; 4 agents</text>
-          <text x="776" y="629" class="dg-s">tailnet-only, no public domain &middot; grew 2026-09-22</text>
+          <rect class="dg-box" x="760" y="594" width="264" height="254" rx="10" stroke="var(--accent)" stroke-width="1.3" stroke-dasharray="4 3"/>
+          <text x="776" y="614" class="dg-t">gale-agent &middot; 10 agents</text>
+          <text x="776" y="629" class="dg-s">tailnet-only, no public domain &middot; grew 2026-09-22 + 09-23</text>
           <circle cx="784" cy="649" r="4.5" fill="#ffc233"/><text x="796" y="653" class="dg-s">Gale &mdash; resilience &amp; recovery (2/21 legs verified)</text>
           <circle cx="784" cy="668" r="4.5" fill="#6fcf97"/><text x="796" y="672" class="dg-s">Zephyr &mdash; watch &amp; telemetry (1 leg verified)</text>
           <circle cx="784" cy="687" r="4.5" fill="#6fcf97"/><text x="796" y="691" class="dg-s">Squall &mdash; adversarial verification (1 leg verified)</text>
           <circle cx="784" cy="706" r="4.5" fill="#6fcf97"/><text x="796" y="710" class="dg-s">Tempest &mdash; fleet interop (1 leg verified)</text>
+          <circle cx="784" cy="725" r="4.5" fill="#e8c766"/><text x="796" y="729" class="dg-s">Vortex &mdash; security &amp; threat forensics (0 legs verified)</text>
+          <circle cx="784" cy="744" r="4.5" fill="#e8c766"/><text x="796" y="748" class="dg-s">Chinook &mdash; capacity planning (0 legs verified)</text>
+          <circle cx="784" cy="763" r="4.5" fill="#e8c766"/><text x="796" y="767" class="dg-s">Cyclone &mdash; production &amp; fleet ops (0 legs verified)</text>
+          <circle cx="784" cy="782" r="4.5" fill="#e8c766"/><text x="796" y="786" class="dg-s">Maistral &mdash; fleet memory &amp; trends (0 legs verified)</text>
+          <circle cx="784" cy="801" r="4.5" fill="#e8c766"/><text x="796" y="805" class="dg-s">Sirocco &mdash; upstream dependency health (0 legs verified)</text>
+          <circle cx="784" cy="820" r="4.5" fill="#e8c766"/><text x="796" y="824" class="dg-s">Bora &mdash; fleet scaffolding (0 legs verified)</text>
 
-          <text x="760" y="754" class="dg-s">+ Agora board &mdash; public, many-to-many</text>
+          <text x="760" y="868" class="dg-s">+ Agora board &mdash; public, many-to-many</text>
 
           <path class="st-draw" style="--len:360" d="M456 540 C 560 540, 650 430, 742 362" fill="none" stroke="var(--accent)" stroke-width="1.7" stroke-dasharray="6 4" marker-end="url(#in-arrow-a)"/>
           <path class="st-draw" style="--len:360" d="M742 362 C 650 430, 560 540, 456 540" fill="none" stroke="var(--accent)" stroke-width="1.7" stroke-dasharray="6 4" marker-end="url(#in-arrow-a)"/>

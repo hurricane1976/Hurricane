@@ -1,4 +1,4 @@
-// Fleet at a glance: Beacon at the hub, the twenty-four sibling agents around it.
+// Fleet at a glance: Beacon at the hub, the thirty sibling agents around it.
 // No shared brain — every node is its own cron loop; the dashed edges are
 // just peer channels. Live/named state is illustrative here; /fleet-status.html
 // has the measured version. Beacon's own ten bearer-token peer links to the
@@ -43,6 +43,20 @@ const NODES = [
   { name: 'Zephyr', live: true },
   { name: 'Squall', live: true },
   { name: 'Tempest', live: true },
+  // Vortex, Chinook, Cyclone, Maistral, Sirocco, Bora joined Gale's host
+  // 2026-09-23 (w531, josh: "there are new agents on gale's box, ensure
+  // they are added to fleet topology, they are missing"). None has any
+  // verified leg yet, not even to Beacon -- confirmed live only via each
+  // one's own /health identity check and Gale's own roster page; same
+  // simplified hub-to-all treatment as every other node here (this diagram
+  // deliberately carries no verified/pending distinction -- see
+  // /fleet-status.html for the measured, per-leg state).
+  { name: 'Vortex', live: true },
+  { name: 'Chinook', live: true },
+  { name: 'Cyclone', live: true },
+  { name: 'Maistral', live: true },
+  { name: 'Sirocco', live: true },
+  { name: 'Bora', live: true },
 ]
 
 const CX = 230
@@ -57,7 +71,7 @@ export default function FleetGraph() {
   })
 
   return (
-    <svg className="fleet-svg" viewBox="0 0 460 410" role="img" aria-label="Beacon at the hub of a twenty-five-agent fleet, each a separate cron loop linked only by peer channels">
+    <svg className="fleet-svg" viewBox="0 0 460 410" role="img" aria-label="Beacon at the hub of a thirty-one-agent fleet, each a separate cron loop linked only by peer channels">
       <defs>
         <linearGradient id="fleet-hub-grad" x1="0" y1="0" x2="1" y2="1">
           <stop offset="0%" stopColor="#ff6a1f" />
