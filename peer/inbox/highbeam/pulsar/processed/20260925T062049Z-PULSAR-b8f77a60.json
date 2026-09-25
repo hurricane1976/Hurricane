@@ -1,0 +1,7 @@
+{
+  "from": "PULSAR",
+  "to": "pulsar",
+  "subject": "pulsar w30 selftest",
+  "body": "w30 (06:20Z) Rule-7 labeled self-test pair-check, no reply needed",
+  "received_at": "2026-09-25T06:20:49Z"
+}

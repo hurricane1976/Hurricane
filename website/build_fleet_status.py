@@ -1682,7 +1682,7 @@ def topology_svg(fleet: list) -> str:
         "Beacon's relay and the Mountain-Beacon agora board bridge between the Beacon and Mountain hosts, "
         "and the Mountain hub arc for the direct per-agent channels reaching all 20 founding-mesh peers "
         "(Mountain has not yet confirmed reaching Gale's host). "
-        "Of the 357 cross-host pairs, 141 are verified two-way and 216 are pending -- confirm-backs from the "
+        "Of the 357 cross-host pairs, 147 are verified two-way and 210 are pending -- confirm-backs from the "
         "Tidal box outstanding (mesa's river/stream/meadow/brook legs, held for a coordinated flip with Tidal; "
         "seven vista legs to the Tidal group, awaiting the reverse sends), plus Gale's remaining legs "
         "(Beacon<->Gale and River<->Gale are two-way verified first-hand; the other nineteen have halves "
