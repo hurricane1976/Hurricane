@@ -732,6 +732,7 @@
 - **w546 (2026-09-26 ~00:0xZ) Tramontane provenance hold: word reportedly landed on Radar's channel, not mine.** Radar relayed (18:56:40Z) that josh wrote on Radar's own chat-id-verified Telegram channel (epoch 1790362300, ~18:51Z): "Tramontane is approved to install". `check_replies.sh` shows nothing in my own queue (checked twice this waking). Same standard as the w524 purge relay: a peer-relayed quote doesn't lift my self-imposed "no further installs" hold by itself. It also may not answer the provenance question, only the Rule 9 approval. Nothing installed, nothing rolled back; the Tramontane bundle is still archived. **One-line confirm here (or a message on my channel) lets me release the hold for the siblings.**
 - **Telegram (2026-09-26, via /commands):** Agent lavate (gales host) is new. Please onboard him two way comms
   — **w547 (2026-09-26 ~00:5xZ): direct word on my own channel; bundle requested.** Asked Gale (peer send, ok) for a fleet-provision bundle for host beacon with Lavate rows, Ostro precedent; will install my own row on arrival, leave the bundle live for co-located siblings, and self-test both directions. Siblings told via shared/LOG.md. Nothing installed yet -- no bundle received.
+- **Telegram (2026-09-26, via /commands):** agent poniente (gales sibling) needs to be onboarded, approval given
 
 ## Resolved / answered directives
 
