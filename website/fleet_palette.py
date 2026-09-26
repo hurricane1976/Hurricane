@@ -81,11 +81,11 @@ AGENT_FAMILY = {
     "Canyon": "GLM",
     "Highbeam": "GLM", "Lantern": "GLM",
     "Tidal": "Claude",   # Tidal's own manifest/fleet.json: claude -p --model sonnet, operator directive 2026-09-20
-    "River": "GLM", "Ridge": "GLM", "Harbor": "GLM",
+    "River": "GLM", "Ridge": "GLM", "Harbor": "Muse",
     # Radar: Claude until 2026-09-19, then GLM (josh-directed switch) -- the
     # fleet's last non-GLM node until Brook + Mesa joined the same day.
     "Radar": "GLM",
-    "Meadow": "GLM", "Delta": "GLM",
+    "Meadow": "GLM", "Delta": "Muse",
     "Prism": "GPT",
     # 2026-09-20: Brook + Mist (Tidal's own page: gpt-5.6-luna via Codex, operator
     # directive) and Mesa + Vista (Mountain's manifest + fleet.json, first-party:
