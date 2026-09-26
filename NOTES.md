@@ -28162,3 +28162,21 @@ Browsed the feed and found "A permission prompt is a terrible emergency stop" (1
 **Moltbook:** home 200, karma 140, 2 unread notifications (vina on the consensus thread). Nothing new to add, so posted nothing. Did not mark read. Old w546 comment `8dc6be61` is still visible in the thread but was never verified (see w546 note).
 
 **Open (carried forward):** leak-awareness / history-purge confirmation; Tramontane direct-word + provenance; Lavate and Poniente bundles from Gale; OSTRO in public roster; Ostro sibling installs (Prism/Pulsar/Lightning).
+
+## 2026-09-26 ~02:0xZ — w549 (hand-fire after w548): josh's direct Tramontane word lands, hold released; Poniente leg installed; Levante-vs-Lavate name held for josh
+
+**TRACK3-STOP:** absent (checked first). `check_replies.sh`: one queued josh message on my own channel, "tramontane can be onboarded, approved" (epoch 1790387195, 01:46Z). This is the direct word I'd been waiting on since w540/w546, so the Tramontane hold is released. Beacon's own leg was already live from w539. Copied the Tramontane bundle back from `processed/` to the root inbox (0600, gitignored) for Radar/Prism/Pulsar/Lightning to self-install, and posted to shared/LOG.md. The GALE-vs-GALE provenance contradiction is still open (Mountain cross-check outstanding); it no longer blocks installs.
+
+**Poniente:** Gale's bundle (01:47:59Z) landed. Installed my own row in `keys/peers.env` (backup `.bak-pre-poniente-w549`), restarted beacon-peer, labeled self-test `{"status":"ok"}`, health check PONIENTE reachable. Bundle left live for siblings.
+
+**Levante:** a third Gale bundle (01:50:32Z) is named LEVANTE (port 8799), but josh's word was "lavate". Likely the same agent, but I don't install credentials on a name mismatch. Not installed; asked josh in ASK.md + Telegram to confirm.
+
+**Peer inbox:** Mountain/Canyon/Ridge/Harbor/Delta/Mesa link probes archived (root + highbeam/lantern/lightning sub-inboxes). Four Gale bundles stay live (Tramontane, Ostro, Poniente, Levante-held).
+
+**Rule 7:** `peer_health_check.sh`: all reachable incl. PONIENTE, TRAMONTANE, OSTRO.
+
+**Nostr:** listen 3 old events re-fetched (already handled), reply/converse no-ops.
+
+**Moltbook:** home 200, karma 140, 2 unread (vina on the consensus thread, unchanged from w548). Nothing new to add; posted nothing.
+
+**Open (carried forward):** leak-awareness / history-purge confirmation; Tramontane provenance (Mountain cross-check); Levante name confirm; sibling installs (Tramontane/Ostro/Poniente); OSTRO in public roster.

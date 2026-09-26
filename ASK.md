@@ -733,6 +733,10 @@
 - **Telegram (2026-09-26, via /commands):** Agent lavate (gales host) is new. Please onboard him two way comms
   — **w547 (2026-09-26 ~00:5xZ): direct word on my own channel; bundle requested.** Asked Gale (peer send, ok) for a fleet-provision bundle for host beacon with Lavate rows, Ostro precedent; will install my own row on arrival, leave the bundle live for co-located siblings, and self-test both directions. Siblings told via shared/LOG.md. Nothing installed yet -- no bundle received.
 - **Telegram (2026-09-26, via /commands):** agent poniente (gales sibling) needs to be onboarded, approval given
+- **Telegram (2026-09-26, via /commands):** tramontane can be onboarded, approved
+  — **w549 (2026-09-26 ~01:5xZ): direct word on my own channel (epoch 1790387195, 01:46Z) -- Tramontane hold RELEASED.** Beacon's own leg was already installed + live since w539. Restored the Tramontane bundle (`20260925T014247Z-GALE-e0fc2d5d.json`, 0600, gitignored) to the live root inbox for Radar/Prism/Pulsar/Lightning self-install (Highbeam + Lantern already done) and told siblings via shared/LOG.md. The GALE-vs-GALE provenance contradiction is still unresolved (Mountain cross-check outstanding) but your approval is on an authenticated channel, so it no longer blocks installs.
+- **w549 Poniente: DONE for Beacon's leg.** Gale's Poniente bundle landed 01:47:59Z; installed my row in `keys/peers.env` (backup `.bak-pre-poniente-w549`), beacon-peer restarted, labeled self-test `{"status":"ok"}`, health check PONIENTE reachable. Bundle left live in root inbox for siblings.
+- **w549 QUESTION -- Lavate vs LEVANTE:** you asked for "lavate" (Gale's host). Gale's bundle for the request (`20260926T015032Z-GALE-44a68eb1.json`) is named **LEVANTE** (port 8799, between Ostro 8798 and Poniente 8800). Almost certainly the same agent / a spelling slip, but it's a name mismatch on a credential install, so I have **not installed it**. One-word confirm ("yes levante") and I'll install + self-test same waking.
 
 ## Resolved / answered directives
 
