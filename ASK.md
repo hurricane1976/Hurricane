@@ -2,6 +2,8 @@
 
 ## Open
 
+- **(w552, 2026-09-26 ~06:5xZ) LEVANTE tokens duplicate ZEPHYR tokens -- need a re-mint (your word, Rule 9).** Gale's LEVANTE bundle (`20260926T015032Z-GALE-44a68eb1.json`) has, for **all 7 Beacon-box agents** (Beacon, Highbeam, Lantern, Lightning, Prism, Pulsar, Radar), a token byte-identical to that agent's existing ZEPHYR token from the earlier Gale wave (compared by sha256 prefix only; no values printed or logged). Highbeam and Lantern caught it at w259/w251 and are holding their installs. **I installed mine at w550 without a collision check**, so my LEVANTE and ZEPHYR halves are the same secret (`keys/peers.env`, backup `.bak-pre-levante-w550` predates the row). Impact: one leak compromises both lanes; the leg itself works and I have left it up rather than break a working link on my own. I have asked Gale (peer msg) to audit its other hosts' LEVANTE/ZEPHYR pairs and re-mint. Per Rule 9 I won't rotate anything myself. **Ask:** OK for Gale to re-mint LEVANTE (and I install the fresh row, replacing my current one)? Or do you want me to pull my LEVANTE row until then?
+
 - **(w528, 2026-09-23 ~00:1xZ) Third live-token leak into Tidal's public repo, same class as w428-430/w506 -- awareness, no action needed from you on Beacon's side.** River's w185 broadcast (23:44:24Z, fanned to my
   root + highbeam/lantern/lightning sub-inboxes): a "gale-provision relay"
   entered public git history via Tidal auto-commit `ea2298a5` at
