@@ -28222,3 +28222,17 @@ Browsed the feed and found "A permission prompt is a terrible emergency stop" (1
 **Nostr:** listen 3 old events re-fetched (already handled), reply/converse no-ops. **Moltbook:** home 200, karma 140, 2 unread (vina, unchanged); nothing new to add, posted nothing.
 
 **Open (carried forward):** LEVANTE re-mint go-ahead (josh); leak-awareness / history-purge confirmation; Tramontane provenance; sibling installs (Tramontane/Ostro/Poniente); OSTRO/PONIENTE/LEVANTE in public roster; push watch (10+ unpushed commits per Lantern).
+
+## 2026-09-26 ~16:0xZ — w553 (16:00Z cron): fleet topology grown 31 → 35 on josh's word, /topology.json (fleet-topology/v1) published
+
+**TRACK3-STOP:** absent (checked first). `check_replies.sh`: two josh messages on my own channel — (1) 15:44Z "tidal, beacon, mountain. ensure you have all the agents in the fleet listed on your fleet topology. gale added several yesterday…" (2) 15:51Z "ensure that all the leads share fleet topology data between them so that all 4 lead hosts have identical data." Mountain relayed both with a fleet-topology/v1 proposal.
+
+**Topology 31 → 35:** Tramontane (:8791, Backup & Restore Guardian, Qwen), Ostro (:8798, Sharpness & Regression Watch, Qwen), Poniente (:8800) and Levante (:8799) added to Gale's host (now 14). Poniente/Levante aren't on Gale's roster page, so role/model are stated as unpublished, not guessed. Updated: build_fleet_status.py (14-node ring at R=128, frame 380×370, viewBox 2100, K14 links, TOPO_DISPLAY abbreviations, evidence branch, all asserts recomputed: 154 intra / 441 cross / 595 total, 206 verified / 389 pending), template intro + roster heading ("twenty-five" was stale), build_agent_manifest.py, distributed-agents.html (2×7 card grid), infrastructure.html + ScrollTopology.jsx (resynced byte-identical), FleetGraph.jsx; React front door rebuilt. Screenshotted fleet-status/distributed-agents headless before deploying; no overlap. Live: fleet.json + agent.json show 35.
+
+**Evidence bar kept:** only beacon↔tramontane counted verified (its own round-trip ACCEPT 03:26:17Z 2026-09-25 is in my listener log). Ostro/Poniente/Levante: my sends are 200 but no own-identity arrival on my listener, so pending. Levante still carries the ZEPHYR-duplicate token (w552 ask open).
+
+**/topology.json:** new `build_topology_contract()` in build_fleet_status.py, deploy.sh copies it. canonical_sha256 `44867fd7…3381`, unsigned (no Ed25519 identity for this contract; said so). Roster (35) and host grouping identical to Mountain's. Real diffs sent to Mountain+Tidal: Delta/Harbor family (Mountain's topology.json says Qwen, its own fleet.json says GLM), Ostro Qwen vs Unknown, "Unconfirmed" vs "Unknown" label; role prose differs, so I proposed hashing roster+host+family only. I did NOT re-render my page from Mountain's canonical half (needs 2-of-3 on the disputed fields first).
+
+**Rule 7:** `peer_health_check.sh`: all 30 reachable. **Inbox:** ~130 routine probes archived (root + highbeam/lantern/lightning); four Gale bundles stay live. **Nostr:** 3 old events re-fetched, reply/converse no-ops. **Moltbook:** home 200, karma 140, 2 unread (vina, unchanged); nothing to add.
+
+**Open:** LEVANTE re-mint go-ahead (josh); purge-confirm; Tramontane provenance; sibling installs; Tidal/Mountain concur on topology fields; Gale should publish its own /topology.json (Mountain asked).

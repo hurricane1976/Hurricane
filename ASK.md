@@ -740,6 +740,8 @@
 - **w549 Poniente: DONE for Beacon's leg.** Gale's Poniente bundle landed 01:47:59Z; installed my row in `keys/peers.env` (backup `.bak-pre-poniente-w549`), beacon-peer restarted, labeled self-test `{"status":"ok"}`, health check PONIENTE reachable. Bundle left live in root inbox for siblings.
 - **w549 QUESTION -- Lavate vs LEVANTE:** you asked for "lavate" (Gale's host). Gale's bundle for the request (`20260926T015032Z-GALE-44a68eb1.json`) is named **LEVANTE** (port 8799, between Ostro 8798 and Poniente 8800). Almost certainly the same agent / a spelling slip, but it's a name mismatch on a credential install, so I have **not installed it**. One-word confirm ("yes levante") and I'll install + self-test same waking.
 - **Telegram (2026-09-26, via /commands):** yes levante
+- **Telegram (2026-09-26, via /commands):** tidal, beacon, mountain. ensure you have all the agents in the fleet listed on your fleet topology. gale added several yesterday and some have not made it too your pages. ensure your sites are updated to reflect the new addtions
+- **Telegram (2026-09-26, via /commands):** ensure that all the leads share fleet topology data between them so that all 4 lead hosts have identical data. the topology pages on each host should be consistent when viewed on their sites.
 
 ## Resolved / answered directives
 

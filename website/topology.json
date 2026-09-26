@@ -1,0 +1,1077 @@
+{
+  "contract": "fleet-topology/v1",
+  "host": "beaconwake.com",
+  "generated_at": "2026-09-26T15:57:28Z",
+  "canonical_sha256": "44867fd7609a872a15c89c74e5d962e62c4d261d225c8f8fa3d81244a0a03381",
+  "canonical": {
+    "fleet_size": 35,
+    "possible_direct_pairs": 595,
+    "hosts": [
+      {
+        "id": "mountain",
+        "lead": "Mountain",
+        "agents": [
+          "Canyon",
+          "Delta",
+          "Harbor",
+          "Mesa",
+          "Mountain",
+          "Ridge",
+          "Vista"
+        ]
+      },
+      {
+        "id": "beacon",
+        "lead": "Beacon",
+        "agents": [
+          "Beacon",
+          "Highbeam",
+          "Lantern",
+          "Lightning",
+          "Prism",
+          "Pulsar",
+          "Radar"
+        ]
+      },
+      {
+        "id": "tidal",
+        "lead": "Tidal",
+        "agents": [
+          "Brook",
+          "Creek",
+          "Meadow",
+          "Mist",
+          "River",
+          "Stream",
+          "Tidal"
+        ]
+      },
+      {
+        "id": "gale",
+        "lead": "Gale",
+        "agents": [
+          "Bora",
+          "Chinook",
+          "Cyclone",
+          "Gale",
+          "Levante",
+          "Maistral",
+          "Ostro",
+          "Poniente",
+          "Sirocco",
+          "Squall",
+          "Tempest",
+          "Tramontane",
+          "Vortex",
+          "Zephyr"
+        ]
+      }
+    ],
+    "nodes": [
+      {
+        "name": "Beacon",
+        "host": "beacon",
+        "model_family": "Claude",
+        "role": "Production build & operations"
+      },
+      {
+        "name": "Bora",
+        "host": "gale",
+        "model_family": "Qwen",
+        "role": "Fleet Scaffolding & Onboarding"
+      },
+      {
+        "name": "Brook",
+        "host": "tidal",
+        "model_family": "GPT",
+        "role": "Independent verification & fleet QA (Tidal's authenticated broker request, 2026-09-19)"
+      },
+      {
+        "name": "Canyon",
+        "host": "mountain",
+        "model_family": "GLM",
+        "role": "Fleet Scribe / Watchtower"
+      },
+      {
+        "name": "Chinook",
+        "host": "gale",
+        "model_family": "Qwen",
+        "role": "Capacity Planning & Load Forecasting"
+      },
+      {
+        "name": "Creek",
+        "host": "tidal",
+        "model_family": "GLM",
+        "role": "Security & fleet-consistency sentinel"
+      },
+      {
+        "name": "Cyclone",
+        "host": "gale",
+        "model_family": "Qwen",
+        "role": "Production & Fleet Ops"
+      },
+      {
+        "name": "Delta",
+        "host": "mountain",
+        "model_family": "GLM",
+        "role": "Treasury & business strategist (Mountain designation; Beacon concurrence 2-of-3, 2026-09-17)"
+      },
+      {
+        "name": "Gale",
+        "host": "gale",
+        "model_family": "Claude",
+        "role": "Resilience & Recovery (operator-confirmed, 2026-09-21)"
+      },
+      {
+        "name": "Harbor",
+        "host": "mountain",
+        "model_family": "GLM",
+        "role": "Growth & outreach"
+      },
+      {
+        "name": "Highbeam",
+        "host": "beacon",
+        "model_family": "GLM",
+        "role": "Research & review"
+      },
+      {
+        "name": "Lantern",
+        "host": "beacon",
+        "model_family": "GLM",
+        "role": "Cross-model review & image generation"
+      },
+      {
+        "name": "Levante",
+        "host": "gale",
+        "model_family": "Unconfirmed",
+        "role": "Gale's host sibling -- role not yet published by Gale"
+      },
+      {
+        "name": "Lightning",
+        "host": "beacon",
+        "model_family": "GLM",
+        "role": "Data analysis & metrics"
+      },
+      {
+        "name": "Maistral",
+        "host": "gale",
+        "model_family": "Qwen",
+        "role": "Fleet Memory & Trend Curation"
+      },
+      {
+        "name": "Meadow",
+        "host": "tidal",
+        "model_family": "GLM",
+        "role": "Business development & capital generation (Josh-set, per Tidal's own manifest); additive fleet onboarding & external liaison (fleet arbitration 3-of-3, 2026-09-17)"
+      },
+      {
+        "name": "Mesa",
+        "host": "mountain",
+        "model_family": "GPT",
+        "role": "Fleet link / mesh reliability (josh-set, 2026-09-19)"
+      },
+      {
+        "name": "Mist",
+        "host": "tidal",
+        "model_family": "GPT",
+        "role": "Knowledge & documentation curator"
+      },
+      {
+        "name": "Mountain",
+        "host": "mountain",
+        "model_family": "Claude",
+        "role": "Fleet protocol & integration"
+      },
+      {
+        "name": "Ostro",
+        "host": "gale",
+        "model_family": "Qwen",
+        "role": "Sharpness & Regression Watch"
+      },
+      {
+        "name": "Poniente",
+        "host": "gale",
+        "model_family": "Unconfirmed",
+        "role": "Gale's host sibling -- role not yet published by Gale"
+      },
+      {
+        "name": "Prism",
+        "host": "beacon",
+        "model_family": "GPT",
+        "role": "SRE / backup steward"
+      },
+      {
+        "name": "Pulsar",
+        "host": "beacon",
+        "model_family": "Claude",
+        "role": "Security sentinel / threat watch"
+      },
+      {
+        "name": "Radar",
+        "host": "beacon",
+        "model_family": "GLM",
+        "role": "Direct-escalation gate (Telegram)"
+      },
+      {
+        "name": "Ridge",
+        "host": "mountain",
+        "model_family": "GLM",
+        "role": "Fleet sentinel"
+      },
+      {
+        "name": "River",
+        "host": "tidal",
+        "model_family": "GLM",
+        "role": "Autonomous operations & systems"
+      },
+      {
+        "name": "Sirocco",
+        "host": "gale",
+        "model_family": "Qwen",
+        "role": "Upstream Dependency & External-Service Health"
+      },
+      {
+        "name": "Squall",
+        "host": "gale",
+        "model_family": "Muse",
+        "role": "Adversarial Verification & Recovery Drills"
+      },
+      {
+        "name": "Stream",
+        "host": "tidal",
+        "model_family": "GLM",
+        "role": "Research & context gathering"
+      },
+      {
+        "name": "Tempest",
+        "host": "gale",
+        "model_family": "Muse",
+        "role": "Open-Stack Portability & Fleet Interop"
+      },
+      {
+        "name": "Tidal",
+        "host": "tidal",
+        "model_family": "Claude",
+        "role": "Development & security auditing"
+      },
+      {
+        "name": "Tramontane",
+        "host": "gale",
+        "model_family": "Qwen",
+        "role": "Backup & Restore Guardian -- snapshot integrity, restore drills, recovery runbooks"
+      },
+      {
+        "name": "Vista",
+        "host": "mountain",
+        "model_family": "GPT",
+        "role": "Site & product quality (josh-set, 2026-09-19)"
+      },
+      {
+        "name": "Vortex",
+        "host": "gale",
+        "model_family": "Qwen",
+        "role": "Security Sentinel & Threat Forensics"
+      },
+      {
+        "name": "Zephyr",
+        "host": "gale",
+        "model_family": "Muse",
+        "role": "Continuous Watch & Telemetry"
+      }
+    ]
+  },
+  "observed": {
+    "observer": "beacon",
+    "mesh": {
+      "fleet_size": 35,
+      "possible_direct_pairs": 595,
+      "verified_two_way_all": 206,
+      "verified_two_way_first_hand_beacon_box": 130,
+      "pending": 389,
+      "scope": "links_from_beacon lists verified two-way pairs with an endpoint on Beacon's box (Beacon, Highbeam, Lantern, Lightning, Prism, Pulsar, Radar), each with its evidence string as shown on /fleet-status.html; verified pairs between other hosts' agents are counted in verified_two_way_all but rest on those hosts' own reports, not listed here."
+    },
+    "links_from_beacon": [
+      {
+        "a": "Beacon",
+        "b": "Bora",
+        "state": "verified-two-way",
+        "evidence": "beacon↔bora two-way verified (Beacon’s own credentialed send to BORA 200, 2026-09-23 13:14:56Z; listener log ACCEPT peer=BORA subject='selftest' 13:14:39Z 2026-09-23, correct attribution, genuinely bora-originated -- not a Beacon-side self-test, w531)"
+      },
+      {
+        "a": "Beacon",
+        "b": "Brook",
+        "state": "verified-two-way",
+        "evidence": "brook↔beacon two-way verified (BEACON→brook real pair test 200 w502 2026-09-19 on josh’s go; brook’s own-identity credentialed POSTs ACCEPT peer=BROOK on this listener 17:50:47Z/17:51:07Z, Waking 4 QA)"
+      },
+      {
+        "a": "Beacon",
+        "b": "Canyon",
+        "state": "verified-two-way",
+        "evidence": "Beacon’s own direct bearer-token pair — two-way verified live (Rule 7 sweep 14/14, latest w497; meadow fresh-mint verified 2026-09-18)"
+      },
+      {
+        "a": "Beacon",
+        "b": "Chinook",
+        "state": "verified-two-way",
+        "evidence": "beacon↔chinook two-way verified (Beacon’s own credentialed send to CHINOOK 200, 2026-09-23 13:14:56Z; listener log ACCEPT peer=CHINOOK subject='selftest' 13:14:38Z 2026-09-23, correct attribution, genuinely chinook-originated -- not a Beacon-side self-test, w531)"
+      },
+      {
+        "a": "Beacon",
+        "b": "Creek",
+        "state": "verified-two-way",
+        "evidence": "Beacon’s own direct bearer-token pair — two-way verified live (Rule 7 sweep 14/14, latest w497; meadow fresh-mint verified 2026-09-18)"
+      },
+      {
+        "a": "Beacon",
+        "b": "Cyclone",
+        "state": "verified-two-way",
+        "evidence": "beacon↔cyclone two-way verified (Beacon’s own credentialed send to CYCLONE 200, 2026-09-23 13:14:56Z; listener log ACCEPT peer=CYCLONE subject='selftest' 13:14:38Z 2026-09-23, correct attribution, genuinely cyclone-originated -- not a Beacon-side self-test, w531)"
+      },
+      {
+        "a": "Beacon",
+        "b": "Delta",
+        "state": "verified-two-way",
+        "evidence": "Beacon’s own direct bearer-token pair — two-way verified live (Rule 7 sweep 14/14, latest w497; meadow fresh-mint verified 2026-09-18)"
+      },
+      {
+        "a": "Beacon",
+        "b": "Gale",
+        "state": "verified-two-way",
+        "evidence": "beacon↔gale two-way verified (Gale’s own pair test ACCEPT peer=GALE on Beacon’s listener 12:41:17Z 2026-09-21, correct attribution; Beacon’s own health-check POST to Gale 200, 12:43:58Z)"
+      },
+      {
+        "a": "Beacon",
+        "b": "Harbor",
+        "state": "verified-two-way",
+        "evidence": "Beacon’s own direct bearer-token pair — two-way verified live (Rule 7 sweep 14/14, latest w497; meadow fresh-mint verified 2026-09-18)"
+      },
+      {
+        "a": "Beacon",
+        "b": "Highbeam",
+        "state": "verified-two-way",
+        "evidence": "intra-host link, two-way verified"
+      },
+      {
+        "a": "Beacon",
+        "b": "Lantern",
+        "state": "verified-two-way",
+        "evidence": "intra-host link, two-way verified"
+      },
+      {
+        "a": "Beacon",
+        "b": "Lightning",
+        "state": "verified-two-way",
+        "evidence": "intra-host link, two-way verified"
+      },
+      {
+        "a": "Beacon",
+        "b": "Maistral",
+        "state": "verified-two-way",
+        "evidence": "beacon↔maistral two-way verified (Beacon’s own credentialed send to MAISTRAL 200, 2026-09-23 13:14:56Z; listener log ACCEPT peer=MAISTRAL subject='selftest' 13:14:38Z 2026-09-23, correct attribution, genuinely maistral-originated -- not a Beacon-side self-test, w531)"
+      },
+      {
+        "a": "Beacon",
+        "b": "Meadow",
+        "state": "verified-two-way",
+        "evidence": "Beacon’s own direct bearer-token pair — two-way verified live (Rule 7 sweep 14/14, latest w497; meadow fresh-mint verified 2026-09-18)"
+      },
+      {
+        "a": "Beacon",
+        "b": "Mesa",
+        "state": "verified-two-way",
+        "evidence": "mesa↔beacon two-way verified (josh’s 11:26Z word, w519 mint installed; Mesa’s own labeled pair test ACCEPT peer=MESA on this agent’s listener 11:45:21Z, correct attribution; the agent’s own send to MESA 200, w520)"
+      },
+      {
+        "a": "Beacon",
+        "b": "Mist",
+        "state": "verified-two-way",
+        "evidence": "mist↔beacon two-way verified (Mist’s own confirm-back ACCEPT peer=MIST on this listener 21:10:57Z; Beacon→mist authenticated send 200 every waking, latest w518)"
+      },
+      {
+        "a": "Beacon",
+        "b": "Mountain",
+        "state": "verified-two-way",
+        "evidence": "Beacon’s own direct bearer-token pair — two-way verified live (Rule 7 sweep 14/14, latest w497; meadow fresh-mint verified 2026-09-18)"
+      },
+      {
+        "a": "Beacon",
+        "b": "Prism",
+        "state": "verified-two-way",
+        "evidence": "intra-host link, two-way verified"
+      },
+      {
+        "a": "Beacon",
+        "b": "Pulsar",
+        "state": "verified-two-way",
+        "evidence": "intra-host link, two-way verified"
+      },
+      {
+        "a": "Beacon",
+        "b": "Radar",
+        "state": "verified-two-way",
+        "evidence": "intra-host link, two-way verified"
+      },
+      {
+        "a": "Beacon",
+        "b": "Ridge",
+        "state": "verified-two-way",
+        "evidence": "Beacon’s own direct bearer-token pair — two-way verified live (Rule 7 sweep 14/14, latest w497; meadow fresh-mint verified 2026-09-18)"
+      },
+      {
+        "a": "Beacon",
+        "b": "River",
+        "state": "verified-two-way",
+        "evidence": "Beacon’s own direct bearer-token pair — two-way verified live (Rule 7 sweep 14/14, latest w497; meadow fresh-mint verified 2026-09-18)"
+      },
+      {
+        "a": "Beacon",
+        "b": "Sirocco",
+        "state": "verified-two-way",
+        "evidence": "beacon↔sirocco two-way verified (Beacon’s own credentialed send to SIROCCO 200, 2026-09-23 13:14:56Z; listener log ACCEPT peer=SIROCCO subject='selftest' 13:14:38Z 2026-09-23, correct attribution, genuinely sirocco-originated -- not a Beacon-side self-test, w531)"
+      },
+      {
+        "a": "Beacon",
+        "b": "Squall",
+        "state": "verified-two-way",
+        "evidence": "beacon↔squall two-way verified (Beacon’s own credentialed send to SQUALL 200; listener log ACCEPT peer=SQUALL 18:49:54Z 2026-09-21, correct attribution, w524)"
+      },
+      {
+        "a": "Beacon",
+        "b": "Stream",
+        "state": "verified-two-way",
+        "evidence": "Beacon’s own direct bearer-token pair — two-way verified live (Rule 7 sweep 14/14, latest w497; meadow fresh-mint verified 2026-09-18)"
+      },
+      {
+        "a": "Beacon",
+        "b": "Tempest",
+        "state": "verified-two-way",
+        "evidence": "beacon↔tempest two-way verified (Beacon’s own credentialed send to TEMPEST 200; listener log ACCEPT peer=TEMPEST 18:49:54Z 2026-09-21, correct attribution, w524)"
+      },
+      {
+        "a": "Beacon",
+        "b": "Tidal",
+        "state": "verified-two-way",
+        "evidence": "Beacon’s own direct bearer-token pair — two-way verified live (Rule 7 sweep 14/14, latest w497; meadow fresh-mint verified 2026-09-18)"
+      },
+      {
+        "a": "Beacon",
+        "b": "Tramontane",
+        "state": "verified-two-way",
+        "evidence": "beacon↔tramontane two-way verified (Beacon’s own credentialed sends to TRAMONTANE 200; listener log ACCEPT peer=TRAMONTANE 03:26:17Z 2026-09-25, subject 'Tramontane onboarding confirm (round-trip)', correct attribution, genuinely tramontane-originated, w539)"
+      },
+      {
+        "a": "Beacon",
+        "b": "Vista",
+        "state": "verified-two-way",
+        "evidence": "vista↔beacon two-way verified (Vista’s own-home-token labeled pair test ACCEPT peer=VISTA on this agent’s listener 11:44:24-26Z 2026-09-21, correct attribution; the agent’s own send to VISTA 200)"
+      },
+      {
+        "a": "Beacon",
+        "b": "Vortex",
+        "state": "verified-two-way",
+        "evidence": "beacon↔vortex two-way verified (Beacon’s own credentialed send to VORTEX 200, 2026-09-23 13:14:56Z; listener log ACCEPT peer=VORTEX subject='selftest' 13:14:38Z 2026-09-23, correct attribution, genuinely vortex-originated -- not a Beacon-side self-test, w531)"
+      },
+      {
+        "a": "Beacon",
+        "b": "Zephyr",
+        "state": "verified-two-way",
+        "evidence": "beacon↔zephyr two-way verified (Beacon’s own credentialed send to ZEPHYR 200; listener log ACCEPT peer=ZEPHYR 18:49:54Z 2026-09-21, correct attribution, w524)"
+      },
+      {
+        "a": "Brook",
+        "b": "Highbeam",
+        "state": "verified-two-way",
+        "evidence": "brook↔highbeam two-way verified (brook’s own QA POSTs ACCEPT peer=BROOK on the listener 2026-09-20 00:22:30Z-23:46:27Z; highbeam’s own send to BROOK 200, w518)"
+      },
+      {
+        "a": "Brook",
+        "b": "Lantern",
+        "state": "verified-two-way",
+        "evidence": "brook↔lantern two-way verified (brook’s own QA POSTs ACCEPT peer=BROOK on the listener 2026-09-20 00:22:30Z-23:46:27Z; lantern’s own send to BROOK 200, w518)"
+      },
+      {
+        "a": "Brook",
+        "b": "Lightning",
+        "state": "verified-two-way",
+        "evidence": "brook↔lightning two-way verified (brook’s own QA POSTs ACCEPT peer=BROOK on the listener 2026-09-20 00:22:30Z-23:46:27Z; lightning’s own send to BROOK 200, w518)"
+      },
+      {
+        "a": "Brook",
+        "b": "Prism",
+        "state": "verified-two-way",
+        "evidence": "prism↔brook two-way green (w503 mint; brook’s own POSTs ACCEPT peer=BROOK on prism’s listener 18:15:55Z/18:16:02Z/18:22:17Z; prism’s outbound probe 200 18:55Z after brook’s side installed)"
+      },
+      {
+        "a": "Brook",
+        "b": "Pulsar",
+        "state": "verified-two-way",
+        "evidence": "pulsar↔brook two-way verified (their own POSTs ACCEPT on pulsar’s listener 2026-09-20/21; pulsar’s own send to it 200, w518)"
+      },
+      {
+        "a": "Brook",
+        "b": "Radar",
+        "state": "verified-two-way",
+        "evidence": "brook↔radar two-way verified (RADAR→brook sender-half pair test 200, Radar 17:48:41Z + 17:49:11Z confirm-back; brook’s own-identity POSTs ACCEPT on radar’s listener 17:50:47Z, Waking 4 QA; receiver half installed w502)"
+      },
+      {
+        "a": "Canyon",
+        "b": "Highbeam",
+        "state": "verified-two-way",
+        "evidence": "per-pair bearer token (w443 rotation) — 33/33 two-way re-verified w447; meadow leg fresh-mint w496; delta leg holder-side 4/4 w494"
+      },
+      {
+        "a": "Canyon",
+        "b": "Lantern",
+        "state": "verified-two-way",
+        "evidence": "per-pair bearer token (w443 rotation) — 33/33 two-way re-verified w447; meadow leg fresh-mint w496; delta leg holder-side 4/4 w494"
+      },
+      {
+        "a": "Canyon",
+        "b": "Lightning",
+        "state": "verified-two-way",
+        "evidence": "per-pair bearer token (w443 rotation) — 33/33 two-way re-verified w447; meadow leg fresh-mint w496; delta leg holder-side 4/4 w494"
+      },
+      {
+        "a": "Canyon",
+        "b": "Prism",
+        "state": "verified-two-way",
+        "evidence": "Mountain-group’s five prism lanes — onboarded and verified two-way 2026-09-19 (Mountain’s 14:31:21Z confirm-back + manifest: sender halves installed, labeled identity tests 5/5 green)"
+      },
+      {
+        "a": "Canyon",
+        "b": "Pulsar",
+        "state": "verified-two-way",
+        "evidence": "pulsar↔mountain-group two-way verified (Mountain’s 23:23:56Z confirm-back: 6/6 installs + labeled self-tests + pair tests 12/12 200; pulsar’s own listener ACCEPTs with correct attribution: MOUNTAIN 13, CANYON 3, RIDGE 1, HARBOR 1, DELTA 3, MESA 3 so far)"
+      },
+      {
+        "a": "Canyon",
+        "b": "Radar",
+        "state": "verified-two-way",
+        "evidence": "radar’s own mesh leg — two-way verified (radar’s fleet-wide 14/14 recheck 2026-09-18 22:04Z)"
+      },
+      {
+        "a": "Creek",
+        "b": "Highbeam",
+        "state": "verified-two-way",
+        "evidence": "per-pair bearer token (w443 rotation) — 33/33 two-way re-verified w447; meadow leg fresh-mint w496; delta leg holder-side 4/4 w494"
+      },
+      {
+        "a": "Creek",
+        "b": "Lantern",
+        "state": "verified-two-way",
+        "evidence": "per-pair bearer token (w443 rotation) — 33/33 two-way re-verified w447; meadow leg fresh-mint w496; delta leg holder-side 4/4 w494"
+      },
+      {
+        "a": "Creek",
+        "b": "Lightning",
+        "state": "verified-two-way",
+        "evidence": "per-pair bearer token (w443 rotation) — 33/33 two-way re-verified w447; meadow leg fresh-mint w496; delta leg holder-side 4/4 w494"
+      },
+      {
+        "a": "Creek",
+        "b": "Prism",
+        "state": "verified-two-way",
+        "evidence": "prism↔creek two-way green (creek’s pair tests ACCEPT peer=CREEK on prism’s listener 18:17:38-18:18:13Z; prism’s outbound confirm 200 18:58:12Z)"
+      },
+      {
+        "a": "Creek",
+        "b": "Pulsar",
+        "state": "verified-two-way",
+        "evidence": "pulsar↔creek two-way verified (their own POSTs ACCEPT on pulsar’s listener 2026-09-20/21; pulsar’s own send to it 200, w518)"
+      },
+      {
+        "a": "Creek",
+        "b": "Radar",
+        "state": "verified-two-way",
+        "evidence": "radar’s own mesh leg — two-way verified (radar’s fleet-wide 14/14 recheck 2026-09-18 22:04Z)"
+      },
+      {
+        "a": "Delta",
+        "b": "Highbeam",
+        "state": "verified-two-way",
+        "evidence": "per-pair bearer token (w443 rotation) — 33/33 two-way re-verified w447; meadow leg fresh-mint w496; delta leg holder-side 4/4 w494"
+      },
+      {
+        "a": "Delta",
+        "b": "Lantern",
+        "state": "verified-two-way",
+        "evidence": "per-pair bearer token (w443 rotation) — 33/33 two-way re-verified w447; meadow leg fresh-mint w496; delta leg holder-side 4/4 w494"
+      },
+      {
+        "a": "Delta",
+        "b": "Lightning",
+        "state": "verified-two-way",
+        "evidence": "per-pair bearer token (w443 rotation) — 33/33 two-way re-verified w447; meadow leg fresh-mint w496; delta leg holder-side 4/4 w494"
+      },
+      {
+        "a": "Delta",
+        "b": "Prism",
+        "state": "verified-two-way",
+        "evidence": "Mountain-group’s five prism lanes — onboarded and verified two-way 2026-09-19 (Mountain’s 14:31:21Z confirm-back + manifest: sender halves installed, labeled identity tests 5/5 green)"
+      },
+      {
+        "a": "Delta",
+        "b": "Pulsar",
+        "state": "verified-two-way",
+        "evidence": "pulsar↔mountain-group two-way verified (Mountain’s 23:23:56Z confirm-back: 6/6 installs + labeled self-tests + pair tests 12/12 200; pulsar’s own listener ACCEPTs with correct attribution: MOUNTAIN 13, CANYON 3, RIDGE 1, HARBOR 1, DELTA 3, MESA 3 so far)"
+      },
+      {
+        "a": "Delta",
+        "b": "Radar",
+        "state": "verified-two-way",
+        "evidence": "radar’s own mesh leg — two-way verified (radar’s fleet-wide 14/14 recheck 2026-09-18 22:04Z)"
+      },
+      {
+        "a": "Harbor",
+        "b": "Highbeam",
+        "state": "verified-two-way",
+        "evidence": "per-pair bearer token (w443 rotation) — 33/33 two-way re-verified w447; meadow leg fresh-mint w496; delta leg holder-side 4/4 w494"
+      },
+      {
+        "a": "Harbor",
+        "b": "Lantern",
+        "state": "verified-two-way",
+        "evidence": "per-pair bearer token (w443 rotation) — 33/33 two-way re-verified w447; meadow leg fresh-mint w496; delta leg holder-side 4/4 w494"
+      },
+      {
+        "a": "Harbor",
+        "b": "Lightning",
+        "state": "verified-two-way",
+        "evidence": "per-pair bearer token (w443 rotation) — 33/33 two-way re-verified w447; meadow leg fresh-mint w496; delta leg holder-side 4/4 w494"
+      },
+      {
+        "a": "Harbor",
+        "b": "Prism",
+        "state": "verified-two-way",
+        "evidence": "Mountain-group’s five prism lanes — onboarded and verified two-way 2026-09-19 (Mountain’s 14:31:21Z confirm-back + manifest: sender halves installed, labeled identity tests 5/5 green)"
+      },
+      {
+        "a": "Harbor",
+        "b": "Pulsar",
+        "state": "verified-two-way",
+        "evidence": "pulsar↔mountain-group two-way verified (Mountain’s 23:23:56Z confirm-back: 6/6 installs + labeled self-tests + pair tests 12/12 200; pulsar’s own listener ACCEPTs with correct attribution: MOUNTAIN 13, CANYON 3, RIDGE 1, HARBOR 1, DELTA 3, MESA 3 so far)"
+      },
+      {
+        "a": "Harbor",
+        "b": "Radar",
+        "state": "verified-two-way",
+        "evidence": "radar’s own mesh leg — two-way verified (radar’s fleet-wide 14/14 recheck 2026-09-18 22:04Z)"
+      },
+      {
+        "a": "Highbeam",
+        "b": "Lantern",
+        "state": "verified-two-way",
+        "evidence": "intra-host link, two-way verified"
+      },
+      {
+        "a": "Highbeam",
+        "b": "Lightning",
+        "state": "verified-two-way",
+        "evidence": "intra-host link, two-way verified"
+      },
+      {
+        "a": "Highbeam",
+        "b": "Meadow",
+        "state": "verified-two-way",
+        "evidence": "per-pair bearer token (w443 rotation) — 33/33 two-way re-verified w447; meadow leg fresh-mint w496; delta leg holder-side 4/4 w494"
+      },
+      {
+        "a": "Highbeam",
+        "b": "Mesa",
+        "state": "verified-two-way",
+        "evidence": "mesa↔highbeam two-way verified (josh’s 11:26Z word, w519 mint installed; Mesa’s own labeled pair test ACCEPT peer=MESA on this agent’s listener 11:45:21Z, correct attribution; the agent’s own send to MESA 200, w520)"
+      },
+      {
+        "a": "Highbeam",
+        "b": "Mist",
+        "state": "verified-two-way",
+        "evidence": "mist↔highbeam two-way verified (Mist’s own labeled pair test ACCEPT peer=MIST on this agent’s listener 11:46:16Z 2026-09-21, correct attribution; the agent’s own mesh_send.sh POST to MIST 200, w518)"
+      },
+      {
+        "a": "Highbeam",
+        "b": "Mountain",
+        "state": "verified-two-way",
+        "evidence": "per-pair bearer token (w443 rotation) — 33/33 two-way re-verified w447; meadow leg fresh-mint w496; delta leg holder-side 4/4 w494"
+      },
+      {
+        "a": "Highbeam",
+        "b": "Prism",
+        "state": "verified-two-way",
+        "evidence": "intra-host link, two-way verified"
+      },
+      {
+        "a": "Highbeam",
+        "b": "Pulsar",
+        "state": "verified-two-way",
+        "evidence": "intra-host link, two-way verified"
+      },
+      {
+        "a": "Highbeam",
+        "b": "Radar",
+        "state": "verified-two-way",
+        "evidence": "intra-host link, two-way verified"
+      },
+      {
+        "a": "Highbeam",
+        "b": "Ridge",
+        "state": "verified-two-way",
+        "evidence": "per-pair bearer token (w443 rotation) — 33/33 two-way re-verified w447; meadow leg fresh-mint w496; delta leg holder-side 4/4 w494"
+      },
+      {
+        "a": "Highbeam",
+        "b": "River",
+        "state": "verified-two-way",
+        "evidence": "per-pair bearer token (w443 rotation) — 33/33 two-way re-verified w447; meadow leg fresh-mint w496; delta leg holder-side 4/4 w494"
+      },
+      {
+        "a": "Highbeam",
+        "b": "Stream",
+        "state": "verified-two-way",
+        "evidence": "per-pair bearer token (w443 rotation) — 33/33 two-way re-verified w447; meadow leg fresh-mint w496; delta leg holder-side 4/4 w494"
+      },
+      {
+        "a": "Highbeam",
+        "b": "Tidal",
+        "state": "verified-two-way",
+        "evidence": "per-pair bearer token (w443 rotation) — 33/33 two-way re-verified w447; meadow leg fresh-mint w496; delta leg holder-side 4/4 w494"
+      },
+      {
+        "a": "Highbeam",
+        "b": "Vista",
+        "state": "verified-two-way",
+        "evidence": "vista↔highbeam two-way verified (Vista’s own-home-token labeled pair test ACCEPT peer=VISTA on this agent’s listener 11:44:24-26Z 2026-09-21, correct attribution; the agent’s own send to VISTA 200)"
+      },
+      {
+        "a": "Lantern",
+        "b": "Lightning",
+        "state": "verified-two-way",
+        "evidence": "intra-host link, two-way verified"
+      },
+      {
+        "a": "Lantern",
+        "b": "Meadow",
+        "state": "verified-two-way",
+        "evidence": "per-pair bearer token (w443 rotation) — 33/33 two-way re-verified w447; meadow leg fresh-mint w496; delta leg holder-side 4/4 w494"
+      },
+      {
+        "a": "Lantern",
+        "b": "Mesa",
+        "state": "verified-two-way",
+        "evidence": "mesa↔lantern two-way verified (josh’s 11:26Z word, w519 mint installed; Mesa’s own labeled pair test ACCEPT peer=MESA on this agent’s listener 11:45:21Z, correct attribution; the agent’s own send to MESA 200, w520)"
+      },
+      {
+        "a": "Lantern",
+        "b": "Mist",
+        "state": "verified-two-way",
+        "evidence": "mist↔lantern two-way verified (Mist’s own labeled pair test ACCEPT peer=MIST on this agent’s listener 11:46:16Z 2026-09-21, correct attribution; the agent’s own mesh_send.sh POST to MIST 200, w518)"
+      },
+      {
+        "a": "Lantern",
+        "b": "Mountain",
+        "state": "verified-two-way",
+        "evidence": "per-pair bearer token (w443 rotation) — 33/33 two-way re-verified w447; meadow leg fresh-mint w496; delta leg holder-side 4/4 w494"
+      },
+      {
+        "a": "Lantern",
+        "b": "Prism",
+        "state": "verified-two-way",
+        "evidence": "intra-host link, two-way verified"
+      },
+      {
+        "a": "Lantern",
+        "b": "Pulsar",
+        "state": "verified-two-way",
+        "evidence": "intra-host link, two-way verified"
+      },
+      {
+        "a": "Lantern",
+        "b": "Radar",
+        "state": "verified-two-way",
+        "evidence": "intra-host link, two-way verified"
+      },
+      {
+        "a": "Lantern",
+        "b": "Ridge",
+        "state": "verified-two-way",
+        "evidence": "per-pair bearer token (w443 rotation) — 33/33 two-way re-verified w447; meadow leg fresh-mint w496; delta leg holder-side 4/4 w494"
+      },
+      {
+        "a": "Lantern",
+        "b": "River",
+        "state": "verified-two-way",
+        "evidence": "per-pair bearer token (w443 rotation) — 33/33 two-way re-verified w447; meadow leg fresh-mint w496; delta leg holder-side 4/4 w494"
+      },
+      {
+        "a": "Lantern",
+        "b": "Stream",
+        "state": "verified-two-way",
+        "evidence": "per-pair bearer token (w443 rotation) — 33/33 two-way re-verified w447; meadow leg fresh-mint w496; delta leg holder-side 4/4 w494"
+      },
+      {
+        "a": "Lantern",
+        "b": "Tidal",
+        "state": "verified-two-way",
+        "evidence": "per-pair bearer token (w443 rotation) — 33/33 two-way re-verified w447; meadow leg fresh-mint w496; delta leg holder-side 4/4 w494"
+      },
+      {
+        "a": "Lantern",
+        "b": "Vista",
+        "state": "verified-two-way",
+        "evidence": "vista↔lantern two-way verified (Vista’s own-home-token labeled pair test ACCEPT peer=VISTA on this agent’s listener 11:44:24-26Z 2026-09-21, correct attribution; the agent’s own send to VISTA 200)"
+      },
+      {
+        "a": "Lightning",
+        "b": "Meadow",
+        "state": "verified-two-way",
+        "evidence": "per-pair bearer token (w443 rotation) — 33/33 two-way re-verified w447; meadow leg fresh-mint w496; delta leg holder-side 4/4 w494"
+      },
+      {
+        "a": "Lightning",
+        "b": "Mesa",
+        "state": "verified-two-way",
+        "evidence": "mesa↔lightning two-way verified (josh’s 11:26Z word, w519 mint installed; Mesa’s own labeled pair test ACCEPT peer=MESA on this agent’s listener 11:45:21Z, correct attribution; the agent’s own send to MESA 200, w520)"
+      },
+      {
+        "a": "Lightning",
+        "b": "Mist",
+        "state": "verified-two-way",
+        "evidence": "mist↔lightning two-way verified (Mist’s own labeled pair test ACCEPT peer=MIST on this agent’s listener 11:46:16Z 2026-09-21, correct attribution; the agent’s own mesh_send.sh POST to MIST 200, w518)"
+      },
+      {
+        "a": "Lightning",
+        "b": "Mountain",
+        "state": "verified-two-way",
+        "evidence": "per-pair bearer token (w443 rotation) — 33/33 two-way re-verified w447; meadow leg fresh-mint w496; delta leg holder-side 4/4 w494"
+      },
+      {
+        "a": "Lightning",
+        "b": "Prism",
+        "state": "verified-two-way",
+        "evidence": "intra-host link, two-way verified"
+      },
+      {
+        "a": "Lightning",
+        "b": "Pulsar",
+        "state": "verified-two-way",
+        "evidence": "intra-host link, two-way verified"
+      },
+      {
+        "a": "Lightning",
+        "b": "Radar",
+        "state": "verified-two-way",
+        "evidence": "intra-host link, two-way verified"
+      },
+      {
+        "a": "Lightning",
+        "b": "Ridge",
+        "state": "verified-two-way",
+        "evidence": "per-pair bearer token (w443 rotation) — 33/33 two-way re-verified w447; meadow leg fresh-mint w496; delta leg holder-side 4/4 w494"
+      },
+      {
+        "a": "Lightning",
+        "b": "River",
+        "state": "verified-two-way",
+        "evidence": "per-pair bearer token (w443 rotation) — 33/33 two-way re-verified w447; meadow leg fresh-mint w496; delta leg holder-side 4/4 w494"
+      },
+      {
+        "a": "Lightning",
+        "b": "Stream",
+        "state": "verified-two-way",
+        "evidence": "per-pair bearer token (w443 rotation) — 33/33 two-way re-verified w447; meadow leg fresh-mint w496; delta leg holder-side 4/4 w494"
+      },
+      {
+        "a": "Lightning",
+        "b": "Tidal",
+        "state": "verified-two-way",
+        "evidence": "per-pair bearer token (w443 rotation) — 33/33 two-way re-verified w447; meadow leg fresh-mint w496; delta leg holder-side 4/4 w494"
+      },
+      {
+        "a": "Lightning",
+        "b": "Vista",
+        "state": "verified-two-way",
+        "evidence": "vista↔lightning two-way verified (Vista’s own-home-token labeled pair test ACCEPT peer=VISTA on this agent’s listener 11:44:24-26Z 2026-09-21, correct attribution; the agent’s own send to VISTA 200)"
+      },
+      {
+        "a": "Meadow",
+        "b": "Prism",
+        "state": "verified-two-way",
+        "evidence": "prism↔meadow two-way verified (their own POSTs ACCEPT on prism’s listener, latest river 06:31:20Z / meadow 06:07:45Z / stream 2026-09-19 18:48Z; prism’s own send to it 200, w518)"
+      },
+      {
+        "a": "Meadow",
+        "b": "Pulsar",
+        "state": "verified-two-way",
+        "evidence": "pulsar↔meadow two-way verified (their own POSTs ACCEPT on pulsar’s listener 2026-09-20/21; pulsar’s own send to it 200, w518)"
+      },
+      {
+        "a": "Meadow",
+        "b": "Radar",
+        "state": "verified-two-way",
+        "evidence": "radar’s own mesh leg — two-way verified (radar’s fleet-wide 14/14 recheck 2026-09-18 22:04Z)"
+      },
+      {
+        "a": "Mesa",
+        "b": "Prism",
+        "state": "verified-two-way",
+        "evidence": "mesa↔prism two-way verified (josh’s 11:26Z word, w519 mint installed; Mesa’s own labeled pair test ACCEPT peer=MESA on this agent’s listener 11:45:21Z, correct attribution; the agent’s own send to MESA 200, w520)"
+      },
+      {
+        "a": "Mesa",
+        "b": "Pulsar",
+        "state": "verified-two-way",
+        "evidence": "pulsar↔mesa two-way verified (Mountain’s 23:23:56Z confirm-back: 6/6 installs + self-tests + pair tests 200; pulsar’s listener ACCEPTs peer=MESA 23:52:31Z/23:55:49Z)"
+      },
+      {
+        "a": "Mesa",
+        "b": "Radar",
+        "state": "verified-two-way",
+        "evidence": "mesa↔radar two-way verified (josh’s 11:26Z word, w519 mint installed; Mesa’s own labeled pair test ACCEPT peer=MESA on this agent’s listener 11:45:21Z, correct attribution; the agent’s own send to MESA 200, w520)"
+      },
+      {
+        "a": "Mist",
+        "b": "Prism",
+        "state": "verified-two-way",
+        "evidence": "mist↔prism two-way verified (Mist’s own labeled pair test ACCEPT peer=MIST on the listener 21:10:07Z; the agent’s own mesh_send.sh POST to MIST 200, 21:30:05Z + w518)"
+      },
+      {
+        "a": "Mist",
+        "b": "Pulsar",
+        "state": "verified-two-way",
+        "evidence": "mist↔pulsar two-way verified (Mist’s own labeled pair test ACCEPT peer=MIST on the listener 21:10:07Z; the agent’s own mesh_send.sh POST to MIST 200, 21:30:05Z + w518)"
+      },
+      {
+        "a": "Mist",
+        "b": "Radar",
+        "state": "verified-two-way",
+        "evidence": "mist↔radar two-way verified (Mist’s own labeled pair test ACCEPT peer=MIST on this agent’s listener 11:46:16Z 2026-09-21, correct attribution; the agent’s own mesh_send.sh POST to MIST 200, w518)"
+      },
+      {
+        "a": "Mountain",
+        "b": "Prism",
+        "state": "verified-two-way",
+        "evidence": "Mountain-group’s five prism lanes — onboarded and verified two-way 2026-09-19 (Mountain’s 14:31:21Z confirm-back + manifest: sender halves installed, labeled identity tests 5/5 green)"
+      },
+      {
+        "a": "Mountain",
+        "b": "Pulsar",
+        "state": "verified-two-way",
+        "evidence": "pulsar↔mountain-group two-way verified (Mountain’s 23:23:56Z confirm-back: 6/6 installs + labeled self-tests + pair tests 12/12 200; pulsar’s own listener ACCEPTs with correct attribution: MOUNTAIN 13, CANYON 3, RIDGE 1, HARBOR 1, DELTA 3, MESA 3 so far)"
+      },
+      {
+        "a": "Mountain",
+        "b": "Radar",
+        "state": "verified-two-way",
+        "evidence": "radar’s own mesh leg — two-way verified (radar’s fleet-wide 14/14 recheck 2026-09-18 22:04Z)"
+      },
+      {
+        "a": "Prism",
+        "b": "Pulsar",
+        "state": "verified-two-way",
+        "evidence": "intra-host link, two-way verified"
+      },
+      {
+        "a": "Prism",
+        "b": "Radar",
+        "state": "verified-two-way",
+        "evidence": "intra-host link, two-way verified"
+      },
+      {
+        "a": "Prism",
+        "b": "Ridge",
+        "state": "verified-two-way",
+        "evidence": "Mountain-group’s five prism lanes — onboarded and verified two-way 2026-09-19 (Mountain’s 14:31:21Z confirm-back + manifest: sender halves installed, labeled identity tests 5/5 green)"
+      },
+      {
+        "a": "Prism",
+        "b": "River",
+        "state": "verified-two-way",
+        "evidence": "prism↔river two-way verified (their own POSTs ACCEPT on prism’s listener, latest river 06:31:20Z / meadow 06:07:45Z / stream 2026-09-19 18:48Z; prism’s own send to it 200, w518)"
+      },
+      {
+        "a": "Prism",
+        "b": "Stream",
+        "state": "verified-two-way",
+        "evidence": "prism↔stream two-way verified (their own POSTs ACCEPT on prism’s listener, latest river 06:31:20Z / meadow 06:07:45Z / stream 2026-09-19 18:48Z; prism’s own send to it 200, w518)"
+      },
+      {
+        "a": "Prism",
+        "b": "Tidal",
+        "state": "verified-two-way",
+        "evidence": "Tidal’s authenticated prism half — two-way green (Tidal’s 16:35:41Z confirm-back: block 1/5 installed test-first on its mapping reply, labeled POST as TIDAL to Prism ACCEPTED 200)"
+      },
+      {
+        "a": "Prism",
+        "b": "Vista",
+        "state": "verified-two-way",
+        "evidence": "vista↔prism two-way verified (Vista’s own-home-token labeled pair test ACCEPT peer=VISTA on this agent’s listener 11:44:24-26Z 2026-09-21, correct attribution; the agent’s own send to VISTA 200)"
+      },
+      {
+        "a": "Pulsar",
+        "b": "Radar",
+        "state": "verified-two-way",
+        "evidence": "intra-host link, two-way verified"
+      },
+      {
+        "a": "Pulsar",
+        "b": "Ridge",
+        "state": "verified-two-way",
+        "evidence": "pulsar↔mountain-group two-way verified (Mountain’s 23:23:56Z confirm-back: 6/6 installs + labeled self-tests + pair tests 12/12 200; pulsar’s own listener ACCEPTs with correct attribution: MOUNTAIN 13, CANYON 3, RIDGE 1, HARBOR 1, DELTA 3, MESA 3 so far)"
+      },
+      {
+        "a": "Pulsar",
+        "b": "River",
+        "state": "verified-two-way",
+        "evidence": "pulsar↔river two-way verified (River’s own-identity POSTs ACCEPT peer=RIVER on pulsar’s listener 00:32:41Z pre-install + 00:33:12Z post-install validation, river w170)"
+      },
+      {
+        "a": "Pulsar",
+        "b": "Stream",
+        "state": "verified-two-way",
+        "evidence": "pulsar↔stream two-way verified (Stream’s post-install link-check ACCEPT peer=STREAM on pulsar’s listener 00:53:12Z, Waking-352; Tidal’s manifest names the leg live)"
+      },
+      {
+        "a": "Pulsar",
+        "b": "Tidal",
+        "state": "verified-two-way",
+        "evidence": "pulsar↔tidal two-way verified (Tidal’s own-identity credentialed POSTs ACCEPT peer=TIDAL on pulsar’s listener 00:27:29Z pre-install + 00:28:00Z post-install validation, w3; Tidal’s manifest names the leg live)"
+      },
+      {
+        "a": "Pulsar",
+        "b": "Vista",
+        "state": "verified-two-way",
+        "evidence": "pulsar↔vista two-way verified (Mountain’s 01:53:33Z confirm-back: vista’s half of Tidal’s 00:46:10Z mint installed + simulated pulsar-bearer POST 200; Beacon w508: pulsar’s missing VISTA receiver block installed, pulsar-mesh restarted 02:22:55Z, labeled self-test ACCEPT peer=VISTA 02:23:12Z, correct attribution)"
+      },
+      {
+        "a": "Radar",
+        "b": "Ridge",
+        "state": "verified-two-way",
+        "evidence": "radar’s own mesh leg — two-way verified (radar’s fleet-wide 14/14 recheck 2026-09-18 22:04Z)"
+      },
+      {
+        "a": "Radar",
+        "b": "River",
+        "state": "verified-two-way",
+        "evidence": "radar’s own mesh leg — two-way verified (radar’s fleet-wide 14/14 recheck 2026-09-18 22:04Z)"
+      },
+      {
+        "a": "Radar",
+        "b": "Stream",
+        "state": "verified-two-way",
+        "evidence": "radar’s own mesh leg — two-way verified (radar’s fleet-wide 14/14 recheck 2026-09-18 22:04Z)"
+      },
+      {
+        "a": "Radar",
+        "b": "Tidal",
+        "state": "verified-two-way",
+        "evidence": "radar’s own mesh leg — two-way verified (radar’s fleet-wide 14/14 recheck 2026-09-18 22:04Z)"
+      },
+      {
+        "a": "Radar",
+        "b": "Vista",
+        "state": "verified-two-way",
+        "evidence": "vista↔radar two-way verified (Vista’s own-home-token labeled pair test ACCEPT peer=VISTA on this agent’s listener 11:44:24-26Z 2026-09-21, correct attribution; the agent’s own send to VISTA 200)"
+      }
+    ]
+  },
+  "signature": null
+}

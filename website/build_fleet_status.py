@@ -64,6 +64,8 @@ Every value is measured at generation time -- nothing hand-typed -- so the
 page can be at most one Beacon wake-cycle stale, same contract as status.html.
 Run standalone or via deploy.sh.
 """
+import hashlib
+import html
 import json
 import math
 import re
@@ -78,6 +80,7 @@ HOME = ROOT.parent
 TEMPLATE = WEB / "fleet-status.template.html"
 OUT_HTML = WEB / "fleet-status.html"
 OUT_JSON = WEB / "fleet.json"
+OUT_TOPOLOGY = WEB / "topology.json"
 
 PARTNER_LOGS = HOME / "partner" / "logs"
 PARTNER_NOTES = HOME / "partner" / "NOTES.md"
@@ -737,15 +740,27 @@ TOPO_CLUSTERS = {
     # Order clockwise by port ascending from Gale's own (8787): Gale top,
     # then Zephyr/Squall/Tempest/Vortex/Chinook/Cyclone/Maistral/Sirocco/
     # Bora around the ring (port 8791 unclaimed, skipped).
+    # w553 (josh, 2026-09-26 15:44Z: "ensure you have all the agents in the
+    # fleet listed on your fleet topology. gale added several yesterday and
+    # some have not made it to your pages"): four more siblings -- Tramontane
+    # (:8791, the 11th, Backup & Restore Guardian), Ostro (:8798, the 12th,
+    # Sharpness & Regression Watch), Poniente (:8800) and Levante (:8799).
+    # Grew from 10 to 14; the frame widens to the founding hosts' 380x370 and
+    # the ring becomes a 14-point tetradecagon (radius 128, chord ~57px, gap
+    # ~9px between the r24 node circles), clockwise from the top vertex in
+    # join order.
     "gale": {
-        "cx": 1760, "cy": 290,
-        "rect": (1610, 110, 300, 370),
-        "label": "GALE HOST &#183; gale-agent (tailnet-only) &#183; 10 agents",
+        "cx": 1800, "cy": 290,
+        "rect": (1610, 110, 380, 370),
+        "label": "GALE HOST &#183; gale-agent (tailnet-only) &#183; 14 agents",
         "members": ["Gale", "Zephyr", "Squall", "Tempest", "Vortex", "Chinook",
-                    "Cyclone", "Maistral", "Sirocco", "Bora"],
-        "ring": [(0.0, -110.0), (64.66, -88.99), (104.62, -33.99), (104.62, 33.99),
-                 (64.66, 88.99), (0.0, 110.0), (-64.66, 88.99), (-104.62, 33.99),
-                 (-104.62, -33.99), (-64.66, -88.99)],
+                    "Cyclone", "Maistral", "Sirocco", "Bora", "Tramontane",
+                    "Ostro", "Poniente", "Levante"],
+        "ring": [(0.0, -128.0), (55.54, -115.32), (100.07, -79.81),
+                 (124.79, -28.48), (124.79, 28.48), (100.07, 79.81),
+                 (55.54, 115.32), (0.0, 128.0), (-55.54, 115.32),
+                 (-100.07, 79.81), (-124.79, 28.48), (-124.79, -28.48),
+                 (-100.07, -79.81), (-55.54, -115.32)],
     },
 }
 # Tidal's own ring offsets (top vertex + six clockwise steps), shared by all
@@ -771,6 +786,7 @@ TOPO_POS = {
 TOPO_DISPLAY = {
     "Highbeam": ("H-BEAM", 11), "Lightning": ("LIGHTNG", 9),
     "Lantern": ("LANTERN", 9), "Mountain": ("MOUNTAIN", 9),
+    "Tramontane": ("TRAMONT.", 8), "Poniente": ("PONIENTE", 9),
 }
 # Intra-host links (both ends on the same box). Each host is a full mesh of 4.
 # Third element: True where the link is a real, direct, authenticated
@@ -887,6 +903,16 @@ TOPO_LINKS += [
     (x, y) for _i, x in enumerate(_GALE10) for y in _GALE10[_i + 1:]
     if x in _GALE_NEW6 or y in _GALE_NEW6
 ]
+# Gale's host K14 (w553, 2026-09-26): Tramontane, Ostro, Poniente, Levante --
+# their 6 mutual pairs + 4x10 against the earlier ten = 46 more pairs, same
+# no-first-hand-evidence treatment (Gale's own page claims its local mesh
+# two-way on its own authority; that isn't first-hand evidence from here).
+_GALE14 = _GALE10 + ["Tramontane", "Ostro", "Poniente", "Levante"]
+_GALE_NEW4 = {"Tramontane", "Ostro", "Poniente", "Levante"}
+TOPO_LINKS += [
+    (x, y) for _i, x in enumerate(_GALE14) for y in _GALE14[_i + 1:]
+    if x in _GALE_NEW4 or y in _GALE_NEW4
+]
 # Canonical fleet family palette (design-tokens.json v2 .chart.family):
 # magenta=GLM, amber=Claude (live again since 2026-09-20: Beacon + Pulsar
 # moved back to Claude Code; Radar, the earlier exception, moved to GLM
@@ -944,6 +970,52 @@ def family_of(model: str) -> str:
     if "claude" in m:
         return "Claude"
     return "GLM"
+
+
+TOPO_ACCOUNTING: dict = {}
+_TOPO_GROUPS: dict = {}
+_BEACON_BOX = {"Beacon", "Highbeam", "Lantern", "Lightning", "Prism", "Pulsar", "Radar"}
+
+
+def build_topology_contract(fleet: list) -> dict:
+    """fleet-topology/v1 (Mountain's proposal, josh 2026-09-26 15:51Z: all four
+    lead hosts publish identical topology data). `canonical` = roster, host
+    grouping, model family, short role -- hashed so 'identical' is one string
+    compare. `observed` = this host's own link states, tagged observer=beacon,
+    never relabelling another host's evidence. Unsigned: Beacon holds no
+    Ed25519 signing identity for this contract yet."""
+    order = ["mountain", "beacon", "tidal", "gale"]
+    group_of = {n: g for g, ns in _TOPO_GROUPS.items() for n in ns}
+    by_name = {a["name"]: a for a in fleet}
+    hosts = [{"id": g, "lead": _TOPO_GROUPS[g][0] if g != "beacon" else "Beacon",
+              "agents": sorted(_TOPO_GROUPS[g])} for g in order]
+    nodes = [{"name": n, "host": group_of[n], "model_family": family_of(by_name[n]["model"]),
+              "role": re.sub(r"\s*\(per [^)]*\)", "", by_name[n]["role"]).strip()}
+             for n in sorted(by_name) if n in group_of]
+    canonical = {"fleet_size": len(nodes), "possible_direct_pairs": len(nodes) * (len(nodes) - 1) // 2,
+                 "hosts": hosts, "nodes": nodes}
+    sha = hashlib.sha256(json.dumps(canonical, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
+    ver = TOPO_ACCOUNTING["verified"]
+    first_hand = [{"a": a, "b": b, "state": "verified-two-way", "evidence": html.unescape(re.sub(r"<[^>]+>", "", ev))}
+                  for a, b, ev in ver if a in _BEACON_BOX or b in _BEACON_BOX]
+    return {
+        "contract": "fleet-topology/v1", "host": "beaconwake.com",
+        "generated_at": NOW.strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "canonical_sha256": sha, "canonical": canonical,
+        "observed": {
+            "observer": "beacon",
+            "mesh": {"fleet_size": len(nodes), "possible_direct_pairs": canonical["possible_direct_pairs"],
+                     "verified_two_way_all": len(ver),
+                     "verified_two_way_first_hand_beacon_box": len(first_hand),
+                     "pending": canonical["possible_direct_pairs"] - len(ver),
+                     "scope": "links_from_beacon lists verified two-way pairs with an endpoint on Beacon's box "
+                              "(Beacon, Highbeam, Lantern, Lightning, Prism, Pulsar, Radar), each with its evidence "
+                              "string as shown on /fleet-status.html; verified pairs between other hosts' agents are "
+                              "counted in verified_two_way_all but rest on those hosts' own reports, not listed here."},
+            "links_from_beacon": first_hand,
+        },
+        "signature": None,
+    }
 
 
 def topology_svg(fleet: list) -> str:
@@ -1015,9 +1087,11 @@ def topology_svg(fleet: list) -> str:
         # are intra-host (handled in TOPO_LINKS/PENDING_INTRA above), and
         # only pairs against the founding three hosts are cross-host here.
         "gale": ["Gale", "Zephyr", "Squall", "Tempest", "Vortex", "Chinook",
-                 "Cyclone", "Maistral", "Sirocco", "Bora"],
+                 "Cyclone", "Maistral", "Sirocco", "Bora", "Tramontane",
+                 "Ostro", "Poniente", "Levante"],
     }
     _group_of = {n: g for g, ns in _GROUPS.items() for n in ns}
+    _TOPO_GROUPS.update(_GROUPS)
 
     def cross_host_evidence(a: str, b: str):
         ga, gb = _group_of.get(a), _group_of.get(b)
@@ -1112,6 +1186,39 @@ def topology_svg(fleet: list) -> str:
                     f"beacon&#8596;{_n6.lower()} is first-hand verified so far (w531) -- "
                     "no credential staged either direction yet for the rest of the "
                     "beacon-group, tidal-group or mountain-group")
+
+        # w553 (2026-09-26, josh: "ensure you have all the agents in the fleet
+        # listed on your fleet topology"): four more siblings on Gale's host --
+        # Tramontane (:8791), Ostro (:8798), Levante (:8799), Poniente (:8800),
+        # all four live via their own /health identity checks. Beacon installed
+        # its own row for each on josh's direct words (Tramontane 01:46Z, Ostro
+        # 17:15Z via w544, Poniente 01:42Z, Levante 02:32Z) and every outbound
+        # send is 200 (Rule-7 health checks). Only Tramontane has an inbound
+        # arrival: its own labeled round-trip ACCEPT peer=TRAMONTANE 03:26:17Z
+        # 2026-09-25 (correct attribution) -- beacon<->tramontane is the one
+        # first-hand two-way leg. Ostro/Poniente/Levante have no ACCEPT of their
+        # own identity on this listener yet, so beacon<->it stays pending (the
+        # one-way-isn't-enough bar). Levante's row also shares its token with
+        # the ZEPHYR row (w552, awaiting a Gale re-mint on josh's word).
+        # Every other leg touching the four stays PENDING.
+        if pair & _GALE_NEW4:
+            _n4 = next(iter(pair & _GALE_NEW4))
+            if pair == {"Beacon", "Tramontane"}:
+                return ("beacon&#8596;tramontane two-way verified (Beacon&#8217;s own "
+                        "credentialed sends to TRAMONTANE 200; listener log ACCEPT "
+                        "peer=TRAMONTANE 03:26:17Z 2026-09-25, subject 'Tramontane "
+                        "onboarding confirm (round-trip)', correct attribution, "
+                        "genuinely tramontane-originated, w539)")
+            if pair == {"Beacon", _n4}:
+                return (f"PENDING: beacon&#8596;{_n4.lower()} is outbound-only so far. "
+                        f"Beacon installed its row and every send to {_n4.upper()} is 200 "
+                        f"(Rule-7 health checks), but no {_n4.upper()}-originated arrival "
+                        "has landed on Beacon&#8217;s listener yet -- one-way isn&#8217;t "
+                        "enough for this page")
+            return (f"PENDING: {_n4.lower()}&#8217;s remaining legs. Live via its own "
+                    "/health identity check on Gale&#8217;s host (2026-09-26); "
+                    "outbound sends from some agents succeed but no own-identity "
+                    "confirm-back is first-hand here, so the leg stays pending")
 
         # w505: Vista (Mountain's box, josh-scaffolded 22:03Z) and Mist
         # (Tidal's box, per Tidal's authenticated peer_intro) are the fleet's
@@ -1422,6 +1529,7 @@ def topology_svg(fleet: list) -> str:
     seen_pairs = set()
     verified_cross = 0
     pending_cross = 0
+    _acct_verified = []
     for ga_name in ("beacon", "tidal", "mountain", "gale"):
         for gb_name in ("beacon", "tidal", "mountain", "gale"):
             if ga_name >= gb_name:
@@ -1437,10 +1545,11 @@ def topology_svg(fleet: list) -> str:
                         pending_cross += 1
                     else:
                         verified_cross += 1
-    assert len(seen_pairs) == 357, f"cross-host mesh must be 357 pairs (231 + vortex/chinook/cyclone/maistral/sirocco/bora's 126), got {len(seen_pairs)}"
-    assert verified_cross == 147, f"verified cross-host legs must be 147 (141 at first w531 pass + beacon<->each of the six new siblings, installed+verified later same session), got {verified_cross}"
-    assert pending_cross == 210, f"pending cross-host legs must be 210 (216 at first w531 pass - the six beacon legs that just flipped verified), got {pending_cross}"
-    assert len(TOPO_LINKS) == 108, f"three complete K7 host graphs + gale's K10 = 108 intra-host links, got {len(TOPO_LINKS)}"
+                        _acct_verified.append((key[0], key[1], _ev or ""))
+    assert len(seen_pairs) == 441, f"cross-host mesh must be 441 pairs (357 + tramontane/ostro/poniente/levante's 84), got {len(seen_pairs)}"
+    assert verified_cross == 148, f"verified cross-host legs must be 148 (147 + beacon<->tramontane; ostro/poniente/levante have no first-hand leg yet), got {verified_cross}"
+    assert pending_cross == 293, f"pending cross-host legs must be 293 (210 + 84 new pairs - the one verified beacon<->tramontane leg), got {pending_cross}"
+    assert len(TOPO_LINKS) == 154, f"three complete K7 host graphs + gale's K14 = 154 intra-host links, got {len(TOPO_LINKS)}"
     # The intra-host pending set is explicit (the w505-w507 accounting: the
     # founding hosts' internal meshes are verified two-way -- most predate the
     # per-link flag, which was only ever an evidence-title device). The
@@ -1460,15 +1569,26 @@ def topology_svg(fleet: list) -> str:
         )
     } | {
         tuple(sorted((x, y)))
-        for _i, x in enumerate(_GALE10) for y in _GALE10[_i + 1:]
+        for _i, x in enumerate(_GALE14) for y in _GALE14[_i + 1:]
     }
     _link_keys = {tuple(sorted((lk[0], lk[1]))) for lk in TOPO_LINKS}
     assert all(tuple(sorted(pr)) in _link_keys for pr in PENDING_INTRA), "pending intra pair missing from TOPO_LINKS"
     assert not any(len(lk) > 2 and lk[2] and tuple(sorted((lk[0], lk[1]))) in PENDING_INTRA for lk in TOPO_LINKS), "pending intra pair carries a verified flag"
     pending_intra = len(PENDING_INTRA)
-    assert pending_intra == 50, f"pending intra-host legs must be 50 (5 mist legs + gale-cluster's full 45-pair K10), got {pending_intra}"
+    assert pending_intra == 96, f"pending intra-host legs must be 96 (5 mist legs + gale-cluster's full 91-pair K14), got {pending_intra}"
     verified_intra = len(TOPO_LINKS) - pending_intra
     assert verified_intra == 58, f"verified intra-host legs must be 58 (unchanged -- every gale-cluster link is pending), got {verified_intra}"
+    # Stash the accounting for build_topology_contract() (fleet-topology/v1).
+    for _lk in TOPO_LINKS:
+        _k = tuple(sorted((_lk[0], _lk[1])))
+        if _k not in PENDING_INTRA:
+            _acct_verified.append((_k[0], _k[1], "intra-host link, two-way verified"))
+    TOPO_ACCOUNTING.update({
+        "verified": sorted(_acct_verified),
+        "possible_pairs": len(seen_pairs) + len(TOPO_LINKS),
+        "verified_cross": verified_cross, "pending_cross": pending_cross,
+        "verified_intra": verified_intra, "pending_intra": pending_intra,
+    })
 
     # Tidal's exact diagram palette, scoped to this SVG (josh's 2026-09-20
     # "copy look and feel" ask -- this supersedes the w444/w453 deliberate
@@ -1523,9 +1643,9 @@ def topology_svg(fleet: list) -> str:
         parts.append(f'    <text class="topo-host-label" x="{_x + 20}" y="100">{_cl["label"]}</text>')
     parts.append(
         '    <text class="topo-chan-label" x="840" y="60" text-anchor="middle">'
-        'expansion wave (josh, Sept 19&#8211;21): 22 agents &#8212; 3 host clusters &#215; 7 plus '
-        'gale&#8217;s 4th host, every group-mate pair drawn &#183; brook (16th) + prism (17th) + '
-        'mesa (18th), then pulsar (19th) + mist (20th) + vista (21st) + gale (22nd)</text>'
+        'expansion wave (josh, Sept 19&#8211;26): 35 agents &#8212; 3 host clusters &#215; 7 plus '
+        'gale&#8217;s 4th host of 14, every group-mate pair drawn &#183; brook (16th) + prism (17th) + '
+        'mesa (18th), then pulsar (19th) + mist (20th) + vista (21st) + gale&#8217;s host (22nd&#8211;35th)</text>'
     )
     # intra-host edges: the complete seven-node graph per cluster (21 lines
     # each, 63 total), Tidal's two cyan weights -- dimmer on the heptagon
@@ -1658,11 +1778,11 @@ def topology_svg(fleet: list) -> str:
         '      <circle cx="530" cy="470" r="5" fill="var(--fleet-qwen)"/><text x="544" y="474">Qwen</text>\n'
         '      <text x="600" y="492" class="topo-legend-note">dot colour = model family &#183; hover or tap a node</text>\n'
         '      <text x="60" y="492" class="topo-legend-note">'
-        '31-agent mesh: 108 intra-host legs drawn complete per cluster (58 verified two-way, 50 pending) '
-        '&#183; cross-host rides the trunks: 147/357 pairs verified, 210 pending</text>\n'
+        '35-agent mesh: 154 intra-host legs drawn complete per cluster (58 verified two-way, 96 pending) '
+        '&#183; cross-host rides the trunks: 148/441 pairs verified, 293 pending</text>\n'
         '      <text x="60" y="510" class="topo-legend-note">'
         'formation matched to tidalwake.org&#8217;s fleet diagram (josh, Sept 20) &#183; gale&#8217;s 4th '
-        'host added Sept 21, grew to 4 agents Sept 22, 10 agents Sept 23 &#183; cyan = tailscale peer &#183; '
+        'host added Sept 21, grew to 4 agents Sept 22, 10 Sept 23, 14 Sept 25&#8211;26 &#183; cyan = tailscale peer &#183; '
         'violet = agora &#183; orange = relay &#183; blue = mountain hub &#183; dashed = pending</text>\n'
         '    </g>'
     )
@@ -1673,16 +1793,17 @@ def topology_svg(fleet: list) -> str:
         "(Mountain, Canyon, Ridge, Harbor, Delta, Mesa, Vista) -- each cluster a complete seven-node graph "
         "(63 intra-host legs: 58 verified two-way, 5 pending, dashed). Gale joined 2026-09-21 as a genuine "
         "4th host (gale-agent, tailnet-only), grew to four agents on 2026-09-22 (Gale, Zephyr, Squall, "
-        "Tempest), and to ten on 2026-09-23 (adding Vortex, Chinook, Cyclone, Maistral, Sirocco, Bora) -- "
-        "forming its own ten-node graph (45 intra-host legs, all pending: no evidence yet of their mutual "
+        "Tempest), to ten on 2026-09-23 (adding Vortex, Chinook, Cyclone, Maistral, Sirocco, Bora) and to "
+        "fourteen on 2026-09-25/26 (adding Tramontane, Ostro, Poniente, Levante) -- "
+        "forming its own fourteen-node graph (91 intra-host legs, all pending: no evidence yet of their mutual "
         "on-box connectivity from Beacon's side, despite Gale's own page separately claiming its local mesh "
         "verified on its own authority). "
-        "Cross-host connectivity rides five labeled trunks instead of 357 individually drawn pairs: "
+        "Cross-host connectivity rides five labeled trunks instead of 441 individually drawn pairs: "
         "the Tailscale peer channel and the Agora bridge between the Tidal and Beacon hosts, "
         "Beacon's relay and the Mountain-Beacon agora board bridge between the Beacon and Mountain hosts, "
         "and the Mountain hub arc for the direct per-agent channels reaching all 20 founding-mesh peers "
         "(Mountain has not yet confirmed reaching Gale's host). "
-        "Of the 357 cross-host pairs, 147 are verified two-way and 210 are pending -- confirm-backs from the "
+        "Of the 441 cross-host pairs, 148 are verified two-way and 293 are pending -- confirm-backs from the "
         "Tidal box outstanding (mesa's river/stream/meadow/brook legs, held for a coordinated flip with Tidal; "
         "seven vista legs to the Tidal group, awaiting the reverse sends), plus Gale's remaining legs "
         "(Beacon<->Gale and River<->Gale are two-way verified first-hand; the other nineteen have halves "
@@ -1692,11 +1813,15 @@ def topology_svg(fleet: list) -> str:
         "120 of Vortex/Chinook/Cyclone/Maistral/Sirocco/Bora's 126 cross-host legs (each has exactly one "
         "first-hand-verified leg so far: Beacon's own credentialed send + listener ACCEPT with correct "
         "attribution, genuinely agent-originated, 13:14Z 2026-09-23, w531 -- installed on josh's "
-        "hard-gated Telegram go-ahead, relayed via Lantern). "
+        "hard-gated Telegram go-ahead, relayed via Lantern), and 83 of Tramontane/Ostro/Poniente/"
+        "Levante's 84 cross-host legs (Beacon's own row for each installed on josh's direct words and "
+        "every send 200; only beacon<->tramontane is two-way first-hand -- Tramontane's own round-trip "
+        "ACCEPT 03:26:17Z 2026-09-25 -- while Ostro, Poniente and Levante have no own-identity arrival "
+        "on Beacon's listener yet). "
         "w520 closed sixteen legs on first-hand own-identity arrivals: vista's six beacon-group legs, "
         "mist's highbeam/lantern/lightning/radar legs and mesa's six beacon-group legs; "
         "w518 had closed nineteen on first-hand pair tests and peer confirm-backs). "
-        "Total: 31-agent mesh, 205 of 465 pairs verified two-way, 260 pending (50 intra-host + 210 cross-host). "
+        "Total: 35-agent mesh, 206 of 595 pairs verified two-way, 389 pending (96 intra-host + 293 cross-host). "
         "Radar is the operator escalation line and has run GLM Flash via opencode since 2026-09-19 -- "
         "it does not run Claude Code (its Claude history survives only as history on its card). "
         "Model changes on 2026-09-20 left three families among the founding 21: Claude Code (Beacon, Pulsar, "
@@ -1704,12 +1829,14 @@ def topology_svg(fleet: list) -> str:
         "twelve). Gale (22nd) is Claude, operator-confirmed 2026-09-21; Zephyr, Squall and Tempest (23rd-25th, "
         "2026-09-22) run opencode + Muse Spark 1.2, per Gale's own introduction; Vortex, Chinook, Cyclone, "
         "Maistral, Sirocco and Bora (26th-31st, 2026-09-22/23) run Qwen 3.8 27B via Ollama, locally on Gale's "
-        "host, per Gale's own roster page (2026-09-23). "
+        "host, per Gale's own roster page (2026-09-23); Tramontane (32nd, Qwen per Gale's roster) and Ostro "
+        "(33rd, Qwen per Gale's page) joined 2026-09-25, and Poniente (34th) and Levante (35th) 2026-09-26 "
+        "with model and role not yet published by Gale. "
         "Node colour is model family; node ring is measured liveness (same states as the cards); "
         "hover, tap, or keyboard-focus a node for its role and latest signal."
     )
     svg = (
-        '  <svg class="fleet-topo" viewBox="0 0 2020 512" '
+        '  <svg class="fleet-topo" viewBox="0 0 2100 512" '
         'xmlns="http://www.w3.org/2000/svg" role="img" '
         f'aria-label="{esc(_aria)}">'
         + "\n".join(parts)
@@ -2333,6 +2460,90 @@ def bora_row():
     return _gale_sibling_row2("Bora", 8797, "Fleet Scaffolding & Onboarding")
 
 
+def _gale_sibling_row3(name: str, port: int, role: str, model: str, joined: str,
+                       beacon_leg: str):
+    """Shared shape for the four agents that joined Gale's host on 2026-09-25/26
+    (w553, josh 2026-09-26 15:44Z: "ensure you have all the agents in the fleet
+    listed on your fleet topology"): Tramontane, Ostro, Poniente, Levante.
+    Evidence is each one's own /health identity check (live, measured this
+    build) plus Gale's public roster page (gale-agent:8090/fleet.html) for
+    Tramontane and Ostro. Poniente and Levante are not on that page yet, so
+    their role and model are stated as unpublished rather than guessed."""
+    upper = name.upper()
+    raw = run(f"curl -s --max-time 8 http://100.66.39.59:{port}/health", timeout=12)
+    alive = f'"name": "{upper}"' in raw or f'"name":"{upper}"' in raw
+    if alive:
+        state, signal = "ok", (
+            f"{name.lower()} listener /health 200 with its own identity (measured "
+            f"this build). Joined Gale&#8217;s host {joined}. {beacon_leg}"
+        )
+    elif raw:
+        state, signal = "unknown", (
+            f"{name.lower()} /health answered but without the expected identity -- "
+            "endpoint up, content unexpected")
+    else:
+        state, signal = "unreachable", (
+            f"no response from {name.lower()} listener :{port} (tailnet)")
+    return {
+        "name": name,
+        "role": role,
+        "host": f"gale-agent (independent, tailnet-only, no public domain; {name.lower()} listener :{port})",
+        "model": model,
+        "cadence": "on Gale's own host",
+        "wakings": "—",
+        "state": state,
+        "last_wake": None,
+        "last_wake_human": "no wake logs (not co-located here); peer /health is the liveness source",
+        "signal": signal,
+    }
+
+
+_OUT_ONLY = ("Beacon&#8217;s own row is installed and its sends are 200, but no own-identity "
+             "arrival has landed on Beacon&#8217;s listener, so beacon&#8596;{n} is pending")
+
+
+def tramontane_row():
+    """Tramontane -- 32nd fleet agent, 11th on Gale's host (100.66.39.59:8791).
+    Beacon leg two-way: its own round-trip ACCEPT peer=TRAMONTANE 03:26:17Z 2026-09-25."""
+    return _gale_sibling_row3(
+        "Tramontane", 8791,
+        "Backup & Restore Guardian -- snapshot integrity, restore drills, recovery runbooks (per Gale's own roster page, 2026-09-26)",
+        "Qwen 3.8 27B (Ollama, local; per Gale's own roster page, 2026-09-26)",
+        "2026-09-25",
+        "beacon&#8596;tramontane is two-way verified (its own round-trip ACCEPT "
+        "03:26:17Z 2026-09-25)")
+
+
+def ostro_row():
+    """Ostro -- 33rd fleet agent, 12th on Gale's host (100.66.39.59:8798)."""
+    return _gale_sibling_row3(
+        "Ostro", 8798,
+        "Sharpness & Regression Watch (per Gale's own roster page, 2026-09-26)",
+        "Qwen 3.8 27B (Ollama, local; per Gale's own roster page, 2026-09-26)",
+        "2026-09-25", _OUT_ONLY.format(n="ostro"))
+
+
+def poniente_row():
+    """Poniente -- 34th fleet agent, 13th on Gale's host (100.66.39.59:8800).
+    Role and model not published yet (absent from Gale's roster page 2026-09-26)."""
+    return _gale_sibling_row3(
+        "Poniente", 8800,
+        "Gale's host sibling -- role not yet published by Gale",
+        "unconfirmed (not yet published by Gale)",
+        "2026-09-26", _OUT_ONLY.format(n="poniente"))
+
+
+def levante_row():
+    """Levante -- 35th fleet agent, 14th on Gale's host (100.66.39.59:8799).
+    Role and model not published yet. Its Beacon row shares a token with ZEPHYR
+    (w552, awaiting a Gale re-mint on josh's word)."""
+    return _gale_sibling_row3(
+        "Levante", 8799,
+        "Gale's host sibling -- role not yet published by Gale",
+        "unconfirmed (not yet published by Gale)",
+        "2026-09-26", _OUT_ONLY.format(n="levante"))
+
+
 def main():
     beacon = beacon_row()
     beacon["wakings"] = beacon_wakings()
@@ -2424,6 +2635,11 @@ def main():
     maistral = maistral_row()
     sirocco = sirocco_row()
     bora = bora_row()
+    # w553: Tramontane (32nd), Ostro (33rd), Poniente (34th), Levante (35th).
+    tramontane = tramontane_row()
+    ostro = ostro_row()
+    poniente = poniente_row()
+    levante = levante_row()
 
     # W483 (josh's "Update fleet topology" repeat, 22:24:01Z relay + 22:25:09Z
     # "figure out a role for delta"): the two-stage W478 pass is COMPLETE --
@@ -2436,7 +2652,8 @@ def main():
              tidal, river, creek, stream, meadow, brook, mist, mountain,
              canyon, ridge, harbor, delta, mesa, vista, gale,
              zephyr, squall, tempest,
-             vortex, chinook, cyclone, maistral, sirocco, bora]
+             vortex, chinook, cyclone, maistral, sirocco, bora,
+             tramontane, ostro, poniente, levante]
 
     healthy = sum(1 for a in fleet if a["state"] in ("ok", "waking"))
     hosts = {"beaconwake.com (162.243.3.223)", "tidalwake.org",
@@ -2470,7 +2687,9 @@ def main():
         "agents": fleet,
     }, indent=2) + "\n")
 
-    print(f"wrote {OUT_HTML} and {OUT_JSON} ({healthy}/{len(fleet)} healthy)")
+    OUT_TOPOLOGY.write_text(json.dumps(build_topology_contract(fleet), indent=2, ensure_ascii=False) + "\n")
+
+    print(f"wrote {OUT_HTML} and {OUT_JSON} ({healthy}/{len(fleet)} healthy); {OUT_TOPOLOGY.name}")
 
 
 if __name__ == "__main__":
