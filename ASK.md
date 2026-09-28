@@ -2,6 +2,8 @@
 
 ## Open
 
+- **RESOLVED w571 (2026-09-28 ~19:2xZ): "Yes applies to all agents on gale" (chat-id-gated, epoch 1790621405) read as extending the w568/w569 Prism relay-for-gale authorization fleet-wide, not just to Prism.** Audited every on-box agent's Gale-wave (TRAMONTANE/OSTRO/PONIENTE/LEVANTE) credentials before touching anything: Beacon/Highbeam/Lantern/Radar/Pulsar/Prism already had full sender+receiver sets (self-installed across w539-w569, under their own per-wave josh go-aheads) -- the one gap was **Lightning**, whose `keys/mountain-gateway.env` (outbound sender store) had zero rows for any of the four. Installed all 4 from the already-staged/authorized Gale bundles (`e0fc2d5d`/`a0d31f40`/`5d152510`/`e664c01a` -- no new minting, Rule 9), backup `lightning/keys/mountain-gateway.env.bak-pre-galewave-w571-*`, digest-checked against existing rows first (zero collisions), added the 4 non-secret addresses to `lightning/peer_extra_addresses.json`. Self-tested outbound: **4/4 HTTP 200** via Lightning's own tailnet node (not the shared-box-IP fallback). Lightning's receiver side for these 4 was already installed+tested at w563. Notified Lightning directly (200). This closes the long-carried "Lightning's Tramontane/Ostro/Poniente install" open item -- the Pulsar half of that same carried-forward line turned out to be **already done** (stale note on my part; Pulsar's files have had the full set since 2026-09-27, likely a self-install that never got reflected back into my NOTES). If "all agents" meant something broader (off-box fleet, not just Beacon's siblings), say so and I'll take another pass.
+
 - **RESOLVED w568 (2026-09-28 ~15:1xZ): two follow-up lines on your chat-id-gated channel ("Gale re pair for prism"; "You have authorizing to relay for gale, also to get prism working with keys") answered the item below. I replaced Prism's stale GALE sender token (was HTTP 401) and added its missing TRAMONTANE/OSTRO/PONIENTE sender rows from bundle 20260927T024952Z, collision-checked by digest, backup `prism/keys/peers.env.bak-pre-gale-relay-w568-*`. Prism->GALE/TRAMONTANE/OSTRO/PONIENTE all HTTP 200. Prism's receiver side (`keys/inbound.env`, 20 blocks, no Gale-wave rows) NOT touched -- ask below.**
 
 - **RESOLVED w569 (2026-09-28 ~15:3xZ): josh replied "Yes send to gale" on his chat-id-gated channel. Installed all 14 Gale-wave receiver rows into `prism/keys/inbound.env` (34 blocks, 0600, digest collision check clean, backup `inbound.env.bak-pre-gale-receiver-w569-*`), restarted prism-mesh, self-test 14/14 ACCEPT with correct identity + bad-token control 401, test msgs deleted, confirm-back sent to GALE (200) asking for one remote probe. I read "Yes" as the answer to the ask and "send to gale" as the confirm-back; if you meant something else, say so.**
@@ -761,6 +763,7 @@
 - **Telegram (2026-09-28, via /commands):** Gale re pair for prism
 - **Telegram (2026-09-28, via /commands):** You have authorizing to relay for gale, also to get prism working with keys.
 - **Telegram (2026-09-28, via /commands):** Yes send to gale
+- **Telegram (2026-09-28, via /commands):** Yes applies to all agents on gale
 
 ## Resolved / answered directives
 
