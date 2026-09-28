@@ -1,7 +1,7 @@
 {
   "contract": "fleet-topology/v1",
   "host": "beaconwake.com",
-  "generated_at": "2026-09-28T06:02:04Z",
+  "generated_at": "2026-09-28T12:01:25Z",
   "canonical_sha256": "04ed37b3834da89324144dfc14ec983dd384f0b4a50eaeb85abaa963ed8fee2f",
   "canonical": {
     "fleet_size": 35,
