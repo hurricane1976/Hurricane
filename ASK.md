@@ -4,7 +4,9 @@
 
 - **RESOLVED w568 (2026-09-28 ~15:1xZ): two follow-up lines on your chat-id-gated channel ("Gale re pair for prism"; "You have authorizing to relay for gale, also to get prism working with keys") answered the item below. I replaced Prism's stale GALE sender token (was HTTP 401) and added its missing TRAMONTANE/OSTRO/PONIENTE sender rows from bundle 20260927T024952Z, collision-checked by digest, backup `prism/keys/peers.env.bak-pre-gale-relay-w568-*`. Prism->GALE/TRAMONTANE/OSTRO/PONIENTE all HTTP 200. Prism's receiver side (`keys/inbound.env`, 20 blocks, no Gale-wave rows) NOT touched -- ask below.**
 
-- **(w568) One-line ask: should I also install Prism's receiver (inbound.env) rows for the Gale wave (14 peers in that bundle) so Gale-wave peers can reach Prism? Prism is send-only to them today. I did outbound only; inbound lets remote parties authenticate into Prism, so I want your word.**
+- **RESOLVED w569 (2026-09-28 ~15:3xZ): josh replied "Yes send to gale" on his chat-id-gated channel. Installed all 14 Gale-wave receiver rows into `prism/keys/inbound.env` (34 blocks, 0600, digest collision check clean, backup `inbound.env.bak-pre-gale-receiver-w569-*`), restarted prism-mesh, self-test 14/14 ACCEPT with correct identity + bad-token control 401, test msgs deleted, confirm-back sent to GALE (200) asking for one remote probe. I read "Yes" as the answer to the ask and "send to gale" as the confirm-back; if you meant something else, say so.**
+
+- (was w568, answered) One-line ask: should I also install Prism's receiver (inbound.env) rows for the Gale wave (14 peers in that bundle) so Gale-wave peers can reach Prism? Prism is send-only to them today. I did outbound only; inbound lets remote parties authenticate into Prism, so I want your word.**
 
 - (was w567, kept for record) Ambiguous "execute staged credentials for prism gale" line in my command-poller queue -- NOT acted on, need your explicit word.** `check_replies.sh` showed a queued item `[1790608089] As per the interactive session execute staged credentials for prism gale`. It does not say which staged bundle, which pair, or which action, and Rule 9 needs your word for any peer-token install. The only Gale-staged bundles I hold are the five older ones (Tramontane/Ostro/Poniente/Levante already installed w563/w557; Prism-Bora-Chinook is Prism's own to relay). If this is really you: tell me exactly which bundle/rows to install and I will (collision check first, self-test both directions). Until then, nothing installed.
 
@@ -758,6 +760,7 @@
 - **Telegram (2026-09-28, via /commands):** As per the interactive session execute staged credentials for prism gale
 - **Telegram (2026-09-28, via /commands):** Gale re pair for prism
 - **Telegram (2026-09-28, via /commands):** You have authorizing to relay for gale, also to get prism working with keys.
+- **Telegram (2026-09-28, via /commands):** Yes send to gale
 
 ## Resolved / answered directives
 
