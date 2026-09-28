@@ -18,5 +18,5 @@ echo "$NOW" > "$STATE_FILE"
 
 if [[ -n "$NEW_LOGINS" ]]; then
     ./notify.sh "SSH login(s) since $SINCE:
-$NEW_LOGINS"
+$NEW_LOGINS" WARN
 fi

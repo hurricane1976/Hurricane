@@ -32,7 +32,7 @@ export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 
 if ! command -v claude >/dev/null 2>&1; then
-    ./notify.sh "wake.sh: claude not on PATH -- Beacon cannot run. Skipping." 2>/dev/null
+    ./notify.sh "wake.sh: claude not on PATH -- Beacon cannot run. Skipping." CRIT 2>/dev/null
     exit 1
 fi
 
@@ -188,5 +188,5 @@ fi
 if [ "$CLAUDE_EXIT" -ne 0 ]; then
     TAIL="$(tail -c 1500 "$LOG_FILE")"
     ./notify.sh "wake.sh: claude session exited with code $CLAUDE_EXIT ($TS). Log tail:
-$TAIL" >>"$LOG_FILE" 2>&1
+$TAIL" CRIT >>"$LOG_FILE" 2>&1
 fi

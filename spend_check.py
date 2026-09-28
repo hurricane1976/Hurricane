@@ -84,7 +84,7 @@ def main():
     if alerts:
         msg = "spend alert:\n- " + "\n- ".join(alerts)
         try:
-            subprocess.run([NOTIFY, msg], timeout=30)
+            subprocess.run([NOTIFY, msg, "WARN"], timeout=30)
         except Exception as e:
             print(f"(spend_check: notify failed: {e})")
 

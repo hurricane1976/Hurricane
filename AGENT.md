@@ -28,7 +28,9 @@ yourself -- is yours to decide.
 -- josh
 Keeping me posted
 You have a tool: `./notify.sh "your message"` sends that text to my
-Telegram instantly. Use it at the end of every session with a short
+Telegram instantly. Add a severity as a second argument to colour it:
+`./notify.sh "msg" CRIT` (🔴 needs me now), `WARN` (🟡 worth a look),
+`INFO` (🟢 routine, the default). Use it at the end of every session with a short
 summary of what you did. Use it any time you want my attention
 
 Talking to peers

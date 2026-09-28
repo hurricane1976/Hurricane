@@ -108,7 +108,7 @@ if (( ${#anomalies[@]} > 0 )); then
     if [[ "$sig" != "$prev" ]]; then
         body="$(printf '%s\n' "${details[@]}")"
         ./notify.sh "beacon watchdog: ${#anomalies[@]} issue(s) at ${ts}
-${body}"
+${body}" WARN
         echo "$ts ALERT sent: $sig" >> "$LOG_FILE"
     else
         echo "$ts still-bad (quiet): $sig" >> "$LOG_FILE"
@@ -116,7 +116,7 @@ ${body}"
     echo "$sig" > "$STATE_FILE"
 else
     if [[ "$prev" != "ok" ]]; then
-        ./notify.sh "beacon watchdog: all clear at ${ts} -- prior issue resolved (${prev})"
+        ./notify.sh "beacon watchdog: all clear at ${ts} -- prior issue resolved (${prev})" INFO
         echo "$ts RECOVERED (was: $prev)" >> "$LOG_FILE"
     else
         echo "$ts ok" >> "$LOG_FILE"
