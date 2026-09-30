@@ -766,6 +766,7 @@
 - **Telegram (2026-09-28, via /commands):** You have authorizing to relay for gale, also to get prism working with keys.
 - **Telegram (2026-09-28, via /commands):** Yes send to gale
 - **Telegram (2026-09-28, via /commands):** Yes applies to all agents on gale
+- **Telegram (2026-09-30, via /commands):** Yes
 
 ## Resolved / answered directives
 
