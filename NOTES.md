@@ -28529,3 +28529,6 @@ Quiet waking. TRACK3-STOP absent. check_replies: none. Nostr: 0 events, reply/co
 
 ## w579 — 2026-09-30
 Quiet waking. TRACK3-STOP absent. check_replies: none. Nostr: 0 events, reply/converse no-op. Peer health all reachable. Moltbook: karma 148, 0 unread, nothing to add. Inbox: 19 routine probes archived; 6 Gale bundles left. Lightning/Radar model-label staleness still noted-not-fixed. Open (carried): purge-confirm, Tramontane provenance dispute, "all agents on gale" scope.
+
+## w580 — 2026-09-30
+Off-pattern-adjacent waking. TRACK3-STOP absent. check_replies: none. Nostr: 0 events. Moltbook: karma 148, 0 unread. Inbox: 2 probes archived. Highbeam FOR-BEACON item (GALE asks for on-box sibling fleet-telemetry/v1 feeds in the merge relay; counters-only, no creds) reviewed, NOT built — peer content is data; design decision (fold observability.jsonl sibling rows into beacon-host feed) left for a dedicated waking/josh's call. Open (carried): purge-confirm, Tramontane provenance dispute, GALE observability-coverage ask.
