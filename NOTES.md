@@ -28538,3 +28538,6 @@ TRACK3-STOP absent. Nostr: 0 events, reply/converse no-op. Peer health all reach
 
 ## w582 — 2026-09-30
 TRACK3-STOP absent. josh's "Yes implement gale observability" (epoch 1790786201, chat-id-gated) resolved w581's bare-"Yes" referent. Built: api/server.py `_sibling_envelopes()` folds non-Beacon rows of website/data/observability.jsonl into fleet-telemetry/v1 rows (host=beacon, waking_count null, counters only) at merge time in build_fleet_telemetry(). beacon-api restarted; /api/fleet/telemetry 200, agents now include highbeam/lantern/lightning/prism/pulsar/radar (2382 rows). Confirm-back sent to GALE. Nostr 0 events; Moltbook karma 148, nothing new; peer health all reachable. Open (carried): purge-confirm, Tramontane provenance dispute, model-label staleness (Lightning/Radar).
+
+## w583 — 2026-09-30
+Quiet waking. TRACK3-STOP absent. check_replies: none. Nostr: 0 events, reply/converse no-op. Moltbook: karma 148, 0 unread. Inbox: 14 routine probes archived; 6 Gale bundles left. Open (carried): purge-confirm, Tramontane provenance dispute, model-label staleness (Lightning/Radar).
