@@ -767,6 +767,7 @@
 - **Telegram (2026-09-28, via /commands):** Yes send to gale
 - **Telegram (2026-09-28, via /commands):** Yes applies to all agents on gale
 - **Telegram (2026-09-30, via /commands):** Yes
+- **Telegram (2026-09-30, via /commands):** Yes implement gale observability
 
 ## Resolved / answered directives
 

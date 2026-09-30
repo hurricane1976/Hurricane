@@ -839,6 +839,7 @@ FLEET_TELEMETRY_REMOTE = {
 FLEET_TELEMETRY_TTL = 120          # seconds; short cache, NOT deploy-bound
 FLEET_TELEMETRY_MAX = 3000         # rows returned, newest kept
 FLEET_TELEMETRY_FETCH_TIMEOUT = 6  # per-host
+FLEET_OBS_STORE = ROOT / "website" / "data" / "observability.jsonl"
 _AGENT_RE = re.compile(r"^[a-z][a-z0-9_-]{0,31}$")
 _fleet_telemetry_cache = {"at": 0.0, "data": None}
 
@@ -867,6 +868,42 @@ def _parse_ndjson(text: str) -> list:
     return out
 
 
+def _sibling_envelopes() -> list:
+    """Fold the on-box siblings' per-run rows (observability.jsonl, counters only)
+    into fleet-telemetry/v1 shape. Beacon's own rows come from the native feed.
+    Added w582 on josh's "implement gale observability" (GALE ask 2026-09-30)."""
+    fams = (("claude", "claude"), ("gemini", "gemini"), ("glm", "glm"), ("deepseek", "deepseek"))
+    out = []
+    try:
+        lines = FLEET_OBS_STORE.read_text().splitlines()
+    except OSError:
+        return out
+    for line in lines:
+        try:
+            r = json.loads(line)
+        except ValueError:
+            continue
+        name = str(r.get("agent") or "").lower()
+        if not name or name == "beacon" or not _AGENT_RE.match(name) or not r.get("ts"):
+            continue
+        model = r.get("model") or ""
+        fam = next((f for k, f in fams if k in model.lower()), "other")
+        err = bool(r.get("is_error"))
+        out.append({
+            "schema": "fleet-telemetry/v1", "agent": name, "host": "beacon",
+            "ts": r["ts"], "waking_count": None, "model": model or None, "model_family": fam,
+            "cost_usd": r.get("cost_usd"), "cost_estimated": bool(r.get("cost_estimated")),
+            "input_tokens": r.get("input_tokens"), "output_tokens": r.get("output_tokens"),
+            "cache_read_tokens": r.get("cache_read_tokens"),
+            "cache_creation_tokens": r.get("cache_creation_tokens"),
+            "duration_ms": r.get("duration_ms"), "duration_api_ms": r.get("duration_api_ms"),
+            "turns": r.get("turns"), "is_error": err,
+            "terminal_reason": r.get("terminal_reason") or ("other" if err else "completed"),
+            "subtype": r.get("subtype"),
+        })
+    return out
+
+
 def _fetch_host_feed(url: str) -> list:
     req = urllib.request.Request(url, headers={"User-Agent": "beacon-api fleet-telemetry aggregator"})
     with urllib.request.urlopen(req, timeout=FLEET_TELEMETRY_FETCH_TIMEOUT) as resp:
@@ -885,8 +922,10 @@ def build_fleet_telemetry():
     # Local (Beacon) feed -- committed file, always present.
     try:
         local = _parse_ndjson(FLEET_TELEMETRY_LOCAL.read_text()) if FLEET_TELEMETRY_LOCAL.exists() else []
+        sib = _sibling_envelopes()
         rows.extend(local)
-        hosts["beacon"] = {"status": "ok" if local else "empty", "rows": len(local), "source": "local file"}
+        rows.extend(sib)
+        hosts["beacon"] = {"status": "ok" if local else "empty", "rows": len(local) + len(sib), "source": "local file + on-box sibling rows (observability.jsonl)"}
     except OSError as e:
         hosts["beacon"] = {"status": "error", "rows": 0, "detail": str(e)}
 

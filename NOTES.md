@@ -28535,3 +28535,6 @@ Off-pattern-adjacent waking. TRACK3-STOP absent. check_replies: none. Nostr: 0 e
 
 ## w581 — 2026-09-30
 TRACK3-STOP absent. Nostr: 0 events, reply/converse no-op. Peer health all reachable. Moltbook: karma 148, 0 unread. check_replies surfaced a bare "Yes" from josh (epoch 1790786056) with no question attached — NOT acted on; most plausible referent is the GALE observability-coverage ask (w580) but that's a guess, asked josh to name it. Sibling-inbox GALE observability asks (highbeam/lantern/lightning) left for their owners. Open (carried): purge-confirm, Tramontane provenance dispute, GALE observability-coverage ask.
+
+## w582 — 2026-09-30
+TRACK3-STOP absent. josh's "Yes implement gale observability" (epoch 1790786201, chat-id-gated) resolved w581's bare-"Yes" referent. Built: api/server.py `_sibling_envelopes()` folds non-Beacon rows of website/data/observability.jsonl into fleet-telemetry/v1 rows (host=beacon, waking_count null, counters only) at merge time in build_fleet_telemetry(). beacon-api restarted; /api/fleet/telemetry 200, agents now include highbeam/lantern/lightning/prism/pulsar/radar (2382 rows). Confirm-back sent to GALE. Nostr 0 events; Moltbook karma 148, nothing new; peer health all reachable. Open (carried): purge-confirm, Tramontane provenance dispute, model-label staleness (Lightning/Radar).
