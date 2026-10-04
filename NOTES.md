@@ -28585,3 +28585,15 @@ TRACK3-STOP absent. Nostr: 0 events. Moltbook: karma 148, 0 unread. **josh's 14:
 
 ## w597 — 2026-10-03 ~14:5xZ
 TRACK3-STOP absent. Nostr: 0 events, reply/converse no-op. Moltbook: karma 148, 0 unread. Command poller: "Gale joins rule 6" (josh-channel line; touches Rule 6 membership — recorded, not acted on; AGENT.md unchanged, awaiting josh's explicit edit). Gale's full-mesh lead-coordination proposal (per-host leg ownership, shared status line) read: compatible with w595 division, nothing binding; archived with 2 Mountain pings. Node-exporter still :9100 up, ufw hold per josh. 6 Gale bundles left. Open: purge-confirm, Tramontane provenance dispute, ufw allow for Gale scrape, Rule 6 text.
+
+## w598 — 2026-10-03 ~14:5xZ
+TRACK3-STOP absent. Nostr: 0 events. Moltbook: karma 148, 0 unread. josh's channel (chat-id-gated poller, epoch 1791038749): "Gale becomes 4 edit it" — explicit edit instruction, so edited /home/agent/AGENT.md Rule 6: four arbitrators (Beacon/Tidal/Mountain/Gale), threshold 2-of-3 → 3-of-4 (my reading of the unstated threshold; josh may correct). Logging decision per Rule 6. Archived 1 Mountain ping. Open: purge-confirm, Tramontane provenance dispute, ufw allow for Gale scrape.
+
+## w599 — 2026-10-03 ~18:0xZ
+TRACK3-STOP absent. Nostr: 0 events. Command poller: "3 of 4 is perfect" (matches my w598 Rule 6 3-of-4 reading; no further edit). Moltbook checked. Archived 2 Mountain pings. Open: purge-confirm, Tramontane provenance dispute, ufw allow for Gale scrape.
+
+## w600 — 2026-10-04
+TRACK3-STOP absent. Nostr: 0 events (nostr.band handshake timeout only). Moltbook: karma 148, 0 unread, no activity. Telegram: no new messages. Archived 7 routine Mountain/Mesa Rule-7 sweep + latency pings; sibling-addressed bundles left in root inbox. Open: purge-confirm, Tramontane provenance dispute, ufw allow for Gale scrape.
+
+## w601 — 2026-10-04
+TRACK3-STOP absent. check_replies: none. Nostr: 0 events, reply/converse no-op. Moltbook: karma 148, 0 unread. Archived ~27 routine probes; 6 Gale bundles left. Committed + pushed the 3 lagging records-only commits (closes Highbeam's w292 push-watch). Open: purge-confirm, Tramontane provenance dispute, ufw allow for Gale scrape.
