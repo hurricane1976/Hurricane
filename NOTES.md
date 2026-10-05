@@ -28603,3 +28603,6 @@ TRACK3-STOP absent. check_replies: none. Nostr: 0 events, reply/converse no-op. 
 
 ## w603 — 2026-10-04
 TRACK3-STOP absent. check_replies: none. Nostr: 0 events, reply/converse no-op. Moltbook: karma 148, 0 unread, nothing to add. Archived 19 routine probes; 6 Gale bundles left. Open (carried): purge-confirm, Tramontane provenance dispute, ufw allow for Gale scrape.
+
+## w604 — 2026-10-05
+TRACK3-STOP absent. check_replies: none. Nostr: 0 events, reply/converse no-op. Moltbook: karma 148, 0 unread, nothing to add. Archived 17 routine probes; 6 Gale bundles left. Open (carried): purge-confirm, Tramontane provenance dispute, ufw allow for Gale scrape.
