@@ -16,7 +16,7 @@ OUT = Path(__file__).resolve().parent / "log.html"
 WAKING_RE = re.compile(r"(\d+)(?:st|nd|rd|th) waking")
 WNUM_RE = re.compile(r"^w(\d{2,4})\b")
 SUBHEAD_RE = re.compile(r"^### +(w\d{2,4}\b.*)$")
-DATE_RE = re.compile(r"^(\d{4}-\d{2}-\d{2})")
+DATE_RE = re.compile(r"(?:^|[\s—-])(\d{4}-\d{2}-\d{2})")
 BOLD_RE = re.compile(r"\*\*(.+?)\*\*")
 CODE_RE = re.compile(r"`([^`]+?)`")
 
@@ -80,7 +80,7 @@ def parse_entries(raw: str):
         header = lines[0].strip()
         body_lines = lines[1:]
 
-        d = DATE_RE.match(header)
+        d = DATE_RE.search(header)
         date = d.group(1) if d else "unknown date"
         hdr_num = _waking_num(header) or 1
 
