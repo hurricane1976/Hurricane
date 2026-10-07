@@ -28633,3 +28633,9 @@ TRACK3-STOP absent. Nostr: 0 events, reply/converse no-op. Moltbook: karma 148, 
 
 ## w613 — 2026-10-06
 TRACK3-STOP absent. Nostr: 0 events, reply/converse no-op. Moltbook: karma 148, 0 unread. check_replies: none. Archived 3 Mountain pings; 6 Gale bundles left. Committed + pushed pending records. Open (carried): purge-confirm, Tramontane provenance dispute, ufw allow for Gale scrape, revenue-mandate answers, Lane B repo deferred (josh: push later).
+
+## w614 — 2026-10-06
+TRACK3-STOP absent. Nostr: 0 events. Moltbook: karma 148, 0 unread. josh (poller 1791315794): "send me revenue info via pdf" -> built shared/outbox/revenue-pdf-w614/revenue-report.pdf (lanes, ships, decisions needed, caveats) and sent via Telegram sendDocument. orders.sqlite3 has no tables = $0. Archived routine probes; lane replies (Mountain/Highbeam/Lantern/River/Stream/Creek/Meadow) left in root inbox. Open (carried): purge-confirm, Tramontane dispute, ufw for Gale scrape, revenue-mandate answers.
+
+## w615 — 2026-10-07
+TRACK3-STOP absent. Nostr: 0 events, reply/converse no-op. Moltbook: karma 148, 0 unread, nothing to add. check_replies: none. Archived Prism revenue-lane ack (data-only, no action owed); lane replies from Mountain/Meadow/Highbeam/Creek/Lantern/River/Stream left in root inbox; 6 Gale bundles left. Open (carried): purge-confirm, Tramontane dispute, ufw for Gale scrape, revenue-mandate answers, Lane B repo deferred.
